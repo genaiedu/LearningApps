@@ -771,18 +771,14 @@ code {
       <strong>Wichtig zur Sprache der Namen:</strong> Dieses Quiz trainiert überwiegend internationale,
       englisch geprägte IUPAC-Schreibweisen, weil externe Datenbanken deutsche Schulnamen nicht zuverlässig
       liefern. Deutsche Bezeichnungen wie „Ethansäure“ oder „Propan-2-ol“ können von der internationalen
-      Darstellung wie „ethanoic acid“ oder „propan-2-ol“ abweichen. Eine Hilfsseite erklärt die wichtigsten
-      Unterschiede.
+      Darstellung wie „ethanoic acid“ oder „propan-2-ol“ abweichen. Nach dem Start ist unten auf der Seite
+      eine Hilfsseite mit den wichtigsten Unterschieden verfügbar.
     </div>
 
     <div class="consent-actions">
       <button class="btn btn-primary" onclick="acceptExternalDatabases()">
         <i data-lucide="check"></i>
         Einverstanden, Quiz starten
-      </button>
-      <button class="btn" onclick="openModal('nomenhilfe')">
-        <i data-lucide="book-open"></i>
-        Hilfe zu deutschen Schreibweisen
       </button>
       <button class="btn" onclick="openModal('datenschutz')">
         <i data-lucide="shield-check"></i>
@@ -830,7 +826,7 @@ code {
       <span class="stat"><strong id="stat-streak">0</strong> Serie</span>
       <span class="stat">aktuelle Stufe: <strong id="stat-level">1</strong></span>
       <span class="stat">Fortschritt: <strong id="stat-progress">1.00</strong></span>
-      <span class="stat">Pool: <strong id="stat-pool">wird erzeugt</strong></span>
+      <span class="stat">Pool: <strong id="stat-pool">noch nicht erzeugt</strong></span>
     </div>
 
     <button class="btn btn-primary" onclick="newQuestion()">
@@ -1138,7 +1134,7 @@ const SOURCES = {
 /* ============================================================
    Molekülgenerator
    Der Pool wird zur Laufzeit aus Mustern erzeugt. Dadurch entstehen
-   mindestens 1000 Kandidaten pro Stufe, ohne dass die Datei riesig wird.
+   mindestens 100 Kandidaten pro Stufe, ohne dass die Datei riesig wird.
    ============================================================ */
 const ROOTS = {
   1: 'meth',
@@ -1456,7 +1452,7 @@ function generateLevelPool(level) {
     }
   }
 
-  while (pool.length < 1000) {
+  while (pool.length < 100) {
     const n = 8 + (pool.length % 12);
     const p1 = 2 + (pool.length % 5);
     const p2 = 3 + (pool.length % 6);
@@ -1472,20 +1468,21 @@ function generateLevelPool(level) {
     }
   }
 
-  return shuffle(pool).slice(0, Math.max(1000, pool.length)).map(m => ({ ...m, difficulty: level }));
+  return shuffle(pool).slice(0, 100).map(m => ({ ...m, difficulty: level }));
 }
 
 function buildGeneratedPool() {
   const all = [];
   for (let level = 1; level <= 7; level++) {
     const levelPool = generateLevelPool(level);
-    all.push(...levelPool.slice(0, Math.max(1000, levelPool.length)));
+    all.push(...levelPool.slice(0, 100));
   }
   GENERATED_POOL = all;
   document.getElementById('stat-pool').textContent = `${GENERATED_POOL.length}`;
 }
 
-buildGeneratedPool();
+/* Der große Molekülpool wird erst nach Zustimmung erzeugt.
+   Dadurch bleibt der Begrüßungsbildschirm sofort bedienbar. */
 
 /* ============================================================
    Quizlogik
@@ -1510,7 +1507,16 @@ const moleculeCache = new Map();
 function acceptExternalDatabases() {
   consentGiven = true;
   document.getElementById('consent-overlay').classList.add('hidden');
-  newQuestion();
+
+  if (!GENERATED_POOL.length) {
+    document.getElementById('stat-pool').textContent = 'wird erzeugt ...';
+    setTimeout(() => {
+      buildGeneratedPool();
+      newQuestion();
+    }, 30);
+  } else {
+    newQuestion();
+  }
 }
 
 async function fetchMolecule(mol) {
