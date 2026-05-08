@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktives Nomenklaturquiz für organische Moleküle mit externen Datenbankabfragen nach ausdrücklicher Bestätigung">
+<title>Nomenklaturquiz · Organische Chemie</title>
+
+<style>
+/* ============================================================
+   1. Lokale Schriften aus /fonts/
+   ============================================================ */
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-900.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('fonts/dancing-script-v29-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* ============================================================
+   2. Variablen
+   ============================================================ */
+:root {
+  --primary: #16a34a;
+  --primary-dark: #15803d;
+  --accent: #f59e0b;
+  --violet: #7c3aed;
+  --blue: #1a6fb5;
+  --red: #dc2626;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
+  --panel: rgba(255, 255, 255, 0.88);
+  --glass-bg: rgba(15, 23, 42, 0.05);
+  --glass-border: rgba(15, 23, 42, 0.10);
+  --blur: blur(20px);
+  --radius: 18px;
+  --radius-sm: 11px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.11);
+  --bg-base: #f1f5fb;
+}
+
+body.dark {
+  --primary: #4ade80;
+  --primary-dark: #22c55e;
+  --accent: #fbbf24;
+  --violet: #a78bfa;
+  --blue: #38bdf8;
+  --red: #f87171;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --surface: rgba(15, 23, 42, 0.80);
+  --surface-solid: #0f172a;
+  --panel: rgba(30, 41, 59, 0.78);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.11);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --bg-base: #0b1220;
+}
+
+/* ============================================================
+   3. Reset und Grundlayout
+   ============================================================ */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg-base);
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.30;
+  z-index: -1;
+  animation: drift 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.blob:nth-child(1) {
+  width: 520px;
+  height: 520px;
+  background: var(--primary);
+  top: -12%;
+  left: -10%;
+}
+.blob:nth-child(2) {
+  width: 420px;
+  height: 420px;
+  background: var(--violet);
+  top: 35%;
+  right: -8%;
+  animation-duration: 26s;
+}
+.blob:nth-child(3) {
+  width: 360px;
+  height: 360px;
+  background: var(--blue);
+  bottom: -8%;
+  left: 35%;
+  animation-duration: 24s;
+}
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 50px) scale(0.95); }
+  100% { transform: translate(30px, 20px) scale(1.02); }
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 42px 28px 56px;
+}
+@media (max-width: 700px) {
+  .container { padding: 28px 16px 44px; }
+}
+
+/* ============================================================
+   4. Header
+   ============================================================ */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.eyebrow {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin: 0 0 12px;
+}
+h1 span { color: var(--primary); }
+.lead {
+  max-width: 760px;
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  margin: 0;
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  color: var(--text);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover {
+  background: var(--panel);
+}
+.icon-btn i { width: 18px; height: 18px; }
+
+/* ============================================================
+   5. Karten und Quizlayout
+   ============================================================ */
+.card {
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.quiz-shell {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(360px, 1.08fr);
+  gap: 24px;
+  align-items: stretch;
+}
+@media (max-width: 920px) {
+  .quiz-shell { grid-template-columns: 1fr; }
+}
+
+.structure-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 570px;
+}
+.structure-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.badge--green { color: var(--primary-dark); }
+.badge--blue { color: var(--blue); }
+.badge--violet { color: var(--violet); }
+
+.source-note {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-align: right;
+}
+.molecule-frame {
+  background: var(--surface-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  min-height: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+body.dark .molecule-frame {
+  background: #f8fafc;
+}
+#molecule-img {
+  max-width: 100%;
+  max-height: 290px;
+  object-fit: contain;
+}
+.molecule-placeholder {
+  color: #64748b;
+  line-height: 1.5;
+  text-align: center;
+  padding: 20px;
+}
+.fact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+.fact {
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.fact-label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+.fact-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.question-card {
+  padding: 24px;
+  min-height: 570px;
+  display: flex;
+  flex-direction: column;
+}
+.question-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--glass-border);
+}
+.question-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--primary);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.question-icon i { width: 22px; height: 22px; }
+.question-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin: 0;
+}
+.question-sub {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 3px 0 0;
+}
+.options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.option-btn {
+  border: 1px solid var(--glass-border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 15px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.option-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+}
+.option-btn:disabled {
+  cursor: default;
+}
+.option-btn.correct {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.55);
+}
+.option-btn.wrong {
+  background: rgba(239, 68, 68, 0.13);
+  border-color: rgba(239, 68, 68, 0.55);
+}
+.feedback {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--panel);
+  padding: 14px 16px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  min-height: 86px;
+}
+.feedback strong {
+  color: var(--text);
+}
+.feedback.ok {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.10);
+}
+.feedback.err {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.10);
+}
+.action-row {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 18px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  padding: 11px 15px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+.btn i { width: 16px; height: 16px; }
+.btn:hover {
+  background: var(--glass-bg);
+}
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+.btn-danger {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: var(--red);
+}
+
+/* ============================================================
+   6. Filter und Statistik
+   ============================================================ */
+.toolbar {
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .toolbar { grid-template-columns: 1fr; }
+}
+.statbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 8px 12px;
+}
+.stat strong {
+  color: var(--text);
+}
+
+.category-panel {
+  margin-bottom: 22px;
+  padding: 18px 20px;
+}
+.category-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.category-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  margin: 0;
+}
+.category-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 9px;
+}
+.category-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+.category-check:hover {
+  border-color: var(--primary);
+}
+.category-check input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary);
+}
+
+/* ============================================================
+   7. Warnbildschirm
+   ============================================================ */
+.consent-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background:
+    radial-gradient(circle at top left, rgba(22, 163, 74, 0.20), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.22), transparent 42%),
+    rgba(11, 18, 32, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.consent-box {
+  width: min(820px, 100%);
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 30px;
+}
+.consent-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.consent-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: #f59e0b;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.consent-icon i { width: 24px; height: 24px; }
+.consent-box h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.55rem;
+  line-height: 1.2;
+  margin: 0;
+}
+.consent-box p, .consent-box li {
+  line-height: 1.6;
+  color: #475569;
+}
+.consent-box ul {
+  margin: 12px 0 0;
+  padding-left: 1.2rem;
+}
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.consent-small {
+  font-size: 0.84rem;
+  color: #64748b;
+  margin-top: 14px;
+}
+
+/* ============================================================
+   8. Legal
+   ============================================================ */
+.legal-bar {
+  margin-top: 28px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+.legal-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.legal-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+.legal-links a:hover { color: var(--primary); }
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal.show { display: flex; }
+.modal-box {
+  width: min(760px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--surface-solid);
+  color: var(--text);
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  position: relative;
+}
+.modal-box h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.35rem;
+  margin: 0 0 16px;
+}
+.modal-box h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.98rem;
+  margin: 18px 0 6px;
+}
+.modal-box p {
+  color: var(--text-muted);
+  line-height: 1.62;
+  margin: 0 0 10px;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text);
+}
+
+/* ============================================================
+   9. Hilfen
+   ============================================================ */
+.loading {
+  opacity: 0.72;
+  pointer-events: none;
+}
+.hidden { display: none !important; }
+.error-text { color: var(--red); }
+code {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+</style>
+</head>
+
+<body>
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div id="consent-overlay" class="consent-overlay">
+  <div class="consent-box">
+    <div class="consent-head">
+      <div class="consent-icon"><i data-lucide="triangle-alert"></i></div>
+      <div>
+        <h2>Hinweis: Diese Seite nutzt externe chemische Datenbanken</h2>
+        <p>
+          Dieses Nomenklaturquiz lädt nach deiner Bestätigung Molekülbilder, Summenformeln,
+          SMILES-Angaben und IUPAC-Namen aus externen Datenbanken. Erst nach dem Klick auf
+          „Einverstanden, Quiz starten“ werden Anfragen an diese Dienste gesendet.
+        </p>
+      </div>
+    </div>
+
+    <ul>
+      <li><strong>PubChem</strong> wird als Hauptquelle verwendet.</li>
+      <li><strong>NCI/Cactus Chemical Identifier Resolver</strong> kann als Ersatzquelle genutzt werden, falls PubChem für eine Struktur keine verwertbaren Daten liefert.</li>
+      <li>Dabei können technisch notwendige Zugriffsdaten wie IP-Adresse, Zeitpunkt des Abrufs und Browserinformationen an die jeweiligen Anbieter übertragen werden.</li>
+      <li>Die Quizseite speichert keine personenbezogenen Daten und verwendet keine Cookies. Der Punktestand bleibt nur im geöffneten Browserfenster erhalten.</li>
+    </ul>
+
+    <div class="consent-actions">
+      <button class="btn btn-primary" onclick="acceptExternalDatabases()">
+        <i data-lucide="check"></i>
+        Einverstanden, Quiz starten
+      </button>
+      <button class="btn" onclick="openModal('datenschutz')">
+        <i data-lucide="shield-check"></i>
+        Datenschutzhinweise anzeigen
+      </button>
+      <a class="btn" href="index.html">
+        <i data-lucide="arrow-left"></i>
+        Zurück zur Übersicht
+      </a>
+    </div>
+
+    <div class="consent-small">
+      Ohne Bestätigung bleibt die eigentliche Quizfunktion deaktiviert.
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">organische Chemie</div>
+      <h1>Nomenklatur-<span>Quiz</span></h1>
+      <p class="lead">
+        Bestimme systematische Namen organischer Moleküle. Die Aufgaben umfassen Alkane,
+        Alkene, verzweigte Verbindungen, Alkohole, Aldehyde, Ketone, Carbonsäuren,
+        Amine, Amide, Halogenverbindungen und Kombinationen daraus.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Farbschema wechseln">
+        <i data-lucide="moon" id="theme-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <section class="toolbar card">
+    <div class="statbar">
+      <span class="stat"><strong id="stat-score">0</strong> richtig</span>
+      <span class="stat"><strong id="stat-total">0</strong> beantwortet</span>
+      <span class="stat"><strong id="stat-streak">0</strong> Serie</span>
+      <span class="stat">aktuelle Stufe: <strong id="stat-level">1</strong></span>
+      <span class="stat">Fortschritt: <strong id="stat-progress">0.00</strong></span>
+    </div>
+
+    <button class="btn btn-primary" onclick="newQuestion()">
+      <i data-lucide="refresh-cw"></i>
+      Neue Aufgabe
+    </button>
+  </section>
+
+  <section class="category-panel card">
+    <div class="category-head">
+      <h2 class="category-title">Teilnehmende Stoffklassen</h2>
+      <div class="category-actions">
+        <button class="btn" onclick="selectAllCategories()">Alle auswählen</button>
+        <button class="btn" onclick="selectCoreCategories()">Grundkurs-Auswahl</button>
+        <button class="btn" onclick="clearCategories()">Auswahl leeren</button>
+      </div>
+    </div>
+
+    <div class="category-grid" id="category-grid">
+      <label class="category-check"><input type="checkbox" value="alkanes" checked> Alkane und verzweigte Alkane</label>
+      <label class="category-check"><input type="checkbox" value="alkenes" checked> Alkene</label>
+      <label class="category-check"><input type="checkbox" value="alcohols" checked> Alkohole</label>
+      <label class="category-check"><input type="checkbox" value="carbonyls" checked> Aldehyde und Ketone</label>
+      <label class="category-check"><input type="checkbox" value="acids" checked> Carbonsäuren und Derivate</label>
+      <label class="category-check"><input type="checkbox" value="nitrogen" checked> Amine und Amide</label>
+      <label class="category-check"><input type="checkbox" value="halogen" checked> Halogenverbindungen</label>
+      <label class="category-check"><input type="checkbox" value="mixed" checked> Gemischte Funktionalitäten</label>
+    </div>
+  </section>
+
+  <main class="quiz-shell">
+    <section class="structure-card card">
+      <div class="structure-top">
+        <div class="badge-row">
+          <span id="badge-class" class="badge badge--green">noch nicht geladen</span>
+          <span id="badge-difficulty" class="badge badge--violet">Stufe 1</span>
+        </div>
+        <div class="source-note" id="source-note">Quelle nach Zustimmung</div>
+      </div>
+
+      <div class="molecule-frame">
+        <img id="molecule-img" alt="Molekülstruktur" class="hidden">
+        <div id="molecule-placeholder" class="molecule-placeholder">
+          Bestätige zuerst den Hinweis zu externen Datenbanken. Danach wird hier die Molekülstruktur angezeigt.
+        </div>
+      </div>
+
+      <div class="fact-grid">
+        <div class="fact">
+          <div class="fact-label">Summenformel</div>
+          <div class="fact-value" id="fact-formula">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="question-card card">
+      <div class="question-head">
+        <div class="question-icon"><i data-lucide="help-circle"></i></div>
+        <div>
+          <h2 class="question-title">Wie heißt dieses Molekül?</h2>
+          <p class="question-sub">Wähle den passenden IUPAC-Namen aus. Die Stufe passt sich langsam an.</p>
+        </div>
+      </div>
+
+      <div id="options" class="options">
+        <button class="option-btn" disabled>Quiz noch nicht gestartet</button>
+        <button class="option-btn" disabled>Bitte Warnhinweis bestätigen</button>
+        <button class="option-btn" disabled>Danach wird eine Aufgabe geladen</button>
+        <button class="option-btn" disabled>—</button>
+      </div>
+
+      <div id="feedback" class="feedback">
+        Die Seite fragt externe Datenbanken erst nach deiner Bestätigung ab.
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-primary" onclick="newQuestion()">
+          <i data-lucide="arrow-right"></i>
+          Nächste Aufgabe
+        </button>
+        <button class="btn" onclick="showSolution()">
+          <i data-lucide="eye"></i>
+          Lösung anzeigen
+        </button>
+        <button class="btn btn-danger" onclick="resetStats()">
+          <i data-lucide="rotate-ccw"></i>
+          Statistik zurücksetzen
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="legal-bar card">
+    <div>© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
+    <div class="legal-links">
+      <a onclick="openModal('impressum')">Impressum</a>
+      <a onclick="openModal('datenschutz')">Datenschutz</a>
+      <a href="index.html">Übersicht</a>
+    </div>
+  </footer>
+</div>
+
+<div id="modal-impressum" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Schließen"><i data-lucide="x"></i></button>
+    <h2>Impressum</h2>
+
+    <h3>Verantwortlich für den Inhalt</h3>
+    <p>
+      Dr. Claus Unterberg<br>
+      Gymnasium Thomaeum Kempen<br>
+      Am Gymnasium 4<br>
+      47906 Kempen
+    </p>
+
+    <h3>Kontakt</h3>
+    <p>E-Mail: unterberg [at] thomaeum.de</p>
+
+    <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+    <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
+
+    <h3>Haftung für Inhalte und Links</h3>
+    <p>
+      Die Inhalte dieser Seite wurden mit Sorgfalt zusammengestellt. Für die Inhalte
+      der angebundenen externen chemischen Datenbanken sind die jeweiligen Anbieter verantwortlich.
+    </p>
+  </div>
+</div>
+
+<div id="modal-datenschutz" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Schließen"><i data-lucide="x"></i></button>
+    <h2>Datenschutzerklärung</h2>
+
+    <h3>Allgemeines</h3>
+    <p>
+      Diese Seite ist datensparsam aufgebaut. Schriftarten und lokale Skripte werden aus dem
+      Verzeichnis <code>fonts/</code> geladen. Die Seite verwendet keine Cookies, kein Tracking
+      und keine Anmeldung.
+    </p>
+
+    <h3>Externe chemische Datenbanken</h3>
+    <p>
+      Die eigentliche Quizfunktion nutzt nach ausdrücklicher Bestätigung externe Datenbanken,
+      insbesondere PubChem und gegebenenfalls den NCI/Cactus Chemical Identifier Resolver.
+      Die Abfragen dienen dazu, Molekülstrukturen, Moleküldaten und IUPAC-Namen abzurufen.
+    </p>
+    <p>
+      Beim Abruf dieser externen Daten können technisch notwendige Zugriffsdaten an die jeweiligen
+      Anbieter übermittelt werden, insbesondere die IP-Adresse, Datum und Uhrzeit des Zugriffs,
+      Browserinformationen sowie die konkret abgerufene Molekülanfrage. Diese Übermittlung erfolgt
+      erst nach Bestätigung des vorgeschalteten Warnhinweises.
+    </p>
+
+    <h3>Lokale Verarbeitung</h3>
+    <p>
+      Der Punktestand, die Serie und die adaptive Schwierigkeitsstufe werden nur im aktuell geöffneten
+      Browserfenster verarbeitet und nicht dauerhaft gespeichert. Es werden keine personenbezogenen
+      Eingaben an den Betreiber dieser Seite übertragen.
+    </p>
+
+    <h3>Hosting</h3>
+    <p>
+      Wird diese Seite über GitHub Pages bereitgestellt, verarbeitet GitHub beim Aufruf der Seite
+      technisch notwendige Zugriffsdaten zur Auslieferung der Webseite. Eine Verknüpfung dieser
+      Daten mit Quizdaten durch den Seitenbetreiber findet nicht statt.
+    </p>
+
+    <h3>Hinweis</h3>
+    <p>
+      Diese Erklärung ersetzt keine rechtliche Prüfung. Für den produktiven schulischen Einsatz
+      sollte die endgültige Fassung mit den schulischen Datenschutzvorgaben abgeglichen werden.
+    </p>
+  </div>
+</div>
+
+<script src="fonts/lucide.min.js"></script>
+<script>
+/* ============================================================
+   Lokale Icons / UI
+   ============================================================ */
+function safeLucide() {
+  if (window.lucide && lucide.createIcons) {
+    try { lucide.createIcons(); } catch(e) {}
+  }
+}
+safeLucide();
+
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  safeLucide();
+}
+
+function openModal(which) {
+  document.getElementById('modal-' + which).classList.add('show');
+  document.body.style.overflow = 'hidden';
+  safeLucide();
+}
+function closeModal() {
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+  document.body.style.overflow = '';
+}
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+/* ============================================================
+   Datenquellen
+   Wichtig: Externe Datenbanken werden erst nach acceptExternalDatabases()
+   abgefragt.
+   ============================================================ */
+const SOURCES = {
+  pubchem: {
+    name: 'PubChem',
+    propertyUrl: (name) => `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(name)}/property/IUPACName,MolecularFormula,CanonicalSMILES,IsomericSMILES/JSON`,
+    imageUrl: (name) => `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(name)}/PNG?record_type=2d&image_size=large`
+  },
+  cactus: {
+    name: 'NCI/Cactus',
+    iupacUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/iupac_name`,
+    smilesUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/smiles`,
+    imageUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/image`
+  }
+};
+
+const MOLECULE_POOL = [
+  /* Alkane und verzweigte Alkane */
+  { query: 'methane', local: 'Methan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: 'ethane', local: 'Ethan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: 'propane', local: 'Propan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: 'butane', local: 'Butan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: 'pentane', local: 'Pentan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: 'hexane', local: 'Hexan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
+  { query: '2-methylpropane', local: '2-Methylpropan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
+  { query: '2-methylbutane', local: '2-Methylbutan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
+  { query: '2,2-dimethylpropane', local: '2,2-Dimethylpropan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
+  { query: '3-methylhexane', local: '3-Methylhexan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 3 },
+
+  /* Alkene */
+  { query: 'ethene', local: 'Ethen', category: 'alkenes', cls: 'Alken', difficulty: 1 },
+  { query: 'propene', local: 'Propen', category: 'alkenes', cls: 'Alken', difficulty: 1 },
+  { query: '1-butene', local: 'But-1-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
+  { query: '2-butene', local: 'But-2-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
+  { query: '2-methylpropene', local: '2-Methylpropen', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 2 },
+  { query: '3-methyl-1-butene', local: '3-Methylbut-1-en', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 3 },
+  { query: '2-methyl-2-butene', local: '2-Methylbut-2-en', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 3 },
+  { query: '1-hexene', local: 'Hex-1-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
+
+  /* Alkohole */
+  { query: 'methanol', local: 'Methanol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
+  { query: 'ethanol', local: 'Ethanol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
+  { query: '1-propanol', local: 'Propan-1-ol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
+  { query: '2-propanol', local: 'Propan-2-ol', category: 'alcohols', cls: 'sekundärer Alkohol', difficulty: 2 },
+  { query: '1-butanol', local: 'Butan-1-ol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
+  { query: '2-butanol', local: 'Butan-2-ol', category: 'alcohols', cls: 'sekundärer Alkohol', difficulty: 2 },
+  { query: '2-methyl-1-propanol', local: '2-Methylpropan-1-ol', category: 'alcohols', cls: 'verzweigter Alkohol', difficulty: 2 },
+  { query: '2-methyl-2-propanol', local: '2-Methylpropan-2-ol', category: 'alcohols', cls: 'tertiärer Alkohol', difficulty: 2 },
+  { query: 'ethylene glycol', local: 'Ethan-1,2-diol', category: 'mixed', cls: 'Diol', difficulty: 2 },
+  { query: 'glycerol', local: 'Propan-1,2,3-triol', category: 'mixed', cls: 'Triol', difficulty: 3 },
+
+  /* Aldehyde und Ketone */
+  { query: 'formaldehyde', local: 'Methanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
+  { query: 'acetaldehyde', local: 'Ethanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
+  { query: 'propanal', local: 'Propanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
+  { query: 'butanal', local: 'Butanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
+  { query: '3-methylbutanal', local: '3-Methylbutanal', category: 'carbonyls', cls: 'verzweigter Aldehyd', difficulty: 3 },
+  { query: 'acetone', local: 'Propanon', category: 'carbonyls', cls: 'Keton', difficulty: 1 },
+  { query: '2-butanone', local: 'Butan-2-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
+  { query: '2-pentanone', local: 'Pentan-2-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
+  { query: '3-pentanone', local: 'Pentan-3-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
+  { query: '3-methyl-2-butanone', local: '3-Methylbutan-2-on', category: 'carbonyls', cls: 'verzweigtes Keton', difficulty: 3 },
+
+  /* Carbonsäuren und Derivate */
+  { query: 'formic acid', local: 'Methansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
+  { query: 'acetic acid', local: 'Ethansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
+  { query: 'propionic acid', local: 'Propansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
+  { query: 'butyric acid', local: 'Butansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
+  { query: '2-methylpropanoic acid', local: '2-Methylpropansäure', category: 'acids', cls: 'verzweigte Carbonsäure', difficulty: 2 },
+  { query: '2-methylbutanoic acid', local: '2-Methylbutansäure', category: 'acids', cls: 'verzweigte Carbonsäure', difficulty: 3 },
+  { query: 'acrylic acid', local: 'Prop-2-ensäure', category: 'mixed', cls: 'ungesättigte Carbonsäure', difficulty: 3 },
+  { query: 'methacrylic acid', local: '2-Methylprop-2-ensäure', category: 'mixed', cls: 'ungesättigte Carbonsäure', difficulty: 4 },
+
+  /* Amine und Amide */
+  { query: 'methylamine', local: 'Methanamin', category: 'nitrogen', cls: 'Amin', difficulty: 1 },
+  { query: 'ethylamine', local: 'Ethanamin', category: 'nitrogen', cls: 'Amin', difficulty: 1 },
+  { query: '1-propylamine', local: 'Propan-1-amin', category: 'nitrogen', cls: 'Amin', difficulty: 2 },
+  { query: '2-propylamine', local: 'Propan-2-amin', category: 'nitrogen', cls: 'Amin', difficulty: 2 },
+  { query: 'dimethylamine', local: 'Dimethylamin', category: 'nitrogen', cls: 'sekundäres Amin', difficulty: 2 },
+  { query: 'trimethylamine', local: 'Trimethylamin', category: 'nitrogen', cls: 'tertiäres Amin', difficulty: 2 },
+  { query: 'formamide', local: 'Methanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
+  { query: 'acetamide', local: 'Ethanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
+  { query: 'propanamide', local: 'Propanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
+  { query: '2-methylpropanamide', local: '2-Methylpropanamid', category: 'nitrogen', cls: 'verzweigtes Amid', difficulty: 3 },
+
+  /* Halogenverbindungen */
+  { query: 'chloromethane', local: 'Chlormethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
+  { query: 'bromomethane', local: 'Brommethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
+  { query: 'iodomethane', local: 'Iodmethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
+  { query: 'chloroethane', local: 'Chlorethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
+  { query: 'bromoethane', local: 'Bromethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
+  { query: '1-chloropropane', local: '1-Chlorpropan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
+  { query: '2-chloropropane', local: '2-Chlorpropan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
+  { query: '1-bromobutane', local: '1-Brombutan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
+  { query: '2-bromobutane', local: '2-Brombutan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
+  { query: 'chloroform', local: 'Trichlormethan', category: 'halogen', cls: 'Halogenverbindung', difficulty: 2 },
+
+  /* Mischungen / höhere Schwierigkeit */
+  { query: '2-chloroethanol', local: '2-Chlorethanol', category: 'mixed', cls: 'Halogenalkohol', difficulty: 3 },
+  { query: '3-chloro-1-propanol', local: '3-Chlorpropan-1-ol', category: 'mixed', cls: 'Halogenalkohol', difficulty: 3 },
+  { query: 'lactic acid', local: '2-Hydroxypropansäure', category: 'mixed', cls: 'Hydroxycarbonsäure', difficulty: 3 },
+  { query: 'glycolic acid', local: '2-Hydroxyethansäure', category: 'mixed', cls: 'Hydroxycarbonsäure', difficulty: 3 },
+  { query: 'alanine', local: '2-Aminopropansäure', category: 'mixed', cls: 'Aminocarbonsäure', difficulty: 4 },
+  { query: 'glycine', local: '2-Aminoethansäure', category: 'mixed', cls: 'Aminocarbonsäure', difficulty: 3 },
+  { query: 'acetol', local: '1-Hydroxypropan-2-on', category: 'mixed', cls: 'Hydroxyketon', difficulty: 4 },
+  { query: 'pyruvic acid', local: '2-Oxopropansäure', category: 'mixed', cls: 'Ketocarbonsäure', difficulty: 4 },
+  { query: 'acetoacetic acid', local: '3-Oxobutansäure', category: 'mixed', cls: 'Ketocarbonsäure', difficulty: 4 },
+  { query: 'chloroacetic acid', local: 'Chlorethansäure', category: 'mixed', cls: 'Halogencarbonsäure', difficulty: 3 }
+];
+
+let consentGiven = false;
+let currentQuestion = null;
+let currentOptions = [];
+let answered = false;
+let score = 0;
+let total = 0;
+let streak = 0;
+
+/*
+  Adaptive Schwierigkeit:
+  difficultyScore steigt bei richtigen Antworten langsam um 0.35.
+  Bei falschen Antworten oder Lösung anzeigen sinkt er deutlicher um 0.75.
+  Die Aufgabenstufe ist die gerundete, begrenzte Stufe von 1 bis 4.
+*/
+let difficultyScore = 1.0;
+const MIN_LEVEL = 1;
+const MAX_LEVEL = 4;
+const UP_STEP = 0.35;
+const DOWN_STEP = 0.75;
+const LEVEL_TOLERANCE = 1;
+
+const moleculeCache = new Map();
+
+function acceptExternalDatabases() {
+  consentGiven = true;
+  document.getElementById('consent-overlay').classList.add('hidden');
+  newQuestion();
+}
+
+async function fetchMolecule(mol) {
+  const cacheKey = mol.query;
+  if (moleculeCache.has(cacheKey)) return moleculeCache.get(cacheKey);
+
+  const data = {
+    query: mol.query,
+    local: mol.local,
+    category: mol.category,
+    cls: mol.cls,
+    difficulty: mol.difficulty,
+    source: 'PubChem',
+    imageUrl: SOURCES.pubchem.imageUrl(mol.query),
+    formula: '—',
+    smiles: '—',
+    iupac: mol.local
+  };
+
+  try {
+    const res = await fetch(SOURCES.pubchem.propertyUrl(mol.query), { cache: 'force-cache' });
+    if (!res.ok) throw new Error('PubChem property request failed');
+    const json = await res.json();
+    const props = json?.PropertyTable?.Properties?.[0];
+    if (props) {
+      data.iupac = props.IUPACName || mol.local;
+      data.formula = props.MolecularFormula || '—';
+      data.smiles = props.IsomericSMILES || props.CanonicalSMILES || '—';
+    }
+  } catch (err) {
+    data.source = 'NCI/Cactus';
+    data.imageUrl = SOURCES.cactus.imageUrl(mol.query);
+
+    try {
+      const iupacRes = await fetch(SOURCES.cactus.iupacUrl(mol.query), { cache: 'force-cache' });
+      if (iupacRes.ok) {
+        const txt = (await iupacRes.text()).trim();
+        if (txt && !txt.toLowerCase().includes('not found')) data.iupac = txt;
+      }
+    } catch(e) {}
+
+    try {
+      const smilesRes = await fetch(SOURCES.cactus.smilesUrl(mol.query), { cache: 'force-cache' });
+      if (smilesRes.ok) {
+        const txt = (await smilesRes.text()).trim();
+        if (txt && !txt.toLowerCase().includes('not found')) data.smiles = txt;
+      }
+    } catch(e) {}
+  }
+
+  moleculeCache.set(cacheKey, data);
+  return data;
+}
+
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getCurrentLevel() {
+  return clamp(Math.round(difficultyScore), MIN_LEVEL, MAX_LEVEL);
+}
+
+function getSelectedCategories() {
+  return Array.from(document.querySelectorAll('#category-grid input[type="checkbox"]:checked'))
+    .map(input => input.value);
+}
+
+function getFilteredPool() {
+  const selectedCategories = getSelectedCategories();
+  const categoryFiltered = selectedCategories.length
+    ? MOLECULE_POOL.filter(m => selectedCategories.includes(m.category))
+    : MOLECULE_POOL;
+
+  const currentLevel = getCurrentLevel();
+
+  let levelFiltered = categoryFiltered.filter(m => m.difficulty === currentLevel);
+
+  if (levelFiltered.length < 4) {
+    levelFiltered = categoryFiltered.filter(m => Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE);
+  }
+
+  if (levelFiltered.length < 4) {
+    levelFiltered = categoryFiltered;
+  }
+
+  if (levelFiltered.length < 4) {
+    return MOLECULE_POOL.filter(m => Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE);
+  }
+
+  return levelFiltered;
+}
+
+function chooseDistractors(correct, pool) {
+  const currentLevel = getCurrentLevel();
+
+  const sameCategorySameLevel = pool.filter(m =>
+    m.query !== correct.query &&
+    m.category === correct.category &&
+    Math.abs(m.difficulty - correct.difficulty) <= 1
+  );
+
+  const sameLevel = MOLECULE_POOL.filter(m =>
+    m.query !== correct.query &&
+    Math.abs(m.difficulty - currentLevel) <= 1
+  );
+
+  const allOthers = MOLECULE_POOL.filter(m => m.query !== correct.query);
+
+  const seen = new Set();
+  const candidates = [...shuffle(sameCategorySameLevel), ...shuffle(sameLevel), ...shuffle(allOthers)]
+    .filter(m => {
+      if (seen.has(m.query)) return false;
+      seen.add(m.query);
+      return true;
+    });
+
+  return candidates.slice(0, 3);
+}
+
+function setLoading(isLoading) {
+  document.querySelector('.quiz-shell').classList.toggle('loading', isLoading);
+}
+
+async function newQuestion() {
+  if (!consentGiven) {
+    document.getElementById('consent-overlay').classList.remove('hidden');
+    safeLucide();
+    return;
+  }
+
+  answered = false;
+  setLoading(true);
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+  feedback.textContent = 'Lade Moleküldaten aus der externen Datenbank ...';
+
+  const pool = getFilteredPool();
+  const correctBase = shuffle(pool)[0];
+  const distractorBases = chooseDistractors(correctBase, pool);
+  const bases = [correctBase, ...distractorBases];
+
+  try {
+    const fetched = await Promise.all(bases.map(fetchMolecule));
+    const correct = fetched[0];
+
+    currentQuestion = correct;
+    currentOptions = shuffle(fetched.map(d => ({
+      text: normalizeNameForDisplay(d.iupac),
+      sourceQuery: d.query,
+      isCorrect: d.query === correct.query
+    })));
+
+    renderQuestion(correct, currentOptions);
+
+    feedback.className = 'feedback';
+    feedback.innerHTML = `Aktuelle adaptive Stufe: <strong>${getCurrentLevel()}</strong>. Wähle den passenden Namen aus.`;
+  } catch (err) {
+    feedback.className = 'feedback err';
+    feedback.innerHTML = '<strong>Die Aufgabe konnte nicht geladen werden.</strong><br>Prüfe die Internetverbindung oder versuche es erneut.';
+  } finally {
+    setLoading(false);
+    safeLucide();
+  }
+}
+
+function normalizeNameForDisplay(name) {
+  if (!name) return '—';
+  return name
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function renderQuestion(mol, options) {
+  document.getElementById('badge-class').textContent = mol.cls;
+  document.getElementById('badge-difficulty').textContent = `Stufe ${mol.difficulty}`;
+  document.getElementById('source-note').textContent = `Datenquelle: ${mol.source}`;
+
+  document.getElementById('fact-formula').textContent = mol.formula || '—';
+
+  const img = document.getElementById('molecule-img');
+  const ph = document.getElementById('molecule-placeholder');
+  img.classList.add('hidden');
+  ph.classList.remove('hidden');
+  ph.textContent = 'Molekülstruktur wird geladen ...';
+
+  img.onload = () => {
+    ph.classList.add('hidden');
+    img.classList.remove('hidden');
+  };
+  img.onerror = () => {
+    img.classList.add('hidden');
+    ph.classList.remove('hidden');
+    ph.innerHTML = '<span class="error-text">Strukturbild konnte nicht geladen werden.</span><br>Die Aufgabe kann trotzdem beantwortet werden.';
+  };
+  img.src = mol.imageUrl;
+
+  const optionsBox = document.getElementById('options');
+  optionsBox.innerHTML = '';
+  options.forEach((opt, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+    btn.onclick = () => answerQuestion(opt, btn);
+    optionsBox.appendChild(btn);
+  });
+}
+
+function answerQuestion(opt, btn) {
+  if (answered) return;
+  answered = true;
+
+  total += 1;
+  const isCorrect = opt.isCorrect;
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+  });
+
+  const correctOption = currentOptions.find(o => o.isCorrect);
+
+  if (isCorrect) {
+    score += 1;
+    streak += 1;
+    difficultyScore = clamp(difficultyScore + UP_STEP, MIN_LEVEL, MAX_LEVEL);
+    btn.classList.add('correct');
+    const feedback = document.getElementById('feedback');
+    feedback.className = 'feedback ok';
+    feedback.innerHTML = `<strong>Richtig.</strong><br>${correctOption.text} ist der von der Datenbank gelieferte IUPAC-Name. Die adaptive Schwierigkeit steigt langsam.`;
+  } else {
+    streak = 0;
+    difficultyScore = clamp(difficultyScore - DOWN_STEP, MIN_LEVEL, MAX_LEVEL);
+    btn.classList.add('wrong');
+    document.querySelectorAll('.option-btn').forEach((b, idx) => {
+      if (currentOptions[idx].isCorrect) b.classList.add('correct');
+    });
+    const feedback = document.getElementById('feedback');
+    feedback.className = 'feedback err';
+    feedback.innerHTML = `<strong>Nicht richtig.</strong><br>Der gesuchte Name lautet: <strong>${correctOption.text}</strong>. Die adaptive Schwierigkeit sinkt wieder.`;
+  }
+
+  updateStats();
+}
+
+function showSolution() {
+  if (!currentQuestion || !currentOptions.length) return;
+  if (!answered) {
+    total += 1;
+    streak = 0;
+    difficultyScore = clamp(difficultyScore - DOWN_STEP, MIN_LEVEL, MAX_LEVEL);
+    answered = true;
+  }
+
+  const correctOption = currentOptions.find(o => o.isCorrect);
+  document.querySelectorAll('.option-btn').forEach((b, idx) => {
+    b.disabled = true;
+    if (currentOptions[idx].isCorrect) b.classList.add('correct');
+  });
+
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+  feedback.innerHTML = `<strong>Lösung:</strong><br>${correctOption.text}<br><br>Stoffklasse: ${currentQuestion.cls}. Datenquelle: ${currentQuestion.source}.`;
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-score').textContent = score;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-streak').textContent = streak;
+  document.getElementById('stat-level').textContent = getCurrentLevel();
+  document.getElementById('stat-progress').textContent = difficultyScore.toFixed(2);
+}
+
+function resetStats() {
+  score = 0;
+  total = 0;
+  streak = 0;
+  difficultyScore = 1.0;
+  updateStats();
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = 'Statistik und adaptive Schwierigkeit zurückgesetzt.';
+}
+
+function selectAllCategories() {
+  document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => input.checked = true);
+  if (consentGiven) newQuestion();
+}
+
+function selectCoreCategories() {
+  const core = new Set(['alkanes', 'alkenes', 'alcohols', 'carbonyls', 'acids', 'halogen']);
+  document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => {
+    input.checked = core.has(input.value);
+  });
+  if (consentGiven) newQuestion();
+}
+
+function clearCategories() {
+  document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => input.checked = false);
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = 'Keine Stoffklasse ausgewählt. Für die nächste Aufgabe wird automatisch aus allen Molekülen gewählt, sofern die Auswahl leer bleibt.';
+}
+
+document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => {
+  input.addEventListener('change', () => {
+    if (consentGiven) newQuestion();
+  });
+});
+
+updateStats();
+safeLucide();
+</script>
+</body>
+</html>
