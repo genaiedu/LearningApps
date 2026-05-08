@@ -1,53 +1,221 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stereochemie Trainer: Fischer-Projektionen & 3D</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktiver Stereochemie-Trainer mit Fischer-Projektionen, 3D-Modellen und R/S-Quiz">
+<title>Stereochemie Trainer: Fischer-Projektionen & 3D</title>
 
-    <!-- Externe Ressourcen (Für Produktivbetrieb auf GitHub Pages bitte lokal einbinden!) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. Lokale Schriften aus /fonts/
+   ============================================================ */
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/inter-v20-latin-regular.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/inter-v20-latin-600.woff2') format('woff2');
+    font-weight: 600;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/inter-v20-latin-700.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-        }
-        .canvas-container {
-            width: 100%;
-            height: 400px;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
-            cursor: grab;
-        }
-        .canvas-container:active {
-            cursor: grabbing;
-        }
-        .fischer-text {
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .fischer-text:hover {
-            fill: #2563eb;
-            font-weight: bold;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .overflow-visible {
-            overflow: visible;
-        }
-    </style>
+/* ============================================================
+   2. Grundlayout und Tailwind-Ersatz
+   Diese Datei lädt kein Tailwind-CDN mehr.
+   Alle bisher verwendeten Tailwind-Klassen werden lokal ersetzt.
+   ============================================================ */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+.p-6 { padding: 1.5rem; }
+.p-4 { padding: 1rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.pb-2 { padding-bottom: 0.5rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-12 { margin-bottom: 3rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-8 { margin-top: 2rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.max-w-7xl { max-width: 80rem; }
+.max-w-3xl { max-width: 48rem; }
+.w-full { width: 100%; }
+.md\:w-auto { width: auto; }
+.md\:w-64 { width: 16rem; }
+
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-12 > * + * { margin-top: 3rem; }
+
+.grid { display: grid; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+.gap-12 { gap: 3rem; }
+
+.text-center { text-align: center; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-4xl { font-size: 2.25rem; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.uppercase { text-transform: uppercase; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+.text-slate-500 { color: #64748b; }
+.text-slate-600 { color: #475569; }
+.text-slate-700 { color: #334155; }
+.text-slate-800 { color: #1e293b; }
+.text-blue-600 { color: #2563eb; }
+.text-green-600 { color: #16a34a; }
+.text-green-700 { color: #15803d; }
+.text-green-800 { color: #166534; }
+.text-indigo-600 { color: #4f46e5; }
+.text-white { color: #ffffff; }
+
+.bg-white { background-color: #ffffff; }
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-green-50 { background-color: #f0fdf4; }
+.bg-green-100 { background-color: #dcfce7; }
+.bg-green-200 { background-color: #bbf7d0; }
+.bg-indigo-600 { background-color: #4f46e5; }
+.bg-indigo-700 { background-color: #4338ca; }
+.bg-purple-600 { background-color: #9333ea; }
+.bg-purple-700 { background-color: #7e22ce; }
+.bg-red-100 { background-color: #fee2e2; }
+
+.hover\:bg-green-200:hover { background-color: #bbf7d0; }
+.hover\:bg-indigo-700:hover { background-color: #4338ca; }
+.hover\:bg-purple-700:hover { background-color: #7e22ce; }
+.hover\:text-slate-800:hover { color: #1e293b; }
+
+.border { border: 1px solid #e2e8f0; }
+.border-b { border-bottom: 1px solid #e2e8f0; }
+.border-t-4 { border-top: 4px solid; }
+.border-blue-200 { border-color: #bfdbfe; }
+.border-green-200 { border-color: #bbf7d0; }
+.border-green-300 { border-color: #86efac; }
+.border-red-300 { border-color: #fca5a5; }
+.border-indigo-500 { border-top-color: #6366f1; }
+
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-2xl { border-radius: 1rem; }
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.10), 0 4px 6px -4px rgba(0,0,0,0.10);
+}
+.hover\:shadow-xl:hover {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.10), 0 8px 10px -6px rgba(0,0,0,0.10);
+}
+.shadow-inner {
+    box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+}
+
+.relative { position: relative; }
+.hidden { display: none !important; }
+.transition { transition: all 0.2s ease; }
+.transform { transform: translateZ(0); }
+.hover\:-translate-y-1:hover { transform: translateY(-0.25rem); }
+.overflow-visible { overflow: visible; }
+
+.w-4 { width: 1rem; }
+.h-4 { height: 1rem; }
+.w-10 { width: 2.5rem; }
+.h-10 { height: 2.5rem; }
+
+.text-green-800 { color: #166534; }
+.bg-green-100.text-green-800 { color: #166534; }
+.bg-red-100.text-red-800 { color: #991b1b; }
+.text-red-800 { color: #991b1b; }
+
+@media (min-width: 768px) {
+    .md\:p-8 { padding: 2rem; }
+    .md\:p-10 { padding: 2.5rem; }
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md\:flex-row { flex-direction: row; }
+    .md\:w-auto { width: auto; }
+    .md\:w-64 { width: 16rem; }
+}
+
+/* ============================================================
+   3. Seitenspezifische Gestaltung
+   ============================================================ */
+.canvas-container {
+    width: 100%;
+    min-width: 280px;
+    height: 400px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+    cursor: grab;
+}
+.canvas-container:active {
+    cursor: grabbing;
+}
+.fischer-text {
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.fischer-text:hover {
+    fill: #2563eb;
+    font-weight: bold;
+}
+.glass-panel {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+button {
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+}
+svg {
+    display: block;
+}
+</style>
+
+<!-- Lokale Skripte aus /fonts/ -->
+<script src="fonts/three.min.js"></script>
+<script src="fonts/lucide.min.js"></script>
 </head>
+
 <body class="p-6 md:p-10 max-w-7xl mx-auto space-y-12">
 
     <header class="text-center space-y-4">
@@ -55,7 +223,10 @@
             <i data-lucide="flask-conical" class="w-10 h-10 text-blue-600"></i>
             Stereochemie Trainer
         </h1>
-        <p class="text-slate-600 max-w-3xl mx-auto">Klicke auf die OH/H-Gruppen in der Fischer-Projektion, um ihre Positionen zu tauschen. Das 3D-Modell, die R/S-Konfiguration und die Nomenklatur werden in Echtzeit berechnet.</p>
+        <p class="text-slate-600 max-w-3xl mx-auto">
+            Klicke auf die OH/H-Gruppen in der Fischer-Projektion, um ihre Positionen zu tauschen.
+            Das 3D-Modell, die R/S-Konfiguration und die Nomenklatur werden in Echtzeit berechnet.
+        </p>
     </header>
 
     <!-- Modul 1: Weinsäure -->
@@ -65,7 +236,6 @@
         </h2>
 
         <div class="grid md:grid-cols-2 gap-8 items-center">
-            <!-- Fischer Projektion -->
             <div class="flex flex-col items-center">
                 <h3 class="text-lg font-semibold mb-4 text-slate-700">Fischer-Projektion</h3>
                 <svg width="200" height="300" viewBox="0 0 200 300" class="overflow-visible">
@@ -87,9 +257,8 @@
                 </svg>
             </div>
 
-            <!-- 3D Viewport -->
             <div class="flex flex-col items-center w-full">
-                <h3 class="text-lg font-semibold mb-4 text-slate-700">3D-Zick-Zack-Modell (Frei drehbar)</h3>
+                <h3 class="text-lg font-semibold mb-4 text-slate-700">3D-Zick-Zack-Modell (frei drehbar)</h3>
                 <div id="canvas-tartaric" class="canvas-container"></div>
             </div>
         </div>
@@ -145,7 +314,7 @@
             </div>
 
             <div class="flex flex-col items-center w-full">
-                <h3 id="hexose-3d-title" class="text-lg font-semibold mb-4 text-slate-700">3D-Modell (Frei drehbar)</h3>
+                <h3 id="hexose-3d-title" class="text-lg font-semibold mb-4 text-slate-700">3D-Modell (frei drehbar)</h3>
                 <div id="canvas-hexose" class="canvas-container"></div>
             </div>
         </div>
@@ -159,9 +328,13 @@
     <!-- Modul 3: Quiz -->
     <section class="glass-panel rounded-2xl p-6 md:p-8 mb-12 border-t-4 border-indigo-500">
         <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-            <i data-lucide="help-circle" class="text-indigo-600"></i> R/S Nomenklatur Quiz
+            <i data-lucide="help-circle" class="text-indigo-600"></i> R/S-Nomenklatur-Quiz
         </h2>
-        <p class="text-slate-600 mb-8 max-w-3xl">Bestimme die absolute Konfiguration (R oder S) des gezeigten chiralen Zentrums anhand der CIP-Regeln. Erinnere dich an die Fischer-Regel: Steht die Gruppe mit der niedrigsten Priorität horizontal, dreht sich das Ergebnis um.</p>
+        <p class="text-slate-600 mb-8 max-w-3xl">
+            Bestimme die absolute Konfiguration (R oder S) des gezeigten chiralen Zentrums anhand der CIP-Regeln.
+            Erinnere dich an die Fischer-Regel: Steht die Gruppe mit der niedrigsten Priorität horizontal,
+            dreht sich das Ergebnis um.
+        </p>
 
         <div class="flex flex-col md:flex-row gap-12 items-center justify-center">
             <div class="bg-white p-4 rounded-xl shadow-inner border relative w-full md:w-auto flex justify-center">
@@ -195,13 +368,15 @@
     </section>
 
     <script>
-        if (window.lucide && lucide.createIcons) lucide.createIcons();
+        function refreshLucide() {
+            if (window.lucide && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        refreshLucide();
 
         let hexoseForm = 'linear';
-
-        function refreshLucide() {
-            if (window.lucide && lucide.createIcons) lucide.createIcons();
-        }
 
         function toggleHexoseForm() {
             hexoseForm = hexoseForm === 'linear' ? 'cyclic' : 'linear';
@@ -209,8 +384,8 @@
                 ? '<i data-lucide="refresh-cw" class="w-4 h-4"></i> Zyklisch zeigen' 
                 : '<i data-lucide="minus" class="w-4 h-4"></i> Offenkettig zeigen';
             document.getElementById('hexose-3d-title').textContent = hexoseForm === 'linear' 
-                ? '3D-Zick-Zack-Modell (Frei drehbar)'
-                : '3D-Pyranose Sessel (Frei drehbar)';
+                ? '3D-Zick-Zack-Modell (frei drehbar)'
+                : '3D-Pyranose-Sessel (frei drehbar)';
             refreshLucide();
             rebuildHexose3D();
         }
@@ -220,19 +395,22 @@
         const atomColors = { C: 0x333333, O: 0xef4444, H: 0xffffff };
 
         function init3DScene(containerId) {
+            const container = document.getElementById(containerId);
+
             if (!window.THREE) {
-                const container = document.getElementById(containerId);
-                container.innerHTML = '<div style="padding:1rem;color:#b91c1c;font-weight:600;">Three.js konnte nicht geladen werden. Prüfe die Internetverbindung oder binde three.min.js lokal ein.</div>';
+                container.innerHTML = '<div style="padding:1rem;color:#b91c1c;font-weight:600;">Three.js konnte nicht geladen werden. Prüfe, ob fonts/three.min.js vorhanden ist.</div>';
                 return null;
             }
 
-            const container = document.getElementById(containerId);
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const width = container.clientWidth || 400;
+            const height = container.clientHeight || 400;
+            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
             camera.position.z = 12;
 
             const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             container.appendChild(renderer.domElement);
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -247,25 +425,40 @@
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
 
-            container.addEventListener('mousedown', () => { isDragging = true; });
-            window.addEventListener('mouseup', () => { isDragging = false; });
-            window.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const deltaMove = { x: e.clientX - previousMousePosition.x, y: e.clientY - previousMousePosition.y };
-                    group.rotation.y += deltaMove.x * 0.01;
-                    group.rotation.x += deltaMove.y * 0.01;
-                }
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
 
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.clientX - previousMousePosition.x,
+                        y: e.clientY - previousMousePosition.y
+                    };
+                    group.rotation.y += deltaMove.x * 0.01;
+                    group.rotation.x += deltaMove.y * 0.01;
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            });
+
             container.addEventListener('touchstart', (e) => { 
-                isDragging = true; 
+                if (!e.touches || e.touches.length === 0) return;
+                isDragging = true;
                 previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             }, { passive: true });
+
             window.addEventListener('touchend', () => { isDragging = false; });
+            window.addEventListener('touchcancel', () => { isDragging = false; });
+
             window.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    const deltaMove = { x: e.touches[0].clientX - previousMousePosition.x, y: e.touches[0].clientY - previousMousePosition.y };
+                if (isDragging && e.touches && e.touches.length > 0) {
+                    const deltaMove = {
+                        x: e.touches[0].clientX - previousMousePosition.x,
+                        y: e.touches[0].clientY - previousMousePosition.y
+                    };
                     group.rotation.y += deltaMove.x * 0.01;
                     group.rotation.x += deltaMove.y * 0.01;
                     previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -280,10 +473,11 @@
             animate();
 
             window.addEventListener('resize', () => {
-                if (!container.clientWidth || !container.clientHeight) return;
-                camera.aspect = container.clientWidth / container.clientHeight;
+                const newWidth = container.clientWidth || 400;
+                const newHeight = container.clientHeight || 400;
+                camera.aspect = newWidth / newHeight;
                 camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setSize(newWidth, newHeight);
             });
 
             return group;
@@ -339,6 +533,7 @@
             bondsArr.push([oPos, hPos]);
         }
 
+        /* --- MATHEMATISCHER R/S-LÖSER --- */
         function getRS(c_pos, p1, p2, p3, p4) {
             const sorted = [p1, p2, p3, p4].sort((a,b) => b.prio - a.prio); 
             const v1 = sorted[0].pos.clone().sub(c_pos);
@@ -676,11 +871,9 @@
             }
         };
 
-        // Init App
         updateTartaric();
         updateHexose();
         generateQuiz();
-
     </script>
 </body>
 </html>
