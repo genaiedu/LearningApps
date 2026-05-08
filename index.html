@@ -8,7 +8,7 @@
 
 <style>
 /* ============================================================
-   1. Schriften – lokal aus /Fonts/
+   1. Schriften – lokal aus /fonts/
    ============================================================ */
 @font-face {
   font-family: 'Poppins';
@@ -122,16 +122,28 @@ body {
   pointer-events: none;
 }
 .blob:nth-child(1) {
-  width: 500px; height: 500px; background: var(--primary);
-  top: -10%; left: -10%; animation-duration: 20s;
+  width: 500px;
+  height: 500px;
+  background: var(--primary);
+  top: -10%;
+  left: -10%;
+  animation-duration: 20s;
 }
 .blob:nth-child(2) {
-  width: 400px; height: 400px; background: #7c3aed;
-  top: 40%; right: -5%; animation-duration: 25s;
+  width: 400px;
+  height: 400px;
+  background: #7c3aed;
+  top: 40%;
+  right: -5%;
+  animation-duration: 25s;
 }
 .blob:nth-child(3) {
-  width: 350px; height: 350px; background: #0ea5e9;
-  bottom: -5%; left: 30%; animation-duration: 22s;
+  width: 350px;
+  height: 350px;
+  background: #0ea5e9;
+  bottom: -5%;
+  left: 30%;
+  animation-duration: 22s;
 }
 @keyframes drift {
   0%   { transform: translate(0, 0) scale(1); }
@@ -145,7 +157,8 @@ body {
    ============================================================ */
 #progress-bar {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   height: 4px;
   width: 0;
   background: linear-gradient(90deg, var(--primary), var(--accent));
@@ -158,7 +171,8 @@ body {
    ============================================================ */
 .sidebar {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: var(--sidebar-width);
   height: 100vh;
   padding: 32px 28px;
@@ -199,7 +213,11 @@ body {
   margin-top: 4px;
 }
 
-.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .nav__heading {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -225,7 +243,10 @@ body {
   background: var(--glass-bg);
   color: var(--primary);
 }
-.nav__link i { width: 18px; height: 18px; }
+.nav__link i {
+  width: 18px;
+  height: 18px;
+}
 
 .sidebar-footer {
   margin-top: auto;
@@ -250,15 +271,20 @@ body {
   transition: background 0.2s ease;
 }
 .dark-toggle:hover { background: var(--primary-light); }
-.dark-toggle i { width: 16px; height: 16px; }
+.dark-toggle i {
+  width: 16px;
+  height: 16px;
+}
 
 /* Hamburger nur mobil */
 .menu-btn {
   display: none;
   position: fixed;
-  top: 16px; left: 16px;
+  top: 16px;
+  left: 16px;
   z-index: 200;
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   background: var(--surface);
   backdrop-filter: var(--blur);
@@ -285,7 +311,7 @@ body {
 .hero__eyebrow {
   font-family: 'Dancing Script', cursive;
   font-weight: 600;
-  font-size: 1.6rem;
+  font-size: 1.65rem;
   color: var(--accent);
   margin-bottom: 8px;
 }
@@ -307,7 +333,9 @@ body {
 }
 
 /* Sektion */
-.section { margin-bottom: 64px; }
+.section {
+  margin-bottom: 64px;
+}
 .section__head {
   display: flex;
   align-items: center;
@@ -317,7 +345,8 @@ body {
   border-bottom: 1px solid var(--glass-border);
 }
 .section__icon {
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -325,10 +354,13 @@ body {
   color: white;
   flex-shrink: 0;
 }
-.section__icon i { width: 22px; height: 22px; }
-.section__icon--physik   { background: var(--physik); }
-.section__icon--chemie   { background: var(--chemie); }
-.section__icon--sonstiges{ background: var(--sonstiges); }
+.section__icon i {
+  width: 22px;
+  height: 22px;
+}
+.section__icon--physik { background: var(--physik); }
+.section__icon--chemie { background: var(--chemie); }
+.section__icon--sonstiges { background: var(--sonstiges); }
 
 .section__title {
   font-family: 'Poppins', sans-serif;
@@ -374,8 +406,10 @@ body {
 .app-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 3px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
   background: var(--card-accent, var(--primary));
   transform: scaleX(0);
   transform-origin: left;
@@ -389,7 +423,8 @@ body {
 .app-card:hover::before { transform: scaleX(1); }
 
 .app-card__icon {
-  width: 48px; height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   background: var(--card-accent, var(--primary));
   color: white;
@@ -398,7 +433,10 @@ body {
   justify-content: center;
   flex-shrink: 0;
 }
-.app-card__icon i { width: 24px; height: 24px; }
+.app-card__icon i {
+  width: 24px;
+  height: 24px;
+}
 .app-card__title {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -422,8 +460,8 @@ body {
   color: var(--card-accent, var(--primary));
 }
 
-.app-card--physik    { --card-accent: var(--physik); }
-.app-card--chemie    { --card-accent: var(--chemie); }
+.app-card--physik { --card-accent: var(--physik); }
+.app-card--chemie { --card-accent: var(--chemie); }
 .app-card--sonstiges { --card-accent: var(--sonstiges); }
 
 /* Platzhalter-Karte */
@@ -481,7 +519,10 @@ body {
   font-size: 1rem;
 }
 .legal h3:not(:first-child) { margin-top: 18px; }
-.legal a { color: var(--primary); text-decoration: none; }
+.legal a {
+  color: var(--primary);
+  text-decoration: none;
+}
 .legal a:hover { text-decoration: underline; }
 
 /* ============================================================
@@ -561,8 +602,7 @@ body {
     <h1 class="hero__title">Lernanwendungen für <span>Physik und Chemie</span></h1>
     <p class="hero__lead">
       Eine wachsende Sammlung kleiner Web-Anwendungen, die im Unterricht und zu Hause
-      genutzt werden können. Jede Anwendung steht für sich und läuft direkt im Browser,
-      ohne Anmeldung, ohne externe Dienste.
+      genutzt werden können. Jede Anwendung steht für sich und läuft direkt im Browser.
     </p>
   </section>
 
@@ -578,10 +618,10 @@ body {
 
     <div class="app-grid">
       <a href="Wechselstromsimulator.html" class="app-card app-card--physik">
-        <div class="app-card__icon"><i data-lucide="thermometer"></i></div>
+        <div class="app-card__icon"><i data-lucide="activity"></i></div>
         <h3 class="app-card__title">Wechselstromsimulator</h3>
         <p class="app-card__desc">
-          Interaktives Zeigerdiagramm
+          Interaktives Zeigerdiagramm und Oszilloskop für Spannung, Strom, Leistung und Phasenverschiebung.
         </p>
         <span class="app-card__tag">
           <i data-lucide="arrow-right"></i> öffnen
@@ -602,15 +642,26 @@ body {
         <i data-lucide="flask-conical"></i>
       </div>
       <h2 class="section__title">Chemie</h2>
-      <span class="section__count">1 Anwendung</span>
+      <span class="section__count">2 Anwendungen</span>
     </div>
 
     <div class="app-grid">
       <a href="Stereochemietrainer.html" class="app-card app-card--chemie">
-        <div class="app-card__icon"><i data-lucide="flask-conical"></i></div>
+        <div class="app-card__icon"><i data-lucide="box"></i></div>
         <h3 class="app-card__title">Stereochemie-Trainer</h3>
         <p class="app-card__desc">
-          Interaktiver Trainer zu Fischer-Projektionen, R/S-Konfigurationen, Weinsäure und Aldohexosen.
+          Fischer-Projektionen, 3D-Modelle und R/S-Nomenklatur für Weinsäure, Hexosen und einfache chirale Zentren.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="Nomenklaturquiz.html" class="app-card app-card--chemie">
+        <div class="app-card__icon"><i data-lucide="list-checks"></i></div>
+        <h3 class="app-card__title">Nomenklaturquiz</h3>
+        <p class="app-card__desc">
+          Adaptives Quiz zur organischen Nomenklatur mit Molekülstrukturen aus externen chemischen Datenbanken nach Bestätigung.
         </p>
         <span class="app-card__tag">
           <i data-lucide="arrow-right"></i> öffnen
@@ -678,7 +729,7 @@ body {
   <section class="legal reveal" id="datenschutz">
     <h3>Datenschutzerklärung</h3>
     <p>
-      Diese Seite ist bewusst datensparsam aufgebaut. Sie verwendet keine Cookies,
+      Diese Übersichtsseite ist bewusst datensparsam aufgebaut. Sie verwendet keine Cookies,
       kein Tracking, keine externen Schriftdienste, keine externen Content-Delivery-Netzwerke
       und keine eingebetteten Inhalte von Drittanbietern. Alle Schriftarten und Skripte
       werden direkt vom Hostserver ausgeliefert.
@@ -704,6 +755,14 @@ body {
       Browsereinstellungen gelöscht werden.
     </p>
 
+    <h3>Externe Datenbanken in einzelnen Anwendungen</h3>
+    <p>
+      Einzelne Anwendungen können nach ausdrücklichem Hinweis und Bestätigung externe
+      fachliche Datenbanken abrufen. Dies betrifft insbesondere das Nomenklaturquiz,
+      das Molekülstrukturen und Moleküldaten aus externen chemischen Datenbanken laden kann.
+      Die entsprechende Anwendung weist vor dem Start gesondert darauf hin.
+    </p>
+
     <h3>Rechte der betroffenen Personen</h3>
     <p>
       Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
@@ -716,23 +775,24 @@ body {
 
 </main>
 
-<!-- Lucide-Icons (lokal aus /Fonts/) -->
-<script src="Fonts/lucide.min.js"></script>
+<!-- Lucide-Icons lokal aus /fonts/ -->
+<script src="fonts/lucide.min.js"></script>
 <script>
-/* ===== Dark Mode ===== */
-function createLucideIconsSafely() {
+/* ===== Lucide sicher initialisieren ===== */
+function safeLucide() {
   if (window.lucide && lucide.createIcons) {
-    lucide.createIcons();
+    try { lucide.createIcons(); } catch (e) {}
   }
 }
 
+/* ===== Dark Mode ===== */
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark');
   const icon = document.getElementById('theme-icon');
   const label = document.getElementById('theme-label');
   icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
   label.textContent = isDark ? 'Helles Design' : 'Dunkles Design';
-  createLucideIconsSafely();
+  safeLucide();
 }
 
 /* ===== Sidebar (mobil) ===== */
@@ -753,7 +813,6 @@ const observer = new IntersectionObserver((entries) => {
     if (e.isIntersecting) e.target.classList.add('visible');
   });
 }, { threshold: 0.15 });
-
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 /* ===== Sidebar nach Klick auf mobilem Link schließen ===== */
@@ -766,7 +825,7 @@ document.querySelectorAll('.nav__link').forEach(link => {
 });
 
 /* ===== Lucide initialisieren ===== */
-createLucideIconsSafely();
+safeLucide();
 </script>
 </body>
 </html>
