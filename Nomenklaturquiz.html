@@ -883,7 +883,7 @@ code {
       </div>
 
       <div class="fact-grid">
-        <div class="fact">
+        <div class="fact" id="fact-formula-box">
           <div class="fact-label">Summenformel</div>
           <div class="fact-value" id="fact-formula">—</div>
         </div>
@@ -1263,10 +1263,19 @@ function normalizeMultiprefix(items) {
   return items.filter(Boolean).join('-');
 }
 
+function cleanDisplayName(name) {
+  return String(name)
+    .replace(/\s+variant\s+\d+$/i, '')
+    .replace(/\s+·\s+repeat unit example\s+\d+$/i, '')
+    .trim();
+}
+
 function pushMol(pool, name, category, cls, difficulty, query = name, note = '—') {
-  const key = `${name}|${category}|${difficulty}`;
+  const displayName = cleanDisplayName(name);
+  const queryName = String(query).replace(/\s+variant\s+\d+$/i, '').trim();
+  const key = `${queryName}|${displayName}|${category}|${difficulty}`;
   if (!pool.some(m => m.key === key)) {
-    pool.push({ key, name, query, category, cls, difficulty, note });
+    pool.push({ key, name: displayName, query: queryName, category, cls, difficulty, note });
   }
 }
 
@@ -1452,15 +1461,14 @@ function generateLevelPool(level) {
     const p1 = 2 + (pool.length % 5);
     const p2 = 3 + (pool.length % 6);
     const hal = HALOGENS[pool.length % HALOGENS.length];
-    const suffix = Math.floor(pool.length / 10);
     const category = level >= 5 ? (pool.length % 3 === 0 ? 'cycles' : pool.length % 3 === 1 ? 'mixed' : 'aromatics') : (pool.length % 2 === 0 ? 'mixed' : 'alkanes');
 
     if (category === 'cycles') {
-      pushMol(pool, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)} variant ${suffix}`, 'cycles', 'substituierter Cyclus', level, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)}`);
+      pushMol(pool, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)}`, 'cycles', 'substituierter Cyclus', level, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)}`);
     } else if (category === 'aromatics') {
-      pushMol(pool, `${p1}-${hal}-${p2}-methylbenzoic acid variant ${suffix}`, 'aromatics', 'substituierter Aromat', level, `${p1}-${hal}-${p2}-methylbenzoic acid`);
+      pushMol(pool, `${p1}-${hal}-${p2}-methylbenzoic acid`, 'aromatics', 'substituierter Aromat', level, `${p1}-${hal}-${p2}-methylbenzoic acid`);
     } else {
-      pushMol(pool, `${p1}-${hal}-${p2}-methyl${acidName(n)} variant ${suffix}`, 'mixed', 'substituierte Verbindung', level, `${p1}-${hal}-${p2}-methyl${acidName(n)}`);
+      pushMol(pool, `${p1}-${hal}-${p2}-methyl${acidName(n)}`, 'mixed', 'substituierte Verbindung', level, `${p1}-${hal}-${p2}-methyl${acidName(n)}`);
     }
   }
 
@@ -1672,7 +1680,15 @@ function renderQuestion(mol, options) {
   document.getElementById('badge-class').textContent = mol.cls;
   document.getElementById('badge-difficulty').textContent = `Stufe ${mol.difficulty}`;
   document.getElementById('source-note').textContent = `Datenquelle: ${mol.source}`;
-  document.getElementById('fact-formula').textContent = mol.formula || '—';
+  const formulaBox = document.getElementById('fact-formula-box');
+  const formulaValue = document.getElementById('fact-formula');
+  if (mol.formula && mol.formula !== '—') {
+    formulaValue.textContent = mol.formula;
+    formulaBox.classList.remove('hidden');
+  } else {
+    formulaValue.textContent = '';
+    formulaBox.classList.add('hidden');
+  }
   document.getElementById('fact-note').textContent = mol.note || '—';
 
   const img = document.getElementById('molecule-img');
