@@ -8,41 +8,41 @@
 
 <style>
 /* ============================================================
-   1. Schriften – lokal aus /Fonts/
+   1. Schriften – lokal aus /fonts/
    ============================================================ */
 @font-face {
   font-family: 'Poppins';
-  src: url('Fonts/Poppins-SemiBold.woff2') format('woff2');
+  src: url('fonts/Poppins-SemiBold.woff2') format('woff2');
   font-weight: 600; font-display: swap;
 }
 @font-face {
   font-family: 'Poppins';
-  src: url('Fonts/Poppins-Bold.woff2') format('woff2');
+  src: url('fonts/Poppins-Bold.woff2') format('woff2');
   font-weight: 700; font-display: swap;
 }
 @font-face {
   font-family: 'Poppins';
-  src: url('Fonts/Poppins-Black.woff2') format('woff2');
+  src: url('fonts/Poppins-Black.woff2') format('woff2');
   font-weight: 900; font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('Fonts/Inter-Regular.woff2') format('woff2');
+  src: url('fonts/Inter-Regular.woff2') format('woff2');
   font-weight: 400; font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('Fonts/Inter-Medium.woff2') format('woff2');
+  src: url('fonts/Inter-Medium.woff2') format('woff2');
   font-weight: 500; font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('Fonts/Inter-SemiBold.woff2') format('woff2');
+  src: url('fonts/Inter-SemiBold.woff2') format('woff2');
   font-weight: 600; font-display: swap;
 }
 @font-face {
   font-family: 'Caveat';
-  src: url('Fonts/Caveat-Bold.woff2') format('woff2');
+  src: url('fonts/Caveat-Bold.woff2') format('woff2');
   font-weight: 700; font-display: swap;
 }
 
@@ -663,16 +663,22 @@ input[type="number"]:focus {
 </footer>
 
 <!-- Lucide-Icons (lokal) -->
-<script src="Fonts/lucide.min.js"></script>
+<script src="fonts/lucide.min.js"></script>
 <script>
 /* ============================================================
    Theme-Toggle (zusätzlich, beeinflusst die Logik nicht)
    ============================================================ */
+function safeLucide() {
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    try { lucide.createIcons(); } catch (e) { /* still ok */ }
+  }
+}
+
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
   const icon = document.getElementById('theme-icon');
   icon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
-  lucide.createIcons();
+  safeLucide();
 }
 
 /* ============================================================
@@ -1274,7 +1280,7 @@ function draw() {
 }
 
 // Init
-lucide.createIcons();
+safeLucide();
 setMode('ohm');
 resizeCanvases();
 requestAnimationFrame(draw);
