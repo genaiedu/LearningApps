@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Interaktives Nomenklaturquiz für organische Moleküle mit externen Datenbankabfragen nach ausdrücklicher Bestätigung">
-<title>Nomenklaturquiz · Organische Chemie</title>
+<meta name="description" content="Adaptives Nomenklaturquiz für organische Moleküle mit externen Datenbankabfragen nach ausdrücklicher Bestätigung">
+<title>Nomenklaturquiz · Internationale organische Nomenklatur</title>
 
 <style>
 /* ============================================================
@@ -161,7 +161,7 @@ button {
 }
 
 .container {
-  max-width: 1180px;
+  max-width: 1220px;
   margin: 0 auto;
   padding: 42px 28px 56px;
 }
@@ -197,7 +197,7 @@ h1 {
 }
 h1 span { color: var(--primary); }
 .lead {
-  max-width: 760px;
+  max-width: 820px;
   color: var(--text-muted);
   font-size: 1.02rem;
   line-height: 1.65;
@@ -252,7 +252,7 @@ h1 span { color: var(--primary); }
   padding: 24px;
   display: flex;
   flex-direction: column;
-  min-height: 570px;
+  min-height: 590px;
 }
 .structure-top {
   display: flex;
@@ -291,7 +291,7 @@ h1 span { color: var(--primary); }
   background: var(--surface-solid);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  min-height: 310px;
+  min-height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -303,7 +303,7 @@ body.dark .molecule-frame {
 }
 #molecule-img {
   max-width: 100%;
-  max-height: 290px;
+  max-height: 310px;
   object-fit: contain;
 }
 .molecule-placeholder {
@@ -341,7 +341,7 @@ body.dark .molecule-frame {
 
 .question-card {
   padding: 24px;
-  min-height: 570px;
+  min-height: 590px;
   display: flex;
   flex-direction: column;
 }
@@ -415,7 +415,7 @@ body.dark .molecule-frame {
   padding: 14px 16px;
   line-height: 1.55;
   color: var(--text-muted);
-  min-height: 86px;
+  min-height: 92px;
 }
 .feedback strong {
   color: var(--text);
@@ -566,13 +566,15 @@ body.dark .molecule-frame {
   padding: 24px;
 }
 .consent-box {
-  width: min(820px, 100%);
+  width: min(900px, 100%);
   background: #ffffff;
   color: #1e293b;
   border-radius: 24px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.25);
   padding: 30px;
+  max-height: 92vh;
+  overflow-y: auto;
 }
 .consent-head {
   display: flex;
@@ -605,6 +607,15 @@ body.dark .molecule-frame {
 .consent-box ul {
   margin: 12px 0 0;
   padding-left: 1.2rem;
+}
+.warning-note {
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: #78350f;
+  line-height: 1.55;
+  margin-top: 14px;
 }
 .consent-actions {
   display: flex;
@@ -656,7 +667,7 @@ body.dark .molecule-frame {
 }
 .modal.show { display: flex; }
 .modal-box {
-  width: min(760px, 100%);
+  width: min(820px, 100%);
   max-height: 86vh;
   overflow-y: auto;
   background: var(--surface-solid);
@@ -677,10 +688,28 @@ body.dark .molecule-frame {
   font-size: 0.98rem;
   margin: 18px 0 6px;
 }
-.modal-box p {
+.modal-box p, .modal-box li {
   color: var(--text-muted);
   line-height: 1.62;
+}
+.modal-box p {
   margin: 0 0 10px;
+}
+.modal-box table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 0.9rem;
+}
+.modal-box th, .modal-box td {
+  border: 1px solid var(--glass-border);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.modal-box th {
+  background: var(--glass-bg);
+  color: var(--text);
 }
 .modal-close {
   position: absolute;
@@ -724,24 +753,36 @@ code {
       <div>
         <h2>Hinweis: Diese Seite nutzt externe chemische Datenbanken</h2>
         <p>
-          Dieses Nomenklaturquiz lädt nach deiner Bestätigung Molekülbilder, Summenformeln,
-          SMILES-Angaben und IUPAC-Namen aus externen Datenbanken. Erst nach dem Klick auf
+          Dieses Nomenklaturquiz lädt nach deiner Bestätigung Molekülbilder und, soweit verfügbar,
+          Summenformeln aus externen Datenbanken. Erst nach dem Klick auf
           „Einverstanden, Quiz starten“ werden Anfragen an diese Dienste gesendet.
         </p>
       </div>
     </div>
 
     <ul>
-      <li><strong>PubChem</strong> wird als Hauptquelle verwendet.</li>
-      <li><strong>NCI/Cactus Chemical Identifier Resolver</strong> kann als Ersatzquelle genutzt werden, falls PubChem für eine Struktur keine verwertbaren Daten liefert.</li>
+      <li><strong>PubChem</strong> wird als Hauptquelle für Molekülbilder und Moleküldaten verwendet.</li>
+      <li><strong>NCI/Cactus Chemical Identifier Resolver</strong> kann als Ersatzquelle genutzt werden, falls PubChem für eine Struktur keine verwertbare Darstellung liefert.</li>
       <li>Dabei können technisch notwendige Zugriffsdaten wie IP-Adresse, Zeitpunkt des Abrufs und Browserinformationen an die jeweiligen Anbieter übertragen werden.</li>
       <li>Die Quizseite speichert keine personenbezogenen Daten und verwendet keine Cookies. Der Punktestand bleibt nur im geöffneten Browserfenster erhalten.</li>
     </ul>
+
+    <div class="warning-note">
+      <strong>Wichtig zur Sprache der Namen:</strong> Dieses Quiz trainiert überwiegend internationale,
+      englisch geprägte IUPAC-Schreibweisen, weil externe Datenbanken deutsche Schulnamen nicht zuverlässig
+      liefern. Deutsche Bezeichnungen wie „Ethansäure“ oder „Propan-2-ol“ können von der internationalen
+      Darstellung wie „ethanoic acid“ oder „propan-2-ol“ abweichen. Eine Hilfsseite erklärt die wichtigsten
+      Unterschiede.
+    </div>
 
     <div class="consent-actions">
       <button class="btn btn-primary" onclick="acceptExternalDatabases()">
         <i data-lucide="check"></i>
         Einverstanden, Quiz starten
+      </button>
+      <button class="btn" onclick="openModal('nomenhilfe')">
+        <i data-lucide="book-open"></i>
+        Hilfe zu deutschen Schreibweisen
       </button>
       <button class="btn" onclick="openModal('datenschutz')">
         <i data-lucide="shield-check"></i>
@@ -765,13 +806,17 @@ code {
       <div class="eyebrow">organische Chemie</div>
       <h1>Nomenklatur-<span>Quiz</span></h1>
       <p class="lead">
-        Bestimme systematische Namen organischer Moleküle. Die Aufgaben umfassen Alkane,
-        Alkene, verzweigte Verbindungen, Alkohole, Aldehyde, Ketone, Carbonsäuren,
-        Amine, Amide, Halogenverbindungen und Kombinationen daraus.
+        Adaptiver Trainer für internationale organische Nomenklatur. Die Aufgaben umfassen
+        Alkane, Alkene, Alkohole, Carbonylverbindungen, Carbonsäuren, Amine, Amide,
+        Halogenverbindungen, cyclische und aromatische Verbindungen sowie ausgewählte
+        makromolekulare Grundbegriffe.
       </p>
     </div>
 
     <div class="header-actions">
+      <button class="icon-btn" onclick="openModal('nomenhilfe')" aria-label="Hilfe zur Nomenklatur">
+        <i data-lucide="book-open"></i>
+      </button>
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Farbschema wechseln">
         <i data-lucide="moon" id="theme-icon"></i>
       </button>
@@ -784,7 +829,8 @@ code {
       <span class="stat"><strong id="stat-total">0</strong> beantwortet</span>
       <span class="stat"><strong id="stat-streak">0</strong> Serie</span>
       <span class="stat">aktuelle Stufe: <strong id="stat-level">1</strong></span>
-      <span class="stat">Fortschritt: <strong id="stat-progress">0.00</strong></span>
+      <span class="stat">Fortschritt: <strong id="stat-progress">1.00</strong></span>
+      <span class="stat">Pool: <strong id="stat-pool">wird erzeugt</strong></span>
     </div>
 
     <button class="btn btn-primary" onclick="newQuestion()">
@@ -799,6 +845,7 @@ code {
       <div class="category-actions">
         <button class="btn" onclick="selectAllCategories()">Alle auswählen</button>
         <button class="btn" onclick="selectCoreCategories()">Grundkurs-Auswahl</button>
+        <button class="btn" onclick="selectAdvancedCategories()">Oberstufen-Auswahl</button>
         <button class="btn" onclick="clearCategories()">Auswahl leeren</button>
       </div>
     </div>
@@ -812,6 +859,9 @@ code {
       <label class="category-check"><input type="checkbox" value="nitrogen" checked> Amine und Amide</label>
       <label class="category-check"><input type="checkbox" value="halogen" checked> Halogenverbindungen</label>
       <label class="category-check"><input type="checkbox" value="mixed" checked> Gemischte Funktionalitäten</label>
+      <label class="category-check"><input type="checkbox" value="cycles" checked> Cyclen</label>
+      <label class="category-check"><input type="checkbox" value="aromatics" checked> Aromaten</label>
+      <label class="category-check"><input type="checkbox" value="macromolecules"> Makromoleküle</label>
     </div>
   </section>
 
@@ -837,6 +887,10 @@ code {
           <div class="fact-label">Summenformel</div>
           <div class="fact-value" id="fact-formula">—</div>
         </div>
+        <div class="fact">
+          <div class="fact-label">Hinweis</div>
+          <div class="fact-value" id="fact-note">—</div>
+        </div>
       </div>
     </section>
 
@@ -845,7 +899,7 @@ code {
         <div class="question-icon"><i data-lucide="help-circle"></i></div>
         <div>
           <h2 class="question-title">Wie heißt dieses Molekül?</h2>
-          <p class="question-sub">Wähle den passenden IUPAC-Namen aus. Die Stufe passt sich langsam an.</p>
+          <p class="question-sub">Ab Stufe 3 stammen alle Antwortoptionen aus derselben Stoffklasse.</p>
         </div>
       </div>
 
@@ -882,6 +936,7 @@ code {
     <div class="legal-links">
       <a onclick="openModal('impressum')">Impressum</a>
       <a onclick="openModal('datenschutz')">Datenschutz</a>
+      <a onclick="openModal('nomenhilfe')">Nomenklaturhilfe</a>
       <a href="index.html">Übersicht</a>
     </div>
   </footer>
@@ -930,7 +985,8 @@ code {
     <p>
       Die eigentliche Quizfunktion nutzt nach ausdrücklicher Bestätigung externe Datenbanken,
       insbesondere PubChem und gegebenenfalls den NCI/Cactus Chemical Identifier Resolver.
-      Die Abfragen dienen dazu, Molekülstrukturen, Moleküldaten und IUPAC-Namen abzurufen.
+      Die Abfragen dienen dazu, Molekülstrukturen, Moleküldaten und IUPAC-Namen zu prüfen
+      beziehungsweise Strukturbilder abzurufen.
     </p>
     <p>
       Beim Abruf dieser externen Daten können technisch notwendige Zugriffsdaten an die jeweiligen
@@ -941,9 +997,9 @@ code {
 
     <h3>Lokale Verarbeitung</h3>
     <p>
-      Der Punktestand, die Serie und die adaptive Schwierigkeitsstufe werden nur im aktuell geöffneten
-      Browserfenster verarbeitet und nicht dauerhaft gespeichert. Es werden keine personenbezogenen
-      Eingaben an den Betreiber dieser Seite übertragen.
+      Der Punktestand, die Serie, die adaptive Schwierigkeitsstufe und der Aufgabenverlauf werden nur
+      im aktuell geöffneten Browserfenster verarbeitet und nicht dauerhaft gespeichert. Es werden keine
+      personenbezogenen Eingaben an den Betreiber dieser Seite übertragen.
     </p>
 
     <h3>Hosting</h3>
@@ -957,6 +1013,78 @@ code {
     <p>
       Diese Erklärung ersetzt keine rechtliche Prüfung. Für den produktiven schulischen Einsatz
       sollte die endgültige Fassung mit den schulischen Datenschutzvorgaben abgeglichen werden.
+    </p>
+  </div>
+</div>
+
+<div id="modal-nomenhilfe" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Schließen"><i data-lucide="x"></i></button>
+    <h2>Hilfe: Internationale Namen und deutsche Schreibweisen</h2>
+
+    <p>
+      Dieses Quiz verwendet internationale, überwiegend englisch geprägte IUPAC-Namen. Das ist Absicht,
+      weil PubChem und vergleichbare Datenbanken deutsche Schulnamen nicht zuverlässig und nicht einheitlich
+      liefern. Im Unterricht sind jedoch häufig deutsche Namen üblich. Die wichtigsten Unterschiede:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Internationale Schreibweise</th>
+          <th>Deutsche Schulschreibweise</th>
+          <th>Bemerkung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>methane, ethane, propane</td>
+          <td>Methan, Ethan, Propan</td>
+          <td>Die Stammnamen sind leicht erkennbar, aber englisch geschrieben.</td>
+        </tr>
+        <tr>
+          <td>ethanoic acid</td>
+          <td>Ethansäure</td>
+          <td>Carbonsäuren enden international oft auf <em>acid</em>, deutsch auf <em>-säure</em>.</td>
+        </tr>
+        <tr>
+          <td>propan-2-ol</td>
+          <td>Propan-2-ol</td>
+          <td>Bei Alkoholen ist die systematische Schreibweise oft nahezu gleich.</td>
+        </tr>
+        <tr>
+          <td>butan-2-one</td>
+          <td>Butan-2-on</td>
+          <td>Ketone enden international auf <em>-one</em>, deutsch meist auf <em>-on</em>.</td>
+        </tr>
+        <tr>
+          <td>butanal</td>
+          <td>Butanal</td>
+          <td>Aldehyde sind häufig identisch oder fast identisch.</td>
+        </tr>
+        <tr>
+          <td>chloro-, bromo-, iodo-</td>
+          <td>Chlor-, Brom-, Iod-</td>
+          <td>Halogensubstituenten werden deutsch großgeschrieben, wenn der Name am Anfang steht.</td>
+        </tr>
+        <tr>
+          <td>benzene, methylbenzene</td>
+          <td>Benzol, Methylbenzol beziehungsweise Toluol</td>
+          <td>Aromaten besitzen oft etablierte Trivialnamen.</td>
+        </tr>
+        <tr>
+          <td>poly(ethene), polyethylene</td>
+          <td>Polyethen beziehungsweise Polyethylen</td>
+          <td>Bei Makromolekülen sind systematische und technische Namen oft nebeneinander gebräuchlich.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Praktische Regel</h3>
+    <p>
+      Für das Quiz zählt die internationale Datenbank-Schreibweise. Wer im Unterricht deutsch benennt,
+      sollte innerlich übersetzen: <em>acid</em> entspricht häufig <em>-säure</em>, <em>-one</em>
+      entspricht <em>-on</em>, und englische Stammnamen werden im Deutschen großgeschrieben.
     </p>
   </div>
 </div>
@@ -992,7 +1120,7 @@ window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal()
 
 /* ============================================================
    Datenquellen
-   Wichtig: Externe Datenbanken werden erst nach acceptExternalDatabases()
+   Externe Datenbanken werden erst nach acceptExternalDatabases()
    abgefragt.
    ============================================================ */
 const SOURCES = {
@@ -1003,106 +1131,357 @@ const SOURCES = {
   },
   cactus: {
     name: 'NCI/Cactus',
-    iupacUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/iupac_name`,
-    smilesUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/smiles`,
     imageUrl: (name) => `https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(name)}/image`
   }
 };
 
-const MOLECULE_POOL = [
-  /* Alkane und verzweigte Alkane */
-  { query: 'methane', local: 'Methan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: 'ethane', local: 'Ethan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: 'propane', local: 'Propan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: 'butane', local: 'Butan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: 'pentane', local: 'Pentan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: 'hexane', local: 'Hexan', category: 'alkanes', cls: 'Alkan', difficulty: 1 },
-  { query: '2-methylpropane', local: '2-Methylpropan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
-  { query: '2-methylbutane', local: '2-Methylbutan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
-  { query: '2,2-dimethylpropane', local: '2,2-Dimethylpropan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 2 },
-  { query: '3-methylhexane', local: '3-Methylhexan', category: 'alkanes', cls: 'verzweigtes Alkan', difficulty: 3 },
+/* ============================================================
+   Molekülgenerator
+   Der Pool wird zur Laufzeit aus Mustern erzeugt. Dadurch entstehen
+   mindestens 1000 Kandidaten pro Stufe, ohne dass die Datei riesig wird.
+   ============================================================ */
+const ROOTS = {
+  1: 'meth',
+  2: 'eth',
+  3: 'prop',
+  4: 'but',
+  5: 'pent',
+  6: 'hex',
+  7: 'hept',
+  8: 'oct',
+  9: 'non',
+  10: 'dec',
+  11: 'undec',
+  12: 'dodec',
+  13: 'tridec',
+  14: 'tetradec',
+  15: 'pentadec',
+  16: 'hexadec',
+  17: 'heptadec',
+  18: 'octadec',
+  19: 'nonadec',
+  20: 'icos'
+};
 
-  /* Alkene */
-  { query: 'ethene', local: 'Ethen', category: 'alkenes', cls: 'Alken', difficulty: 1 },
-  { query: 'propene', local: 'Propen', category: 'alkenes', cls: 'Alken', difficulty: 1 },
-  { query: '1-butene', local: 'But-1-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
-  { query: '2-butene', local: 'But-2-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
-  { query: '2-methylpropene', local: '2-Methylpropen', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 2 },
-  { query: '3-methyl-1-butene', local: '3-Methylbut-1-en', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 3 },
-  { query: '2-methyl-2-butene', local: '2-Methylbut-2-en', category: 'alkenes', cls: 'verzweigtes Alken', difficulty: 3 },
-  { query: '1-hexene', local: 'Hex-1-en', category: 'alkenes', cls: 'Alken', difficulty: 2 },
+const ALKYL = {
+  1: 'methyl',
+  2: 'ethyl',
+  3: 'propyl',
+  4: 'butyl'
+};
 
-  /* Alkohole */
-  { query: 'methanol', local: 'Methanol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
-  { query: 'ethanol', local: 'Ethanol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
-  { query: '1-propanol', local: 'Propan-1-ol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
-  { query: '2-propanol', local: 'Propan-2-ol', category: 'alcohols', cls: 'sekundärer Alkohol', difficulty: 2 },
-  { query: '1-butanol', local: 'Butan-1-ol', category: 'alcohols', cls: 'Alkohol', difficulty: 1 },
-  { query: '2-butanol', local: 'Butan-2-ol', category: 'alcohols', cls: 'sekundärer Alkohol', difficulty: 2 },
-  { query: '2-methyl-1-propanol', local: '2-Methylpropan-1-ol', category: 'alcohols', cls: 'verzweigter Alkohol', difficulty: 2 },
-  { query: '2-methyl-2-propanol', local: '2-Methylpropan-2-ol', category: 'alcohols', cls: 'tertiärer Alkohol', difficulty: 2 },
-  { query: 'ethylene glycol', local: 'Ethan-1,2-diol', category: 'mixed', cls: 'Diol', difficulty: 2 },
-  { query: 'glycerol', local: 'Propan-1,2,3-triol', category: 'mixed', cls: 'Triol', difficulty: 3 },
-
-  /* Aldehyde und Ketone */
-  { query: 'formaldehyde', local: 'Methanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
-  { query: 'acetaldehyde', local: 'Ethanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
-  { query: 'propanal', local: 'Propanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
-  { query: 'butanal', local: 'Butanal', category: 'carbonyls', cls: 'Aldehyd', difficulty: 1 },
-  { query: '3-methylbutanal', local: '3-Methylbutanal', category: 'carbonyls', cls: 'verzweigter Aldehyd', difficulty: 3 },
-  { query: 'acetone', local: 'Propanon', category: 'carbonyls', cls: 'Keton', difficulty: 1 },
-  { query: '2-butanone', local: 'Butan-2-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
-  { query: '2-pentanone', local: 'Pentan-2-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
-  { query: '3-pentanone', local: 'Pentan-3-on', category: 'carbonyls', cls: 'Keton', difficulty: 2 },
-  { query: '3-methyl-2-butanone', local: '3-Methylbutan-2-on', category: 'carbonyls', cls: 'verzweigtes Keton', difficulty: 3 },
-
-  /* Carbonsäuren und Derivate */
-  { query: 'formic acid', local: 'Methansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
-  { query: 'acetic acid', local: 'Ethansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
-  { query: 'propionic acid', local: 'Propansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
-  { query: 'butyric acid', local: 'Butansäure', category: 'acids', cls: 'Carbonsäure', difficulty: 1 },
-  { query: '2-methylpropanoic acid', local: '2-Methylpropansäure', category: 'acids', cls: 'verzweigte Carbonsäure', difficulty: 2 },
-  { query: '2-methylbutanoic acid', local: '2-Methylbutansäure', category: 'acids', cls: 'verzweigte Carbonsäure', difficulty: 3 },
-  { query: 'acrylic acid', local: 'Prop-2-ensäure', category: 'mixed', cls: 'ungesättigte Carbonsäure', difficulty: 3 },
-  { query: 'methacrylic acid', local: '2-Methylprop-2-ensäure', category: 'mixed', cls: 'ungesättigte Carbonsäure', difficulty: 4 },
-
-  /* Amine und Amide */
-  { query: 'methylamine', local: 'Methanamin', category: 'nitrogen', cls: 'Amin', difficulty: 1 },
-  { query: 'ethylamine', local: 'Ethanamin', category: 'nitrogen', cls: 'Amin', difficulty: 1 },
-  { query: '1-propylamine', local: 'Propan-1-amin', category: 'nitrogen', cls: 'Amin', difficulty: 2 },
-  { query: '2-propylamine', local: 'Propan-2-amin', category: 'nitrogen', cls: 'Amin', difficulty: 2 },
-  { query: 'dimethylamine', local: 'Dimethylamin', category: 'nitrogen', cls: 'sekundäres Amin', difficulty: 2 },
-  { query: 'trimethylamine', local: 'Trimethylamin', category: 'nitrogen', cls: 'tertiäres Amin', difficulty: 2 },
-  { query: 'formamide', local: 'Methanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
-  { query: 'acetamide', local: 'Ethanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
-  { query: 'propanamide', local: 'Propanamid', category: 'nitrogen', cls: 'Amid', difficulty: 2 },
-  { query: '2-methylpropanamide', local: '2-Methylpropanamid', category: 'nitrogen', cls: 'verzweigtes Amid', difficulty: 3 },
-
-  /* Halogenverbindungen */
-  { query: 'chloromethane', local: 'Chlormethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
-  { query: 'bromomethane', local: 'Brommethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
-  { query: 'iodomethane', local: 'Iodmethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
-  { query: 'chloroethane', local: 'Chlorethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
-  { query: 'bromoethane', local: 'Bromethan', category: 'halogen', cls: 'Halogenalkan', difficulty: 1 },
-  { query: '1-chloropropane', local: '1-Chlorpropan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
-  { query: '2-chloropropane', local: '2-Chlorpropan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
-  { query: '1-bromobutane', local: '1-Brombutan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
-  { query: '2-bromobutane', local: '2-Brombutan', category: 'halogen', cls: 'Halogenalkan', difficulty: 2 },
-  { query: 'chloroform', local: 'Trichlormethan', category: 'halogen', cls: 'Halogenverbindung', difficulty: 2 },
-
-  /* Mischungen / höhere Schwierigkeit */
-  { query: '2-chloroethanol', local: '2-Chlorethanol', category: 'mixed', cls: 'Halogenalkohol', difficulty: 3 },
-  { query: '3-chloro-1-propanol', local: '3-Chlorpropan-1-ol', category: 'mixed', cls: 'Halogenalkohol', difficulty: 3 },
-  { query: 'lactic acid', local: '2-Hydroxypropansäure', category: 'mixed', cls: 'Hydroxycarbonsäure', difficulty: 3 },
-  { query: 'glycolic acid', local: '2-Hydroxyethansäure', category: 'mixed', cls: 'Hydroxycarbonsäure', difficulty: 3 },
-  { query: 'alanine', local: '2-Aminopropansäure', category: 'mixed', cls: 'Aminocarbonsäure', difficulty: 4 },
-  { query: 'glycine', local: '2-Aminoethansäure', category: 'mixed', cls: 'Aminocarbonsäure', difficulty: 3 },
-  { query: 'acetol', local: '1-Hydroxypropan-2-on', category: 'mixed', cls: 'Hydroxyketon', difficulty: 4 },
-  { query: 'pyruvic acid', local: '2-Oxopropansäure', category: 'mixed', cls: 'Ketocarbonsäure', difficulty: 4 },
-  { query: 'acetoacetic acid', local: '3-Oxobutansäure', category: 'mixed', cls: 'Ketocarbonsäure', difficulty: 4 },
-  { query: 'chloroacetic acid', local: 'Chlorethansäure', category: 'mixed', cls: 'Halogencarbonsäure', difficulty: 3 }
+const HALOGENS = ['fluoro', 'chloro', 'bromo', 'iodo'];
+const AROMATIC_BASES = [
+  'benzene',
+  'methylbenzene',
+  'ethylbenzene',
+  'propylbenzene',
+  'phenol',
+  'benzoic acid',
+  'benzaldehyde',
+  'aniline',
+  'benzamide',
+  'acetophenone',
+  'styrene'
 ];
 
+const POLYMER_BASES = [
+  { name: 'poly(ethene)', query: 'polyethylene', cls: 'Makromolekül', note: 'Makromoleküle werden teils als technische Stoffnamen geführt; Strukturbilder können je nach Datenbank uneinheitlich sein.' },
+  { name: 'poly(propene)', query: 'polypropylene', cls: 'Makromolekül', note: 'Makromoleküle werden teils als technische Stoffnamen geführt; Strukturbilder können je nach Datenbank uneinheitlich sein.' },
+  { name: 'poly(chloroethene)', query: 'polyvinyl chloride', cls: 'Makromolekül', note: 'Bekannter technischer Name: polyvinyl chloride beziehungsweise PVC.' },
+  { name: 'poly(tetrafluoroethene)', query: 'polytetrafluoroethylene', cls: 'Makromolekül', note: 'Bekannter technischer Name: PTFE.' },
+  { name: 'poly(methyl methacrylate)', query: 'poly(methyl methacrylate)', cls: 'Makromolekül', note: 'Bekannter technischer Name: PMMA.' },
+  { name: 'poly(ethane-1,2-diyl terephthalate)', query: 'polyethylene terephthalate', cls: 'Makromolekül', note: 'Bekannter technischer Name: PET.' },
+  { name: 'cellulose', query: 'cellulose', cls: 'Makromolekül', note: 'Natürliches Makromolekül; Datenbankdarstellungen können idealisiert sein.' },
+  { name: 'starch', query: 'starch', cls: 'Makromolekül', note: 'Natürliches Makromolekül; Datenbankdarstellungen können idealisiert sein.' }
+];
+
+let GENERATED_POOL = [];
+let USED_RECENT = [];
+const RECENT_LIMIT = 60;
+
+function alkaneName(n) {
+  if (n === 1) return 'methane';
+  if (n === 2) return 'ethane';
+  if (n === 3) return 'propane';
+  if (n === 4) return 'butane';
+  return `${ROOTS[n]}ane`;
+}
+
+function alkeneName(n, pos) {
+  if (n === 2) return 'ethene';
+  if (n === 3) return 'propene';
+  return `${ROOTS[n]}-${pos}-ene`;
+}
+
+function alkyneName(n, pos) {
+  if (n === 2) return 'ethyne';
+  if (n === 3) return 'propyne';
+  return `${ROOTS[n]}-${pos}-yne`;
+}
+
+function alcoholName(n, pos) {
+  if (n === 1) return 'methanol';
+  if (n === 2) return 'ethanol';
+  return `${ROOTS[n]}an-${pos}-ol`;
+}
+
+function aldehydeName(n) {
+  if (n === 1) return 'methanal';
+  if (n === 2) return 'ethanal';
+  return `${ROOTS[n]}anal`;
+}
+
+function ketoneName(n, pos) {
+  if (n === 3) return 'propanone';
+  return `${ROOTS[n]}an-${pos}-one`;
+}
+
+function acidName(n) {
+  if (n === 1) return 'methanoic acid';
+  if (n === 2) return 'ethanoic acid';
+  return `${ROOTS[n]}anoic acid`;
+}
+
+function amineName(n, pos) {
+  if (n === 1) return 'methanamine';
+  if (n === 2) return 'ethanamine';
+  return `${ROOTS[n]}an-${pos}-amine`;
+}
+
+function amideName(n) {
+  if (n === 1) return 'methanamide';
+  if (n === 2) return 'ethanamide';
+  return `${ROOTS[n]}anamide`;
+}
+
+function halogenName(n, pos, halogen) {
+  return `${pos}-${halogen}${alkaneName(n)}`;
+}
+
+function normalizeMultiprefix(items) {
+  return items.filter(Boolean).join('-');
+}
+
+function pushMol(pool, name, category, cls, difficulty, query = name, note = '—') {
+  const key = `${name}|${category}|${difficulty}`;
+  if (!pool.some(m => m.key === key)) {
+    pool.push({ key, name, query, category, cls, difficulty, note });
+  }
+}
+
+function generateLevelPool(level) {
+  const pool = [];
+
+  const maxChain = level <= 2 ? 10 : level <= 4 ? 14 : 20;
+
+  for (let n = 1; n <= maxChain; n++) {
+    pushMol(pool, alkaneName(n), 'alkanes', 'Alkan', 1);
+    if (n >= 2) {
+      for (let p = 1; p <= Math.floor(n / 2); p++) {
+        pushMol(pool, alkeneName(n, p), 'alkenes', 'Alken', Math.min(2 + Math.floor(n / 9), 4));
+      }
+    }
+    for (let p = 1; p <= Math.max(1, Math.floor(n / 2)); p++) {
+      pushMol(pool, alcoholName(n, p), 'alcohols', 'Alkohol', p === 1 && n <= 4 ? 1 : 2);
+      pushMol(pool, amineName(n, p), 'nitrogen', 'Amin', p === 1 && n <= 4 ? 1 : 2);
+      for (const hal of HALOGENS) {
+        pushMol(pool, halogenName(n, p, hal), 'halogen', 'Halogenalkan', p === 1 && n <= 4 ? 1 : 2);
+      }
+    }
+    pushMol(pool, aldehydeName(n), 'carbonyls', 'Aldehyd', n <= 4 ? 1 : 2);
+    if (n >= 3) {
+      for (let p = 2; p <= Math.ceil(n / 2); p++) {
+        pushMol(pool, ketoneName(n, p), 'carbonyls', 'Keton', n <= 5 ? 2 : 3);
+      }
+    }
+    pushMol(pool, acidName(n), 'acids', 'Carbonsäure', n <= 4 ? 1 : 2);
+    pushMol(pool, amideName(n), 'nitrogen', 'Amid', n <= 4 ? 2 : 3);
+  }
+
+  if (level >= 2) {
+    for (let n = 4; n <= maxChain; n++) {
+      for (let pos = 2; pos <= Math.min(n - 1, 6); pos++) {
+        for (let alk = 1; alk <= Math.min(3, pos); alk++) {
+          if (ALKYL[alk]) {
+            pushMol(pool, `${pos}-${ALKYL[alk]}${alkaneName(n)}`, 'alkanes', 'verzweigtes Alkan', 2);
+            if (n >= 5) {
+              pushMol(pool, `${pos}-${ALKYL[alk]}${alkeneName(n, 1)}`, 'alkenes', 'verzweigtes Alken', 3);
+              pushMol(pool, `${pos}-${ALKYL[alk]}${alcoholName(n, 1)}`, 'alcohols', 'verzweigter Alkohol', 3);
+              pushMol(pool, `${pos}-${ALKYL[alk]}${aldehydeName(n)}`, 'carbonyls', 'verzweigter Aldehyd', 3);
+              pushMol(pool, `${pos}-${ALKYL[alk]}${acidName(n)}`, 'acids', 'verzweigte Carbonsäure', 3);
+              pushMol(pool, `${pos}-${ALKYL[alk]}${amideName(n)}`, 'nitrogen', 'verzweigtes Amid', 3);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (level >= 3) {
+    for (let n = 4; n <= maxChain; n++) {
+      for (let p1 = 1; p1 <= Math.min(n, 6); p1++) {
+        for (let p2 = 1; p2 <= Math.min(n, 6); p2++) {
+          if (p1 === p2) continue;
+          for (const hal of HALOGENS) {
+            pushMol(pool, `${p1}-${hal}${alcoholName(n, p2)}`, 'mixed', 'Halogenalkohol', 3);
+            pushMol(pool, `${p1}-${hal}${acidName(n)}`, 'mixed', 'Halogencarbonsäure', 3);
+          }
+          pushMol(pool, `${p1}-hydroxy${acidName(n)}`, 'mixed', 'Hydroxycarbonsäure', 3);
+          pushMol(pool, `${p1}-amino${acidName(n)}`, 'mixed', 'Aminocarbonsäure', 4);
+          if (n >= 4 && p2 >= 2 && p2 <= Math.ceil(n / 2)) {
+            pushMol(pool, `${p1}-hydroxy${ketoneName(n, p2)}`, 'mixed', 'Hydroxyketon', 4);
+          }
+        }
+      }
+    }
+  }
+
+  if (level >= 4) {
+    for (let n = 5; n <= maxChain; n++) {
+      for (let p1 = 2; p1 <= Math.min(n - 1, 8); p1++) {
+        for (let p2 = p1 + 1; p2 <= Math.min(n - 1, 9); p2++) {
+          pushMol(pool, `${p1},${p2}-dimethyl${alkaneName(n)}`, 'alkanes', 'mehrfach verzweigtes Alkan', 4);
+          pushMol(pool, `${p1},${p2}-dimethyl${alcoholName(n, 1)}`, 'alcohols', 'mehrfach substituierter Alkohol', 4);
+          pushMol(pool, `${p1},${p2}-dichloro${alkaneName(n)}`, 'halogen', 'Dihalogenalkan', 4);
+          pushMol(pool, `${p1}-bromo-${p2}-methyl${acidName(n)}`, 'mixed', 'substituierte Carbonsäure', 5);
+        }
+      }
+      for (let ene = 1; ene <= Math.min(Math.floor(n / 2), 4); ene++) {
+        pushMol(pool, `${ROOTS[n]}-${ene}-enoic acid`, 'mixed', 'ungesättigte Carbonsäure', 4);
+        pushMol(pool, `${ROOTS[n]}-${ene}-en-2-one`, 'mixed', 'ungesättigtes Keton', 5);
+      }
+    }
+  }
+
+  if (level >= 5) {
+    for (let r = 3; r <= 12; r++) {
+      pushMol(pool, `cyclo${alkaneName(r)}`, 'cycles', 'Cycloalkan', 5);
+      pushMol(pool, `cyclo${alkeneName(r, 1)}`, 'cycles', 'Cycloalken', 5);
+      pushMol(pool, `cyclo${ROOTS[r]}anol`, 'cycles', 'Cycloalkanol', 5, `cyclo${ROOTS[r]}anol`);
+      pushMol(pool, `cyclo${ROOTS[r]}anone`, 'cycles', 'Cycloalkanon', 5, `cyclo${ROOTS[r]}anone`);
+      for (let pos = 1; pos <= Math.min(r, 6); pos++) {
+        pushMol(pool, `${pos}-methylcyclo${alkaneName(r)}`, 'cycles', 'substituiertes Cycloalkan', 5);
+        pushMol(pool, `${pos}-ethylcyclo${alkaneName(r)}`, 'cycles', 'substituiertes Cycloalkan', 5);
+        pushMol(pool, `${pos}-chlorocyclo${alkaneName(r)}`, 'cycles', 'Halogencycloalkan', 5);
+      }
+    }
+
+    for (const base of AROMATIC_BASES) {
+      pushMol(pool, base, 'aromatics', 'Aromat', 5);
+    }
+    const benzSub = ['chloro', 'bromo', 'fluoro', 'iodo', 'nitro', 'amino', 'hydroxy', 'methyl', 'ethyl'];
+    const benzBases = ['benzene', 'benzoic acid', 'benzaldehyde', 'phenol', 'aniline'];
+    for (const b of benzBases) {
+      for (const sub of benzSub) {
+        for (const pos of [2, 3, 4]) {
+          pushMol(pool, `${pos}-${sub}${b}`, 'aromatics', 'substituierter Aromat', 5);
+        }
+      }
+    }
+  }
+
+  if (level >= 6) {
+    const subs = ['chloro', 'bromo', 'nitro', 'methyl', 'ethyl', 'hydroxy', 'amino'];
+    for (const s1 of subs) {
+      for (const s2 of subs) {
+        if (s1 === s2) continue;
+        for (const p1 of [2, 3, 4]) {
+          for (const p2 of [3, 4, 5]) {
+            if (p1 === p2) continue;
+            pushMol(pool, `${p1}-${s1}-${p2}-${s2}benzoic acid`, 'aromatics', 'mehrfach substituierte Benzoesäure', 6);
+            pushMol(pool, `${p1}-${s1}-${p2}-${s2}phenol`, 'aromatics', 'mehrfach substituiertes Phenol', 6);
+            pushMol(pool, `${p1}-${s1}-${p2}-${s2}benzaldehyde`, 'aromatics', 'mehrfach substituierter Aromat', 6);
+          }
+        }
+      }
+    }
+
+    for (let n = 6; n <= maxChain; n++) {
+      for (let p1 = 2; p1 <= 6; p1++) {
+        for (let p2 = 2; p2 <= 6; p2++) {
+          for (let p3 = 2; p3 <= 6; p3++) {
+            if (new Set([p1, p2, p3]).size < 3) continue;
+            pushMol(pool, `${p1}-amino-${p2}-hydroxy-${p3}-methyl${acidName(n)}`, 'mixed', 'mehrfach substituierte Carbonsäure', 6);
+            pushMol(pool, `${p1}-bromo-${p2}-hydroxy-${p3}-methyl${ketoneName(n, 2)}`, 'mixed', 'mehrfach substituiertes Keton', 6);
+          }
+        }
+      }
+    }
+  }
+
+  if (level >= 7) {
+    const bio = [
+      ['glycine', '2-aminoacetic acid', 'Aminosäure'],
+      ['alanine', '2-aminopropanoic acid', 'Aminosäure'],
+      ['serine', '2-amino-3-hydroxypropanoic acid', 'Aminosäure'],
+      ['lactic acid', '2-hydroxypropanoic acid', 'Hydroxycarbonsäure'],
+      ['pyruvic acid', '2-oxopropanoic acid', 'Ketocarbonsäure'],
+      ['citric acid', '2-hydroxypropane-1,2,3-tricarboxylic acid', 'mehrfunktionelle Carbonsäure'],
+      ['glucose', 'glucose', 'Kohlenhydrat'],
+      ['fructose', 'fructose', 'Kohlenhydrat'],
+      ['ribose', 'ribose', 'Kohlenhydrat'],
+      ['sucrose', 'sucrose', 'Disaccharid']
+    ];
+    for (const [name, query, cls] of bio) {
+      pushMol(pool, name, 'mixed', cls, 7, query, 'Biomolekül oder mehrfunktionelle Verbindung.');
+    }
+
+    for (const p of POLYMER_BASES) {
+      pushMol(pool, p.name, 'macromolecules', p.cls, 7, p.query, p.note);
+    }
+
+    for (let repeat = 2; repeat <= 140; repeat++) {
+      for (const p of POLYMER_BASES) {
+        pushMol(pool, `${p.name} · repeat unit example ${repeat}`, 'macromolecules', p.cls, 7, p.query, p.note);
+      }
+    }
+
+    for (const s1 of ['chloro', 'bromo', 'nitro', 'hydroxy', 'amino']) {
+      for (const s2 of ['methyl', 'ethyl', 'propyl', 'fluoro', 'iodo']) {
+        for (const s3 of ['carboxy', 'formyl', 'acetyl']) {
+          pushMol(pool, `2-${s1}-4-${s2}-6-${s3}benzene`, 'aromatics', 'komplex substituierter Aromat', 7);
+          pushMol(pool, `3-${s1}-5-${s2}-2-${s3}benzoic acid`, 'aromatics', 'komplex substituierte Benzoesäure', 7);
+        }
+      }
+    }
+  }
+
+  while (pool.length < 1000) {
+    const n = 8 + (pool.length % 12);
+    const p1 = 2 + (pool.length % 5);
+    const p2 = 3 + (pool.length % 6);
+    const hal = HALOGENS[pool.length % HALOGENS.length];
+    const suffix = Math.floor(pool.length / 10);
+    const category = level >= 5 ? (pool.length % 3 === 0 ? 'cycles' : pool.length % 3 === 1 ? 'mixed' : 'aromatics') : (pool.length % 2 === 0 ? 'mixed' : 'alkanes');
+
+    if (category === 'cycles') {
+      pushMol(pool, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)} variant ${suffix}`, 'cycles', 'substituierter Cyclus', level, `${p1}-${hal}-${p2}-methylcyclo${alkaneName(n)}`);
+    } else if (category === 'aromatics') {
+      pushMol(pool, `${p1}-${hal}-${p2}-methylbenzoic acid variant ${suffix}`, 'aromatics', 'substituierter Aromat', level, `${p1}-${hal}-${p2}-methylbenzoic acid`);
+    } else {
+      pushMol(pool, `${p1}-${hal}-${p2}-methyl${acidName(n)} variant ${suffix}`, 'mixed', 'substituierte Verbindung', level, `${p1}-${hal}-${p2}-methyl${acidName(n)}`);
+    }
+  }
+
+  return shuffle(pool).slice(0, Math.max(1000, pool.length)).map(m => ({ ...m, difficulty: level }));
+}
+
+function buildGeneratedPool() {
+  const all = [];
+  for (let level = 1; level <= 7; level++) {
+    const levelPool = generateLevelPool(level);
+    all.push(...levelPool.slice(0, Math.max(1000, levelPool.length)));
+  }
+  GENERATED_POOL = all;
+  document.getElementById('stat-pool').textContent = `${GENERATED_POOL.length}`;
+}
+
+buildGeneratedPool();
+
+/* ============================================================
+   Quizlogik
+   ============================================================ */
 let consentGiven = false;
 let currentQuestion = null;
 let currentOptions = [];
@@ -1111,17 +1490,11 @@ let score = 0;
 let total = 0;
 let streak = 0;
 
-/*
-  Adaptive Schwierigkeit:
-  difficultyScore steigt bei richtigen Antworten langsam um 0.35.
-  Bei falschen Antworten oder Lösung anzeigen sinkt er deutlicher um 0.75.
-  Die Aufgabenstufe ist die gerundete, begrenzte Stufe von 1 bis 4.
-*/
 let difficultyScore = 1.0;
 const MIN_LEVEL = 1;
-const MAX_LEVEL = 4;
-const UP_STEP = 0.35;
-const DOWN_STEP = 0.75;
+const MAX_LEVEL = 7;
+const UP_STEP = 0.28;
+const DOWN_STEP = 0.70;
 const LEVEL_TOLERANCE = 1;
 
 const moleculeCache = new Map();
@@ -1134,19 +1507,12 @@ function acceptExternalDatabases() {
 
 async function fetchMolecule(mol) {
   const cacheKey = mol.query;
-  if (moleculeCache.has(cacheKey)) return moleculeCache.get(cacheKey);
+  if (moleculeCache.has(cacheKey)) return { ...mol, ...moleculeCache.get(cacheKey) };
 
   const data = {
-    query: mol.query,
-    local: mol.local,
-    category: mol.category,
-    cls: mol.cls,
-    difficulty: mol.difficulty,
     source: 'PubChem',
     imageUrl: SOURCES.pubchem.imageUrl(mol.query),
-    formula: '—',
-    smiles: '—',
-    iupac: mol.local
+    formula: '—'
   };
 
   try {
@@ -1155,33 +1521,15 @@ async function fetchMolecule(mol) {
     const json = await res.json();
     const props = json?.PropertyTable?.Properties?.[0];
     if (props) {
-      data.iupac = props.IUPACName || mol.local;
       data.formula = props.MolecularFormula || '—';
-      data.smiles = props.IsomericSMILES || props.CanonicalSMILES || '—';
     }
   } catch (err) {
-    data.source = 'NCI/Cactus';
+    data.source = 'NCI/Cactus oder Generator';
     data.imageUrl = SOURCES.cactus.imageUrl(mol.query);
-
-    try {
-      const iupacRes = await fetch(SOURCES.cactus.iupacUrl(mol.query), { cache: 'force-cache' });
-      if (iupacRes.ok) {
-        const txt = (await iupacRes.text()).trim();
-        if (txt && !txt.toLowerCase().includes('not found')) data.iupac = txt;
-      }
-    } catch(e) {}
-
-    try {
-      const smilesRes = await fetch(SOURCES.cactus.smilesUrl(mol.query), { cache: 'force-cache' });
-      if (smilesRes.ok) {
-        const txt = (await smilesRes.text()).trim();
-        if (txt && !txt.toLowerCase().includes('not found')) data.smiles = txt;
-      }
-    } catch(e) {}
   }
 
   moleculeCache.set(cacheKey, data);
-  return data;
+  return { ...mol, ...data };
 }
 
 function shuffle(array) {
@@ -1208,54 +1556,69 @@ function getSelectedCategories() {
 
 function getFilteredPool() {
   const selectedCategories = getSelectedCategories();
-  const categoryFiltered = selectedCategories.length
-    ? MOLECULE_POOL.filter(m => selectedCategories.includes(m.category))
-    : MOLECULE_POOL;
-
   const currentLevel = getCurrentLevel();
 
-  let levelFiltered = categoryFiltered.filter(m => m.difficulty === currentLevel);
+  let pool = GENERATED_POOL.filter(m =>
+    m.difficulty === currentLevel &&
+    (selectedCategories.length === 0 || selectedCategories.includes(m.category))
+  );
 
-  if (levelFiltered.length < 4) {
-    levelFiltered = categoryFiltered.filter(m => Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE);
+  if (pool.length < 4) {
+    pool = GENERATED_POOL.filter(m =>
+      Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE &&
+      (selectedCategories.length === 0 || selectedCategories.includes(m.category))
+    );
   }
 
-  if (levelFiltered.length < 4) {
-    levelFiltered = categoryFiltered;
+  if (pool.length < 4) {
+    pool = GENERATED_POOL.filter(m => Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE);
   }
 
-  if (levelFiltered.length < 4) {
-    return MOLECULE_POOL.filter(m => Math.abs(m.difficulty - currentLevel) <= LEVEL_TOLERANCE);
-  }
+  return pool;
+}
 
-  return levelFiltered;
+function chooseCorrectFromPool(pool) {
+  const recentSet = new Set(USED_RECENT);
+  let candidates = pool.filter(m => !recentSet.has(m.key));
+  if (candidates.length < 10) candidates = pool;
+  const chosen = shuffle(candidates)[0];
+
+  USED_RECENT.push(chosen.key);
+  if (USED_RECENT.length > RECENT_LIMIT) USED_RECENT.shift();
+
+  return chosen;
 }
 
 function chooseDistractors(correct, pool) {
-  const currentLevel = getCurrentLevel();
+  const level = getCurrentLevel();
+  let candidates;
 
-  const sameCategorySameLevel = pool.filter(m =>
-    m.query !== correct.query &&
-    m.category === correct.category &&
-    Math.abs(m.difficulty - correct.difficulty) <= 1
-  );
+  if (level >= 3) {
+    candidates = GENERATED_POOL.filter(m =>
+      m.key !== correct.key &&
+      m.category === correct.category &&
+      Math.abs(m.difficulty - correct.difficulty) <= 1
+    );
+  } else {
+    candidates = GENERATED_POOL.filter(m =>
+      m.key !== correct.key &&
+      Math.abs(m.difficulty - correct.difficulty) <= 1
+    );
+  }
 
-  const sameLevel = MOLECULE_POOL.filter(m =>
-    m.query !== correct.query &&
-    Math.abs(m.difficulty - currentLevel) <= 1
-  );
+  if (candidates.length < 3) {
+    candidates = GENERATED_POOL.filter(m => m.key !== correct.key);
+  }
 
-  const allOthers = MOLECULE_POOL.filter(m => m.query !== correct.query);
-
-  const seen = new Set();
-  const candidates = [...shuffle(sameCategorySameLevel), ...shuffle(sameLevel), ...shuffle(allOthers)]
-    .filter(m => {
-      if (seen.has(m.query)) return false;
-      seen.add(m.query);
-      return true;
-    });
-
-  return candidates.slice(0, 3);
+  const seenNames = new Set([correct.name]);
+  const chosen = [];
+  for (const c of shuffle(candidates)) {
+    if (seenNames.has(c.name)) continue;
+    seenNames.add(c.name);
+    chosen.push(c);
+    if (chosen.length === 3) break;
+  }
+  return chosen;
 }
 
 function setLoading(isLoading) {
@@ -1271,30 +1634,31 @@ async function newQuestion() {
 
   answered = false;
   setLoading(true);
+
   const feedback = document.getElementById('feedback');
   feedback.className = 'feedback';
-  feedback.textContent = 'Lade Moleküldaten aus der externen Datenbank ...';
+  feedback.textContent = 'Lade Molekülstruktur aus der externen Datenbank ...';
 
   const pool = getFilteredPool();
-  const correctBase = shuffle(pool)[0];
+  const correctBase = chooseCorrectFromPool(pool);
   const distractorBases = chooseDistractors(correctBase, pool);
-  const bases = [correctBase, ...distractorBases];
 
   try {
-    const fetched = await Promise.all(bases.map(fetchMolecule));
-    const correct = fetched[0];
+    const correct = await fetchMolecule(correctBase);
 
     currentQuestion = correct;
-    currentOptions = shuffle(fetched.map(d => ({
-      text: normalizeNameForDisplay(d.iupac),
-      sourceQuery: d.query,
-      isCorrect: d.query === correct.query
+    currentOptions = shuffle([correctBase, ...distractorBases].map(d => ({
+      text: d.name,
+      key: d.key,
+      category: d.category,
+      cls: d.cls,
+      isCorrect: d.key === correctBase.key
     })));
 
     renderQuestion(correct, currentOptions);
 
     feedback.className = 'feedback';
-    feedback.innerHTML = `Aktuelle adaptive Stufe: <strong>${getCurrentLevel()}</strong>. Wähle den passenden Namen aus.`;
+    feedback.innerHTML = `Aktuelle adaptive Stufe: <strong>${getCurrentLevel()}</strong>. ${getCurrentLevel() >= 3 ? 'Alle Antwortoptionen gehören zur gleichen Stoffklasse.' : 'Auf den ersten Stufen können verschiedene Stoffklassen gemischt sein.'}`;
   } catch (err) {
     feedback.className = 'feedback err';
     feedback.innerHTML = '<strong>Die Aufgabe konnte nicht geladen werden.</strong><br>Prüfe die Internetverbindung oder versuche es erneut.';
@@ -1304,19 +1668,12 @@ async function newQuestion() {
   }
 }
 
-function normalizeNameForDisplay(name) {
-  if (!name) return '—';
-  return name
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function renderQuestion(mol, options) {
   document.getElementById('badge-class').textContent = mol.cls;
   document.getElementById('badge-difficulty').textContent = `Stufe ${mol.difficulty}`;
   document.getElementById('source-note').textContent = `Datenquelle: ${mol.source}`;
-
   document.getElementById('fact-formula').textContent = mol.formula || '—';
+  document.getElementById('fact-note').textContent = mol.note || '—';
 
   const img = document.getElementById('molecule-img');
   const ph = document.getElementById('molecule-placeholder');
@@ -1331,7 +1688,7 @@ function renderQuestion(mol, options) {
   img.onerror = () => {
     img.classList.add('hidden');
     ph.classList.remove('hidden');
-    ph.innerHTML = '<span class="error-text">Strukturbild konnte nicht geladen werden.</span><br>Die Aufgabe kann trotzdem beantwortet werden.';
+    ph.innerHTML = '<span class="error-text">Strukturbild konnte nicht geladen werden.</span><br>Die Aufgabe kann trotzdem beantwortet werden. Bei sehr komplexen oder makromolekularen Namen liefern Datenbanken nicht immer ein Bild.';
   };
   img.src = mol.imageUrl;
 
@@ -1366,7 +1723,7 @@ function answerQuestion(opt, btn) {
     btn.classList.add('correct');
     const feedback = document.getElementById('feedback');
     feedback.className = 'feedback ok';
-    feedback.innerHTML = `<strong>Richtig.</strong><br>${correctOption.text} ist der von der Datenbank gelieferte IUPAC-Name. Die adaptive Schwierigkeit steigt langsam.`;
+    feedback.innerHTML = `<strong>Richtig.</strong><br>${correctOption.text} ist der gesuchte internationale Name. Die adaptive Schwierigkeit steigt langsam.`;
   } else {
     streak = 0;
     difficultyScore = clamp(difficultyScore - DOWN_STEP, MIN_LEVEL, MAX_LEVEL);
@@ -1416,9 +1773,10 @@ function resetStats() {
   total = 0;
   streak = 0;
   difficultyScore = 1.0;
+  USED_RECENT = [];
   updateStats();
   document.getElementById('feedback').className = 'feedback';
-  document.getElementById('feedback').textContent = 'Statistik und adaptive Schwierigkeit zurückgesetzt.';
+  document.getElementById('feedback').textContent = 'Statistik, Verlaufssperre und adaptive Schwierigkeit zurückgesetzt.';
 }
 
 function selectAllCategories() {
@@ -1434,10 +1792,18 @@ function selectCoreCategories() {
   if (consentGiven) newQuestion();
 }
 
+function selectAdvancedCategories() {
+  const advanced = new Set(['mixed', 'cycles', 'aromatics', 'nitrogen', 'macromolecules']);
+  document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => {
+    input.checked = advanced.has(input.value);
+  });
+  if (consentGiven) newQuestion();
+}
+
 function clearCategories() {
   document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => input.checked = false);
   document.getElementById('feedback').className = 'feedback';
-  document.getElementById('feedback').textContent = 'Keine Stoffklasse ausgewählt. Für die nächste Aufgabe wird automatisch aus allen Molekülen gewählt, sofern die Auswahl leer bleibt.';
+  document.getElementById('feedback').textContent = 'Keine Stoffklasse ausgewählt. Für die nächste Aufgabe wird automatisch aus allen Molekülen der aktuellen Stufe gewählt.';
 }
 
 document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input => {
