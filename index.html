@@ -602,13 +602,24 @@ body {
         <i data-lucide="flask-conical"></i>
       </div>
       <h2 class="section__title">Chemie</h2>
-      <span class="section__count">in Vorbereitung</span>
+      <span class="section__count">1 Anwendung</span>
     </div>
 
     <div class="app-grid">
+      <a href="Stereochemietrainer.html" class="app-card app-card--chemie">
+        <div class="app-card__icon"><i data-lucide="flask-conical"></i></div>
+        <h3 class="app-card__title">Stereochemie-Trainer</h3>
+        <p class="app-card__desc">
+          Interaktiver Trainer zu Fischer-Projektionen, R/S-Konfigurationen, Weinsäure und Aldohexosen.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
       <div class="app-card app-card--placeholder">
         <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
-        Anwendungen folgen
+        weitere Anwendungen folgen
       </div>
     </div>
   </section>
@@ -733,8 +744,11 @@ window.addEventListener('scroll', () => {
 
 /* ===== Reveal-Animation ===== */
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
 }, { threshold: 0.15 });
+
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 /* ===== Sidebar nach Klick auf mobilem Link schließen ===== */
