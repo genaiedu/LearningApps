@@ -285,6 +285,11 @@ canvas { display: block; width: 100%; height: 100%; }
   box-shadow: var(--shadow);
 }
 #rlc-legend.show { display: flex; }
+#rlc-legend sub {
+  font-size: 0.78em;
+  vertical-align: -0.18em;
+  margin-left: 1px;
+}
 #rlc-legend .legend__bar {
   display: inline-block;
   width: 14px; height: 3px;
@@ -650,10 +655,10 @@ input[type="number"]:focus {
   <div id="phasor-container" class="panel canvas-panel hidden">
     <div class="panel__label">Zeigerdiagramm</div>
     <div id="rlc-legend">
-      <div><span class="legend__bar" style="background: var(--ch-r);"></span> I_R (Ohmsch)</div>
-      <div><span class="legend__bar" style="background: var(--ch-c);"></span> I_C (Kapazitiv)</div>
-      <div><span class="legend__bar" style="background: var(--ch-l);"></span> I_L (Induktiv)</div>
-      <div><span class="legend__bar" style="background: var(--ch-i);"></span> I_ges (Resultierend)</div>
+      <div><span class="legend__bar" style="background: var(--ch-r);"></span> I<sub>R</sub> (Ohmsch)</div>
+      <div><span class="legend__bar" style="background: var(--ch-c);"></span> I<sub>C</sub> (Kapazitiv)</div>
+      <div><span class="legend__bar" style="background: var(--ch-l);"></span> I<sub>L</sub> (Induktiv)</div>
+      <div><span class="legend__bar" style="background: var(--ch-i);"></span> I<sub>ges</sub> (Resultierend)</div>
     </div>
     <div class="canvas-container">
       <canvas id="canvas-phasor"></canvas>
