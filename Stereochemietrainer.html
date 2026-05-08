@@ -1,691 +1,1302 @@
+Hier ist die korrigierte Fassung. Ich habe die Ordnerstruktur beibehalten, das unsichtbare Quiz-Kreuz korrigiert, die Formulierung zum 3D-Modell fachlich entschärft, die Touch-Steuerung verbessert und die Quiz-R/S-Bestimmung robuster gemacht.
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stereochemie Trainer: Fischer-Projektionen & 3D</title>
-    
-    <!-- Externe Ressourcen (Für Produktivbetrieb auf GitHub Pages bitte lokal einbinden!) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-        }
-        .canvas-container {
-            width: 100%;
-            height: 400px;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
-            cursor: grab;
-        }
-        .canvas-container:active {
-            cursor: grabbing;
-        }
-        .fischer-text {
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .fischer-text:hover {
-            fill: #2563eb;
-            font-weight: bold;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktiver Stereochemie-Trainer mit Fischer-Projektionen, 3D-Modellen und R/S-Quiz">
+<title>Stereochemie-Trainer · Fischer-Projektionen und 3D</title>
+<style>
+/* ============================================================
+   1. Schriften – lokal aus /fonts/
+   ============================================================ */
+@font-face { font-family: 'Poppins'; src: url('fonts/Poppins-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('fonts/Poppins-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('fonts/Poppins-Black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fonts/Inter-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fonts/Inter-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fonts/Inter-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Caveat'; src: url('fonts/Caveat-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+/* ============================================================
+   2. CSS-Variablen
+   ============================================================ */
+:root {
+  --primary:       #1a6fb5;
+  --primary-dark:  #155a92;
+  --accent:        #f59e0b;
+  --text:          #1e293b;
+  --text-muted:    #64748b;
+  --surface:       rgba(255, 255, 255, 0.75);
+  --surface-solid: #ffffff;
+  --panel:         rgba(255, 255, 255, 0.85);
+  --glass-bg:      rgba(15, 23, 42, 0.05);
+  --glass-border:  rgba(15, 23, 42, 0.10);
+  --blur:          blur(20px);
+  --radius:        16px;
+  --radius-sm:     10px;
+  --shadow:        0 8px 32px rgba(0, 0, 0, 0.10);
+  --bg-base:       #f1f5fb;
+  --c-tartaric:    #1a6fb5;
+  --c-hexose:      #16a34a;
+  --c-quiz:        #7c3aed;
+}
+body.dark {
+  --primary:       #38bdf8;
+  --primary-dark:  #0284c7;
+  --text:          #e2e8f0;
+  --text-muted:    #94a3b8;
+  --surface:       rgba(15, 23, 42, 0.80);
+  --surface-solid: #0f172a;
+  --panel:         rgba(30, 41, 59, 0.75);
+  --glass-bg:      rgba(255, 255, 255, 0.05);
+  --glass-border:  rgba(255, 255, 255, 0.10);
+  --shadow:        0 8px 32px rgba(0, 0, 0, 0.45);
+  --bg-base:       #0b1220;
+  --c-tartaric:    #38bdf8;
+  --c-hexose:      #4ade80;
+  --c-quiz:        #a78bfa;
+}
+/* ============================================================
+   3. Reset
+   ============================================================ */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg-base);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+/* ============================================================
+   4. Hintergrund-Blobs
+   ============================================================ */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.30;
+  z-index: -1;
+  animation: drift 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.blob:nth-child(1) { width: 500px; height: 500px; background: var(--primary); top: -10%; left: -10%; animation-duration: 20s; }
+.blob:nth-child(2) { width: 400px; height: 400px; background: #16a34a; top: 35%; right: -5%; animation-duration: 25s; }
+.blob:nth-child(3) { width: 350px; height: 350px; background: #7c3aed; bottom: -5%; left: 30%; animation-duration: 22s; }
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(40px, -30px) scale(1.05); }
+  66%  { transform: translate(-20px, 50px) scale(0.95); }
+  100% { transform: translate(30px, 20px) scale(1.02); }
+}
+/* ============================================================
+   5. Layout
+   ============================================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px 64px;
+}
+@media (max-width: 700px) {
+  .container { padding: 32px 18px 48px; }
+}
+/* Hero */
+.hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.hero__eyebrow {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.hero__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0 0 18px;
+}
+.hero__title span { color: var(--primary); }
+.hero__lead {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+/* Theme-Toggle */
+.theme-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: background 0.2s ease;
+}
+.theme-btn:hover { background: var(--panel); }
+.theme-btn i { width: 18px; height: 18px; }
+/* Sektion / Glaskarte */
+.section {
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--section-color, var(--primary));
+}
+.section--tartaric { --section-color: var(--c-tartaric); }
+.section--hexose   { --section-color: var(--c-hexose); }
+.section--quiz     { --section-color: var(--c-quiz); }
+.section__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--glass-border);
+  flex-wrap: wrap;
+}
+.section__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--section-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section__icon i {
+  width: 22px;
+  height: 22px;
+}
+.section__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+.section__lead {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 720px;
+  margin: 0 0 24px;
+}
+/* Zwei-Spalten-Grid für Fischer + 3D */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.column__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+/* Fischer-SVG */
+.fischer-svg .axis {
+  stroke: var(--text);
+  stroke-width: 3;
+}
+.fischer-svg .label-main {
+  fill: var(--text);
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+.fischer-svg .label-rs {
+  fill: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+.fischer-svg .label-rs tspan {
+  fill: var(--section-color);
+  font-weight: 600;
+}
+.fischer-svg .fischer-text {
+  cursor: pointer;
+  transition: fill 0.2s, font-weight 0.2s;
+  user-select: none;
+  fill: var(--text);
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+.fischer-svg .fischer-text:hover {
+  fill: var(--section-color);
+}
+/* 3D-Container */
+.canvas-container {
+  width: 100%;
+  height: 400px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(226, 232, 240, 0.6), rgba(203, 213, 225, 0.5));
+  border: 1px solid var(--glass-border);
+  cursor: grab;
+  touch-action: none;
+}
+body.dark .canvas-container {
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.5));
+}
+.canvas-container:active {
+  cursor: grabbing;
+}
+/* Nomenklatur-Box */
+.nomenclature {
+  margin-top: 28px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  text-align: center;
+}
+.nomenclature__label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.nomenclature__name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn:hover {
+  background: var(--glass-bg);
+}
+.btn i {
+  width: 16px;
+  height: 16px;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(26, 111, 181, 0.25);
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: var(--c-quiz);
+  color: #fff;
+  border-color: var(--c-quiz);
+}
+.btn-secondary:hover {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+/* Quiz */
+.quiz-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.quiz-canvas-wrap {
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  width: 340px;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.quiz-cross {
+  color: var(--text);
+}
+.quiz-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 240px;
+  max-width: 100%;
+}
+.btn-quiz {
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-quiz:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+.btn-quiz--r { background: var(--primary); }
+.btn-quiz--s { background: var(--c-quiz); }
+.btn-skip {
+  margin-top: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  transition: color 0.2s ease;
+}
+.btn-skip:hover {
+  color: var(--text);
+}
+.btn-skip i {
+  width: 14px;
+  height: 14px;
+}
+.feedback {
+  margin-top: 28px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+  border: 1px solid;
+  display: none;
+}
+.feedback.show {
+  display: block;
+}
+.feedback--ok {
+  background: rgba(22, 163, 74, 0.10);
+  border-color: rgba(22, 163, 74, 0.35);
+  color: #15803d;
+}
+body.dark .feedback--ok {
+  color: #4ade80;
+}
+.feedback--err {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #b91c1c;
+}
+body.dark .feedback--err {
+  color: #fca5a5;
+}
+.feedback strong {
+  color: inherit;
+}
+/* ============================================================
+   6. Legal-Bar + Modale
+   ============================================================ */
+.legal-bar {
+  margin-top: 16px;
+  padding: 20px 32px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-top: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.legal-bar__links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.legal-bar a {
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.legal-bar a:hover {
+  color: var(--primary);
+}
+.legal-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.legal-modal.show {
+  display: flex;
+}
+.legal-modal__box {
+  background: var(--surface-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+  position: relative;
+  color: var(--text);
+}
+.legal-modal__box h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 0 0 16px;
+}
+.legal-modal__box h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 18px 0 6px;
+}
+.legal-modal__box p {
+  margin: 0 0 8px;
+  line-height: 1.6;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+.legal-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.legal-modal__close:hover {
+  background: var(--panel);
+}
+.legal-modal__close i {
+  width: 18px;
+  height: 18px;
+}
+/* Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
 </head>
-<body class="p-6 md:p-10 max-w-7xl mx-auto space-y-12">
-
-    <header class="text-center space-y-4">
-        <h1 class="text-4xl font-bold text-slate-800 flex justify-center items-center gap-3">
-            <i data-lucide="flask-conical" class="w-10 h-10 text-blue-600"></i>
-            Stereochemie Trainer
-        </h1>
-        <p class="text-slate-600 max-w-3xl mx-auto">Klicke auf die OH/H-Gruppen in der Fischer-Projektion, um ihre Positionen zu tauschen. Das thermodynamisch stabilste 3D-Modell (mit exakten 109,5° bzw. 120° Bindungswinkeln), die R/S-Konfiguration und die Nomenklatur werden in Echtzeit berechnet.</p>
-    </header>
-
-    <!-- Modul 1: Weinsäure -->
-    <section class="glass-panel rounded-2xl p-6 md:p-8 mt-8">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-2">
-            <i data-lucide="microscope" class="text-blue-600"></i> Weinsäure-Konfigurator
-        </h2>
-        
-        <div class="grid md:grid-cols-2 gap-8 items-center">
-            <!-- Fischer Projektion -->
-            <div class="flex flex-col items-center">
-                <h3 class="text-lg font-semibold mb-4 text-slate-700">Fischer-Projektion</h3>
-                <svg width="200" height="300" viewBox="0 0 200 300" class="overflow-visible">
-                    <line x1="100" y1="40" x2="100" y2="260" stroke="#333" stroke-width="3"/>
-                    <line x1="40" y1="110" x2="160" y2="110" stroke="#333" stroke-width="3"/>
-                    <line x1="40" y1="190" x2="160" y2="190" stroke="#333" stroke-width="3"/>
-
-                    <text x="100" y="30" text-anchor="middle" font-size="20" fill="#333" font-weight="bold">COOH</text>
-                    <text x="100" y="285" text-anchor="middle" font-size="20" fill="#333" font-weight="bold">COOH</text>
-                    
-                    <text x="100" y="105" text-anchor="middle" font-size="14" fill="#666">C2 <tspan id="tartaric-c2-rs" fill="#2563eb"></tspan></text>
-                    <text x="100" y="185" text-anchor="middle" font-size="14" fill="#666">C3 <tspan id="tartaric-c3-rs" fill="#2563eb"></tspan></text>
-
-                    <text id="tartaric-c2-left" x="30" y="117" text-anchor="end" font-size="22" class="fischer-text" onclick="toggleTartaric(2)">HO</text>
-                    <text id="tartaric-c2-right" x="170" y="117" text-anchor="start" font-size="22" class="fischer-text" onclick="toggleTartaric(2)">H</text>
-                    
-                    <text id="tartaric-c3-left" x="30" y="197" text-anchor="end" font-size="22" class="fischer-text" onclick="toggleTartaric(3)">H</text>
-                    <text id="tartaric-c3-right" x="170" y="197" text-anchor="start" font-size="22" class="fischer-text" onclick="toggleTartaric(3)">OH</text>
-                </svg>
-            </div>
-
-            <!-- 3D Viewport -->
-            <div class="flex flex-col items-center w-full">
-                <h3 class="text-lg font-semibold mb-4 text-slate-700">3D-Zick-Zack-Modell (Frei drehbar)</h3>
-                <div id="canvas-tartaric" class="canvas-container"></div>
-            </div>
-        </div>
-        
-        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-            <p class="text-sm text-blue-600 uppercase tracking-wider font-semibold mb-1">Nomenklatur</p>
-            <p id="tartaric-name" class="text-2xl font-bold text-slate-800"></p>
-        </div>
-    </section>
-
-    <!-- Modul 2: Hexosen -->
-    <section class="glass-panel rounded-2xl p-6 md:p-8">
-        <div class="flex flex-col md:flex-row justify-between items-center border-b pb-2 mb-6 gap-4">
-            <h2 class="text-2xl font-bold flex items-center gap-2">
-                <i data-lucide="hexagon" class="text-green-600"></i> Aldohexosen
-            </h2>
-            <button id="btn-hex-form" onclick="toggleHexoseForm()" class="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg font-semibold transition flex items-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Zyklisch zeigen
-            </button>
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-8 items-center">
-            <div class="flex flex-col items-center">
-                <h3 class="text-lg font-semibold mb-4 text-slate-700">Fischer-Projektion</h3>
-                <svg width="200" height="420" viewBox="0 0 200 420" class="overflow-visible">
-                    <line x1="100" y1="40" x2="100" y2="380" stroke="#333" stroke-width="3"/>
-                    
-                    <line x1="40" y1="100" x2="160" y2="100" stroke="#333" stroke-width="3"/>
-                    <line x1="40" y1="160" x2="160" y2="160" stroke="#333" stroke-width="3"/>
-                    <line x1="40" y1="220" x2="160" y2="220" stroke="#333" stroke-width="3"/>
-                    <line x1="40" y1="280" x2="160" y2="280" stroke="#333" stroke-width="3"/>
-
-                    <text x="100" y="30" text-anchor="middle" font-size="20" fill="#333" font-weight="bold">CHO</text>
-                    <text x="100" y="405" text-anchor="middle" font-size="20" fill="#333" font-weight="bold">CH₂OH</text>
-                    
-                    <text x="100" y="95" text-anchor="middle" font-size="12" fill="#666">C2 <tspan id="hexose-c2-rs" fill="#16a34a"></tspan></text>
-                    <text x="100" y="155" text-anchor="middle" font-size="12" fill="#666">C3 <tspan id="hexose-c3-rs" fill="#16a34a"></tspan></text>
-                    <text x="100" y="215" text-anchor="middle" font-size="12" fill="#666">C4 <tspan id="hexose-c4-rs" fill="#16a34a"></tspan></text>
-                    <text x="100" y="275" text-anchor="middle" font-size="12" fill="#666">C5 <tspan id="hexose-c5-rs" fill="#16a34a"></tspan></text>
-
-                    <text id="hexose-c2-left" x="30" y="107" text-anchor="end" font-size="20" class="fischer-text" onclick="toggleHexose(2)">H</text>
-                    <text id="hexose-c2-right" x="170" y="107" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(2)">OH</text>
-                    
-                    <text id="hexose-c3-left" x="30" y="167" text-anchor="end" font-size="20" class="fischer-text" onclick="toggleHexose(3)">HO</text>
-                    <text id="hexose-c3-right" x="170" y="167" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(3)">H</text>
-
-                    <text id="hexose-c4-left" x="30" y="227" text-anchor="end" font-size="20" class="fischer-text" onclick="toggleHexose(4)">H</text>
-                    <text id="hexose-c4-right" x="170" y="227" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(4)">OH</text>
-
-                    <text id="hexose-c5-left" x="30" y="287" text-anchor="end" font-size="20" class="fischer-text" onclick="toggleHexose(5)">H</text>
-                    <text id="hexose-c5-right" x="170" y="287" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(5)">OH</text>
-                </svg>
-            </div>
-
-            <div class="flex flex-col items-center w-full">
-                <h3 id="hexose-3d-title" class="text-lg font-semibold mb-4 text-slate-700">3D-Modell (Frei drehbar)</h3>
-                <div id="canvas-hexose" class="canvas-container"></div>
-            </div>
-        </div>
-
-        <div class="mt-8 bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <p class="text-sm text-green-700 uppercase tracking-wider font-semibold mb-1">Nomenklatur</p>
-            <p id="hexose-name" class="text-2xl font-bold text-slate-800"></p>
-        </div>
-    </section>
-
-    <!-- Modul 3: Quiz -->
-    <section class="glass-panel rounded-2xl p-6 md:p-8 mb-12 border-t-4 border-indigo-500">
-        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-            <i data-lucide="help-circle" class="text-indigo-600"></i> R/S Nomenklatur Quiz
-        </h2>
-        <p class="text-slate-600 mb-8 max-w-3xl">Bestimme die absolute Konfiguration (R oder S) des gezeigten chiralen Zentrums anhand der CIP-Regeln. Erinnere dich an die Fischer-Regel: Steht die Gruppe mit der niedrigsten Priorität horizontal, dreht sich das Ergebnis um!</p>
-        
-        <div class="flex flex-col md:flex-row gap-12 items-center justify-center">
-            <div class="bg-white p-4 rounded-xl shadow-inner border relative w-full md:w-auto flex justify-center">
-                <svg width="100%" height="240" viewBox="0 0 340 340" class="overflow-visible" style="max-width: 340px;">
-                    <line x1="170" y1="60" x2="170" y2="280" stroke="#333" stroke-width="3"/>
-                    <line x1="60" y1="170" x2="280" y2="170" stroke="#333" stroke-width="3"/>
-                    
-                    <text id="quiz-top" x="170" y="45" text-anchor="middle" font-size="24" font-weight="bold" fill="#1e293b"></text>
-                    <text id="quiz-bottom" x="170" y="310" text-anchor="middle" font-size="24" font-weight="bold" fill="#1e293b"></text>
-                    <text id="quiz-left" x="45" y="178" text-anchor="end" font-size="24" font-weight="bold" fill="#1e293b"></text>
-                    <text id="quiz-right" x="295" y="178" text-anchor="start" font-size="24" font-weight="bold" fill="#1e293b"></text>
-                    
-                    <circle cx="170" cy="170" r="5" fill="#ef4444" />
-                </svg>
-            </div>
-
-            <div class="flex flex-col gap-4 w-full md:w-64">
-                <button onclick="checkQuizAnswer('R')" class="py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                    Es ist (R)
-                </button>
-                <button onclick="checkQuizAnswer('S')" class="py-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xl font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                    Es ist (S)
-                </button>
-                <button onclick="generateQuiz()" class="mt-4 py-2 text-slate-500 hover:text-slate-800 transition text-sm flex items-center justify-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Überspringen / Neu
-                </button>
-            </div>
-        </div>
-
-        <div id="quiz-feedback" class="mt-8 hidden p-4 rounded-lg text-center font-medium text-lg border"></div>
-    </section>
-
-    <script>
-        lucide.createIcons();
-
-        let hexoseForm = 'linear';
-
-        function toggleHexoseForm() {
-            hexoseForm = hexoseForm === 'linear' ? 'cyclic' : 'linear';
-            document.getElementById('btn-hex-form').innerHTML = hexoseForm === 'linear' 
-                ? '<i data-lucide="refresh-cw" class="w-4 h-4"></i> Zyklisch zeigen' 
-                : '<i data-lucide="minus" class="w-4 h-4"></i> Offenkettig zeigen';
-            document.getElementById('hexose-3d-title').textContent = hexoseForm === 'linear' 
-                ? '3D-Zick-Zack-Modell (Frei drehbar)'
-                : '3D-Pyranose Sessel (Frei drehbar)';
-            lucide.createIcons();
-            rebuildHexose3D();
-        }
-
-        /* --- 3D ENGINE & EXAKTE WINKEL BERECHNUNG --- */
-        const atomRadii = { C: 0.3, O: 0.3, H: 0.2 };
-        const atomColors = { C: 0x333333, O: 0xef4444, H: 0xffffff };
-
-        function init3DScene(containerId) {
-            const container = document.getElementById(containerId);
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 12;
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(5, 5, 5);
-            scene.add(dirLight);
-
-            const group = new THREE.Group();
-            scene.add(group);
-
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
-            
-            container.addEventListener('mousedown', () => { isDragging = true; });
-            window.addEventListener('mouseup', () => { isDragging = false; });
-            window.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
-                    group.rotation.y += deltaMove.x * 0.01;
-                    group.rotation.x += deltaMove.y * 0.01;
-                }
-                previousMousePosition = { x: e.offsetX, y: e.offsetY };
-            });
-
-            container.addEventListener('touchstart', (e) => { 
-                isDragging = true; 
-                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            });
-            window.addEventListener('touchend', () => { isDragging = false; });
-            window.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    const deltaMove = { x: e.touches[0].clientX - previousMousePosition.x, y: e.touches[0].clientY - previousMousePosition.y };
-                    group.rotation.y += deltaMove.x * 0.01;
-                    group.rotation.x += deltaMove.y * 0.01;
-                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                }
-            });
-
-            const animate = function () {
-                requestAnimationFrame(animate);
-                if (!isDragging) group.rotation.y += 0.005;
-                renderer.render(scene, camera);
-            };
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-
-            return group;
-        }
-
-        function createAtom(type, pos) {
-            const r = atomRadii[type];
-            const geometry = new THREE.SphereGeometry(r, 32, 32);
-            const material = new THREE.MeshPhongMaterial({ color: atomColors[type], shininess: 60 });
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.copy(pos);
-            return sphere;
-        }
-
-        function createBond(p1, p2) {
-            const distance = p1.distanceTo(p2);
-            const geometry = new THREE.CylinderGeometry(0.1, 0.1, distance, 8);
-            const material = new THREE.MeshPhongMaterial({ color: 0xcccccc });
-            const cylinder = new THREE.Mesh(geometry, material);
-            cylinder.position.copy(p1).lerp(p2, 0.5);
-            cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), p2.clone().sub(p1).normalize());
-            return cylinder;
-        }
-
-        // Rotiert Vektor um die Z-Achse (Zur exakten Berechnung der 120° Winkel für sp2 Atome)
-        function rotateZ(v, angle) {
-            const cos = Math.cos(angle);
-            const sin = Math.sin(angle);
-            return new THREE.Vector3(v.x * cos - v.y * sin, v.x * sin + v.y * cos, v.z);
-        }
-
-        // Generiert 3 Vektoren, die mit dem Basisvektor einen exakten 109,5° Tetraeder aufspannen
-        function getTetrahedronVectors(baseVector) {
-            const v0 = baseVector.clone().normalize();
-            const temp = Math.abs(v0.x) > 0.5 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
-            const v1 = new THREE.Vector3().crossVectors(v0, temp).normalize();
-            const v2 = new THREE.Vector3().crossVectors(v0, v1).normalize();
-            
-            const z = -1/3;
-            const rReal = Math.sqrt(8)/3;
-            
-            const vecA = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal);
-            const vecB = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal * -0.5).addScaledVector(v2, rReal * Math.sin(Math.PI*2/3));
-            const vecC = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal * -0.5).addScaledVector(v2, rReal * Math.sin(Math.PI*4/3));
-            
-            const L = baseVector.length();
-            return [vecA.multiplyScalar(L), vecB.multiplyScalar(L), vecC.multiplyScalar(L)];
-        }
-
-        // Erzeugt ein H-Atom an einer OH-Gruppe (exakter Tetraederwinkel vom C-Atom aus betrachtet)
-        function makeOH(cPos, oPos, atomsArr, bondsArr) {
-            const vCO = cPos.clone().sub(oPos);
-            const dirs = getTetrahedronVectors(vCO);
-            // Nutze die erste Tetraederrichtung für das H-Atom (etwas kürzere Bindung)
-            const hPos = oPos.clone().add(dirs[0].normalize().multiplyScalar(0.8)); 
-            atomsArr.push({pos: hPos, type: 'H'});
-            bondsArr.push([oPos, hPos]);
-        }
-
-        /* --- MATHEMATISCHER R/S LÖSER --- */
-        function getRS(c_pos, p1, p2, p3, p4) {
-            const sorted = [p1, p2, p3, p4].sort((a,b) => b.prio - a.prio); 
-            const v1 = sorted[0].pos.clone().sub(c_pos);
-            const v2 = sorted[1].pos.clone().sub(c_pos);
-            const v3 = sorted[2].pos.clone().sub(c_pos);
-            const v4 = sorted[3].pos.clone().sub(c_pos);
-            
-            const v1_4 = v1.clone().sub(v4);
-            const v2_4 = v2.clone().sub(v4);
-            const v3_4 = v3.clone().sub(v4);
-            const det = new THREE.Vector3().crossVectors(v1_4, v2_4).dot(v3_4);
-            return det < 0 ? 'R' : 'S';
-        }
-
-        function assignSubstituents(pos, p1, p2, slotA, slotB, subA, subB, targetRS) {
-            const rs1 = getRS(pos, p1, p2, {pos: slotA, prio: subA.prio}, {pos: slotB, prio: subB.prio});
-            if (rs1 === targetRS) {
-                return [{pos: slotA, ...subA}, {pos: slotB, ...subB}];
-            } else {
-                return [{pos: slotB, ...subA}, {pos: slotA, ...subB}];
-            }
-        }
-
-        // Berechnet die exakten 109,5° Koordinaten für die Substituenten im Zick-Zack-Modell
-        const S_SCALE = 1.0;
-        const dx = 0.577 * S_SCALE;
-        const dy = 0.816 * S_SCALE;
-
-        function getLinearSlots(pos) {
-            const dirX = pos.x < 0 ? -1 : 1;
-            return {
-                a: pos.clone().add(new THREE.Vector3(dirX * 2*dx, 0, 2*dy)),
-                b: pos.clone().add(new THREE.Vector3(dirX * 2*dx, 0, -2*dy))
-            };
-        }
-
-        // Berechnet exakte 109,5° Sessel-Positionen inkl. axialer und äquatorialer Ausrichtung
-        function getChairSlots(pos, prevPos, nextPos, isUp) {
-            const vPrev = prevPos.clone().sub(pos);
-            const vNext = nextPos.clone().sub(pos);
-            const L = vPrev.length(); 
-            const vAx = new THREE.Vector3(0, isUp ? L : -L, 0);
-            
-            // Die 4 Vektoren am Tetraeder müssen sich aufheben, um exakt 109,5° zu erzielen
-            const vEq = new THREE.Vector3().subVectors(new THREE.Vector3(0,0,0), vAx).sub(vPrev).sub(vNext);
-            vEq.normalize().multiplyScalar(L);
-            
-            return {
-                ax: pos.clone().add(vAx),
-                eq: pos.clone().add(vEq)
-            };
-        }
-
-
-        /* --- MODUL 1: WEINSÄURE --- */
-        let tartaricState = { c2OhRight: false, c3OhRight: true }; 
-        const tartaricGroup = init3DScene('canvas-tartaric');
-
-        window.toggleTartaric = function(carbon) {
-            if (carbon === 2) tartaricState.c2OhRight = !tartaricState.c2OhRight;
-            if (carbon === 3) tartaricState.c3OhRight = !tartaricState.c3OhRight;
-            updateTartaric();
-        };
-
-        function updateTartaric() {
-            document.getElementById('tartaric-c2-left').textContent = tartaricState.c2OhRight ? "H" : "HO";
-            document.getElementById('tartaric-c2-right').textContent = tartaricState.c2OhRight ? "OH" : "H";
-            document.getElementById('tartaric-c3-left').textContent = tartaricState.c3OhRight ? "H" : "HO";
-            document.getElementById('tartaric-c3-right').textContent = tartaricState.c3OhRight ? "OH" : "H";
-
-            const c2Rs = tartaricState.c2OhRight ? "R" : "S";
-            const c3Rs = tartaricState.c3OhRight ? "S" : "R";
-            
-            document.getElementById('tartaric-c2-rs').textContent = `(${c2Rs})`;
-            document.getElementById('tartaric-c3-rs').textContent = `(${c3Rs})`;
-
-            let name = "";
-            if (c2Rs === "S" && c3Rs === "S") name = "(2S, 3S)-Weinsäure | D-(-)-Weinsäure";
-            else if (c2Rs === "R" && c3Rs === "R") name = "(2R, 3R)-Weinsäure | L-(+)-Weinsäure";
-            else name = `(2${c2Rs}, 3${c3Rs})-Weinsäure | meso-Weinsäure`;
-            document.getElementById('tartaric-name').textContent = name;
-
-            rebuildTartaric3D();
-        }
-
-        function rebuildTartaric3D() {
-            while(tartaricGroup.children.length > 0) tartaricGroup.remove(tartaricGroup.children[0]); 
-
-            const c1 = new THREE.Vector3(dx, 3*dy, 0); 
-            const c2 = new THREE.Vector3(-dx, dy, 0);
-            const c3 = new THREE.Vector3(dx, -dy, 0);
-            const c4 = new THREE.Vector3(-dx, -3*dy, 0);
-
-            const atoms = []; const bonds = [];
-            [c1, c2, c3, c4].forEach(p => atoms.push({pos: p, type: 'C'}));
-            bonds.push([c1, c2], [c2, c3], [c3, c4]);
-
-            // COOH Top (Exakte 120° Ausrichtung für C=O und C-OH)
-            const vC1C2 = new THREE.Vector3(-2*dx, -2*dy, 0);
-            const o1A = c1.clone().add(rotateZ(vC1C2, Math.PI * 2 / 3)); // 120°
-            const o1B = c1.clone().add(rotateZ(vC1C2, -Math.PI * 2 / 3)); // -120°
-            atoms.push({pos: o1A, type: 'O'}, {pos: o1B, type: 'O'});
-            bonds.push([c1, o1A], [c1, o1B]);
-            makeOH(c1, o1B, atoms, bonds);
-
-            // COOH Bot (Exakte 120° Ausrichtung)
-            const vC4C3 = new THREE.Vector3(2*dx, 2*dy, 0);
-            const o4A = c4.clone().add(rotateZ(vC4C3, Math.PI * 2 / 3)); // 120°
-            const o4B = c4.clone().add(rotateZ(vC4C3, -Math.PI * 2 / 3)); // -120°
-            atoms.push({pos: o4A, type: 'O'}, {pos: o4B, type: 'O'});
-            bonds.push([c4, o4A], [c4, o4B]);
-            makeOH(c4, o4B, atoms, bonds);
-
-            // C2 Substituenten
-            const rsC2 = tartaricState.c2OhRight ? "R" : "S";
-            const slotC2 = getLinearSlots(c2);
-            const sub2 = assignSubstituents(c2, {pos:c1, prio:3}, {pos:c3, prio:2}, slotC2.a, slotC2.b, {type:'O', prio:4, isOH:true}, {type:'H', prio:1}, rsC2);
-            sub2.forEach(s => { 
-                atoms.push(s); bonds.push([c2, s.pos]); 
-                if(s.isOH) makeOH(c2, s.pos, atoms, bonds);
-            });
-
-            // C3 Substituenten
-            const rsC3 = tartaricState.c3OhRight ? "S" : "R";
-            const slotC3 = getLinearSlots(c3);
-            const sub3 = assignSubstituents(c3, {pos:c2, prio:3}, {pos:c4, prio:2}, slotC3.a, slotC3.b, {type:'O', prio:4, isOH:true}, {type:'H', prio:1}, rsC3);
-            sub3.forEach(s => { 
-                atoms.push(s); bonds.push([c3, s.pos]); 
-                if(s.isOH) makeOH(c3, s.pos, atoms, bonds);
-            });
-
-            atoms.forEach(a => tartaricGroup.add(createAtom(a.type, a.pos)));
-            bonds.forEach(b => tartaricGroup.add(createBond(b[0], b[1])));
-        }
-
-        /* --- MODUL 2: HEXOSEN --- */
-        let hexoseState = { c2: true, c3: false, c4: true, c5: true }; // D-Glucose
-        const hexoseGroup = init3DScene('canvas-hexose');
-
-        window.toggleHexose = function(c) {
-            hexoseState[`c${c}`] = !hexoseState[`c${c}`];
-            updateHexose();
-        };
-
-        function updateHexose() {
-            [2, 3, 4, 5].forEach(c => {
-                const isRight = hexoseState[`c${c}`];
-                document.getElementById(`hexose-c${c}-left`).textContent = isRight ? "H" : "HO";
-                document.getElementById(`hexose-c${c}-right`).textContent = isRight ? "OH" : "H";
-                document.getElementById(`hexose-c${c}-rs`).textContent = `(${isRight ? "R" : "S"})`;
-            });
-
-            const boolStr = `${+hexoseState.c2}${+hexoseState.c3}${+hexoseState.c4}${+hexoseState.c5}`;
-            const isD = hexoseState.c5;
-            let pattern = boolStr;
-            if (!isD) pattern = `${+!hexoseState.c2}${+!hexoseState.c3}${+!hexoseState.c4}1`;
-
-            const names = {
-                '1111': 'Allose', '0111': 'Altrose', '1011': 'Glucose', '0011': 'Mannose',
-                '1101': 'Gulose', '0101': 'Idose', '1001': 'Galactose', '0001': 'Talose'
-            };
-
-            const baseName = names[pattern] || 'Unbekannt';
-            const dlPrefix = isD ? 'D' : 'L';
-            const prefixAll = [2,3,4,5].map(c => ` ${c}${hexoseState[`c${c}`] ? "R" : "S"}`).join(',');
-
-            document.getElementById('hexose-name').textContent = `(${prefixAll.trim()})-${dlPrefix}-${baseName}`;
-            
-            rebuildHexose3D();
-        }
-
-        function rebuildHexose3D() {
-            while(hexoseGroup.children.length > 0) hexoseGroup.remove(hexoseGroup.children[0]);
-            const atoms = []; const bonds = [];
-
-            if (hexoseForm === 'linear') {
-                const coords = [
-                    new THREE.Vector3( dx,  5*dy, 0), // C1
-                    new THREE.Vector3(-dx,  3*dy, 0), // C2
-                    new THREE.Vector3( dx,   dy, 0), // C3
-                    new THREE.Vector3(-dx,  -dy, 0), // C4
-                    new THREE.Vector3( dx, -3*dy, 0), // C5
-                    new THREE.Vector3(-dx, -5*dy, 0)  // C6
-                ];
-                coords.forEach(p => atoms.push({pos: p, type: 'C'}));
-                for(let i=0; i<5; i++) bonds.push([coords[i], coords[i+1]]);
-
-                // C1 (CHO) - Trigonal Planar (120°)
-                const vC1C2 = new THREE.Vector3(-2*dx, -2*dy, 0);
-                const o1 = coords[0].clone().add(rotateZ(vC1C2, Math.PI * 2 / 3)); // 120°
-                const h1 = coords[0].clone().add(rotateZ(vC1C2, -Math.PI * 2 / 3)); // -120°
-                atoms.push({pos: o1, type: 'O'}); bonds.push([coords[0], o1]);
-                atoms.push({pos: h1, type: 'H'}); bonds.push([coords[0], h1]);
-
-                // C6 (CH2OH) - Tetraedrisch (109.5°)
-                const slotsC6 = getLinearSlots(coords[5]);
-                const posC7 = coords[5].clone().add(new THREE.Vector3(2*dx, -2*dy, 0)); // Exakte Tetraederposition für das 4. Bein
-                
-                atoms.push({pos: posC7, type: 'O'}); bonds.push([coords[5], posC7]);
-                makeOH(coords[5], posC7, atoms, bonds);
-                atoms.push({pos: slotsC6.a, type: 'H'}); bonds.push([coords[5], slotsC6.a]);
-                atoms.push({pos: slotsC6.b, type: 'H'}); bonds.push([coords[5], slotsC6.b]);
-
-                [2, 3, 4, 5].forEach((c, idx) => {
-                    const pos = coords[idx + 1];
-                    const rsTarget = hexoseState[`c${c}`] ? "R" : "S";
-                    const slots = getLinearSlots(pos);
-                    const subs = assignSubstituents(pos, {pos:coords[idx], prio:3}, {pos:coords[idx+2], prio:2}, slots.a, slots.b, {type:'O', prio:4, isOH:true}, {type:'H', prio:1}, rsTarget);
-                    subs.forEach(s => { 
-                        atoms.push(s); bonds.push([pos, s.pos]); 
-                        if(s.isOH) makeOH(pos, s.pos, atoms, bonds);
-                    });
-                });
-
-            } else {
-                // Zyklisch: Pyranose Sessel (Mathematisch korrekter Sessel mit 109,5° Winkeln)
-                const R = 1.4;
-                const h = 0.25; // Exakter vertikaler Offset für 109,5° bei R=1.4
-                const ringAtoms = [];
-                for(let i=0; i<6; i++) {
-                    const angle = i * Math.PI / 3;
-                    ringAtoms.push(new THREE.Vector3( R * Math.cos(angle), (i%2==0 ? h : -h), R * Math.sin(angle) ));
-                }
-                const rotMatrix = new THREE.Matrix4().makeRotationX(0.2);
-                ringAtoms.forEach(v => v.applyMatrix4(rotMatrix));
-
-                const [O5, C1, C2, C3, C4, C5] = ringAtoms;
-                atoms.push({pos: O5, type: 'O'});
-                [C1, C2, C3, C4, C5].forEach(c => atoms.push({pos: c, type: 'C'}));
-                bonds.push([O5, C1], [C1, C2], [C2, C3], [C3, C4], [C4, C5], [C5, O5]);
-
-                // C2..C4
-                [
-                    {cIdx: 2, pos: C2, p1: C1, p2: C3, isUp: true},
-                    {cIdx: 3, pos: C3, p1: C2, p2: C4, isUp: false},
-                    {cIdx: 4, pos: C4, p1: C3, p2: C5, isUp: true}
-                ].forEach(item => {
-                    const rsTarget = hexoseState[`c${item.cIdx}`] ? "R" : "S";
-                    const slots = getChairSlots(item.pos, item.p1, item.p2, item.isUp);
-                    const subs = assignSubstituents(item.pos, {pos:item.p1, prio:3}, {pos:item.p2, prio:2}, slots.ax, slots.eq, {type:'O', prio:4, isOH:true}, {type:'H', prio:1}, rsTarget);
-                    subs.forEach(s => { 
-                        atoms.push(s); bonds.push([item.pos, s.pos]); 
-                        if(s.isOH) makeOH(item.pos, s.pos, atoms, bonds);
-                    });
-                });
-
-                // C5 (D/L bestimmt Position von C6) -> C5 hat in der Struktur isUp = false
-                const rsC5 = hexoseState.c5 ? "R" : "S";
-                const slotsC5 = getChairSlots(C5, C4, O5, false);
-                const subsC5 = assignSubstituents(C5, {pos:O5, prio:4}, {pos:C4, prio:3}, slotsC5.ax, slotsC5.eq, {type:'C', prio:2, isC6:true}, {type:'H', prio:1}, rsC5);
-                subsC5.forEach(s => {
-                    if (s.isC6) {
-                        atoms.push({pos: s.pos, type: 'C'}); bonds.push([C5, s.pos]);
-                        
-                        // C6 braucht 3 weitere Bindungen im perfekten Tetraeder (OH, H, H)
-                        const vC6C5 = C5.clone().sub(s.pos);
-                        const dirs = getTetrahedronVectors(vC6C5);
-                        
-                        const o6 = s.pos.clone().add(dirs[0]);
-                        const h6A = s.pos.clone().add(dirs[1]);
-                        const h6B = s.pos.clone().add(dirs[2]);
-                        
-                        atoms.push({pos: o6, type: 'O'}); bonds.push([s.pos, o6]);
-                        makeOH(s.pos, o6, atoms, bonds);
-                        atoms.push({pos: h6A, type: 'H'}); bonds.push([s.pos, h6A]);
-                        atoms.push({pos: h6B, type: 'H'}); bonds.push([s.pos, h6B]);
-                    } else {
-                        atoms.push(s); bonds.push([C5, s.pos]);
-                    }
-                });
-
-                // C1 (beta-Anomer => OH Äquatorial) -> C1 hat in der Struktur isUp = false
-                const slotsC1 = getChairSlots(C1, O5, C2, false);
-                atoms.push({pos: slotsC1.eq, type: 'O'}); bonds.push([C1, slotsC1.eq]);
-                makeOH(C1, slotsC1.eq, atoms, bonds);
-                atoms.push({pos: slotsC1.ax, type: 'H'}); bonds.push([C1, slotsC1.ax]);
-            }
-
-            // Rendering
-            atoms.forEach(a => hexoseGroup.add(createAtom(a.type, a.pos)));
-            bonds.forEach(b => hexoseGroup.add(createBond(b[0], b[1])));
-        }
-
-        /* --- MODUL 3: QUIZ --- */
-        const groupsPool = [
-            { id: 'Br', prio: 35 }, { id: 'Cl', prio: 17 }, { id: 'F',  prio: 9 }, { id: 'OH', prio: 8 },
-            { id: 'NH₂', prio: 7 }, { id: 'COOH', prio: 6.3 }, { id: 'CHO', prio: 6.2 }, 
-            { id: 'CH₂OH', prio: 6.1 }, { id: 'CH₃', prio: 6.0 }, { id: 'H',  prio: 1 }
-        ];
-
-        let currentQuizAnswer = '';
-        let currentQuizGroups = [];
-
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-            }
-            return array;
-        }
-
-        window.generateQuiz = function() {
-            document.getElementById('quiz-feedback').classList.add('hidden');
-            const selected = shuffle([...groupsPool]).slice(0, 4);
-            currentQuizGroups = selected;
-            
-            document.getElementById('quiz-top').textContent = selected[0].id;
-            document.getElementById('quiz-right').textContent = selected[1].id;
-            document.getElementById('quiz-bottom').textContent = selected[2].id;
-            document.getElementById('quiz-left').textContent = selected[3].id;
-
-            const sorted = [...selected].sort((a, b) => b.prio - a.prio);
-            const getIndex = (rank) => selected.findIndex(g => g.id === sorted[rank-1].id);
-            
-            const i1 = getIndex(1); const i2 = getIndex(2); const i3 = getIndex(3); const i4 = getIndex(4);
-            const isHorizontal = (i4 === 1 || i4 === 3);
-
-            let isCW = false;
-            const d1 = (i2 - i1 + 4) % 4;
-            const d2 = (i3 - i2 + 4) % 4;
-            
-            if (d1 === 1 && d2 === 1) isCW = true; 
-            else if (d1 === 1 && d2 === 2) isCW = true; 
-            else if (d1 === 2 && d2 === 1) isCW = true; 
-            
-            let finalResult = isCW ? 'R' : 'S';
-            if (isHorizontal) finalResult = (finalResult === 'R') ? 'S' : 'R';
-            currentQuizAnswer = finalResult;
-        };
-
-        window.checkQuizAnswer = function(answer) {
-            const fb = document.getElementById('quiz-feedback');
-            fb.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'border-green-300', 'bg-red-100', 'text-red-800', 'border-red-300');
-            
-            const sorted = [...currentQuizGroups].sort((a, b) => b.prio - a.prio);
-            const lowestGroup = sorted[3];
-            const lowestIndex = currentQuizGroups.findIndex(g => g.id === lowestGroup.id);
-            const isHoriz = (lowestIndex === 1 || lowestIndex === 3);
-
-            if (answer === currentQuizAnswer) {
-                fb.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
-                fb.innerHTML = `<strong>Richtig! Es ist (${currentQuizAnswer}).</strong><br> Die Gruppe niedrigster Priorität (${lowestGroup.id}) steht ${isHoriz ? 'horizontal (Ergebnis umgekehrt)' : 'vertikal (Ergebnis bleibt)'}.`;
-                setTimeout(generateQuiz, 3000);
-            } else {
-                fb.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
-                fb.innerHTML = `<strong>Falsch! Es ist (${currentQuizAnswer}).</strong><br> Prüfe die Prioritäten: 1:${sorted[0].id}, 2:${sorted[1].id}, 3:${sorted[2].id}.<br>Die Gruppe ${lowestGroup.id} (Prio 4) steht ${isHoriz ? 'horizontal (Ergebnis dreht sich um!)' : 'vertikal'}.`;
-            }
-        };
-
-        // Init App
-        updateTartaric();
-        updateHexose();
-        generateQuiz();
-
-    </script>
+<body>
+<!-- Hintergrund-Blobs -->
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+<!-- Theme-Toggle -->
+<button class="theme-btn" onclick="toggleTheme()" aria-label="Farbschema wechseln">
+  <i data-lucide="moon" id="theme-icon"></i>
+</button>
+<div class="container">
+  <!-- Hero -->
+  <header class="hero reveal">
+    <div class="hero__eyebrow">interaktiv</div>
+    <h1 class="hero__title">Stereochemie-<span>Trainer</span></h1>
+    <p class="hero__lead">
+      Klicke auf die OH/H-Gruppen in der Fischer-Projektion, um ihre Positionen zu tauschen.
+      Ein räumliches 3D-Modell, die R/S-Konfiguration und die Nomenklatur werden in Echtzeit berechnet.
+    </p>
+  </header>
+  <!-- ===================== MODUL 1: WEINSÄURE ===================== -->
+  <section class="section section--tartaric reveal">
+    <div class="section__head">
+      <div class="section__icon"><i data-lucide="microscope"></i></div>
+      <h2 class="section__title">Weinsäure-Konfigurator</h2>
+    </div>
+    <div class="grid-2">
+      <div class="column">
+        <h3 class="column__title">Fischer-Projektion</h3>
+        <svg class="fischer-svg" width="200" height="300" viewBox="0 0 200 300" style="overflow: visible;">
+          <line class="axis" x1="100" y1="40"  x2="100" y2="260"/>
+          <line class="axis" x1="40"  y1="110" x2="160" y2="110"/>
+          <line class="axis" x1="40"  y1="190" x2="160" y2="190"/>
+          <text class="label-main" x="100" y="30"  text-anchor="middle" font-size="20">COOH</text>
+          <text class="label-main" x="100" y="285" text-anchor="middle" font-size="20">COOH</text>
+          <text class="label-rs" x="100" y="105" text-anchor="middle" font-size="14">C<tspan dy="3" font-size="11">2</tspan><tspan dy="-3"> </tspan><tspan id="tartaric-c2-rs"></tspan></text>
+          <text class="label-rs" x="100" y="185" text-anchor="middle" font-size="14">C<tspan dy="3" font-size="11">3</tspan><tspan dy="-3"> </tspan><tspan id="tartaric-c3-rs"></tspan></text>
+          <text id="tartaric-c2-left"  x="30"  y="117" text-anchor="end"   font-size="22" class="fischer-text" onclick="toggleTartaric(2)">HO</text>
+          <text id="tartaric-c2-right" x="170" y="117" text-anchor="start" font-size="22" class="fischer-text" onclick="toggleTartaric(2)">H</text>
+          <text id="tartaric-c3-left"  x="30"  y="197" text-anchor="end"   font-size="22" class="fischer-text" onclick="toggleTartaric(3)">H</text>
+          <text id="tartaric-c3-right" x="170" y="197" text-anchor="start" font-size="22" class="fischer-text" onclick="toggleTartaric(3)">OH</text>
+        </svg>
+      </div>
+      <div class="column">
+        <h3 class="column__title">3D-Zick-Zack-Modell</h3>
+        <div id="canvas-tartaric" class="canvas-container"></div>
+      </div>
+    </div>
+    <div class="nomenclature">
+      <div class="nomenclature__label">Nomenklatur</div>
+      <div id="tartaric-name" class="nomenclature__name"></div>
+    </div>
+  </section>
+  <!-- ===================== MODUL 2: HEXOSEN ===================== -->
+  <section class="section section--hexose reveal">
+    <div class="section__head">
+      <div class="section__icon"><i data-lucide="hexagon"></i></div>
+      <h2 class="section__title">Aldohexosen</h2>
+      <button id="btn-hex-form" onclick="toggleHexoseForm()" class="btn">
+        <i data-lucide="refresh-cw"></i>
+        <span id="btn-hex-form-text">Zyklisch zeigen</span>
+      </button>
+    </div>
+    <div class="grid-2">
+      <div class="column">
+        <h3 class="column__title">Fischer-Projektion</h3>
+        <svg class="fischer-svg" width="200" height="420" viewBox="0 0 200 420" style="overflow: visible;">
+          <line class="axis" x1="100" y1="40"  x2="100" y2="380"/>
+          <line class="axis" x1="40"  y1="100" x2="160" y2="100"/>
+          <line class="axis" x1="40"  y1="160" x2="160" y2="160"/>
+          <line class="axis" x1="40"  y1="220" x2="160" y2="220"/>
+          <line class="axis" x1="40"  y1="280" x2="160" y2="280"/>
+          <text class="label-main" x="100" y="30"  text-anchor="middle" font-size="20">CHO</text>
+          <text class="label-main" x="100" y="405" text-anchor="middle" font-size="20">CH<tspan dy="4" font-size="14">2</tspan><tspan dy="-4">OH</tspan></text>
+          <text class="label-rs" x="100" y="95"  text-anchor="middle" font-size="12">C<tspan dy="3" font-size="9">2</tspan><tspan dy="-3"> </tspan><tspan id="hexose-c2-rs"></tspan></text>
+          <text class="label-rs" x="100" y="155" text-anchor="middle" font-size="12">C<tspan dy="3" font-size="9">3</tspan><tspan dy="-3"> </tspan><tspan id="hexose-c3-rs"></tspan></text>
+          <text class="label-rs" x="100" y="215" text-anchor="middle" font-size="12">C<tspan dy="3" font-size="9">4</tspan><tspan dy="-3"> </tspan><tspan id="hexose-c4-rs"></tspan></text>
+          <text class="label-rs" x="100" y="275" text-anchor="middle" font-size="12">C<tspan dy="3" font-size="9">5</tspan><tspan dy="-3"> </tspan><tspan id="hexose-c5-rs"></tspan></text>
+          <text id="hexose-c2-left"  x="30"  y="107" text-anchor="end"   font-size="20" class="fischer-text" onclick="toggleHexose(2)">H</text>
+          <text id="hexose-c2-right" x="170" y="107" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(2)">OH</text>
+          <text id="hexose-c3-left"  x="30"  y="167" text-anchor="end"   font-size="20" class="fischer-text" onclick="toggleHexose(3)">HO</text>
+          <text id="hexose-c3-right" x="170" y="167" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(3)">H</text>
+          <text id="hexose-c4-left"  x="30"  y="227" text-anchor="end"   font-size="20" class="fischer-text" onclick="toggleHexose(4)">H</text>
+          <text id="hexose-c4-right" x="170" y="227" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(4)">OH</text>
+          <text id="hexose-c5-left"  x="30"  y="287" text-anchor="end"   font-size="20" class="fischer-text" onclick="toggleHexose(5)">H</text>
+          <text id="hexose-c5-right" x="170" y="287" text-anchor="start" font-size="20" class="fischer-text" onclick="toggleHexose(5)">OH</text>
+        </svg>
+      </div>
+      <div class="column">
+        <h3 id="hexose-3d-title" class="column__title">3D-Zick-Zack-Modell</h3>
+        <div id="canvas-hexose" class="canvas-container"></div>
+      </div>
+    </div>
+    <div class="nomenclature">
+      <div class="nomenclature__label">Nomenklatur</div>
+      <div id="hexose-name" class="nomenclature__name"></div>
+    </div>
+  </section>
+  <!-- ===================== MODUL 3: QUIZ ===================== -->
+  <section class="section section--quiz reveal">
+    <div class="section__head">
+      <div class="section__icon"><i data-lucide="help-circle"></i></div>
+      <h2 class="section__title">R/S-Nomenklatur-Quiz</h2>
+    </div>
+    <p class="section__lead">
+      Bestimme die absolute Konfiguration (R oder S) des gezeigten chiralen Zentrums anhand
+      der CIP-Regeln. Erinnere dich an die Fischer-Regel: Steht die Gruppe mit der
+      niedrigsten Priorität horizontal, dreht sich das Ergebnis um.
+    </p>
+    <div class="quiz-grid">
+      <div class="quiz-canvas-wrap">
+        <svg class="quiz-cross" width="100%" height="240" viewBox="0 0 340 340" style="overflow: visible; max-width: 340px;">
+          <line x1="170" y1="60" x2="170" y2="280" stroke="currentColor" stroke-width="3"/>
+          <line x1="60"  y1="170" x2="280" y2="170" stroke="currentColor" stroke-width="3"/>
+          <text id="quiz-top"    x="170" y="45"  text-anchor="middle" font-size="24" font-weight="700" fill="currentColor"></text>
+          <text id="quiz-bottom" x="170" y="310" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor"></text>
+          <text id="quiz-left"   x="45"  y="178" text-anchor="end"    font-size="24" font-weight="700" fill="currentColor"></text>
+          <text id="quiz-right"  x="295" y="178" text-anchor="start"  font-size="24" font-weight="700" fill="currentColor"></text>
+          <circle cx="170" cy="170" r="5" fill="#ef4444"/>
+        </svg>
+      </div>
+      <div class="quiz-controls">
+        <button onclick="checkQuizAnswer('R')" class="btn-quiz btn-quiz--r">Es ist (R)</button>
+        <button onclick="checkQuizAnswer('S')" class="btn-quiz btn-quiz--s">Es ist (S)</button>
+        <button onclick="generateQuiz()" class="btn-skip">
+          <i data-lucide="refresh-cw"></i> Überspringen / Neu
+        </button>
+      </div>
+    </div>
+    <div id="quiz-feedback" class="feedback"></div>
+  </section>
+  <!-- Legal-Bar -->
+  <div class="legal-bar">
+    <div>© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
+    <div class="legal-bar__links">
+      <a onclick="openLegal('impressum')">Impressum</a>
+      <a onclick="openLegal('datenschutz')">Datenschutz</a>
+      <a href="index.html">Übersicht</a>
+    </div>
+  </div>
+</div>
+<!-- Modal: Impressum -->
+<div class="legal-modal" id="modal-impressum" onclick="if(event.target===this)closeLegal()">
+  <div class="legal-modal__box">
+    <button class="legal-modal__close" onclick="closeLegal()" aria-label="Schließen"><i data-lucide="x"></i></button>
+    <h2>Impressum</h2>
+    <h3>Verantwortlich für den Inhalt</h3>
+    <p>Dr. Claus Unterberg<br>Gymnasium Thomaeum Kempen<br>Am Gymnasium 4<br>47906 Kempen</p>
+    <h3>Kontakt</h3>
+    <p>E-Mail: unterberg [at] thomaeum.de</p>
+    <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+    <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
+    <h3>Urheberrecht</h3>
+    <p>Die auf dieser Seite veröffentlichten Anwendungen sind urheberrechtlich geschützt. Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht; eine darüber hinausgehende Verwendung bedarf der vorherigen Zustimmung.</p>
+    <h3>Haftung für Inhalte und Links</h3>
+    <p>Die Inhalte dieser Seite wurden mit Sorgfalt zusammengestellt. Für ihre Richtigkeit, Vollständigkeit und Aktualität kann jedoch keine Gewähr übernommen werden. Für die Inhalte verlinkter externer Seiten ist deren Betreiber verantwortlich.</p>
+  </div>
+</div>
+<!-- Modal: Datenschutz -->
+<div class="legal-modal" id="modal-datenschutz" onclick="if(event.target===this)closeLegal()">
+  <div class="legal-modal__box">
+    <button class="legal-modal__close" onclick="closeLegal()" aria-label="Schließen"><i data-lucide="x"></i></button>
+    <h2>Datenschutzerklärung</h2>
+    <h3>Allgemeines</h3>
+    <p>Diese Seite ist bewusst datensparsam aufgebaut. Sie verwendet keine Cookies, kein Tracking, keine externen Schriftdienste, keine externen Content-Delivery-Netzwerke und keine eingebetteten Inhalte von Drittanbietern. Alle Schriftarten und Skripte werden direkt vom Hostserver ausgeliefert.</p>
+    <h3>Zugriffsdaten und Hosting</h3>
+    <p>Diese Seite wird über GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite werden durch den Hosting-Anbieter technisch notwendige Zugriffsdaten verarbeitet (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, übertragene Datenmenge, Browsertyp). Die Verarbeitung erfolgt zur Bereitstellung und Absicherung des Dienstes auf Grundlage des berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO. Eine Verknüpfung mit anderen Datenquellen durch den Betreiber dieser Seite findet nicht statt.</p>
+    <h3>Lokale Verarbeitung in der Anwendung</h3>
+    <p>Diese Anwendung verarbeitet alle Eingaben ausschließlich lokal im Browser. Es werden keine Daten an einen Server übertragen. Beim Schließen der Seite werden die Eingaben nicht gespeichert.</p>
+    <h3>Rechte der betroffenen Personen</h3>
+    <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch gemäß Art. 15 ff. DSGVO. Wenden Sie sich dazu bitte an die im Impressum angegebene Kontaktadresse. Es besteht zudem ein Beschwerderecht bei der Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen.</p>
+  </div>
+</div>
+<!-- Lokale Bibliotheken aus dem vorhandenen fonts-Ordner -->
+<script src="fonts/three.min.js"></script>
+<script src="fonts/lucide.min.js"></script>
+<script>
+/* ============================================================
+   Hilfen: Lucide / Theme / Modale / Reveal
+   ============================================================ */
+function safeLucide() {
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    try { lucide.createIcons(); } catch(e) {}
+  }
+}
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  const icon = document.getElementById('theme-icon');
+  icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  safeLucide();
+}
+function openLegal(which) {
+  document.getElementById('modal-' + which).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLegal() {
+  document.querySelectorAll('.legal-modal').forEach(m => m.classList.remove('show'));
+  document.body.style.overflow = '';
+}
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLegal();
+});
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+/* ============================================================
+   Grundlogik
+   ============================================================ */
+let hexoseForm = 'linear';
+window.toggleHexoseForm = function() {
+  hexoseForm = hexoseForm === 'linear' ? 'cyclic' : 'linear';
+  document.getElementById('btn-hex-form-text').textContent =
+    hexoseForm === 'linear' ? 'Zyklisch zeigen' : 'Offenkettig zeigen';
+  document.getElementById('hexose-3d-title').textContent =
+    hexoseForm === 'linear' ? '3D-Zick-Zack-Modell' : '3D-Pyranose-Sessel';
+  rebuildHexose3D();
+};
+/* --- 3D ENGINE --- */
+const atomRadii = { C: 0.3, O: 0.3, H: 0.2 };
+const atomColors = { C: 0x333333, O: 0xef4444, H: 0xffffff };
+function init3DScene(containerId) {
+  if (typeof THREE === 'undefined') {
+    throw new Error('Three.js wurde nicht geladen. Prüfe den Pfad fonts/three.min.js.');
+  }
+  const container = document.getElementById(containerId);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = 12;
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  container.appendChild(renderer.domElement);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 5, 5);
+  scene.add(dirLight);
+  const group = new THREE.Group();
+  scene.add(group);
+  let isDragging = false;
+  let previousPointerPosition = { x: 0, y: 0 };
+  function startDrag(x, y) {
+    isDragging = true;
+    previousPointerPosition = { x, y };
+  }
+  function moveDrag(x, y) {
+    if (!isDragging) return;
+    const deltaMove = {
+      x: x - previousPointerPosition.x,
+      y: y - previousPointerPosition.y
+    };
+    group.rotation.y += deltaMove.x * 0.01;
+    group.rotation.x += deltaMove.y * 0.01;
+    previousPointerPosition = { x, y };
+  }
+  function endDrag() {
+    isDragging = false;
+  }
+  container.addEventListener('mousedown', (e) => {
+    startDrag(e.clientX, e.clientY);
+  });
+  window.addEventListener('mousemove', (e) => {
+    moveDrag(e.clientX, e.clientY);
+  });
+  window.addEventListener('mouseup', endDrag);
+  container.addEventListener('touchstart', (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    e.preventDefault();
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  container.addEventListener('touchmove', (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    if (isDragging) e.preventDefault();
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  window.addEventListener('touchend', endDrag);
+  window.addEventListener('touchcancel', endDrag);
+  const animate = function () {
+    requestAnimationFrame(animate);
+    if (!isDragging) group.rotation.y += 0.005;
+    renderer.render(scene, camera);
+  };
+  animate();
+  window.addEventListener('resize', () => {
+    if (!container.clientWidth || !container.clientHeight) return;
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+  return group;
+}
+function createAtom(type, pos) {
+  const r = atomRadii[type];
+  const geometry = new THREE.SphereGeometry(r, 32, 32);
+  const material = new THREE.MeshPhongMaterial({ color: atomColors[type], shininess: 60 });
+  const sphere = new THREE.Mesh(geometry, material);
+  sphere.position.copy(pos);
+  return sphere;
+}
+function createBond(p1, p2) {
+  const distance = p1.distanceTo(p2);
+  const geometry = new THREE.CylinderGeometry(0.1, 0.1, distance, 8);
+  const material = new THREE.MeshPhongMaterial({ color: 0xcccccc });
+  const cylinder = new THREE.Mesh(geometry, material);
+  cylinder.position.copy(p1).lerp(p2, 0.5);
+  cylinder.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    p2.clone().sub(p1).normalize()
+  );
+  return cylinder;
+}
+function rotateZ(v, angle) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return new THREE.Vector3(v.x * cos - v.y * sin, v.x * sin + v.y * cos, v.z);
+}
+function getTetrahedronVectors(baseVector) {
+  const v0 = baseVector.clone().normalize();
+  const temp = Math.abs(v0.x) > 0.5 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  const v1 = new THREE.Vector3().crossVectors(v0, temp).normalize();
+  const v2 = new THREE.Vector3().crossVectors(v0, v1).normalize();
+  const z = -1/3;
+  const rReal = Math.sqrt(8)/3;
+  const vecA = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal);
+  const vecB = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal * -0.5).addScaledVector(v2, rReal * Math.sin(Math.PI * 2 / 3));
+  const vecC = new THREE.Vector3().addScaledVector(v0, z).addScaledVector(v1, rReal * -0.5).addScaledVector(v2, rReal * Math.sin(Math.PI * 4 / 3));
+  const L = baseVector.length();
+  return [vecA.multiplyScalar(L), vecB.multiplyScalar(L), vecC.multiplyScalar(L)];
+}
+function makeOH(cPos, oPos, atomsArr, bondsArr) {
+  const vCO = cPos.clone().sub(oPos);
+  const dirs = getTetrahedronVectors(vCO);
+  const hPos = oPos.clone().add(dirs[0].normalize().multiplyScalar(0.8));
+  atomsArr.push({ pos: hPos, type: 'H' });
+  bondsArr.push([oPos, hPos]);
+}
+/* --- R/S-Löser für 3D-Zuweisung --- */
+function getRS(c_pos, p1, p2, p3, p4) {
+  const sorted = [p1, p2, p3, p4].sort((a, b) => b.prio - a.prio);
+  const v1 = sorted[0].pos.clone().sub(c_pos);
+  const v2 = sorted[1].pos.clone().sub(c_pos);
+  const v3 = sorted[2].pos.clone().sub(c_pos);
+  const v4 = sorted[3].pos.clone().sub(c_pos);
+  const v1_4 = v1.clone().sub(v4);
+  const v2_4 = v2.clone().sub(v4);
+  const v3_4 = v3.clone().sub(v4);
+  const det = new THREE.Vector3().crossVectors(v1_4, v2_4).dot(v3_4);
+  return det < 0 ? 'R' : 'S';
+}
+function assignSubstituents(pos, p1, p2, slotA, slotB, subA, subB, targetRS) {
+  const rs1 = getRS(pos, p1, p2, { pos: slotA, prio: subA.prio }, { pos: slotB, prio: subB.prio });
+  if (rs1 === targetRS) {
+    return [{ pos: slotA, ...subA }, { pos: slotB, ...subB }];
+  }
+  return [{ pos: slotB, ...subA }, { pos: slotA, ...subB }];
+}
+const S_SCALE = 1.0;
+const dx = 0.577 * S_SCALE;
+const dy = 0.816 * S_SCALE;
+function getLinearSlots(pos) {
+  const dirX = pos.x < 0 ? -1 : 1;
+  return {
+    a: pos.clone().add(new THREE.Vector3(dirX * 2 * dx, 0,  2 * dy)),
+    b: pos.clone().add(new THREE.Vector3(dirX * 2 * dx, 0, -2 * dy))
+  };
+}
+function getChairSlots(pos, prevPos, nextPos, isUp) {
+  const vPrev = prevPos.clone().sub(pos);
+  const vNext = nextPos.clone().sub(pos);
+  const L = vPrev.length();
+  const vAx = new THREE.Vector3(0, isUp ? L : -L, 0);
+  const vEq = new THREE.Vector3()
+    .subVectors(new THREE.Vector3(0, 0, 0), vAx)
+    .sub(vPrev)
+    .sub(vNext);
+  vEq.normalize().multiplyScalar(L);
+  return {
+    ax: pos.clone().add(vAx),
+    eq: pos.clone().add(vEq)
+  };
+}
+/* --- MODUL 1: WEINSÄURE --- */
+let tartaricState = { c2OhRight: false, c3OhRight: true };
+const tartaricGroup = init3DScene('canvas-tartaric');
+window.toggleTartaric = function(carbon) {
+  if (carbon === 2) tartaricState.c2OhRight = !tartaricState.c2OhRight;
+  if (carbon === 3) tartaricState.c3OhRight = !tartaricState.c3OhRight;
+  updateTartaric();
+};
+function updateTartaric() {
+  document.getElementById('tartaric-c2-left').textContent  = tartaricState.c2OhRight ? 'H'  : 'HO';
+  document.getElementById('tartaric-c2-right').textContent = tartaricState.c2OhRight ? 'OH' : 'H';
+  document.getElementById('tartaric-c3-left').textContent  = tartaricState.c3OhRight ? 'H'  : 'HO';
+  document.getElementById('tartaric-c3-right').textContent = tartaricState.c3OhRight ? 'OH' : 'H';
+  const c2Rs = tartaricState.c2OhRight ? 'R' : 'S';
+  const c3Rs = tartaricState.c3OhRight ? 'S' : 'R';
+  document.getElementById('tartaric-c2-rs').textContent = `(${c2Rs})`;
+  document.getElementById('tartaric-c3-rs').textContent = `(${c3Rs})`;
+  let name = '';
+  if (c2Rs === 'S' && c3Rs === 'S') {
+    name = '(2S, 3S)-Weinsäure | D-(−)-Weinsäure';
+  } else if (c2Rs === 'R' && c3Rs === 'R') {
+    name = '(2R, 3R)-Weinsäure | L-(+)-Weinsäure';
+  } else {
+    name = `(2${c2Rs}, 3${c3Rs})-Weinsäure | meso-Weinsäure`;
+  }
+  document.getElementById('tartaric-name').textContent = name;
+  rebuildTartaric3D();
+}
+function rebuildTartaric3D() {
+  while (tartaricGroup.children.length > 0) {
+    tartaricGroup.remove(tartaricGroup.children[0]);
+  }
+  const c1 = new THREE.Vector3( dx,  3 * dy, 0);
+  const c2 = new THREE.Vector3(-dx,      dy, 0);
+  const c3 = new THREE.Vector3( dx,     -dy, 0);
+  const c4 = new THREE.Vector3(-dx, -3 * dy, 0);
+  const atoms = [];
+  const bonds = [];
+  [c1, c2, c3, c4].forEach(p => atoms.push({ pos: p, type: 'C' }));
+  bonds.push([c1, c2], [c2, c3], [c3, c4]);
+  const vC1C2 = new THREE.Vector3(-2 * dx, -2 * dy, 0);
+  const o1A = c1.clone().add(rotateZ(vC1C2,  Math.PI * 2 / 3));
+  const o1B = c1.clone().add(rotateZ(vC1C2, -Math.PI * 2 / 3));
+  atoms.push({ pos: o1A, type: 'O' }, { pos: o1B, type: 'O' });
+  bonds.push([c1, o1A], [c1, o1B]);
+  makeOH(c1, o1B, atoms, bonds);
+  const vC4C3 = new THREE.Vector3(2 * dx, 2 * dy, 0);
+  const o4A = c4.clone().add(rotateZ(vC4C3,  Math.PI * 2 / 3));
+  const o4B = c4.clone().add(rotateZ(vC4C3, -Math.PI * 2 / 3));
+  atoms.push({ pos: o4A, type: 'O' }, { pos: o4B, type: 'O' });
+  bonds.push([c4, o4A], [c4, o4B]);
+  makeOH(c4, o4B, atoms, bonds);
+  const rsC2 = tartaricState.c2OhRight ? 'R' : 'S';
+  const slotC2 = getLinearSlots(c2);
+  const sub2 = assignSubstituents(
+    c2,
+    { pos: c1, prio: 3 },
+    { pos: c3, prio: 2 },
+    slotC2.a,
+    slotC2.b,
+    { type: 'O', prio: 4, isOH: true },
+    { type: 'H', prio: 1 },
+    rsC2
+  );
+  sub2.forEach(s => {
+    atoms.push(s);
+    bonds.push([c2, s.pos]);
+    if (s.isOH) makeOH(c2, s.pos, atoms, bonds);
+  });
+  const rsC3 = tartaricState.c3OhRight ? 'S' : 'R';
+  const slotC3 = getLinearSlots(c3);
+  const sub3 = assignSubstituents(
+    c3,
+    { pos: c2, prio: 3 },
+    { pos: c4, prio: 2 },
+    slotC3.a,
+    slotC3.b,
+    { type: 'O', prio: 4, isOH: true },
+    { type: 'H', prio: 1 },
+    rsC3
+  );
+  sub3.forEach(s => {
+    atoms.push(s);
+    bonds.push([c3, s.pos]);
+    if (s.isOH) makeOH(c3, s.pos, atoms, bonds);
+  });
+  atoms.forEach(a => tartaricGroup.add(createAtom(a.type, a.pos)));
+  bonds.forEach(b => tartaricGroup.add(createBond(b[0], b[1])));
+}
+/* --- MODUL 2: HEXOSEN --- */
+let hexoseState = { c2: true, c3: false, c4: true, c5: true };
+const hexoseGroup = init3DScene('canvas-hexose');
+window.toggleHexose = function(c) {
+  hexoseState[`c${c}`] = !hexoseState[`c${c}`];
+  updateHexose();
+};
+function updateHexose() {
+  [2, 3, 4, 5].forEach(c => {
+    const isRight = hexoseState[`c${c}`];
+    document.getElementById(`hexose-c${c}-left`).textContent  = isRight ? 'H' : 'HO';
+    document.getElementById(`hexose-c${c}-right`).textContent = isRight ? 'OH' : 'H';
+    document.getElementById(`hexose-c${c}-rs`).textContent = `(${isRight ? 'R' : 'S'})`;
+  });
+  const isD = hexoseState.c5;
+  let pattern = `${+hexoseState.c2}${+hexoseState.c3}${+hexoseState.c4}${+hexoseState.c5}`;
+  if (!isD) {
+    pattern = `${+!hexoseState.c2}${+!hexoseState.c3}${+!hexoseState.c4}1`;
+  }
+  const names = {
+    '1111': 'Allose',
+    '0111': 'Altrose',
+    '1011': 'Glucose',
+    '0011': 'Mannose',
+    '1101': 'Gulose',
+    '0101': 'Idose',
+    '1001': 'Galactose',
+    '0001': 'Talose'
+  };
+  const baseName = names[pattern] || 'Unbekannt';
+  const dlPrefix = isD ? 'D' : 'L';
+  const prefixAll = [2, 3, 4, 5].map(c => ` ${c}${hexoseState[`c${c}`] ? 'R' : 'S'}`).join(',');
+  document.getElementById('hexose-name').textContent = `(${prefixAll.trim()})-${dlPrefix}-${baseName}`;
+  rebuildHexose3D();
+}
+function rebuildHexose3D() {
+  while (hexoseGroup.children.length > 0) {
+    hexoseGroup.remove(hexoseGroup.children[0]);
+  }
+  const atoms = [];
+  const bonds = [];
+  if (hexoseForm === 'linear') {
+    const coords = [
+      new THREE.Vector3( dx,  5 * dy, 0),
+      new THREE.Vector3(-dx,  3 * dy, 0),
+      new THREE.Vector3( dx,      dy, 0),
+      new THREE.Vector3(-dx,     -dy, 0),
+      new THREE.Vector3( dx, -3 * dy, 0),
+      new THREE.Vector3(-dx, -5 * dy, 0)
+    ];
+    coords.forEach(p => atoms.push({ pos: p, type: 'C' }));
+    for (let i = 0; i < 5; i++) bonds.push([coords[i], coords[i + 1]]);
+    const vC1C2 = new THREE.Vector3(-2 * dx, -2 * dy, 0);
+    const o1 = coords[0].clone().add(rotateZ(vC1C2,  Math.PI * 2 / 3));
+    const h1 = coords[0].clone().add(rotateZ(vC1C2, -Math.PI * 2 / 3));
+    atoms.push({ pos: o1, type: 'O' });
+    bonds.push([coords[0], o1]);
+    atoms.push({ pos: h1, type: 'H' });
+    bonds.push([coords[0], h1]);
+    const slotsC6 = getLinearSlots(coords[5]);
+    const posC7 = coords[5].clone().add(new THREE.Vector3(2 * dx, -2 * dy, 0));
+    atoms.push({ pos: posC7, type: 'O' });
+    bonds.push([coords[5], posC7]);
+    makeOH(coords[5], posC7, atoms, bonds);
+    atoms.push({ pos: slotsC6.a, type: 'H' });
+    bonds.push([coords[5], slotsC6.a]);
+    atoms.push({ pos: slotsC6.b, type: 'H' });
+    bonds.push([coords[5], slotsC6.b]);
+    [2, 3, 4, 5].forEach((c, idx) => {
+      const pos = coords[idx + 1];
+      const rsTarget = hexoseState[`c${c}`] ? 'R' : 'S';
+      const slots = getLinearSlots(pos);
+      const subs = assignSubstituents(
+        pos,
+        { pos: coords[idx], prio: 3 },
+        { pos: coords[idx + 2], prio: 2 },
+        slots.a,
+        slots.b,
+        { type: 'O', prio: 4, isOH: true },
+        { type: 'H', prio: 1 },
+        rsTarget
+      );
+      subs.forEach(s => {
+        atoms.push(s);
+        bonds.push([pos, s.pos]);
+        if (s.isOH) makeOH(pos, s.pos, atoms, bonds);
+      });
+    });
+  } else {
+    const R = 1.4;
+    const h = 0.25;
+    const ringAtoms = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = i * Math.PI / 3;
+      ringAtoms.push(new THREE.Vector3(
+        R * Math.cos(angle),
+        (i % 2 === 0 ? h : -h),
+        R * Math.sin(angle)
+      ));
+    }
+    const rotMatrix = new THREE.Matrix4().makeRotationX(0.2);
+    ringAtoms.forEach(v => v.applyMatrix4(rotMatrix));
+    const [O5, C1, C2, C3, C4, C5] = ringAtoms;
+    atoms.push({ pos: O5, type: 'O' });
+    [C1, C2, C3, C4, C5].forEach(c => atoms.push({ pos: c, type: 'C' }));
+    bonds.push([O5, C1], [C1, C2], [C2, C3], [C3, C4], [C4, C5], [C5, O5]);
+    [
+      { cIdx: 2, pos: C2, p1: C1, p2: C3, isUp: true },
+      { cIdx: 3, pos: C3, p1: C2, p2: C4, isUp: false },
+      { cIdx: 4, pos: C4, p1: C3, p2: C5, isUp: true }
+    ].forEach(item => {
+      const rsTarget = hexoseState[`c${item.cIdx}`] ? 'R' : 'S';
+      const slots = getChairSlots(item.pos, item.p1, item.p2, item.isUp);
+      const subs = assignSubstituents(
+        item.pos,
+        { pos: item.p1, prio: 3 },
+        { pos: item.p2, prio: 2 },
+        slots.ax,
+        slots.eq,
+        { type: 'O', prio: 4, isOH: true },
+        { type: 'H', prio: 1 },
+        rsTarget
+      );
+      subs.forEach(s => {
+        atoms.push(s);
+        bonds.push([item.pos, s.pos]);
+        if (s.isOH) makeOH(item.pos, s.pos, atoms, bonds);
+      });
+    });
+    const rsC5 = hexoseState.c5 ? 'R' : 'S';
+    const slotsC5 = getChairSlots(C5, C4, O5, false);
+    const subsC5 = assignSubstituents(
+      C5,
+      { pos: O5, prio: 4 },
+      { pos: C4, prio: 3 },
+      slotsC5.ax,
+      slotsC5.eq,
+      { type: 'C', prio: 2, isC6: true },
+      { type: 'H', prio: 1 },
+      rsC5
+    );
+    subsC5.forEach(s => {
+      if (s.isC6) {
+        atoms.push({ pos: s.pos, type: 'C' });
+        bonds.push([C5, s.pos]);
+        const vC6C5 = C5.clone().sub(s.pos);
+        const dirs = getTetrahedronVectors(vC6C5);
+        const o6  = s.pos.clone().add(dirs[0]);
+        const h6A = s.pos.clone().add(dirs[1]);
+        const h6B = s.pos.clone().add(dirs[2]);
+        atoms.push({ pos: o6, type: 'O' });
+        bonds.push([s.pos, o6]);
+        makeOH(s.pos, o6, atoms, bonds);
+        atoms.push({ pos: h6A, type: 'H' });
+        bonds.push([s.pos, h6A]);
+        atoms.push({ pos: h6B, type: 'H' });
+        bonds.push([s.pos, h6B]);
+      } else {
+        atoms.push(s);
+        bonds.push([C5, s.pos]);
+      }
+    });
+    const slotsC1 = getChairSlots(C1, O5, C2, false);
+    atoms.push({ pos: slotsC1.eq, type: 'O' });
+    bonds.push([C1, slotsC1.eq]);
+    makeOH(C1, slotsC1.eq, atoms, bonds);
+    atoms.push({ pos: slotsC1.ax, type: 'H' });
+    bonds.push([C1, slotsC1.ax]);
+  }
+  atoms.forEach(a => hexoseGroup.add(createAtom(a.type, a.pos)));
+  bonds.forEach(b => hexoseGroup.add(createBond(b[0], b[1])));
+}
+/* --- MODUL 3: QUIZ --- */
+const groupsPool = [
+  { id: 'Br', prio: 35 },
+  { id: 'Cl', prio: 17 },
+  { id: 'F',  prio: 9 },
+  { id: 'OH', prio: 8 },
+  { id: 'NH₂', prio: 7 },
+  { id: 'COOH', prio: 6.3 },
+  { id: 'CHO', prio: 6.2 },
+  { id: 'CH₂OH', prio: 6.1 },
+  { id: 'CH₃', prio: 6.0 },
+  { id: 'H',  prio: 1 }
+];
+let currentQuizAnswer = '';
+let currentQuizGroups = [];
+function shuffle(array) {
+  let currentIndex = array.length;
+  let randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+window.generateQuiz = function() {
+  const fb = document.getElementById('quiz-feedback');
+  fb.classList.remove('show', 'feedback--ok', 'feedback--err');
+  const selected = shuffle([...groupsPool]).slice(0, 4);
+  currentQuizGroups = selected;
+  document.getElementById('quiz-top').textContent    = selected[0].id;
+  document.getElementById('quiz-right').textContent  = selected[1].id;
+  document.getElementById('quiz-bottom').textContent = selected[2].id;
+  document.getElementById('quiz-left').textContent   = selected[3].id;
+  const sorted = [...selected].sort((a, b) => b.prio - a.prio);
+  const getIndex = (rank) => selected.findIndex(g => g.id === sorted[rank - 1].id);
+  const i1 = getIndex(1);
+  const i2 = getIndex(2);
+  const i3 = getIndex(3);
+  const i4 = getIndex(4);
+  const positions = [
+    { x: 0,  y: -1 }, // oben
+    { x: 1,  y: 0  }, // rechts
+    { x: 0,  y: 1  }, // unten
+    { x: -1, y: 0  }  // links
+  ];
+  const p1 = positions[i1];
+  const p2 = positions[i2];
+  const p3 = positions[i3];
+  const signedArea =
+    (p2.x - p1.x) * (p3.y - p1.y) -
+    (p2.y - p1.y) * (p3.x - p1.x);
+  let finalResult = signedArea > 0 ? 'R' : 'S';
+  const isHorizontal = (i4 === 1 || i4 === 3);
+  if (isHorizontal) {
+    finalResult = finalResult === 'R' ? 'S' : 'R';
+  }
+  currentQuizAnswer = finalResult;
+};
+window.checkQuizAnswer = function(answer) {
+  const fb = document.getElementById('quiz-feedback');
+  fb.classList.remove('feedback--ok', 'feedback--err');
+  fb.classList.add('show');
+  const sorted = [...currentQuizGroups].sort((a, b) => b.prio - a.prio);
+  const lowestGroup = sorted[3];
+  const lowestIndex = currentQuizGroups.findIndex(g => g.id === lowestGroup.id);
+  const isHoriz = (lowestIndex === 1 || lowestIndex === 3);
+  if (answer === currentQuizAnswer) {
+    fb.classList.add('feedback--ok');
+    fb.innerHTML = `<strong>Richtig. Es ist (${currentQuizAnswer}).</strong><br>Die Gruppe niedrigster Priorität (${lowestGroup.id}) steht ${isHoriz ? 'horizontal. Das Ergebnis wird deshalb umgekehrt.' : 'vertikal. Das Ergebnis bleibt deshalb erhalten.'}`;
+    setTimeout(generateQuiz, 3000);
+  } else {
+    fb.classList.add('feedback--err');
+    fb.innerHTML = `<strong>Falsch. Es ist (${currentQuizAnswer}).</strong><br>Prüfe die Prioritäten: 1: ${sorted[0].id}, 2: ${sorted[1].id}, 3: ${sorted[2].id}.<br>Die Gruppe ${lowestGroup.id} mit Priorität 4 steht ${isHoriz ? 'horizontal. Das Ergebnis wird deshalb umgekehrt.' : 'vertikal.'}`;
+  }
+};
+/* --- Init App --- */
+safeLucide();
+updateTartaric();
+updateHexose();
+generateQuiz();
+</script>
 </body>
 </html>
