@@ -1490,6 +1490,7 @@ function buildGeneratedPool() {
 let consentGiven = false;
 let currentQuestion = null;
 let currentOptions = [];
+let imageSkipAttempts = 0;
 let answered = false;
 let score = 0;
 let total = 0;
@@ -1544,6 +1545,28 @@ async function fetchMolecule(mol) {
 
   moleculeCache.set(cacheKey, data);
   return { ...mol, ...data };
+}
+
+function testImageUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    let finished = false;
+
+    const done = (ok) => {
+      if (finished) return;
+      finished = true;
+      resolve(ok);
+    };
+
+    img.onload = () => {
+      const hasSize = (img.naturalWidth || 0) > 20 && (img.naturalHeight || 0) > 20;
+      done(hasSize);
+    };
+    img.onerror = () => done(false);
+
+    setTimeout(() => done(false), 4500);
+    img.src = url;
+  });
 }
 
 function shuffle(array) {
@@ -1659,6 +1682,26 @@ async function newQuestion() {
 
   try {
     const correct = await fetchMolecule(correctBase);
+    const imageWorks = await testImageUrl(correct.imageUrl);
+
+    if (!imageWorks) {
+      imageSkipAttempts += 1;
+      feedback.className = 'feedback';
+      feedback.textContent = `Kein verwertbares Strukturbild gefunden. Aufgabe wird übersprungen ... (${imageSkipAttempts})`;
+
+      if (imageSkipAttempts >= 12) {
+        imageSkipAttempts = 0;
+        feedback.className = 'feedback err';
+        feedback.innerHTML = '<strong>Mehrere Moleküle konnten kein Strukturbild liefern.</strong><br>Bitte wähle weniger exotische Stoffklassen oder versuche es später erneut.';
+        setLoading(false);
+        return;
+      }
+
+      setTimeout(newQuestion, 80);
+      return;
+    }
+
+    imageSkipAttempts = 0;
 
     currentQuestion = correct;
     currentOptions = shuffle([correctBase, ...distractorBases].map(d => ({
@@ -1681,6 +1724,7 @@ async function newQuestion() {
     safeLucide();
   }
 }
+
 
 function renderQuestion(mol, options) {
   document.getElementById('badge-class').textContent = mol.cls;
@@ -1745,7 +1789,8 @@ function answerQuestion(opt, btn) {
     btn.classList.add('correct');
     const feedback = document.getElementById('feedback');
     feedback.className = 'feedback ok';
-    feedback.innerHTML = `<strong>Richtig.</strong><br>${correctOption.text} ist der gesuchte internationale Name. Die adaptive Schwierigkeit steigt langsam.`;
+    feedback.innerHTML = `<strong>Richtig.</strong><br>${correctOption.text} ist der gesuchte internationale Name. Nächste Aufgabe folgt automatisch ...`;
+    setTimeout(newQuestion, 500);
   } else {
     streak = 0;
     difficultyScore = clamp(difficultyScore - DOWN_STEP, MIN_LEVEL, MAX_LEVEL);
