@@ -1,531 +1,847 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wechselstrom-Simulator · RLC parallel und RLC Reihe</title>
-<style>
-:root{
-  --bg:#0b1220;--panel:rgba(30,41,59,.82);--panel2:rgba(15,23,42,.9);
-  --border:rgba(255,255,255,.12);--text:#e2e8f0;--muted:#94a3b8;
-  --blue:#3b82f6;--red:#ef4444;--green:#22c55e;--orange:#fb923c;
-  --violet:#a78bfa;--yellow:#facc15;--cyan:#2dd4bf;--accent:#38bdf8;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--text);
-  background:radial-gradient(circle at 0 0,rgba(56,189,248,.22),transparent 35%),
-             radial-gradient(circle at 100% 40%,rgba(124,58,237,.24),transparent 35%),
-             var(--bg);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-header{
-  flex:0 0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;
-  gap:18px;background:rgba(15,23,42,.72);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);
-}
-h1{font-size:1.35rem;margin:0;font-weight:900;letter-spacing:-.02em}
-.sub{color:var(--muted);font-size:.86rem;margin-top:3px}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.86rem}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-main{
-  flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
-  padding:16px;display:flex;flex-direction:column;gap:16px;scroll-padding-bottom:260px;
-}
-.row{display:flex;gap:16px;min-height:420px;flex:0 0 auto}
-.panel{
-  background:var(--panel);border:1px solid var(--border);border-radius:18px;
-  box-shadow:0 10px 35px rgba(0,0,0,.35);position:relative;overflow:hidden;
-}
-#phasorPanel{width:35%;min-width:300px;display:none}
-#scopePanel{flex:1}
-.label{
-  position:absolute;top:12px;left:16px;z-index:2;color:var(--muted);font-weight:800;
-  letter-spacing:.14em;text-transform:uppercase;font-size:.74rem
-}
-.canvasBox{position:absolute;inset:0;padding-top:0}
-canvas{width:100%;height:100%;display:block}
-.floatLegend{
-  position:absolute;z-index:4;background:rgba(15,23,42,.92);border:1px solid var(--border);
-  border-radius:12px;padding:10px 12px;font-size:.82rem;line-height:1.55;box-shadow:0 8px 20px rgba(0,0,0,.35)
-}
-#mainPhasorLegend{right:14px;top:54px;display:none}
-#partLegend{left:14px;bottom:14px;display:none}
-.timeHint{
-  position:absolute;right:14px;top:54px;z-index:4;
-  background:rgba(15,23,42,.88);border:1px solid var(--border);
-  border-radius:12px;padding:8px 10px;font-size:.78rem;color:var(--muted);
-}
-.bar{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
-#extra{display:none;grid-template-columns:minmax(340px,.9fr) minmax(340px,1.1fr);gap:16px;min-height:360px;flex:0 0 auto}
-#extra.show{display:grid}
-.info{padding:18px;overflow:auto}
-.info h2{margin:0 0 14px;font-size:1.1rem}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(130px,1fr));gap:10px}
-.card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px}
-.card small{display:block;color:var(--muted);font-size:.72rem;margin-bottom:5px}
-.card strong{font-size:1rem;color:var(--accent)}
-.formula{margin-top:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--muted);line-height:1.55;font-size:.88rem}
-.formula b,.formula code{color:var(--text)}
-footer{
-  flex:0 0 auto;max-height:42vh;overflow:auto;-webkit-overflow-scrolling:touch;
-  padding:18px 24px;background:rgba(15,23,42,.8);backdrop-filter:blur(18px);border-top:1px solid var(--border)
-}
-.controls{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:24px;max-width:1300px;margin:0 auto}
-.group{display:flex;flex-direction:column;gap:10px}
-.glabel{color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.12em;font-size:.72rem}
-.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:6px}
-button{
-  border:1px solid transparent;border-radius:10px;padding:10px 12px;background:transparent;color:var(--muted);
-  cursor:pointer;font:inherit;font-weight:700
-}
-button:hover{background:rgba(255,255,255,.06);color:var(--text)}
-button.active,.primary{background:var(--accent);color:white}
-.phase{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
-#phaseOut{font-size:1.18rem;color:var(--accent);font-weight:900}
-.hint{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--muted);font-size:.86rem;line-height:1.5}
-.rlcGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
-.field{display:flex;flex-direction:column;gap:4px}
-.field label{color:var(--muted);font-size:.72rem}
-input[type=number]{
-  width:100%;border:1px solid var(--border);border-radius:10px;background:rgba(15,23,42,.6);
-  color:var(--accent);font-weight:800;font-size:1rem;padding:9px 10px;
-  cursor:ew-resize;touch-action:none;user-select:none
-}
-input[type=number].dragging{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(56,189,248,.18);
-  background:rgba(56,189,248,.10)
-}
-.toggleRow{display:flex;gap:8px;flex-wrap:wrap}
-.toggle{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
-.action{display:flex;gap:8px}
-.primary{flex:1;border:0}
-.secondary{width:44px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text)}
-.legal{flex:0 0 auto;padding:10px 24px;color:var(--muted);font-size:.8rem;background:rgba(15,23,42,.72);border-top:1px solid var(--border)}
-@media(max-width:1000px){
-  .row{flex-direction:column;min-height:auto}
-  #phasorPanel{width:100%;min-height:360px}
-  #scopePanel{min-height:380px}
-  #extra{grid-template-columns:1fr}
-  .controls{grid-template-columns:1fr}
-  footer{max-height:46vh}
-}
-</style>
-</head>
-<body>
-<header>
-  <div><h1>Wechselstrom-Simulator</h1><div class="sub">R, L, C, RLC-Parallelkreis und RLC-Reihenkreis</div></div>
-  <div class="legend">
-    <span><i class="dot" style="background:var(--blue)"></i>Spannung U</span>
-    <span><i class="dot" style="background:var(--red)"></i>Strom I</span>
-    <span id="topPower" style="opacity:.35"><i class="dot" style="background:var(--green)"></i>Leistung P</span>
-  </div>
-</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HQ-Matrix | Energiefluss-Kontrolle</title>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-<main id="scrollArea">
-  <section class="row">
-    <div id="phasorPanel" class="panel">
-      <div class="label">Zeigerdiagramm</div>
-      <div id="mainPhasorLegend" class="floatLegend">
-        <div><span class="bar" style="background:var(--blue)"></span>U: Spannung, blaue Kurve</div>
-        <div><span class="bar" style="background:var(--red)"></span>I: Strom, rote Kurve</div>
-      </div>
-      <div id="partLegend" class="floatLegend"></div>
-      <div class="canvasBox"><canvas id="phasor"></canvas></div>
-    </div>
-    <div id="scopePanel" class="panel">
-      <div class="label">Oszilloskop</div>
-      <div class="timeHint">rechts = jetzt · Verlauf läuft nach links</div>
-      <div class="canvasBox"><canvas id="scope"></canvas></div>
-    </div>
-  </section>
+  <style>
+    /* =========================================================================
+       1. LOKALE SCHRIFTEN EINBINDEN
+       ========================================================================= */
+    @font-face { font-family: 'Inter'; src: url('Fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url('Fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url('Fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Poppins'; src: url('Fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Poppins'; src: url('Fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Poppins'; src: url('Fonts/poppins-v24-latin-800.woff2') format('woff2'); font-weight: 800; font-style: normal; font-display: swap; }
 
-  <section id="extra">
-    <div class="panel">
-      <div class="label">Impedanzdiagramm RLC Reihe</div>
-      <div class="canvasBox"><canvas id="impedance"></canvas></div>
-    </div>
-    <div class="panel info">
-      <h2>Berechnung bei RLC in Reihe</h2>
-      <div class="grid">
-        <div class="card"><small>X<sub>L</sub> = ωL</small><strong id="outXL">0 Ω</strong></div>
-        <div class="card"><small>X<sub>C</sub> = 1/(ωC)</small><strong id="outXC">0 Ω</strong></div>
-        <div class="card"><small>X = X<sub>L</sub> − X<sub>C</sub></small><strong id="outX">0 Ω</strong></div>
-        <div class="card"><small>|Z| = √(R² + X²)</small><strong id="outZ">0 Ω</strong></div>
-        <div class="card"><small>I<sub>eff</sub> = U<sub>eff</sub> / |Z|</small><strong id="outI">0 A</strong></div>
-        <div class="card"><small>φ = arctan(X/R)</small><strong id="outPhi">0°</strong></div>
-        <div class="card"><small>Wirkleistung P = U I cos φ</small><strong id="outP">0 W</strong></div>
-        <div class="card"><small>Blindleistung Q = U I sin φ</small><strong id="outQ">0 var</strong></div>
-        <div class="card"><small>Scheinleistung S = U I</small><strong id="outS">0 VA</strong></div>
-        <div class="card"><small>Resonanzfrequenz f₀</small><strong id="outF0">0 Hz</strong></div>
-      </div>
-      <div class="formula">
-        <b>RLC-Reihenkreis:</b><br>
-        Der Strom ist überall gleich. Im Zeigerdiagramm ist deshalb der rote Strompfeil die gemeinsame Bezugsgröße.<br>
-        <code>U<sub>R</sub> = I · R</code><br>
-        <code>U<sub>L</sub> = I · X<sub>L</sub></code><br>
-        <code>U<sub>C</sub> = I · X<sub>C</sub></code><br>
-        <code>U<sub>ges</sub> = U<sub>R</sub> + U<sub>L</sub> + U<sub>C</sub></code><br>
-        <code>|Z| = √(R² + (X<sub>L</sub> − X<sub>C</sub>)²)</code><br>
-        <code>P = U<sub>eff</sub> · I<sub>eff</sub> · cos φ</code>,
-        <code>Q = U<sub>eff</sub> · I<sub>eff</sub> · sin φ</code>,
-        <code>S = U<sub>eff</sub> · I<sub>eff</sub></code>
-      </div>
-    </div>
-  </section>
-</main>
+    /* =========================================================================
+       2. COLOR PALETTE & DESIGN TOKENS
+       ========================================================================= */
+    :root {
+      --theme-blue: #38bdf8; 
+      --accent: var(--theme-blue);
+      --accent-soft: color-mix(in srgb, var(--theme-blue) 15%, transparent);
+      --accent-glow: color-mix(in srgb, var(--theme-blue) 35%, transparent);
+      --accent-gradient: linear-gradient(135deg, #0284c7, #38bdf8);
+      
+      --c-blue: #7dd3fc; --c-amber: #fbbf24; --c-green: #34d399;
+      --c-purple: #a78bfa; --c-pink: #f472b6; --c-red: #f87171;
 
-<footer>
-  <div class="controls">
-    <div class="group">
-      <span class="glabel">Schaltungs-Typ</span>
-      <div class="modegrid">
-        <button data-mode="cap">Kapazitiv</button>
-        <button data-mode="ohm" class="active">Ohmsch</button>
-        <button data-mode="ind">Induktiv</button>
-        <button data-mode="parallel">RLC Parallel</button>
-        <button data-mode="series">RLC Reihe</button>
-      </div>
-    </div>
-    <div class="group">
-      <div class="phase"><span class="glabel">Phasendifferenz φ</span><span id="phaseOut">0.0°</span></div>
-      <div id="simpleHint" class="hint">Ideales Einzelbauteil aktiv. Für erweiterte Parameter wechsle zu <b>RLC Parallel</b> oder <b>RLC Reihe</b>.</div>
-      <div id="rlcControls" class="group" style="display:none">
-        <span class="glabel" style="color:var(--accent)">RLC-Parameter</span>
-        <div class="rlcGrid">
-          <div class="field"><label>R in Ω</label><input type="number" id="R" value="100" min="1" step="10"></div>
-          <div class="field"><label>L in mH</label><input type="number" id="L" value="300" min="1" step="10"></div>
-          <div class="field"><label>C in µF</label><input type="number" id="C" value="30" min="1" step="1"></div>
-          <div class="field"><label>f in Hz</label><input type="number" id="F" value="50" min="1" step="1"></div>
-        </div>
-      </div>
-    </div>
-    <div class="group">
-      <span class="glabel">Ansicht und Steuerung</span>
-      <div class="toggleRow">
-        <label class="toggle"><input type="checkbox" id="showP"> Leistung</label>
-        <label class="toggle"><input type="checkbox" id="showPh"> Zeigerdiagramm</label>
-      </div>
-      <div id="seriesVoltageToggles" class="toggleRow" style="display:none">
-        <label class="toggle"><input type="checkbox" id="showUR"> U<sub>R</sub></label>
-        <label class="toggle"><input type="checkbox" id="showUL"> U<sub>L</sub></label>
-        <label class="toggle"><input type="checkbox" id="showUC"> U<sub>C</sub></label>
-      </div>
-      <div class="action">
-        <button class="primary" id="pause">Stoppen (U-Max)</button>
-        <button class="secondary" id="reset">↺</button>
-      </div>
-    </div>
-  </div>
-</footer>
-<div class="legal">© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
-
-<script>
-const scope=document.getElementById('scope'), phasor=document.getElementById('phasor'), impedance=document.getElementById('impedance');
-const cs=scope.getContext('2d'), cp=phasor.getContext('2d'), ci=impedance.getContext('2d');
-const $=id=>document.getElementById(id);
-let mode='ohm', t=0, paused=false, stopping=false, showP=false, showPh=false, showUR=false, showUL=false, showUC=false;
-const baseOmega=.03, ampU=100, ampIs=75, scaleP=.012;
-let dims={sw:1,sh:1,pw:1,ph:1,iw:1,ih:1};
-
-function resize(){
- const dpr=devicePixelRatio||1;
- const rs=scope.parentElement.getBoundingClientRect(); dims.sw=Math.max(1,rs.width); dims.sh=Math.max(1,rs.height);
- scope.width=dims.sw*dpr; scope.height=dims.sh*dpr; cs.setTransform(dpr,0,0,dpr,0,0);
- if(showPh){const rp=phasor.parentElement.getBoundingClientRect(); dims.pw=Math.max(1,rp.width); dims.ph=Math.max(1,rp.height);
- phasor.width=dims.pw*dpr; phasor.height=dims.ph*dpr; cp.setTransform(dpr,0,0,dpr,0,0);}
- if(mode==='series'){const ri=impedance.parentElement.getBoundingClientRect(); dims.iw=Math.max(1,ri.width); dims.ih=Math.max(1,ri.height);
- impedance.width=dims.iw*dpr; impedance.height=dims.ih*dpr; ci.setTransform(dpr,0,0,dpr,0,0);}
-}
-addEventListener('resize',resize);
-
-function vals(){
- const f=Math.max(1,+$('F').value||50), R=Math.max(.1,+$('R').value||100), L=Math.max(.1,+$('L').value||300)*1e-3, C=Math.max(.1,+$('C').value||30)*1e-6;
- const w=2*Math.PI*f, XL=w*L, XC=1/(w*C), X=XL-XC, Z=Math.sqrt(R*R+X*X), phi=Math.atan2(X,R);
- const Ueff=ampU/Math.sqrt(2), Ieff=Ueff/Math.max(Z,1e-9), S=Ueff*Ieff, P=S*Math.cos(phi), Q=S*Math.sin(phi), f0=1/(2*Math.PI*Math.sqrt(L*C));
- return {f,R,L,C,w,XL,XC,X,Z,phi,Ueff,Ieff,S,P,Q,f0};
-}
-function fmt(v,u,d=2){if(!isFinite(v))return'∞ '+u; if(Math.abs(v)>=1000)return v.toFixed(0)+' '+u; if(Math.abs(v)>=100)return v.toFixed(1)+' '+u; return v.toFixed(d)+' '+u}
-function setOutputs(d){
- $('outXL').innerHTML=fmt(d.XL,'Ω'); $('outXC').innerHTML=fmt(d.XC,'Ω'); $('outX').innerHTML=fmt(d.X,'Ω');
- $('outZ').innerHTML=fmt(d.Z,'Ω'); $('outI').innerHTML=fmt(d.Ieff,'A',3); $('outPhi').innerHTML=(d.phi*180/Math.PI).toFixed(1)+'°';
- $('outP').innerHTML=fmt(d.P,'W'); $('outQ').innerHTML=fmt(d.Q,'var'); $('outS').innerHTML=fmt(d.S,'VA'); $('outF0').innerHTML=fmt(d.f0,'Hz');
-}
-function arrow(ctx,x1,y1,x2,y2,col,w=3){
- const a=Math.atan2(y2-y1,x2-x1),h=10; ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap='round';
- ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
- ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));ctx.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));ctx.closePath();ctx.fill();
-}
-function text(ctx,s,x,y,c,size=13){ctx.fillStyle=c;ctx.font='700 '+size+'px Inter,system-ui,sans-serif';ctx.fillText(s,x,y)}
-function grid(ctx,w,h,cy){
- ctx.strokeStyle='rgba(148,163,184,.16)';ctx.lineWidth=1;ctx.beginPath();
- for(let x=0;x<w;x+=40){ctx.moveTo(x,0);ctx.lineTo(x,h)} for(let y=0;y<h;y+=40){ctx.moveTo(0,y);ctx.lineTo(w,y)} ctx.stroke();
- ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
-}
-function drawScopeTimeDirection(ctx,w,h){
- const y=30, start=w-96, end=118;
- ctx.save();
- ctx.strokeStyle='rgba(226,232,240,.72)';
- ctx.fillStyle='rgba(226,232,240,.86)';
- ctx.lineWidth=2;
- ctx.font='700 12px Inter,system-ui,sans-serif';
- ctx.fillText('Jetzt', w-62, y+4);
- ctx.fillText('Vergangenheit', 18, y+4);
- arrow(ctx,start,y,end,y,'rgba(226,232,240,.72)',2);
- ctx.restore();
-}
-function simplePhi(){return mode==='cap'?-Math.PI/2:mode==='ind'?Math.PI/2:0}
-function currentOmega(){return (mode==='parallel'||mode==='series')?baseOmega*(Math.max(1,+$('F').value||50)/50):baseOmega}
-
-function updateUI(){
- document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
- $('rlcControls').style.display=(mode==='parallel'||mode==='series')?'flex':'none';
- $('simpleHint').style.display=(mode==='parallel'||mode==='series')?'none':'block';
- $('extra').classList.toggle('show',mode==='series');
- $('phasorPanel').style.display=showPh?'block':'none';
- $('mainPhasorLegend').style.display=showPh?'block':'none';
- $('partLegend').style.display=(showPh&&(mode==='parallel'||mode==='series'))?'block':'none';
- if(mode==='parallel'){
-   $('partLegend').innerHTML='<div><span class="bar" style="background:var(--orange)"></span>I<sub>R</sub> ohmsch</div><div><span class="bar" style="background:var(--violet)"></span>I<sub>C</sub> kapazitiv</div><div><span class="bar" style="background:var(--yellow)"></span>I<sub>L</sub> induktiv</div><div><span class="bar" style="background:var(--red)"></span>I<sub>ges</sub></div>';
- }else if(mode==='series'){
-   $('partLegend').innerHTML='<div><span class="bar" style="background:var(--cyan)"></span>U<sub>R</sub> am Widerstand</div><div><span class="bar" style="background:var(--violet)"></span>U<sub>C</sub> am Kondensator</div><div><span class="bar" style="background:var(--yellow)"></span>U<sub>L</sub> an der Spule</div><div><span class="bar" style="background:var(--accent)"></span>U<sub>ges</sub></div>';
- }
- $('topPower').style.opacity=showP?1:.35;
- $('seriesVoltageToggles').style.display=mode==='series'?'flex':'none';
- resize();
-}
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;updateUI()});
-$('showP').onchange=e=>{showP=e.target.checked;updateUI()};
-$('showPh').onchange=e=>{showPh=e.target.checked;updateUI()};
-$('showUR').onchange=e=>{showUR=e.target.checked};
-$('showUL').onchange=e=>{showUL=e.target.checked};
-$('showUC').onchange=e=>{showUC=e.target.checked};
-$('pause').onclick=()=>{ if(paused){paused=false;stopping=false;$('pause').textContent='Stoppen (U-Max)'} else stopping=true };
-$('reset').onclick=()=>{t=0;stopping=false;paused=false;$('pause').textContent='Stoppen (U-Max)'};
-
-function drawImpedance(d){
- ci.clearRect(0,0,dims.iw,dims.ih);
- const cx=70, cy=dims.ih/2+10, maxH=Math.max(d.R,d.Z,1), maxV=Math.max(Math.abs(d.XL),Math.abs(d.XC),Math.abs(d.X),1);
- const sc=Math.min((dims.iw-cx-40)/maxH*.82,(dims.ih/2-74)/maxV*.82);
- grid(ci,dims.iw,dims.ih,cy);
- text(ci,'Impedanzdreieck',16,58,'#e2e8f0',13); text(ci,'|Z| = √(R² + (Xₗ − Xc)²)',16,78,'#94a3b8',12);
- const rx=cx+d.R*sc, xy=cy-d.X*sc, xly=cy-d.XL*sc, xcy=cy+d.XC*sc;
- arrow(ci,cx,cy,rx,cy,'#fb923c',4); text(ci,'R',rx+8,cy-8,'#fb923c');
- arrow(ci,rx,cy,rx,xly,'#facc15',2.5); text(ci,'Xₗ',rx+8,xly+4,'#facc15');
- arrow(ci,rx,cy,rx,xcy,'#a78bfa',2.5); text(ci,'Xc',rx+8,xcy+4,'#a78bfa');
- ci.setLineDash([5,5]); ci.strokeStyle='rgba(56,189,248,.7)';ci.lineWidth=2;ci.beginPath();ci.moveTo(rx,cy);ci.lineTo(rx,xy);ci.stroke();ci.setLineDash([]);
- arrow(ci,cx,cy,rx,xy,'#38bdf8',4.5); text(ci,'Z',rx+10,xy-8,'#38bdf8',15);
- text(ci,d.X>=0?'induktiver Gesamtcharakter':'kapazitiver Gesamtcharakter',16,dims.ih-24,'#94a3b8',12);
-}
-function drawSeriesPhasor(d,angleU,cx,cy){
- const angleI=angleU-d.phi, avail=Math.min(dims.pw,dims.ph)*.32;
- const uR=d.Ieff*d.R,uL=d.Ieff*d.XL,uC=d.Ieff*d.XC,uG=d.Ieff*d.Z, maxU=Math.max(Math.abs(uR),Math.abs(uL),Math.abs(uC),Math.abs(uG),1e-9), sc=avail/maxU;
- const ix=cx+Math.min(avail*.75,95)*Math.cos(angleI), iy=cy-Math.min(avail*.75,95)*Math.sin(angleI);
- const urx=cx+uR*sc*Math.cos(angleI), ury=cy-uR*sc*Math.sin(angleI);
- const ulx=cx+uL*sc*Math.cos(angleI+Math.PI/2), uly=cy-uL*sc*Math.sin(angleI+Math.PI/2);
- const ucx=cx+uC*sc*Math.cos(angleI-Math.PI/2), ucy=cy-uC*sc*Math.sin(angleI-Math.PI/2);
- const ugx=cx+uG*sc*Math.cos(angleI+d.phi), ugy=cy-uG*sc*Math.sin(angleI+d.phi);
- const unet=d.Ieff*(d.XL-d.XC), nx=cx+unet*sc*Math.cos(angleI+Math.PI/2), ny=cy-unet*sc*Math.sin(angleI+Math.PI/2);
- arrow(cp,cx,cy,ix,iy,'#ef4444',3.8); text(cp,'I',ix+8,iy+6,'#ef4444');
- if(showUR||showUL||showUC){
-   cp.setLineDash([4,4]);cp.strokeStyle='rgba(148,163,184,.55)';cp.beginPath();cp.moveTo(urx,ury);cp.lineTo(ugx,ugy);cp.moveTo(nx,ny);cp.lineTo(ugx,ugy);cp.stroke();cp.setLineDash([]);
- }
- if(showUR){arrow(cp,cx,cy,urx,ury,'#2dd4bf',2.8); text(cp,'Uᵣ',urx+8,ury+6,'#2dd4bf');}
- if(showUL){arrow(cp,cx,cy,ulx,uly,'#facc15',2.8); text(cp,'Uₗ',ulx+8,uly+6,'#facc15');}
- if(showUC){arrow(cp,cx,cy,ucx,ucy,'#a78bfa',2.8); text(cp,'Uc',ucx+8,ucy+6,'#a78bfa');}
- arrow(cp,cx,cy,ugx,ugy,'#3b82f6',4.2); text(cp,'Uges',ugx+8,ugy+6,'#3b82f6');
- return {ux:ugx,uy:ugy,ix,iy};
-}
-
-function loop(){
- const om=currentOmega();
- if(!paused){
-   if(stopping){
-     let a=(om*t)%(2*Math.PI),dist=Math.PI/2-a;if(dist<0)dist+=2*Math.PI;
-     if(dist<=om*.08){t=(Math.floor((om*t)/(2*Math.PI))*2*Math.PI+Math.PI/2)/om;paused=true;stopping=false;$('pause').textContent='Weiter'}
-     else t+=Math.max(.05,Math.min(1,dist/.5));
-   }else t+=1;
- }
- let phi=simplePhi(), d=null;
- if(mode==='series'){d=vals();phi=d.phi;setOutputs(d);drawImpedance(d)}
- if(mode==='parallel'){
-   const v=vals(), G=1/v.R, BL=1/(v.w*v.L), BC=v.w*v.C;
-   phi=Math.atan2(BC-BL,G);
- }
- $('phaseOut').textContent=(Math.abs(phi*180/Math.PI)<.05?0:phi*180/Math.PI).toFixed(1)+'°';
-
- cs.clearRect(0,0,dims.sw,dims.sh); grid(cs,dims.sw,dims.sh,dims.sh/2);
- const pU=new Path2D(),pI=new Path2D(),pP=new Path2D(),pUR=new Path2D(),pUL=new Path2D(),pUC=new Path2D(),cy=dims.sh/2;
- let curUY=cy,curIY=cy,curURY=cy,curULY=cy,curUCY=cy;
- for(let x=0;x<=dims.sw;x++){
-   // Das Oszilloskop zeigt jetzt einen laufenden Speicher: rechts ist der aktuelle Zeitpunkt,
-   // nach links liegt die Vergangenheit. Damit gehört das Zeigerdiagramm zum rechten Rand.
-   const a=om*(t-(dims.sw-x)), u=ampU*Math.sin(a);
-   let i=0;
-   if(mode==='parallel'){
-     const v=vals(),G=1/v.R,BL=1/(v.w*v.L),BC=v.w*v.C,maxA=Math.max(G,BL,BC,Math.sqrt(G*G+(BC-BL)*(BC-BL))), sc=maxA*3750>120?120/maxA:3750;
-     i=G*sc*Math.sin(a)+BC*sc*Math.sin(a+Math.PI/2)+BL*sc*Math.sin(a-Math.PI/2);
-   }else if(mode==='series') i=ampIs*Math.sin(a-phi);
-   else i=ampIs*Math.sin(a-phi);
-   let ur=0,ul=0,uc=0;
-   if(mode==='series'){
-     const iNorm=Math.sin(a-phi);
-     const iAmp=ampU/Math.max(d.Z,1e-9);
-     ur=iAmp*d.R*iNorm;
-     ul=iAmp*d.XL*Math.sin(a-phi+Math.PI/2);
-     uc=iAmp*d.XC*Math.sin(a-phi-Math.PI/2);
-   }
-   const yU=cy-u,yI=cy-i,yP=cy-(u*i)*scaleP,yUR=cy-ur,yUL=cy-ul,yUC=cy-uc;
-   if(x===0){pU.moveTo(x,yU);pI.moveTo(x,yI);pP.moveTo(x,yP);pUR.moveTo(x,yUR);pUL.moveTo(x,yUL);pUC.moveTo(x,yUC)}else{pU.lineTo(x,yU);pI.lineTo(x,yI);pP.lineTo(x,yP);pUR.lineTo(x,yUR);pUL.lineTo(x,yUL);pUC.lineTo(x,yUC)}
-   if(x===Math.floor(dims.sw)){curUY=yU;curIY=yI;curURY=yUR;curULY=yUL;curUCY=yUC}
- }
- if(showP){
-   cs.strokeStyle='#22c55e';
-   cs.lineWidth=2;
-   cs.stroke(pP);
-
-   const fillP = new Path2D(pP);
-   fillP.lineTo(dims.sw, cy);
-   fillP.lineTo(0, cy);
-   fillP.closePath();
-   cs.fillStyle='rgba(34,197,94,.10)';
-   cs.fill(fillP);
- }
- if(mode==='series' && showUR){cs.strokeStyle='#2dd4bf';cs.lineWidth=1.9;cs.stroke(pUR);}
- if(mode==='series' && showUL){cs.strokeStyle='#facc15';cs.lineWidth=1.9;cs.stroke(pUL);}
- if(mode==='series' && showUC){cs.strokeStyle='#a78bfa';cs.lineWidth=1.9;cs.stroke(pUC);}
- cs.strokeStyle='#ef4444';cs.lineWidth=2.5;cs.stroke(pI);
- cs.strokeStyle='#3b82f6';cs.lineWidth=2.5;cs.stroke(pU);
-
- // Rechte Referenzlinie: Hier entstehen die aktuellen Werte, die zum Zeigerdiagramm gehören.
- cs.strokeStyle='rgba(226,232,240,.65)';
- cs.lineWidth=2;
- cs.beginPath();
- cs.moveTo(dims.sw-1,0);
- cs.lineTo(dims.sw-1,dims.sh);
- cs.stroke();
- drawScopeTimeDirection(cs,dims.sw,dims.sh);
-
- if(showPh){
-   cp.clearRect(0,0,dims.pw,dims.ph);
-   const cx=dims.pw/2, py=dims.ph/2, angleU=om*t;
-   cp.strokeStyle='#334155';cp.lineWidth=1.5;cp.beginPath();cp.moveTo(cx,0);cp.lineTo(cx,dims.ph);cp.moveTo(0,py);cp.lineTo(dims.pw,py);cp.stroke();
-   let px={ux:cx+ampU*Math.cos(angleU),uy:py-ampU*Math.sin(angleU),ix:null,iy:null};
-   if(mode==='series') px=drawSeriesPhasor(d,angleU,cx,py);
-   else if(mode==='parallel'){
-     const v=vals(),G=1/v.R,BL=1/(v.w*v.L),BC=v.w*v.C,maxA=Math.max(G,BL,BC,Math.sqrt(G*G+(BC-BL)*(BC-BL))), sc=maxA*3750>120?120/maxA:3750;
-     const irx=cx+G*sc*Math.cos(angleU), iry=py-G*sc*Math.sin(angleU);
-     const icx=cx+BC*sc*Math.cos(angleU+Math.PI/2), icy=py-BC*sc*Math.sin(angleU+Math.PI/2);
-     const ilx=cx+BL*sc*Math.cos(angleU-Math.PI/2), ily=py-BL*sc*Math.sin(angleU-Math.PI/2);
-     const ix=(irx-cx)+(icx-cx)+(ilx-cx), iy=(iry-py)+(icy-py)+(ily-py);
-     px.ix=cx+ix;px.iy=py+iy;
-     arrow(cp,cx,py,irx,iry,'#fb923c',2.5);arrow(cp,cx,py,icx,icy,'#a78bfa',2.5);arrow(cp,cx,py,ilx,ily,'#facc15',2.5);
-     arrow(cp,cx,py,px.ix,px.iy,'#ef4444',3.5);arrow(cp,cx,py,px.ux,px.uy,'#3b82f6',3.5);text(cp,'U',px.ux+8,px.uy+6,'#3b82f6');text(cp,'I',px.ix+8,px.iy+6,'#ef4444');
-   }else{
-     const ai=angleU-phi;px.ix=cx+ampIs*Math.cos(ai);px.iy=py-ampIs*Math.sin(ai);
-     arrow(cp,cx,py,px.ix,px.iy,'#ef4444',3.5);arrow(cp,cx,py,px.ux,px.uy,'#3b82f6',3.5);text(cp,'U',px.ux+8,px.uy+6,'#3b82f6');text(cp,'I',px.ix+8,px.iy+6,'#ef4444');
-   }
-   // Hilfslinien gehen über das ganze Oszilloskop. Sie markieren die aktuellen Werte am rechten Rand.
-   cs.setLineDash([3,5]);cs.lineWidth=1.5;
-   cs.strokeStyle='rgba(59,130,246,.58)';cs.beginPath();cs.moveTo(0,curUY);cs.lineTo(dims.sw,curUY);cs.stroke();
-   cs.strokeStyle='rgba(239,68,68,.58)';cs.beginPath();cs.moveTo(0,curIY);cs.lineTo(dims.sw,curIY);cs.stroke();
-   if(mode==='series' && showUR){cs.strokeStyle='rgba(45,212,191,.55)';cs.beginPath();cs.moveTo(0,curURY);cs.lineTo(dims.sw,curURY);cs.stroke();}
-   if(mode==='series' && showUL){cs.strokeStyle='rgba(250,204,21,.55)';cs.beginPath();cs.moveTo(0,curULY);cs.lineTo(dims.sw,curULY);cs.stroke();}
-   if(mode==='series' && showUC){cs.strokeStyle='rgba(167,139,250,.55)';cs.beginPath();cs.moveTo(0,curUCY);cs.lineTo(dims.sw,curUCY);cs.stroke();}
-   cs.setLineDash([]);
- }
- requestAnimationFrame(loop);
-}
-
-// Zahlenwerte durch horizontales Ziehen verändern.
-// Kurzer Tap/Klick bleibt weiterhin normale Texteingabe.
-// Ziehen nach rechts erhöht, Ziehen nach links verringert den Wert.
-(function enableDragNumberInputs(){
-  const inputs = document.querySelectorAll('input[type="number"]');
-  let active = null;
-  let startX = 0;
-  let startValue = 0;
-  let step = 1;
-  let didDrag = false;
-  let pointerId = null;
-
-  function decimalsOf(n){
-    const s = String(n);
-    return s.includes('.') ? s.split('.')[1].length : 0;
-  }
-
-  function clampToInput(input, value){
-    const min = parseFloat(input.min);
-    const max = parseFloat(input.max);
-    if(!Number.isNaN(min)) value = Math.max(min, value);
-    if(!Number.isNaN(max)) value = Math.min(max, value);
-    return value;
-  }
-
-  inputs.forEach(input => {
-    input.addEventListener('pointerdown', e => {
-      if(e.button !== undefined && e.button !== 0) return;
-
-      active = input;
-      pointerId = e.pointerId;
-      startX = e.clientX;
-      startValue = parseFloat(input.value) || 0;
-      step = parseFloat(input.step) || 1;
-      didDrag = false;
-
-      input.classList.add('dragging');
-      input.setPointerCapture(pointerId);
-    });
-
-    input.addEventListener('pointermove', e => {
-      if(active !== input || e.pointerId !== pointerId) return;
-
-      const dx = e.clientX - startX;
-      if(Math.abs(dx) < 4) return;
-
-      didDrag = true;
-      e.preventDefault();
-
-      const fineFactor = e.shiftKey ? 0.1 : 1;
-      const coarseFactor = e.altKey ? 10 : 1;
-      const steps = Math.round(dx / 5);
-      let next = startValue + steps * step * fineFactor * coarseFactor;
-
-      next = clampToInput(input, next);
-      next = Number(next.toFixed(decimalsOf(step * fineFactor)));
-
-      input.value = next;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    function endDrag(e){
-      if(active !== input) return;
-
-      input.classList.remove('dragging');
-
-      try {
-        if(pointerId !== null) input.releasePointerCapture(pointerId);
-      } catch(err) {}
-
-      if(didDrag){
-        e.preventDefault();
-        input.blur();
-      }
-
-      active = null;
-      pointerId = null;
-      didDrag = false;
+      --bg-color: #020617;
+      --bg-grad-1: #081627; --bg-grad-2: #041222; 
+      --bg-grad-3: #0a192f; --bg-grad-4: #020617; 
+      
+      --glass-bg: rgba(15, 23, 42, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+      
+      --text-main: #f8fafc; --text-dim: #cbd5e1; --text-muted: #94a3b8;
+      --sidebar-bg: rgba(2, 6, 23, 0.95);
+      
+      --grad-1: rgba(56, 189, 248, 0.15); --grad-2: rgba(14, 165, 233, 0.15); --grad-3: rgba(167, 139, 250, 0.12);  
+      
+      --sidebar-width: 320px;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-display: 'Poppins', system-ui, sans-serif;
+      
+      --grid-line: rgba(255, 255, 255, 0.05);
+      --wire-color: #38bdf8; --component-stroke: #cbd5e1;
     }
 
-    input.addEventListener('pointerup', endDrag);
-    input.addEventListener('pointercancel', endDrag);
-  });
-})();
+    body.light {
+      --theme-blue: #1a6fb5; --accent: var(--theme-blue);
+      --accent-soft: color-mix(in srgb, var(--theme-blue) 12%, transparent);
+      --accent-glow: color-mix(in srgb, var(--theme-blue) 30%, transparent);
+      --accent-gradient: linear-gradient(135deg, #0a4a80, #1a6fb5);
+      
+      --bg-color: #f8fafc;
+      --bg-grad-1: #f0f9ff; --bg-grad-2: #e0f2fe; --bg-grad-3: #f8fafc; --bg-grad-4: #eef2ff;
+      
+      --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 10px 40px rgba(15, 23, 42, 0.05); 
+      
+      --text-main: #0f172a; --text-dim: #334155; --text-muted: #64748b;
+      --sidebar-bg: rgba(255, 255, 255, 0.95);
+      
+      --grad-1: rgba(26, 111, 181, 0.2); --grad-2: rgba(14, 165, 233, 0.2); --grad-3: rgba(139, 92, 246, 0.2);
+      
+      --grid-line: rgba(15, 23, 42, 0.08); --wire-color: #0284c7; --component-stroke: #334155;
+    }
 
-updateUI();
-requestAnimationFrame(loop);
-</script>
+    /* =========================================================================
+       3. BASE STYLES & APP LOCKING
+       ========================================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
+    body { font-family: var(--font-sans); background: linear-gradient(-45deg, var(--bg-grad-1), var(--bg-grad-2), var(--bg-grad-3), var(--bg-grad-4)); background-size: 300% 300%; color: var(--text-main); animation: gradientBG 24s ease infinite; }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
+    
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); } 33% { transform: translate(5vw, 8vh) scale(1.1) rotate(5deg); } 66% { transform: translate(-3vw, -4vh) scale(0.95) rotate(-5deg); } }
+    @keyframes drift2 { 0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); } 33% { transform: translate(-6vw, -4vh) scale(1.15) rotate(-5deg); } 66% { transform: translate(4vw, 6vh) scale(0.9) rotate(5deg); } }
+    @keyframes drift3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(3vw, -6vh) scale(1.08); } }
+
+    .bg-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; overflow: hidden; }
+    .bg-blobs .blob { position: absolute; border-radius: 50%; filter: blur(120px); }
+    .bg-blobs .blob-1 { width: 60vw; height: 60vw; top: -20vh; left: -15vw; background: var(--grad-1); animation: drift1 28s ease-in-out infinite; }
+    .bg-blobs .blob-2 { width: 55vw; height: 55vw; bottom: -20vh; right: -15vw; background: var(--grad-2); animation: drift2 24s ease-in-out infinite; }
+    .bg-blobs .blob-3 { width: 50vw; height: 50vw; top: 30vh; left: 20vw; background: var(--grad-3); animation: drift3 32s ease-in-out infinite; }
+
+    .progress-bar { position: absolute; top: 0; left: 0; height: 4px; width: 100%; background: var(--accent-gradient); z-index: 1200; box-shadow: 0 0 10px var(--accent-glow); }
+
+    /* =========================================================================
+       4. APP LAYOUT COMPONENTS
+       ========================================================================= */
+    .app-container { display: flex; width: 100vw; height: 100vh; position: absolute; inset: 0; z-index: 10; overflow: hidden; }
+    
+    .sidebar { width: var(--sidebar-width); height: 100vh; flex-shrink: 0; background: var(--sidebar-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; z-index: 1000; box-shadow: 4px 0 40px rgba(0,0,0,0.06); }
+    .sidebar-header { padding: 2.5rem 2rem 1.5rem; border-bottom: 1px solid var(--glass-border); position: relative; overflow: hidden; flex-shrink: 0; }
+    .sidebar-header .school-name { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent); margin-bottom: 0.6rem; font-weight: 700; }
+    .sidebar-header .course-title { font-family: var(--font-display); font-size: 1.8rem; line-height: 1.1; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
+    
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 1.5rem 0; overscroll-behavior: contain; touch-action: pan-y; }
+    .nav-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-muted); padding: 0 2rem 0.75rem; font-weight: 700; }
+    
+    .main-area { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; min-height: 0; }
+    .glass-header { height: 70px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: var(--glass-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); z-index: 50; }
+    
+    .canvas-container { flex: 1; position: relative; overflow: hidden; min-width: 0; min-height: 0; background: rgba(0,0,0,0.1); touch-action: none; }
+
+    /* =========================================================================
+       5. COMPONENT SPECIFICS
+       ========================================================================= */
+    .lucide { stroke-width: 2.2; }
+    
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 0 1.5rem 2rem; }
+    .tool-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1rem; background: transparent; border: 1px solid var(--glass-border); border-radius: 14px; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); touch-action: manipulation; }
+    .tool-btn:hover { background: var(--glass-bg); color: var(--text-main); transform: translateY(-2px); }
+    .tool-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); box-shadow: 0 8px 25px var(--accent-glow); }
+    
+    .danger-btn { width: 100%; padding: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: color-mix(in srgb, var(--c-red) 10%, transparent); border: 1px solid color-mix(in srgb, var(--c-red) 30%, transparent); color: var(--c-red); border-radius: 14px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; touch-action: manipulation; flex-shrink: 0; }
+    .danger-btn:hover { background: var(--c-red); color: white; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(248, 113, 113, 0.4); }
+
+    .zoom-controls { position: absolute; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 6px; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
+    .zoom-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--text-dim); border-radius: 10px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+    .zoom-btn:hover { background: var(--accent-soft); color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .app-container { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; max-height: 45vh; border-right: none; border-bottom: 1px solid var(--glass-border); }
+      .sidebar-header { display: none; }
+      .tool-grid { grid-template-columns: repeat(4, 1fr); padding: 0 1rem 1rem; gap: 0.5rem; }
+      .tool-btn { flex-direction: column; text-align: center; gap: 0.4rem; padding: 0.5rem; font-size: 0.65rem; }
+      .nav-label { padding: 0 1rem 0.5rem; }
+      .zoom-controls { bottom: 16px; right: 16px; flex-direction: row; }
+    }
+  </style>
+</head>
+<body class="select-none"> 
+
+  <div class="progress-bar"></div>
+
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const Icon = ({ name, className = "", size = 20 }) => {
+      const wrapperRef = useRef(null);
+
+      useEffect(() => {
+        let attempts = 0;
+        const tryRenderIcon = () => {
+          if (window.lucide && wrapperRef.current) {
+            wrapperRef.current.innerHTML = `<i data-lucide="${name}"></i>`;
+            window.lucide.createIcons({
+              root: wrapperRef.current,
+              attrs: {
+                class: className,
+                width: size,
+                height: size,
+                'stroke-width': 2.2
+              }
+            });
+          } else if (attempts < 15) {
+            attempts++;
+            setTimeout(tryRenderIcon, 50);
+          }
+        };
+        tryRenderIcon();
+      }, [name, className, size]);
+
+      return <span ref={wrapperRef} className="inline-flex items-center justify-center pointer-events-none" style={{ width: size, height: size }}></span>;
+    };
+
+    // --- GRUNDLOGIK: PORTS & VERBINDUNGEN ---
+    const DIR_N = 0, DIR_NE = 1, DIR_E = 2, DIR_SE = 3, DIR_S = 4, DIR_SW = 5, DIR_W = 6, DIR_NW = 7;
+    const getCellPorts = (cell) => {
+      if (!cell) return [];
+      if (cell.type === 'wire') return [0, 1, 2, 3, 4, 5, 6, 7];
+      const rot = cell.rot;
+      switch (cell.type) {
+        case 'source': case 'bulb': case 'switch': return [rot, (rot + 4) % 8];
+        case 'wechselschalter': return [rot, (rot + 2) % 8, (rot + 4) % 8]; 
+        case 'kreuzschalter': return [(0 + rot) % 8, (2 + rot) % 8, (4 + rot) % 8, (6 + rot) % 8];
+        default: return [];
+      }
+    };
+    const hasPort = (cell, dir) => getCellPorts(cell).includes(dir);
+    const getInternalConns = (cell) => {
+      if (!cell) return [];
+      const rot = cell.rot;
+      switch (cell.type) {
+        case 'switch': return cell.state ? [[rot, (rot + 4) % 8]] : [];
+        case 'wechselschalter': return cell.state ? [[rot, (rot + 2) % 8]] : [[rot, (rot + 4) % 8]];
+        case 'kreuzschalter': return cell.state ? [[(0 + rot) % 8, (2 + rot) % 8], [(4 + rot) % 8, (6 + rot) % 8]] : [[(0 + rot) % 8, (4 + rot) % 8], [(2 + rot) % 8, (6 + rot) % 8]]; 
+        default: return [];
+      }
+    };
+
+    // --- GAUSSSCHES ELIMINATIONSVERFAHREN FÜR MNA ---
+    const solveLinearSystem = (A, b) => {
+      const n = A.length;
+      for (let i = 0; i < n; i++) {
+        let maxEl = Math.abs(A[i][i]), maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+          if (Math.abs(A[k][i]) > maxEl) { maxEl = Math.abs(A[k][i]); maxRow = k; }
+        }
+        for (let k = i; k < n; k++) {
+          const tmp = A[maxRow][k]; A[maxRow][k] = A[i][k]; A[i][k] = tmp;
+        }
+        const tmp = b[maxRow]; b[maxRow] = b[i]; b[i] = tmp;
+        
+        if (Math.abs(A[i][i]) < 1e-12) continue; 
+        
+        for (let k = i + 1; k < n; k++) {
+          const c = -A[k][i] / A[i][i];
+          for (let j = i; j < n; j++) {
+            if (i === j) A[k][j] = 0;
+            else A[k][j] += c * A[i][j];
+          }
+          b[k] += c * b[i];
+        }
+      }
+      const x = new Array(n).fill(0);
+      for (let i = n - 1; i >= 0; i--) {
+        if (Math.abs(A[i][i]) < 1e-12) { x[i] = 0; continue; }
+        x[i] = b[i] / A[i][i];
+        for (let k = i - 1; k >= 0; k--) b[k] -= A[k][i] * x[i];
+      }
+      return x;
+    };
+
+    function App() {
+      const [cells, setCells] = useState({});
+      const [tool, setTool] = useState('pan'); 
+      const [simState, setSimState] = useState({ shortCircuit: false, bulbPowers: {} });
+      const [isLightMode, setIsLightMode] = useState(false);
+      const [showLegal, setShowLegal] = useState(false);
+      
+      const [scale, setScale] = useState(1);
+      const [offset, setOffset] = useState({ x: 0, y: 0 });
+      
+      const viewportRef = useRef(null);
+      const isDraggingViewport = useRef(false);
+      const dragStartPos = useRef({ x: 0, y: 0 });
+      const isDrawing = useRef(false);
+
+      const scaleRef = useRef(1);
+      const offsetRef = useRef({ x: 0, y: 0 });
+
+      const GRID_W = 30, GRID_H = 30, CELL_SIZE = 40;
+
+      useEffect(() => { scaleRef.current = scale; }, [scale]);
+      useEffect(() => { offsetRef.current = offset; }, [offset]);
+
+      useEffect(() => {
+        const preventNativeZoom = (e) => { if (e.touches && e.touches.length > 1) e.preventDefault(); };
+        const preventTrackpadZoom = (e) => { if (e.ctrlKey || e.metaKey) e.preventDefault(); };
+        document.addEventListener('touchmove', preventNativeZoom, { passive: false });
+        document.addEventListener('wheel', preventTrackpadZoom, { passive: false });
+        return () => {
+          document.removeEventListener('touchmove', preventNativeZoom);
+          document.removeEventListener('wheel', preventTrackpadZoom);
+        };
+      }, []);
+
+      const centerGrid = () => {
+        const sidebarW = window.innerWidth > 768 ? 320 : 0;
+        const canvasW = window.innerWidth - sidebarW;
+        const screenH = window.innerHeight;
+        const initialScale = window.innerWidth < 768 ? 0.6 : 1;
+        setScale(initialScale);
+        setOffset({ x: (canvasW - (GRID_W * CELL_SIZE * initialScale)) / 2, y: (screenH - (GRID_H * CELL_SIZE * initialScale)) / 2 });
+      };
+
+      useEffect(() => { centerGrid(); }, []);
+      useEffect(() => {
+        if (isLightMode) document.body.classList.add('light');
+        else document.body.classList.remove('light');
+      }, [isLightMode]);
+
+      useEffect(() => { evaluateCircuit(cells); }, [cells]);
+
+      const applyZoom = (newScale, centerX, centerY) => {
+        const prevScale = scaleRef.current;
+        const clampedScale = Math.min(Math.max(0.2, newScale), 3.5); 
+        if (prevScale === clampedScale) return;
+        const scaleRatio = clampedScale / prevScale;
+        const currentOffset = offsetRef.current;
+        const newX = centerX - (centerX - currentOffset.x) * scaleRatio;
+        const newY = centerY - (centerY - currentOffset.y) * scaleRatio;
+        setScale(clampedScale);
+        setOffset({ x: newX, y: newY });
+      };
+
+      const handleZoomIn = () => { const rect = viewportRef.current.getBoundingClientRect(); applyZoom(scale * 1.3, rect.width / 2, rect.height / 2); };
+      const handleZoomOut = () => { const rect = viewportRef.current.getBoundingClientRect(); applyZoom(scale / 1.3, rect.width / 2, rect.height / 2); };
+
+      useEffect(() => {
+        const viewport = viewportRef.current;
+        if (!viewport) return;
+
+        const handleWheel = (e) => {
+          e.preventDefault(); 
+          const zoomSensitivity = 0.002;
+          const delta = -e.deltaY * zoomSensitivity;
+          const newScale = scaleRef.current * (1 + delta);
+          const rect = viewport.getBoundingClientRect();
+          applyZoom(newScale, e.clientX - rect.left, e.clientY - rect.top);
+        };
+
+        let initialDist = 0, initialScaleAtTouch = 1;
+        const handleTouchStart = (e) => {
+          if (e.touches.length === 2) {
+            e.preventDefault(); 
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            initialDist = Math.hypot(dx, dy);
+            initialScaleAtTouch = scaleRef.current;
+          }
+        };
+
+        const handleTouchMove = (e) => {
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            const newScale = initialScaleAtTouch * (dist / initialDist);
+            const rect = viewport.getBoundingClientRect();
+            const centerX = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
+            const centerY = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
+            applyZoom(newScale, centerX, centerY);
+          }
+        };
+
+        viewport.addEventListener('wheel', handleWheel, { passive: false });
+        viewport.addEventListener('touchstart', handleTouchStart, { passive: false });
+        viewport.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+        return () => {
+          viewport.removeEventListener('wheel', handleWheel);
+          viewport.removeEventListener('touchstart', handleTouchStart);
+          viewport.removeEventListener('touchmove', handleTouchMove);
+        };
+      }, []);
+
+      // --- BERECHNUNG DER ELEKTRISCHEN LEISTUNG (MNA) ---
+      const evaluateCircuit = (grid) => {
+        if (!grid || Object.keys(grid).length === 0) {
+          setSimState({ shortCircuit: false, bulbPowers: {} });
+          return;
+        }
+
+        const parent = {};
+        const find = (i) => { if (parent[i] === undefined) parent[i] = i; if (parent[i] === i) return i; return parent[i] = find(parent[i]); };
+        const union = (i, j) => { const rootI = find(i); const rootJ = find(j); if (rootI !== rootJ) parent[rootI] = rootJ; };
+        const getNodeId = (x, y, dir) => `${x},${y},${dir}`;
+
+        Object.entries(grid).forEach(([pos, cell]) => {
+          const [xStr, yStr] = pos.split(',');
+          const x = parseInt(xStr, 10), y = parseInt(yStr, 10);
+          if (cell.type === 'wire') {
+            for(let d = 0; d < 7; d++) union(getNodeId(x, y, d), getNodeId(x, y, d + 1));
+          } else {
+            getInternalConns(cell).forEach(([p1, p2]) => union(getNodeId(x, y, p1), getNodeId(x, y, p2)));
+          }
+        });
+
+        for (let y = 0; y < GRID_H; y++) {
+          for (let x = 0; x < GRID_W; x++) {
+            const current = grid[`${x},${y}`];
+            if (!current) continue;
+            let neighbor = grid[`${x+1},${y}`];
+            if (neighbor && hasPort(current, DIR_E) && hasPort(neighbor, DIR_W)) union(getNodeId(x, y, DIR_E), getNodeId(x + 1, y, DIR_W));
+            neighbor = grid[`${x+1},${y+1}`];
+            if (neighbor && hasPort(current, DIR_SE) && hasPort(neighbor, DIR_NW)) union(getNodeId(x, y, DIR_SE), getNodeId(x + 1, y + 1, DIR_NW));
+            neighbor = grid[`${x},${y+1}`];
+            if (neighbor && hasPort(current, DIR_S) && hasPort(neighbor, DIR_N)) union(getNodeId(x, y, DIR_S), getNodeId(x, y + 1, DIR_N));
+            neighbor = grid[`${x-1},${y+1}`];
+            if (neighbor && hasPort(current, DIR_SW) && hasPort(neighbor, DIR_NE)) union(getNodeId(x, y, DIR_SW), getNodeId(x - 1, y + 1, DIR_NE));
+          }
+        }
+
+        let shortCircuit = false;
+        const sources = [], bulbs = [];
+        const activeRoots = new Set();
+
+        Object.entries(grid).forEach(([pos, cell]) => {
+          const [x, y] = pos.split(',').map(Number);
+          if (cell.type === 'source') {
+            const r1 = find(getNodeId(x, y, cell.rot));             
+            const r2 = find(getNodeId(x, y, (cell.rot + 4) % 8));   
+            if (r1 === r2) shortCircuit = true;                     
+            activeRoots.add(r1); activeRoots.add(r2);
+            sources.push({ r1, r2 });
+          }
+          if (cell.type === 'bulb') {
+            const r1 = find(getNodeId(x, y, cell.rot));
+            const r2 = find(getNodeId(x, y, (cell.rot + 4) % 8));
+            activeRoots.add(r1); activeRoots.add(r2);
+            bulbs.push({ key: pos, r1, r2 });
+          }
+        });
+
+        if (shortCircuit) { setSimState({ shortCircuit: true, bulbPowers: {} }); return; }
+
+        const netCount = activeRoots.size;
+        if (netCount === 0) { setSimState({ shortCircuit: false, bulbPowers: {} }); return; }
+
+        const netMap = new Map();
+        let idx = 0;
+        activeRoots.forEach(r => netMap.set(r, idx++));
+
+        const G = Array(netCount).fill(0).map(() => Array(netCount).fill(0));
+        const I = Array(netCount).fill(0);
+
+        for (let i = 0; i < netCount; i++) G[i][i] += 1e-6; 
+        G[0][0] += 1e6; 
+
+        const G_bulb = 0.1; // 10 Ohm
+        const G_bat = 2.0;  // 0.5 Ohm Innenwiderstand
+        const I_bat = 9.0;  // 4.5V / 0.5Ohm
+
+        bulbs.forEach(b => {
+          const n1 = netMap.get(b.r1), n2 = netMap.get(b.r2);
+          if (n1 !== n2) {
+            G[n1][n1] += G_bulb; G[n2][n2] += G_bulb;
+            G[n1][n2] -= G_bulb; G[n2][n1] -= G_bulb;
+          }
+        });
+
+        sources.forEach(s => {
+          const n1 = netMap.get(s.r1), n2 = netMap.get(s.r2); 
+          if (n1 !== n2) {
+            G[n1][n1] += G_bat; G[n2][n2] += G_bat;
+            G[n1][n2] -= G_bat; G[n2][n1] -= G_bat;
+            I[n1] += I_bat; 
+            I[n2] -= I_bat; 
+          }
+        });
+
+        const V = solveLinearSystem(G, I);
+        const bulbPowers = {};
+
+        bulbs.forEach(b => {
+          const n1 = netMap.get(b.r1), n2 = netMap.get(b.r2);
+          if (n1 !== n2) {
+            const vDrop = V[n1] - V[n2];
+            bulbPowers[b.key] = (vDrop * vDrop) * G_bulb;
+          } else {
+            bulbPowers[b.key] = 0;
+          }
+        });
+
+        setSimState({ shortCircuit: false, bulbPowers });
+      };
+
+      const handleViewportPointerDown = (e) => {
+        if (!e.isPrimary || showLegal) return; 
+        if (tool === 'pan') {
+          isDraggingViewport.current = true;
+          dragStartPos.current = { x: e.clientX - offset.x, y: e.clientY - offset.y };
+          e.currentTarget.setPointerCapture(e.pointerId);
+        }
+      };
+      
+      const handleViewportPointerMove = (e) => {
+        if (!e.isPrimary) return;
+        if (isDraggingViewport.current && tool === 'pan') {
+          setOffset({ x: e.clientX - dragStartPos.current.x, y: e.clientY - dragStartPos.current.y });
+        }
+      };
+      
+      const handleViewportPointerUp = (e) => {
+        isDraggingViewport.current = false;
+        if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+        isDrawing.current = false;
+      };
+
+      const handleCellAction = (x, y) => {
+        const key = `${x},${y}`;
+        const cell = cells[key];
+        if (tool === 'erase') {
+          const newCells = { ...cells }; delete newCells[key]; setCells(newCells);
+        } else if (tool === 'rotate') {
+          if (cell && cell.type !== 'wire') setCells({ ...cells, [key]: { ...cell, rot: (cell.rot + 1) % 8 } });
+        } else if (tool === 'select') {
+          if (cell && ['switch', 'wechselschalter', 'kreuzschalter'].includes(cell.type)) {
+            setCells({ ...cells, [key]: { ...cell, state: cell.state ? 0 : 1 } });
+          }
+        } else if (tool !== 'pan') {
+          if (cell) return; 
+          setCells({ ...cells, [key]: { type: tool, rot: 0, state: 0 } });
+        }
+      };
+
+      const gridHasConnection = (nx, ny, expectedDir) => {
+        const neighbor = cells[`${nx},${ny}`];
+        return neighbor ? hasPort(neighbor, expectedDir) : false;
+      };
+
+      const renderCell = (x, y) => {
+        const key = `${x},${y}`;
+        const cell = cells[key];
+        if (!cell) return null;
+
+        const transform = `rotate(${cell.rot * 45} 20 20)`;
+        const strokeCol = "var(--component-stroke)"; 
+        const wireCol = "var(--wire-color)"; 
+        const accentCol = "var(--c-amber)";
+        const dangerCol = "var(--c-red)";
+
+        if (cell.type === 'wire') {
+          const n = gridHasConnection(x, y - 1, DIR_S);
+          const e = gridHasConnection(x + 1, y, DIR_W);
+          const s = gridHasConnection(x, y + 1, DIR_N);
+          const w = gridHasConnection(x - 1, y, DIR_E);
+          
+          // Wir werten diagonal zwar intern aus, zeichnen es aber absichtlich nicht
+          // Das erzwingt eine orthogonale, saubere Schaltplan-Optik
+          return (
+            <svg width="40" height="40" viewBox="0 0 40 40" className="absolute top-0 left-0 pointer-events-none">
+              {/* Zentrum füllen, damit rechtwinklige Ecken perfekt nahtlos schließen */}
+              {(n || e || s || w) && <rect x="18" y="18" width="4" height="4" fill={wireCol} />}
+              
+              {/* Isolierter Punkt */}
+              {!(n || e || s || w) && <circle cx="20" cy="20" r="3" fill={wireCol} />}
+              
+              {/* Nur noch orthogonale Linien zeichnen */}
+              {n && <line x1="20" y1="20" x2="20" y2="0" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />}
+              {e && <line x1="20" y1="20" x2="40" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />}
+              {s && <line x1="20" y1="20" x2="20" y2="40" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />}
+              {w && <line x1="20" y1="20" x2="0" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />}
+            </svg>
+          );
+        }
+
+        const power = (cell.type === 'bulb' && simState.bulbPowers[key]) ? simState.bulbPowers[key] : 0;
+        const L = Math.min(1, Math.max(0, Math.pow(power / 1.8, 0.5))); 
+        const isPowered = L > 0.05; 
+
+        return (
+          <svg width="40" height="40" viewBox="-10 -10 60 60" className="absolute pointer-events-none" style={{ top: '-10px', left: '-10px' }}>
+            <g transform={`translate(10, 10) ${transform}`}>
+              {cell.type === 'source' && (
+                <g>
+                  <line x1="20" y1="0" x2="20" y2="15" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="20" y1="40" x2="20" y2="25" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="10" y1="15" x2="30" y2="15" stroke={dangerCol} strokeWidth="3" /> 
+                  <line x1="15" y1="25" x2="25" y2="25" stroke={strokeCol} strokeWidth="5" /> 
+                  <path d="M12 5 L16 5 M14 3 L14 7" stroke={dangerCol} strokeWidth="1.5" />
+                </g>
+              )}
+              {cell.type === 'bulb' && (
+                <g>
+                  <line x1="20" y1="0" x2="20" y2="8" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="20" y1="40" x2="20" y2="32" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  
+                  {isPowered && (
+                    <g>
+                      <circle cx="20" cy="20" r={14 + L * 8} fill={`rgba(253, 224, 71, ${L * 0.15})`} />
+                      <circle cx="20" cy="20" r={12 + L * 4} fill={`rgba(253, 224, 71, ${L * 0.3})`} />
+                    </g>
+                  )}
+
+                  <circle cx="20" cy="20" r="12" 
+                          fill={isPowered ? `rgba(253, 224, 71, ${0.1 + L * 0.4})` : "transparent"} 
+                          stroke={strokeCol} strokeWidth="2" />
+                  
+                  <line x1="14" y1="14" x2="26" y2="26" stroke={isPowered ? `rgba(255,255,255,${0.5 + L * 0.5})` : strokeCol} strokeWidth="2" />
+                  <line x1="14" y1="26" x2="26" y2="14" stroke={isPowered ? `rgba(255,255,255,${0.5 + L * 0.5})` : strokeCol} strokeWidth="2" />
+                  
+                  {isPowered && (
+                    <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
+                      <text x="20" y="38" fontSize="8" fill="var(--text-main)" textAnchor="middle" fontWeight="800" style={{ textShadow: '0 0 4px rgba(0,0,0,0.8)' }}>
+                        {power.toFixed(1)} W
+                      </text>
+                    </g>
+                  )}
+                </g>
+              )}
+              {cell.type === 'switch' && (
+                <g>
+                  <line x1="20" y1="0" x2="20" y2="12" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="20" y1="40" x2="20" y2="28" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <circle cx="20" cy="12" r="2.5" fill={wireCol} />
+                  <circle cx="20" cy="28" r="2.5" fill={wireCol} />
+                  {cell.state ? 
+                    <line x1="20" y1="12" x2="20" y2="28" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" /> : 
+                    <line x1="20" y1="28" x2="30" y2="15" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                  }
+                </g>
+              )}
+              {cell.type === 'wechselschalter' && (
+                <g>
+                  <line x1="20" y1="0" x2="20" y2="12" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="20" y1="40" x2="20" y2="28" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="40" y1="20" x2="30" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <circle cx="20" cy="12" r="2.5" fill={wireCol} />
+                  <circle cx="20" cy="28" r="2.5" fill={wireCol} />
+                  <circle cx="30" cy="20" r="2.5" fill={wireCol} />
+                  {cell.state === 0 ? 
+                    <line x1="20" y1="12" x2="20" y2="28" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" /> : 
+                    <line x1="20" y1="12" x2="30" y2="20" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                  }
+                </g>
+              )}
+              {cell.type === 'kreuzschalter' && (
+                <g>
+                  <line x1="20" y1="0" x2="20" y2="10" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="40" y1="20" x2="30" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="20" y1="40" x2="20" y2="30" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <line x1="0" y1="20" x2="10" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                  <circle cx="20" cy="10" r="2.5" fill={wireCol} />
+                  <circle cx="30" cy="20" r="2.5" fill={wireCol} />
+                  <circle cx="20" cy="30" r="2.5" fill={wireCol} />
+                  <circle cx="10" cy="20" r="2.5" fill={wireCol} />
+                  {cell.state === 0 ? (
+                    <React.Fragment>
+                      <line x1="20" y1="10" x2="20" y2="30" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="10" y1="20" x2="16" y2="20" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="24" y1="20" x2="30" y2="20" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <line x1="20" y1="10" x2="30" y2="20" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="10" y1="20" x2="20" y2="30" stroke={wireCol} strokeWidth="3.5" strokeLinecap="round" />
+                    </React.Fragment>
+                  )}
+                </g>
+              )}
+            </g>
+          </svg>
+        );
+      };
+
+      const ToolBtn = ({ name, iconName, label }) => (
+        <button
+          onClick={() => setTool(name)}
+          className={`tool-btn ${tool === name ? 'active' : ''}`}
+        >
+          <Icon name={iconName} className={tool === name ? "text-[var(--accent)]" : "text-[var(--text-muted)]"} />
+          <span>{label}</span>
+        </button>
+      );
+
+      return (
+        <div className="app-container">
+          
+          <aside className="sidebar flex flex-col h-full">
+            <div className="sidebar-header">
+              <div className="school-name">Gymnasium Thomaeum</div>
+              <div className="course-title">HQ-Matrix</div>
+              <p className="text-xs text-[var(--text-muted)] mt-1 font-medium">Energiefluss-Kontrolle</p>
+            </div>
+
+            <div className="sidebar-content scrollbar-hide flex-1">
+              <div className="nav-label">Aktionen</div>
+              <div className="tool-grid">
+                <ToolBtn name="pan" label="Navigieren" iconName="move" />
+                <ToolBtn name="select" label="Bedienen" iconName="mouse-pointer-2" />
+                <ToolBtn name="rotate" label="Rotieren" iconName="rotate-cw" />
+                <ToolBtn name="erase" label="Demontage" iconName="eraser" />
+              </div>
+
+              <div className="nav-label mt-2">Bauelemente</div>
+              <div className="tool-grid pb-4">
+                <ToolBtn name="wire" label="Kabel" iconName="cable" />
+                <ToolBtn name="source" label="Batterie" iconName="battery" />
+                <ToolBtn name="bulb" label="Lampe" iconName="lightbulb" />
+                <ToolBtn name="switch" label="Schalter" iconName="toggle-left" />
+                <ToolBtn name="wechselschalter" label="Wechsler" iconName="git-branch" />
+                <ToolBtn name="kreuzschalter" label="Kreuz" iconName="git-merge" />
+              </div>
+            </div>
+
+            <div className="px-6 pb-6 pt-2 shrink-0 bg-[var(--sidebar-bg)] border-t border-[var(--glass-border)] md:border-none">
+              <button onClick={() => setCells({})} className="danger-btn mb-4">
+                <Icon name="trash-2" size={16} /> Sektor bereinigen
+              </button>
+              
+              <div className="flex items-center justify-center gap-4 text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-semibold">
+                <button onClick={() => setShowLegal(true)} className="hover:text-[var(--text-main)] transition-colors">Impressum</button>
+                <span>&bull;</span>
+                <button onClick={() => setShowLegal(true)} className="hover:text-[var(--text-main)] transition-colors">Datenschutz</button>
+              </div>
+            </div>
+          </aside>
+
+          <main className="main-area relative">
+            
+            <header className="glass-header">
+              <div className="flex items-center gap-3 text-[var(--accent)] font-semibold tracking-wide uppercase text-sm">
+                <Icon name="cpu" />
+                <span>Laborbereich</span>
+              </div>
+              <button 
+                onClick={() => setIsLightMode(!isLightMode)}
+                className="p-2 rounded-xl text-[var(--text-dim)] hover:text-[var(--text-main)] hover:bg-[var(--glass-border)] transition-colors"
+                title="Erscheinungsbild anpassen"
+              >
+                <Icon name={isLightMode ? "moon" : "sun"} />
+              </button>
+            </header>
+
+            <div 
+              ref={viewportRef}
+              className={`canvas-container ${tool === 'pan' ? 'cursor-move' : 'cursor-crosshair'}`}
+              onPointerDown={handleViewportPointerDown}
+              onPointerMove={handleViewportPointerMove}
+              onPointerUp={handleViewportPointerUp}
+              onPointerLeave={handleViewportPointerUp}
+            >
+              
+              <div className="zoom-controls">
+                <button onClick={handleZoomIn} className="zoom-btn" title="Vergrößern">
+                  <Icon name="zoom-in" size={20} />
+                </button>
+                <button onClick={centerGrid} className="zoom-btn" title="Zentrieren">
+                  <Icon name="focus" size={20} />
+                </button>
+                <button onClick={handleZoomOut} className="zoom-btn" title="Verkleinern">
+                  <Icon name="zoom-out" size={20} />
+                </button>
+              </div>
+
+              {simState.shortCircuit && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 bg-[var(--c-red)] text-white px-6 py-3 rounded-xl font-bold shadow-[0_0_30px_rgba(248,113,113,0.5)] animate-pulse flex items-center gap-3 text-sm uppercase tracking-widest pointer-events-none">
+                  <Icon name="alert-triangle" /> Kritischer Kurzschluss
+                </div>
+              )}
+
+              <div 
+                className="absolute transition-transform duration-75 ease-out"
+                style={{ 
+                  width: GRID_W * CELL_SIZE, 
+                  height: GRID_H * CELL_SIZE,
+                  transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`, 
+                  transformOrigin: '0 0',
+                  willChange: 'transform'
+                }}
+              >
+                <div 
+                  className="absolute inset-0 pointer-events-none opacity-60"
+                  style={{ 
+                    backgroundImage: 'radial-gradient(var(--grid-line) 2px, transparent 2px)',
+                    backgroundSize: '40px 40px', backgroundPosition: '19px 19px'
+                  }}
+                />
+                
+                <div className="relative w-full h-full grid" style={{ gridTemplateColumns: `repeat(${GRID_W}, 40px)`, gridTemplateRows: `repeat(${GRID_H}, 40px)` }}>
+                  {Array.from({ length: GRID_W * GRID_H }).map((_, i) => {
+                    const x = i % GRID_W, y = Math.floor(i / GRID_W);
+                    return (
+                      <div 
+                        key={`${x}-${y}`}
+                        className="w-[40px] h-[40px] relative border-[0.5px] border-[var(--grid-line)] hover:bg-[var(--theme-blue)]/10 transition-colors"
+                        onPointerDown={(e) => {
+                          if (!e.isPrimary || tool === 'pan' || showLegal) return;
+                          isDrawing.current = true;
+                          e.target.releasePointerCapture(e.pointerId);
+                          handleCellAction(x, y);
+                        }}
+                        onPointerEnter={(e) => {
+                          if (!e.isPrimary || tool === 'pan' || showLegal) return;
+                          if (isDrawing.current && (tool === 'wire' || tool === 'erase')) handleCellAction(x, y);
+                        }}
+                      >
+                        {renderCell(x, y)}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {showLegal && (
+              <div className="absolute inset-0 z-[2000] flex items-center justify-center p-4 sm:p-8 bg-[#020617]/80 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
+                <div className="relative w-full max-w-4xl max-h-full overflow-y-auto bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-2xl shadow-2xl p-6 sm:p-10 text-[var(--text-main)]">
+                  <div className="flex items-center justify-between mb-8 border-b border-[var(--glass-border)] pb-4">
+                    <h2 className="text-2xl font-bold font-display text-[var(--accent)] tracking-wide">Rechtliches</h2>
+                    <button onClick={() => setShowLegal(false)} className="p-2 bg-[var(--glass-border)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] rounded-lg transition-colors">
+                      <Icon name="x" size={24} />
+                    </button>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold font-display text-white">Impressum</h3>
+                      <div className="text-sm text-[var(--text-dim)] leading-relaxed space-y-4">
+                        <p><strong className="text-[var(--text-main)]">Angaben gemäß § 5 TMG</strong><br/>Dr. Claus Unterberg<br/>Gymnasium Thomaeum<br/>Am Gymnasium 4<br/>47906 Kempen</p>
+                        <p><strong className="text-[var(--text-main)]">Kontakt</strong><br/>E-Mail: <a href="mailto:claus.unterberg@thomaeum.de" className="text-[var(--accent)] hover:underline">claus.unterberg@thomaeum.de</a></p>
+                        <p><strong className="text-[var(--text-main)]">Hinweis</strong><br/>Diese Webseite ist ein privates, nicht-kommerzielles Angebot zur Unterstützung von Lehrkräften im Umgang mit KI-Werkzeugen. Sie steht in keinem offiziellen Zusammenhang mit dem Gymnasium Thomaeum oder dem Land Nordrhein-Westfalen.</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold font-display text-white">Datenschutzerklärung</h3>
+                      <div className="text-sm text-[var(--text-dim)] leading-relaxed space-y-4">
+                        <p><strong className="text-[var(--text-main)]">Verantwortlicher</strong><br/>Dr. Claus Unterberg (siehe Impressum)</p>
+                        <p><strong className="text-[var(--text-main)]">Hosting</strong><br/>Diese Seite wird über GitHub Pages gehostet. GitHub kann beim Aufruf technische Daten verarbeiten. Weitere Infos: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline">GitHub Privacy Statement</a>.</p>
+                        <p><strong className="text-[var(--text-main)]">Keine Cookies, kein Tracking</strong><br/>Diese Seite setzt selbst keine Cookies und verwendet keine Analyse-Tools. Da das Projekt rein lokal im Browser läuft, werden keine Schaltungs-Daten der Matrix an externe Server übermittelt.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+  
+  <style>
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+  </style>
 </body>
 </html>
