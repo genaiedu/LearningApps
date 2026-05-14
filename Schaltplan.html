@@ -155,9 +155,9 @@
 
     .component-svg { overflow: visible; }
     .wire-line { stroke: var(--wire-color); stroke-width: 3.2; stroke-linecap: square; stroke-linejoin: miter; }
-    .symbol-line { stroke: var(--component-stroke); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
-    .symbol-thin { stroke: var(--component-stroke); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
-    .terminal { fill: var(--component-stroke); stroke: var(--bg-color); stroke-width: 1.1; }
+    .symbol-line { stroke: var(--component-stroke); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .symbol-thin { stroke: var(--component-stroke); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .terminal { fill: var(--component-stroke); stroke: var(--bg-color); stroke-width: 1; }
 
     @media (max-width: 768px) {
       .app-container { flex-direction: column; }
@@ -559,7 +559,6 @@
               {e && <line x1="20" y1="20" x2="41" y2="20" className="wire-line" />}
               {s && <line x1="20" y1="20" x2="20" y2="41" className="wire-line" />}
               {w && <line x1="20" y1="20" x2="-1" y2="20" className="wire-line" />}
-              {(n || e || s || w) && <circle cx="20" cy="20" r="1.8" fill={wireCol} opacity="0.85" />}
               {!(n || e || s || w) && <circle cx="20" cy="20" r="2.4" fill={wireCol} opacity="0.75" />}
             </svg>
           );
@@ -570,8 +569,8 @@
         const isPowered = L > 0.05; 
 
         return (
-          <svg width="40" height="40" viewBox="-24 -24 88 88" className="absolute pointer-events-none component-svg" style={{ top: '-24px', left: '-24px' }}>
-            <g transform={`translate(24, 24) ${transform}`}>
+          <svg width="40" height="40" viewBox="0 0 40 40" className="absolute top-0 left-0 pointer-events-none component-svg">
+            <g transform={transform}>
               {cell.type === 'source' && (
                 <g>
                   <line x1="20" y1="0" x2="20" y2="11" className="wire-line" />
@@ -582,10 +581,7 @@
                   <line x1="20" y1="27" x2="20" y2="29" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
                   <text x="8" y="15" fontSize="8" fill={dangerCol} fontWeight="900" textAnchor="middle">+</text>
                   <text x="31" y="31" fontSize="9" fill={liveCol} fontWeight="900" textAnchor="middle">−</text>
-                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
-                    <text x="20" y="53" fontSize="8" fill="var(--text-dim)" textAnchor="middle" fontWeight="700">Batterie</text>
-                    <text x="20" y="63" fontSize="8" fill="var(--text-muted)" textAnchor="middle" fontWeight="600">4.5 V</text>
-                  </g>
+
                 </g>
               )}
 
@@ -601,12 +597,7 @@
                   <line x1="11.8" y1="28.2" x2="28.2" y2="11.8" stroke={isPowered ? amberCol : strokeCol} strokeWidth="2.2" strokeLinecap="round" />
                   <circle cx="20" cy="7" r="3.1" className="terminal" />
                   <circle cx="20" cy="33" r="3.1" className="terminal" />
-                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
-                    <text x="20" y="52" fontSize="8.5" fill="var(--text-dim)" textAnchor="middle" fontWeight="700">Lampe</text>
-                    <text x="20" y="63" fontSize="8.5" fill={isPowered ? amberCol : "var(--text-muted)"} textAnchor="middle" fontWeight="800">
-                      {isPowered ? `${power.toFixed(1)} W` : "aus"}
-                    </text>
-                  </g>
+
                 </g>
               )}
 
@@ -621,12 +612,7 @@
                   ) : (
                     <line x1="20" y1="28" x2="31" y2="14" stroke={strokeCol} strokeWidth="3.2" strokeLinecap="round" />
                   )}
-                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
-                    <text x="39" y="18" fontSize="8" fill="var(--text-dim)" fontWeight="700">Schalter</text>
-                    <text x="39" y="29" fontSize="8" fill={cell.state ? greenCol : dangerCol} fontWeight="800">
-                      {cell.state ? "geschlossen" : "offen"}
-                    </text>
-                  </g>
+
                 </g>
               )}
 
