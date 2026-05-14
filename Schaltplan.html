@@ -8,7 +8,6 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -47,10 +46,12 @@
       --font-sans: 'Inter', system-ui, sans-serif;
       --font-display: 'Poppins', system-ui, sans-serif;
 
-      --grid-line: rgba(255, 255, 255, 0.05);
-      --wire-color: #38bdf8; --component-stroke: #dbeafe;
-      --component-fill: rgba(15,23,42,0.92);
-      --component-halo: rgba(56,189,248,0.25);
+      --grid-line: rgba(255, 255, 255, 0.055);
+      --wire-color: #cbd5e1;
+      --wire-live: #38bdf8;
+      --component-stroke: #e2e8f0;
+      --component-muted: #94a3b8;
+      --component-fill: rgba(2, 6, 23, 0.65);
     }
 
     body.light {
@@ -70,9 +71,12 @@
 
       --grad-1: rgba(26, 111, 181, 0.2); --grad-2: rgba(14, 165, 233, 0.2); --grad-3: rgba(139, 92, 246, 0.2);
 
-      --grid-line: rgba(15, 23, 42, 0.08); --wire-color: #0284c7; --component-stroke: #1e293b;
-      --component-fill: rgba(255,255,255,0.96);
-      --component-halo: rgba(2,132,199,0.18);
+      --grid-line: rgba(15, 23, 42, 0.08);
+      --wire-color: #334155;
+      --wire-live: #0284c7;
+      --component-stroke: #0f172a;
+      --component-muted: #475569;
+      --component-fill: rgba(255, 255, 255, 0.76);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -132,11 +136,28 @@
     .zoom-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--text-dim); border-radius: 10px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
     .zoom-btn:hover { background: var(--accent-soft); color: var(--accent); }
 
-    .component-svg { overflow: visible; filter: drop-shadow(0 0 8px var(--component-halo)); }
-    .component-backplate { fill: var(--component-fill); stroke: color-mix(in srgb, var(--wire-color) 42%, transparent); stroke-width: 1.5; }
-    .component-dot { fill: var(--wire-color); stroke: var(--component-fill); stroke-width: 1.6; }
-    .wire-line { stroke: var(--wire-color); stroke-width: 5; stroke-linecap: square; stroke-linejoin: miter; }
-    .wire-round { stroke: var(--wire-color); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    .status-card {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      z-index: 95;
+      min-width: 250px;
+      background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--glass-shadow);
+      color: var(--text-main);
+      pointer-events: none;
+    }
+
+    .component-svg { overflow: visible; }
+    .wire-line { stroke: var(--wire-color); stroke-width: 3.2; stroke-linecap: square; stroke-linejoin: miter; }
+    .symbol-line { stroke: var(--component-stroke); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .symbol-thin { stroke: var(--component-stroke); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .terminal { fill: var(--component-stroke); stroke: var(--bg-color); stroke-width: 1.1; }
 
     @media (max-width: 768px) {
       .app-container { flex-direction: column; }
@@ -146,6 +167,7 @@
       .tool-btn { flex-direction: column; text-align: center; gap: 0.4rem; padding: 0.5rem; font-size: 0.65rem; }
       .nav-label { padding: 0 1rem 0.5rem; }
       .zoom-controls { bottom: 16px; right: 16px; flex-direction: row; }
+      .status-card { display: none; }
     }
   </style>
 </head>
@@ -509,6 +531,9 @@
         return neighbor ? hasPort(neighbor, expectedDir) : false;
       };
 
+      const hasAnyPoweredBulb = Object.values(simState.bulbPowers || {}).some(v => v > 0.05);
+      const hasOpenSwitch = Object.values(cells).some(c => c && c.type === 'switch' && !c.state);
+
       const renderCell = (x, y) => {
         const key = `${x},${y}`;
         const cell = cells[key];
@@ -516,8 +541,9 @@
 
         const transform = `rotate(${cell.rot * 45} 20 20)`;
         const wireCol = "var(--wire-color)"; 
+        const liveCol = "var(--wire-live)";
         const strokeCol = "var(--component-stroke)";
-        const fillCol = "var(--component-fill)";
+        const mutedCol = "var(--component-muted)";
         const dangerCol = "var(--c-red)";
         const amberCol = "var(--c-amber)";
         const greenCol = "var(--c-green)";
@@ -527,15 +553,14 @@
           const e = gridHasConnection(x + 1, y, DIR_W);
           const s = gridHasConnection(x, y + 1, DIR_N);
           const w = gridHasConnection(x - 1, y, DIR_E);
-
           return (
             <svg width="40" height="40" viewBox="0 0 40 40" className="absolute top-0 left-0 pointer-events-none component-svg">
-              {(n || e || s || w) && <circle cx="20" cy="20" r="3.2" fill={wireCol} />}
-              {!(n || e || s || w) && <circle cx="20" cy="20" r="3.5" fill={wireCol} />}
               {n && <line x1="20" y1="20" x2="20" y2="-1" className="wire-line" />}
               {e && <line x1="20" y1="20" x2="41" y2="20" className="wire-line" />}
               {s && <line x1="20" y1="20" x2="20" y2="41" className="wire-line" />}
               {w && <line x1="20" y1="20" x2="-1" y2="20" className="wire-line" />}
+              {(n || e || s || w) && <circle cx="20" cy="20" r="1.8" fill={wireCol} opacity="0.85" />}
+              {!(n || e || s || w) && <circle cx="20" cy="20" r="2.4" fill={wireCol} opacity="0.75" />}
             </svg>
           );
         }
@@ -543,46 +568,45 @@
         const power = (cell.type === 'bulb' && simState.bulbPowers[key]) ? simState.bulbPowers[key] : 0;
         const L = Math.min(1, Math.max(0, Math.pow(power / 1.8, 0.5))); 
         const isPowered = L > 0.05; 
-        const openSwitch = cell.type === 'switch' && !cell.state;
 
         return (
-          <svg width="40" height="40" viewBox="-12 -12 64 64" className="absolute pointer-events-none component-svg" style={{ top: '-12px', left: '-12px' }}>
-            <g transform={`translate(12, 12) ${transform}`}>
+          <svg width="40" height="40" viewBox="-24 -24 88 88" className="absolute pointer-events-none component-svg" style={{ top: '-24px', left: '-24px' }}>
+            <g transform={`translate(24, 24) ${transform}`}>
               {cell.type === 'source' && (
                 <g>
                   <line x1="20" y1="0" x2="20" y2="11" className="wire-line" />
                   <line x1="20" y1="40" x2="20" y2="29" className="wire-line" />
-                  <rect x="5" y="9" width="30" height="22" rx="7" className="component-backplate" />
-                  <line x1="10" y1="14" x2="30" y2="14" stroke={dangerCol} strokeWidth="3.4" strokeLinecap="round" /> 
-                  <line x1="14" y1="26" x2="26" y2="26" stroke={strokeCol} strokeWidth="4.8" strokeLinecap="round" /> 
-                  <text x="32" y="13" fontSize="8" fill={dangerCol} fontWeight="900">+</text>
-                  <text x="31" y="29" fontSize="9" fill={strokeCol} fontWeight="900">−</text>
+                  <line x1="12" y1="13" x2="28" y2="13" stroke={strokeCol} strokeWidth="3.4" strokeLinecap="round" />
+                  <line x1="16" y1="27" x2="24" y2="27" stroke={strokeCol} strokeWidth="3.4" strokeLinecap="round" />
+                  <line x1="20" y1="11" x2="20" y2="13" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
+                  <line x1="20" y1="27" x2="20" y2="29" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
+                  <text x="8" y="15" fontSize="8" fill={dangerCol} fontWeight="900" textAnchor="middle">+</text>
+                  <text x="31" y="31" fontSize="9" fill={liveCol} fontWeight="900" textAnchor="middle">−</text>
+                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
+                    <text x="20" y="53" fontSize="8" fill="var(--text-dim)" textAnchor="middle" fontWeight="700">Batterie</text>
+                    <text x="20" y="63" fontSize="8" fill="var(--text-muted)" textAnchor="middle" fontWeight="600">4.5 V</text>
+                  </g>
                 </g>
               )}
 
               {cell.type === 'bulb' && (
                 <g>
-                  <line x1="20" y1="0" x2="20" y2="8" className="wire-line" />
-                  <line x1="20" y1="40" x2="20" y2="32" className="wire-line" />
+                  <line x1="20" y1="0" x2="20" y2="7" className="wire-line" />
+                  <line x1="20" y1="40" x2="20" y2="33" className="wire-line" />
                   {isPowered && (
-                    <g>
-                      <circle cx="20" cy="20" r={18 + L * 9} fill={`rgba(253, 224, 71, ${L * 0.13})`} />
-                      <circle cx="20" cy="20" r={14 + L * 5} fill={`rgba(253, 224, 71, ${L * 0.25})`} />
-                    </g>
+                    <circle cx="20" cy="20" r={17 + L * 4} fill={`rgba(251, 191, 36, ${L * 0.13})`} />
                   )}
-                  <circle cx="20" cy="20" r="15" fill={fillCol} stroke={isPowered ? amberCol : strokeCol} strokeWidth="2.2" />
-                  <circle cx="20" cy="20" r="10.5" fill={isPowered ? `rgba(253, 224, 71, ${0.18 + L * 0.45})` : "transparent"} stroke={isPowered ? amberCol : strokeCol} strokeWidth="1.6" />
-                  <line x1="13.5" y1="13.5" x2="26.5" y2="26.5" stroke={isPowered ? `rgba(255,255,255,${0.55 + L * 0.45})` : strokeCol} strokeWidth="2.1" strokeLinecap="round" />
-                  <line x1="13.5" y1="26.5" x2="26.5" y2="13.5" stroke={isPowered ? `rgba(255,255,255,${0.55 + L * 0.45})` : strokeCol} strokeWidth="2.1" strokeLinecap="round" />
-                  <circle cx="20" cy="8" r="3.2" className="component-dot" />
-                  <circle cx="20" cy="32" r="3.2" className="component-dot" />
-                  {isPowered && (
-                    <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
-                      <text x="20" y="48" fontSize="8" fill="var(--text-main)" textAnchor="middle" fontWeight="900" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                        {power.toFixed(1)} W
-                      </text>
-                    </g>
-                  )}
+                  <circle cx="20" cy="20" r="14" fill="var(--component-fill)" stroke={isPowered ? amberCol : strokeCol} strokeWidth="2.6" />
+                  <line x1="11.8" y1="11.8" x2="28.2" y2="28.2" stroke={isPowered ? amberCol : strokeCol} strokeWidth="2.2" strokeLinecap="round" />
+                  <line x1="11.8" y1="28.2" x2="28.2" y2="11.8" stroke={isPowered ? amberCol : strokeCol} strokeWidth="2.2" strokeLinecap="round" />
+                  <circle cx="20" cy="7" r="3.1" className="terminal" />
+                  <circle cx="20" cy="33" r="3.1" className="terminal" />
+                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
+                    <text x="20" y="52" fontSize="8.5" fill="var(--text-dim)" textAnchor="middle" fontWeight="700">Lampe</text>
+                    <text x="20" y="63" fontSize="8.5" fill={isPowered ? amberCol : "var(--text-muted)"} textAnchor="middle" fontWeight="800">
+                      {isPowered ? `${power.toFixed(1)} W` : "aus"}
+                    </text>
+                  </g>
                 </g>
               )}
 
@@ -590,16 +614,19 @@
                 <g>
                   <line x1="20" y1="0" x2="20" y2="10" className="wire-line" />
                   <line x1="20" y1="40" x2="20" y2="30" className="wire-line" />
-                  <rect x="7" y="8" width="26" height="24" rx="7" className="component-backplate" />
-                  <circle cx="20" cy="12" r="3.3" className="component-dot" />
-                  <circle cx="20" cy="28" r="3.3" className="component-dot" />
-                  {cell.state ? 
-                    <line x1="20" y1="12" x2="20" y2="28" stroke={greenCol} strokeWidth="4" strokeLinecap="round" /> : 
-                    <React.Fragment>
-                      <line x1="20" y1="28" x2="30" y2="16" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
-                      <path d="M10 20 L14 20 M26 20 L30 20" stroke={dangerCol} strokeWidth="2.4" strokeLinecap="round" opacity="0.95" />
-                    </React.Fragment>
-                  }
+                  <circle cx="20" cy="12" r="3.2" className="terminal" />
+                  <circle cx="20" cy="28" r="3.2" className="terminal" />
+                  {cell.state ? (
+                    <line x1="20" y1="12" x2="20" y2="28" stroke={greenCol} strokeWidth="3.2" strokeLinecap="round" />
+                  ) : (
+                    <line x1="20" y1="28" x2="31" y2="14" stroke={strokeCol} strokeWidth="3.2" strokeLinecap="round" />
+                  )}
+                  <g transform={`rotate(-${cell.rot * 45} 20 20)`}>
+                    <text x="39" y="18" fontSize="8" fill="var(--text-dim)" fontWeight="700">Schalter</text>
+                    <text x="39" y="29" fontSize="8" fill={cell.state ? greenCol : dangerCol} fontWeight="800">
+                      {cell.state ? "geschlossen" : "offen"}
+                    </text>
+                  </g>
                 </g>
               )}
 
@@ -608,13 +635,12 @@
                   <line x1="20" y1="0" x2="20" y2="10" className="wire-line" />
                   <line x1="20" y1="40" x2="20" y2="30" className="wire-line" />
                   <line x1="40" y1="20" x2="30" y2="20" className="wire-line" />
-                  <rect x="6" y="7" width="28" height="26" rx="7" className="component-backplate" />
-                  <circle cx="20" cy="12" r="3.2" className="component-dot" />
-                  <circle cx="20" cy="28" r="3.2" className="component-dot" />
-                  <circle cx="30" cy="20" r="3.2" className="component-dot" />
+                  <circle cx="20" cy="12" r="3" className="terminal" />
+                  <circle cx="20" cy="28" r="3" className="terminal" />
+                  <circle cx="30" cy="20" r="3" className="terminal" />
                   {cell.state === 0 ? 
-                    <line x1="20" y1="12" x2="20" y2="28" stroke={wireCol} strokeWidth="4" strokeLinecap="round" /> : 
-                    <line x1="20" y1="12" x2="30" y2="20" stroke={wireCol} strokeWidth="4" strokeLinecap="round" />
+                    <line x1="20" y1="12" x2="20" y2="28" stroke={strokeCol} strokeWidth="3" strokeLinecap="round" /> : 
+                    <line x1="20" y1="12" x2="30" y2="20" stroke={strokeCol} strokeWidth="3" strokeLinecap="round" />
                   }
                 </g>
               )}
@@ -625,20 +651,19 @@
                   <line x1="40" y1="20" x2="31" y2="20" className="wire-line" />
                   <line x1="20" y1="40" x2="20" y2="31" className="wire-line" />
                   <line x1="0" y1="20" x2="9" y2="20" className="wire-line" />
-                  <rect x="8" y="8" width="24" height="24" rx="6" className="component-backplate" />
-                  <circle cx="20" cy="10" r="3" className="component-dot" />
-                  <circle cx="30" cy="20" r="3" className="component-dot" />
-                  <circle cx="20" cy="30" r="3" className="component-dot" />
-                  <circle cx="10" cy="20" r="3" className="component-dot" />
+                  <circle cx="20" cy="10" r="2.8" className="terminal" />
+                  <circle cx="30" cy="20" r="2.8" className="terminal" />
+                  <circle cx="20" cy="30" r="2.8" className="terminal" />
+                  <circle cx="10" cy="20" r="2.8" className="terminal" />
                   {cell.state === 0 ? (
                     <React.Fragment>
-                      <line x1="20" y1="10" x2="20" y2="30" stroke={wireCol} strokeWidth="3.8" strokeLinecap="round" />
-                      <line x1="10" y1="20" x2="30" y2="20" stroke={wireCol} strokeWidth="3.8" strokeLinecap="round" />
+                      <line x1="20" y1="10" x2="20" y2="30" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
+                      <line x1="10" y1="20" x2="30" y2="20" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
-                      <line x1="20" y1="10" x2="30" y2="20" stroke={wireCol} strokeWidth="3.8" strokeLinecap="round" />
-                      <line x1="10" y1="20" x2="20" y2="30" stroke={wireCol} strokeWidth="3.8" strokeLinecap="round" />
+                      <line x1="20" y1="10" x2="30" y2="20" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
+                      <line x1="10" y1="20" x2="20" y2="30" stroke={strokeCol} strokeWidth="2.8" strokeLinecap="round" />
                     </React.Fragment>
                   )}
                 </g>
@@ -725,6 +750,24 @@
                 <button onClick={centerGrid} className="zoom-btn" title="Zentrieren"><Icon name="focus" size={20} /></button>
                 <button onClick={handleZoomOut} className="zoom-btn" title="Verkleinern"><Icon name="zoom-out" size={20} /></button>
               </div>
+
+              {!simState.shortCircuit && Object.keys(cells).length > 0 && (
+                <div className="status-card">
+                  <div className="flex items-start gap-3">
+                    <Icon name="info" size={22} className="text-[var(--accent)]" />
+                    <div>
+                      <div className="text-sm font-extrabold uppercase tracking-wide">
+                        Stromkreis: <span className={hasAnyPoweredBulb ? "text-[var(--c-green)]" : "text-[var(--c-red)]"}>
+                          {hasAnyPoweredBulb ? "geschlossen" : "offen"}
+                        </span>
+                      </div>
+                      <div className="text-xs text-[var(--text-dim)] mt-1">
+                        {hasAnyPoweredBulb ? "Die Lampe leuchtet." : hasOpenSwitch ? "Die Lampe leuchtet nicht." : "Keine geschlossene Verbindung erkannt."}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {simState.shortCircuit && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 bg-[var(--c-red)] text-white px-6 py-3 rounded-xl font-bold shadow-[0_0_30px_rgba(248,113,113,0.5)] animate-pulse flex items-center gap-3 text-sm uppercase tracking-widest pointer-events-none">
