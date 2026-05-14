@@ -509,9 +509,80 @@
         isDrawing.current = false;
       };
 
+      const getNeighborInfo = (x, y, grid) => {
+        const up = grid[`${x},${y - 1}`];
+        const right = grid[`${x + 1},${y}`];
+        const down = grid[`${x},${y + 1}`];
+        const left = grid[`${x - 1},${y}`];
+
+        return {
+          n: up && hasPort(up, DIR_S),
+          e: right && hasPort(right, DIR_W),
+          s: down && hasPort(down, DIR_N),
+          w: left && hasPort(left, DIR_E)
+        };
+      };
+
+      const getAutoRotationForTwoPole = (x, y, grid) => {
+        const nbs = getNeighborInfo(x, y, grid);
+        const count = [nbs.n, nbs.e, nbs.s, nbs.w].filter(Boolean).length;
+
+        // Gegenüberliegende Kabel haben Vorrang, weil das der häufigste Fall beim Einfügen in eine Leitung ist.
+        if (nbs.n && nbs.s) return DIR_N;
+        if (nbs.e && nbs.w) return DIR_E;
+
+        // Bei nur einem Nachbarn wird das Bauteil passend in Richtung dieses Kabels gedreht.
+        if (count === 1) {
+          if (nbs.n) return DIR_N;
+          if (nbs.e) return DIR_E;
+          if (nbs.s) return DIR_S;
+          if (nbs.w) return DIR_W;
+        }
+
+        // Eckfälle: Das zweipolige Bauteil wird zur zuerst gefundenen vorhandenen Richtung ausgerichtet.
+        if (nbs.n && nbs.e) return DIR_N;
+        if (nbs.e && nbs.s) return DIR_E;
+        if (nbs.s && nbs.w) return DIR_S;
+        if (nbs.w && nbs.n) return DIR_W;
+
+        return 0;
+      };
+
+      const getAutoRotationForThreePole = (x, y, grid) => {
+        const nbs = getNeighborInfo(x, y, grid);
+
+        // Gemeinsamer Anschluss + zwei Abgänge. Die Rotation gibt den gemeinsamen Anschluss an.
+        if (nbs.n && nbs.e && nbs.s) return DIR_N;
+        if (nbs.e && nbs.s && nbs.w) return DIR_E;
+        if (nbs.s && nbs.w && nbs.n) return DIR_S;
+        if (nbs.w && nbs.n && nbs.e) return DIR_W;
+
+        // Fallback: bei normaler Leitung wirkt der Wechselschalter wie ein zweipoliges Bauteil.
+        return getAutoRotationForTwoPole(x, y, grid);
+      };
+
+      const getAutoRotationForFourPole = (x, y, grid) => {
+        const nbs = getNeighborInfo(x, y, grid);
+
+        // Kreuzschalter bevorzugt die klassische N-E-S-W-Ausrichtung.
+        if ((nbs.n || nbs.s) && (nbs.e || nbs.w)) return 0;
+        if (nbs.e && nbs.w) return 0;
+        if (nbs.n && nbs.s) return 0;
+
+        return 0;
+      };
+
+      const getAutoRotationForTool = (x, y, grid, toolName) => {
+        if (['source', 'bulb', 'switch'].includes(toolName)) return getAutoRotationForTwoPole(x, y, grid);
+        if (toolName === 'wechselschalter') return getAutoRotationForThreePole(x, y, grid);
+        if (toolName === 'kreuzschalter') return getAutoRotationForFourPole(x, y, grid);
+        return 0;
+      };
+
       const handleCellAction = (x, y) => {
         const key = `${x},${y}`;
         const cell = cells[key];
+
         if (tool === 'erase') {
           const newCells = { ...cells }; delete newCells[key]; setCells(newCells);
         } else if (tool === 'rotate') {
@@ -521,8 +592,23 @@
             setCells({ ...cells, [key]: { ...cell, state: cell.state ? 0 : 1 } });
           }
         } else if (tool !== 'pan') {
-          if (cell) return; 
-          setCells({ ...cells, [key]: { type: tool, rot: 0, state: 0 } });
+          const componentTools = ['source', 'bulb', 'switch', 'wechselschalter', 'kreuzschalter'];
+
+          // Kabel dürfen weiterhin nur auf leere Felder gezeichnet werden.
+          if (tool === 'wire') {
+            if (cell) return;
+            setCells({ ...cells, [key]: { type: 'wire', rot: 0, state: 0 } });
+            return;
+          }
+
+          // Bauteile können jetzt direkt auf ein vorhandenes Kabel gesetzt werden.
+          // Das Kabel wird an dieser Stelle durch das Bauteil ersetzt.
+          if (componentTools.includes(tool)) {
+            if (cell && cell.type !== 'wire') return;
+
+            const rot = getAutoRotationForTool(x, y, cells, tool);
+            setCells({ ...cells, [key]: { type: tool, rot, state: 0 } });
+          }
         }
       };
 
