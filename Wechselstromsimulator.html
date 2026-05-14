@@ -51,6 +51,11 @@ canvas{width:100%;height:100%;display:block}
 }
 #mainPhasorLegend{right:14px;top:54px;display:none}
 #partLegend{left:14px;bottom:14px;display:none}
+.timeHint{
+  position:absolute;right:14px;top:54px;z-index:4;
+  background:rgba(15,23,42,.88);border:1px solid var(--border);
+  border-radius:12px;padding:8px 10px;font-size:.78rem;color:var(--muted);
+}
 .bar{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
 #extra{display:none;grid-template-columns:minmax(340px,.9fr) minmax(340px,1.1fr);gap:16px;min-height:360px;flex:0 0 auto}
 #extra.show{display:grid}
@@ -131,6 +136,7 @@ input[type=number].dragging{
     </div>
     <div id="scopePanel" class="panel">
       <div class="label">Oszilloskop</div>
+      <div class="timeHint">rechts = jetzt · Verlauf läuft nach links</div>
       <div class="canvasBox"><canvas id="scope"></canvas></div>
     </div>
   </section>
@@ -252,6 +258,18 @@ function grid(ctx,w,h,cy){
  for(let x=0;x<w;x+=40){ctx.moveTo(x,0);ctx.lineTo(x,h)} for(let y=0;y<h;y+=40){ctx.moveTo(0,y);ctx.lineTo(w,y)} ctx.stroke();
  ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
 }
+function drawScopeTimeDirection(ctx,w,h){
+ const y=30, start=w-96, end=118;
+ ctx.save();
+ ctx.strokeStyle='rgba(226,232,240,.72)';
+ ctx.fillStyle='rgba(226,232,240,.86)';
+ ctx.lineWidth=2;
+ ctx.font='700 12px Inter,system-ui,sans-serif';
+ ctx.fillText('Jetzt', w-62, y+4);
+ ctx.fillText('Vergangenheit', 18, y+4);
+ arrow(ctx,start,y,end,y,'rgba(226,232,240,.72)',2);
+ ctx.restore();
+}
 function simplePhi(){return mode==='cap'?-Math.PI/2:mode==='ind'?Math.PI/2:0}
 function currentOmega(){return (mode==='parallel'||mode==='series')?baseOmega*(Math.max(1,+$('F').value||50)/50):baseOmega}
 
@@ -322,7 +340,7 @@ function loop(){
  if(mode==='series'){d=vals();phi=d.phi;setOutputs(d);drawImpedance(d)}
  if(mode==='parallel'){
    const v=vals(), G=1/v.R, BL=1/(v.w*v.L), BC=v.w*v.C;
-   phi=Math.atan2(BL-BC,G);
+   phi=Math.atan2(BC-BL,G);
  }
  $('phaseOut').textContent=(Math.abs(phi*180/Math.PI)<.05?0:phi*180/Math.PI).toFixed(1)+'°';
 
@@ -330,7 +348,9 @@ function loop(){
  const pU=new Path2D(),pI=new Path2D(),pP=new Path2D(),cy=dims.sh/2;
  let curUY=cy,curIY=cy;
  for(let x=0;x<=dims.sw;x++){
-   const a=om*(t-x), u=ampU*Math.sin(a);
+   // Das Oszilloskop zeigt jetzt einen laufenden Speicher: rechts ist der aktuelle Zeitpunkt,
+   // nach links liegt die Vergangenheit. Damit gehört das Zeigerdiagramm zum rechten Rand.
+   const a=om*(t-(dims.sw-x)), u=ampU*Math.sin(a);
    let i=0;
    if(mode==='parallel'){
      const v=vals(),G=1/v.R,BL=1/(v.w*v.L),BC=v.w*v.C,maxA=Math.max(G,BL,BC,Math.sqrt(G*G+(BC-BL)*(BC-BL))), sc=maxA*3750>120?120/maxA:3750;
@@ -338,7 +358,8 @@ function loop(){
    }else if(mode==='series') i=ampIs*Math.sin(a-phi);
    else i=ampIs*Math.sin(a-phi);
    const yU=cy-u,yI=cy-i,yP=cy-(u*i)*scaleP;
-   if(x===0){pU.moveTo(x,yU);pI.moveTo(x,yI);pP.moveTo(x,yP);curUY=yU;curIY=yI}else{pU.lineTo(x,yU);pI.lineTo(x,yI);pP.lineTo(x,yP)}
+   if(x===0){pU.moveTo(x,yU);pI.moveTo(x,yI);pP.moveTo(x,yP)}else{pU.lineTo(x,yU);pI.lineTo(x,yI);pP.lineTo(x,yP)}
+   if(x===Math.floor(dims.sw)){curUY=yU;curIY=yI}
  }
  if(showP){
    cs.strokeStyle='#22c55e';
@@ -354,6 +375,15 @@ function loop(){
  }
  cs.strokeStyle='#ef4444';cs.lineWidth=2.5;cs.stroke(pI);
  cs.strokeStyle='#3b82f6';cs.lineWidth=2.5;cs.stroke(pU);
+
+ // Rechte Referenzlinie: Hier entstehen die aktuellen Werte, die zum Zeigerdiagramm gehören.
+ cs.strokeStyle='rgba(226,232,240,.65)';
+ cs.lineWidth=2;
+ cs.beginPath();
+ cs.moveTo(dims.sw-1,0);
+ cs.lineTo(dims.sw-1,dims.sh);
+ cs.stroke();
+ drawScopeTimeDirection(cs,dims.sw,dims.sh);
 
  if(showPh){
    cp.clearRect(0,0,dims.pw,dims.ph);
@@ -374,9 +404,10 @@ function loop(){
      const ai=angleU-phi;px.ix=cx+ampIs*Math.cos(ai);px.iy=py-ampIs*Math.sin(ai);
      arrow(cp,cx,py,px.ix,px.iy,'#ef4444',3.5);arrow(cp,cx,py,px.ux,px.uy,'#3b82f6',3.5);text(cp,'U',px.ux+8,px.uy+6,'#3b82f6');text(cp,'I',px.ix+8,px.iy+6,'#ef4444');
    }
-   cs.setLineDash([3,5]);cs.lineWidth=1;
-   cs.strokeStyle='rgba(59,130,246,.5)';cs.beginPath();cs.moveTo(0,curUY);cs.lineTo(dims.sw,curUY);cs.stroke();
-   cs.strokeStyle='rgba(239,68,68,.5)';cs.beginPath();cs.moveTo(0,curIY);cs.lineTo(dims.sw,curIY);cs.stroke();
+   // Hilfslinien gehen über das ganze Oszilloskop. Sie markieren die aktuellen Werte am rechten Rand.
+   cs.setLineDash([3,5]);cs.lineWidth=1.5;
+   cs.strokeStyle='rgba(59,130,246,.58)';cs.beginPath();cs.moveTo(0,curUY);cs.lineTo(dims.sw,curUY);cs.stroke();
+   cs.strokeStyle='rgba(239,68,68,.58)';cs.beginPath();cs.moveTo(0,curIY);cs.lineTo(dims.sw,curIY);cs.stroke();
    cs.setLineDash([]);
  }
  requestAnimationFrame(loop);
