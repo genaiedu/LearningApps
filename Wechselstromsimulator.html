@@ -207,6 +207,11 @@ input[type=number].dragging{
         <label class="toggle"><input type="checkbox" id="showP"> Leistung</label>
         <label class="toggle"><input type="checkbox" id="showPh"> Zeigerdiagramm</label>
       </div>
+      <div id="seriesVoltageToggles" class="toggleRow" style="display:none">
+        <label class="toggle"><input type="checkbox" id="showUR"> U<sub>R</sub></label>
+        <label class="toggle"><input type="checkbox" id="showUL"> U<sub>L</sub></label>
+        <label class="toggle"><input type="checkbox" id="showUC"> U<sub>C</sub></label>
+      </div>
       <div class="action">
         <button class="primary" id="pause">Stoppen (U-Max)</button>
         <button class="secondary" id="reset">↺</button>
@@ -220,7 +225,7 @@ input[type=number].dragging{
 const scope=document.getElementById('scope'), phasor=document.getElementById('phasor'), impedance=document.getElementById('impedance');
 const cs=scope.getContext('2d'), cp=phasor.getContext('2d'), ci=impedance.getContext('2d');
 const $=id=>document.getElementById(id);
-let mode='ohm', t=0, paused=false, stopping=false, showP=false, showPh=false;
+let mode='ohm', t=0, paused=false, stopping=false, showP=false, showPh=false, showUR=false, showUL=false, showUC=false;
 const baseOmega=.03, ampU=100, ampIs=75, scaleP=.012;
 let dims={sw:1,sh:1,pw:1,ph:1,iw:1,ih:1};
 
@@ -287,11 +292,15 @@ function updateUI(){
    $('partLegend').innerHTML='<div><span class="bar" style="background:var(--cyan)"></span>U<sub>R</sub> am Widerstand</div><div><span class="bar" style="background:var(--violet)"></span>U<sub>C</sub> am Kondensator</div><div><span class="bar" style="background:var(--yellow)"></span>U<sub>L</sub> an der Spule</div><div><span class="bar" style="background:var(--accent)"></span>U<sub>ges</sub></div>';
  }
  $('topPower').style.opacity=showP?1:.35;
+ $('seriesVoltageToggles').style.display=mode==='series'?'flex':'none';
  resize();
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;updateUI()});
 $('showP').onchange=e=>{showP=e.target.checked;updateUI()};
 $('showPh').onchange=e=>{showPh=e.target.checked;updateUI()};
+$('showUR').onchange=e=>{showUR=e.target.checked};
+$('showUL').onchange=e=>{showUL=e.target.checked};
+$('showUC').onchange=e=>{showUC=e.target.checked};
 $('pause').onclick=()=>{ if(paused){paused=false;stopping=false;$('pause').textContent='Stoppen (U-Max)'} else stopping=true };
 $('reset').onclick=()=>{t=0;stopping=false;paused=false;$('pause').textContent='Stoppen (U-Max)'};
 
@@ -318,12 +327,14 @@ function drawSeriesPhasor(d,angleU,cx,cy){
  const ucx=cx+uC*sc*Math.cos(angleI-Math.PI/2), ucy=cy-uC*sc*Math.sin(angleI-Math.PI/2);
  const ugx=cx+uG*sc*Math.cos(angleI+d.phi), ugy=cy-uG*sc*Math.sin(angleI+d.phi);
  const unet=d.Ieff*(d.XL-d.XC), nx=cx+unet*sc*Math.cos(angleI+Math.PI/2), ny=cy-unet*sc*Math.sin(angleI+Math.PI/2);
- cp.setLineDash([4,4]);cp.strokeStyle='rgba(148,163,184,.55)';cp.beginPath();cp.moveTo(urx,ury);cp.lineTo(ugx,ugy);cp.moveTo(nx,ny);cp.lineTo(ugx,ugy);cp.stroke();cp.setLineDash([]);
  arrow(cp,cx,cy,ix,iy,'#ef4444',3.8); text(cp,'I',ix+8,iy+6,'#ef4444');
- arrow(cp,cx,cy,urx,ury,'#2dd4bf',2.8); text(cp,'Uᵣ',urx+8,ury+6,'#2dd4bf');
- arrow(cp,cx,cy,ulx,uly,'#facc15',2.8); text(cp,'Uₗ',ulx+8,uly+6,'#facc15');
- arrow(cp,cx,cy,ucx,ucy,'#a78bfa',2.8); text(cp,'Uc',ucx+8,ucy+6,'#a78bfa');
- arrow(cp,cx,cy,ugx,ugy,'#38bdf8',4.2); text(cp,'Uges',ugx+8,ugy+6,'#38bdf8');
+ if(showUR||showUL||showUC){
+   cp.setLineDash([4,4]);cp.strokeStyle='rgba(148,163,184,.55)';cp.beginPath();cp.moveTo(urx,ury);cp.lineTo(ugx,ugy);cp.moveTo(nx,ny);cp.lineTo(ugx,ugy);cp.stroke();cp.setLineDash([]);
+ }
+ if(showUR){arrow(cp,cx,cy,urx,ury,'#2dd4bf',2.8); text(cp,'Uᵣ',urx+8,ury+6,'#2dd4bf');}
+ if(showUL){arrow(cp,cx,cy,ulx,uly,'#facc15',2.8); text(cp,'Uₗ',ulx+8,uly+6,'#facc15');}
+ if(showUC){arrow(cp,cx,cy,ucx,ucy,'#a78bfa',2.8); text(cp,'Uc',ucx+8,ucy+6,'#a78bfa');}
+ arrow(cp,cx,cy,ugx,ugy,'#3b82f6',4.2); text(cp,'Uges',ugx+8,ugy+6,'#3b82f6');
  return {ux:ugx,uy:ugy,ix,iy};
 }
 
@@ -345,8 +356,8 @@ function loop(){
  $('phaseOut').textContent=(Math.abs(phi*180/Math.PI)<.05?0:phi*180/Math.PI).toFixed(1)+'°';
 
  cs.clearRect(0,0,dims.sw,dims.sh); grid(cs,dims.sw,dims.sh,dims.sh/2);
- const pU=new Path2D(),pI=new Path2D(),pP=new Path2D(),cy=dims.sh/2;
- let curUY=cy,curIY=cy;
+ const pU=new Path2D(),pI=new Path2D(),pP=new Path2D(),pUR=new Path2D(),pUL=new Path2D(),pUC=new Path2D(),cy=dims.sh/2;
+ let curUY=cy,curIY=cy,curURY=cy,curULY=cy,curUCY=cy;
  for(let x=0;x<=dims.sw;x++){
    // Das Oszilloskop zeigt jetzt einen laufenden Speicher: rechts ist der aktuelle Zeitpunkt,
    // nach links liegt die Vergangenheit. Damit gehört das Zeigerdiagramm zum rechten Rand.
@@ -357,9 +368,17 @@ function loop(){
      i=G*sc*Math.sin(a)+BC*sc*Math.sin(a+Math.PI/2)+BL*sc*Math.sin(a-Math.PI/2);
    }else if(mode==='series') i=ampIs*Math.sin(a-phi);
    else i=ampIs*Math.sin(a-phi);
-   const yU=cy-u,yI=cy-i,yP=cy-(u*i)*scaleP;
-   if(x===0){pU.moveTo(x,yU);pI.moveTo(x,yI);pP.moveTo(x,yP)}else{pU.lineTo(x,yU);pI.lineTo(x,yI);pP.lineTo(x,yP)}
-   if(x===Math.floor(dims.sw)){curUY=yU;curIY=yI}
+   let ur=0,ul=0,uc=0;
+   if(mode==='series'){
+     const iNorm=Math.sin(a-phi);
+     const iAmp=ampU/Math.max(d.Z,1e-9);
+     ur=iAmp*d.R*iNorm;
+     ul=iAmp*d.XL*Math.sin(a-phi+Math.PI/2);
+     uc=iAmp*d.XC*Math.sin(a-phi-Math.PI/2);
+   }
+   const yU=cy-u,yI=cy-i,yP=cy-(u*i)*scaleP,yUR=cy-ur,yUL=cy-ul,yUC=cy-uc;
+   if(x===0){pU.moveTo(x,yU);pI.moveTo(x,yI);pP.moveTo(x,yP);pUR.moveTo(x,yUR);pUL.moveTo(x,yUL);pUC.moveTo(x,yUC)}else{pU.lineTo(x,yU);pI.lineTo(x,yI);pP.lineTo(x,yP);pUR.lineTo(x,yUR);pUL.lineTo(x,yUL);pUC.lineTo(x,yUC)}
+   if(x===Math.floor(dims.sw)){curUY=yU;curIY=yI;curURY=yUR;curULY=yUL;curUCY=yUC}
  }
  if(showP){
    cs.strokeStyle='#22c55e';
@@ -373,6 +392,9 @@ function loop(){
    cs.fillStyle='rgba(34,197,94,.10)';
    cs.fill(fillP);
  }
+ if(mode==='series' && showUR){cs.strokeStyle='#2dd4bf';cs.lineWidth=1.9;cs.stroke(pUR);}
+ if(mode==='series' && showUL){cs.strokeStyle='#facc15';cs.lineWidth=1.9;cs.stroke(pUL);}
+ if(mode==='series' && showUC){cs.strokeStyle='#a78bfa';cs.lineWidth=1.9;cs.stroke(pUC);}
  cs.strokeStyle='#ef4444';cs.lineWidth=2.5;cs.stroke(pI);
  cs.strokeStyle='#3b82f6';cs.lineWidth=2.5;cs.stroke(pU);
 
@@ -408,6 +430,9 @@ function loop(){
    cs.setLineDash([3,5]);cs.lineWidth=1.5;
    cs.strokeStyle='rgba(59,130,246,.58)';cs.beginPath();cs.moveTo(0,curUY);cs.lineTo(dims.sw,curUY);cs.stroke();
    cs.strokeStyle='rgba(239,68,68,.58)';cs.beginPath();cs.moveTo(0,curIY);cs.lineTo(dims.sw,curIY);cs.stroke();
+   if(mode==='series' && showUR){cs.strokeStyle='rgba(45,212,191,.55)';cs.beginPath();cs.moveTo(0,curURY);cs.lineTo(dims.sw,curURY);cs.stroke();}
+   if(mode==='series' && showUL){cs.strokeStyle='rgba(250,204,21,.55)';cs.beginPath();cs.moveTo(0,curULY);cs.lineTo(dims.sw,curULY);cs.stroke();}
+   if(mode==='series' && showUC){cs.strokeStyle='rgba(167,139,250,.55)';cs.beginPath();cs.moveTo(0,curUCY);cs.lineTo(dims.sw,curUCY);cs.stroke();}
    cs.setLineDash([]);
  }
  requestAnimationFrame(loop);
