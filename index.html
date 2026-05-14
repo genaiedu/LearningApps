@@ -7,9 +7,6 @@
 <title>LearningApps · Dr. Claus Unterberg</title>
 
 <style>
-/* ============================================================
-   1. Schriften – lokal aus /fonts/
-   ============================================================ */
 @font-face {
   font-family: 'Poppins';
   src: url('fonts/poppins-v24-latin-600.woff2') format('woff2');
@@ -53,9 +50,6 @@
   font-display: swap;
 }
 
-/* ============================================================
-   2. CSS-Variablen
-   ============================================================ */
 :root {
   --primary:        #1a6fb5;
   --primary-light:  #e8f1fb;
@@ -92,9 +86,6 @@ body.dark {
   --sonstiges:      #a78bfa;
 }
 
-/* ============================================================
-   3. Reset & Grundlayout
-   ============================================================ */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
@@ -109,9 +100,6 @@ body {
   transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* ============================================================
-   4. Animierter Hintergrund (Blobs)
-   ============================================================ */
 .blob {
   position: fixed;
   border-radius: 50%;
@@ -152,9 +140,6 @@ body {
   100% { transform: translate(30px, 20px) scale(1.02); }
 }
 
-/* ============================================================
-   5. Scroll-Progress-Bar
-   ============================================================ */
 #progress-bar {
   position: fixed;
   top: 0;
@@ -166,9 +151,6 @@ body {
   transition: width 0.1s linear;
 }
 
-/* ============================================================
-   6. Sidebar
-   ============================================================ */
 .sidebar {
   position: fixed;
   top: 0;
@@ -276,7 +258,6 @@ body {
   height: 16px;
 }
 
-/* Hamburger nur mobil */
 .menu-btn {
   display: none;
   position: fixed;
@@ -295,16 +276,12 @@ body {
   justify-content: center;
 }
 
-/* ============================================================
-   7. Hauptbereich
-   ============================================================ */
 .main-content {
   margin-left: var(--sidebar-width);
   padding: 48px 56px 80px;
   min-height: 100vh;
 }
 
-/* Hero */
 .hero {
   margin-bottom: 56px;
 }
@@ -332,7 +309,6 @@ body {
   line-height: 1.6;
 }
 
-/* Sektion */
 .section {
   margin-bottom: 64px;
 }
@@ -379,7 +355,6 @@ body {
   border-radius: 999px;
 }
 
-/* App-Grid */
 .app-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -464,7 +439,6 @@ body {
 .app-card--chemie { --card-accent: var(--chemie); }
 .app-card--sonstiges { --card-accent: var(--sonstiges); }
 
-/* Platzhalter-Karte */
 .app-card--placeholder {
   border: 2px dashed var(--glass-border);
   background: transparent;
@@ -483,9 +457,6 @@ body {
 }
 .app-card--placeholder::before { display: none; }
 
-/* ============================================================
-   8. Reveal-Animation
-   ============================================================ */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -496,9 +467,6 @@ body {
   transform: translateY(0);
 }
 
-/* ============================================================
-   9. Footer / Legal
-   ============================================================ */
 .legal {
   margin-top: 80px;
   padding: 32px;
@@ -525,9 +493,6 @@ body {
 }
 .legal a:hover { text-decoration: underline; }
 
-/* ============================================================
-  10. Responsive
-   ============================================================ */
 @media (max-width: 900px) {
   .sidebar {
     transform: translateX(-100%);
@@ -544,20 +509,16 @@ body {
 </head>
 <body>
 
-<!-- Hintergrund-Blobs -->
 <div class="blob"></div>
 <div class="blob"></div>
 <div class="blob"></div>
 
-<!-- Scroll-Progress -->
 <div id="progress-bar"></div>
 
-<!-- Hamburger -->
 <button class="menu-btn" onclick="toggleSidebar()" aria-label="Menü öffnen">
   <i data-lucide="menu"></i>
 </button>
 
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <div class="brand__title">LearningApps</div>
@@ -594,7 +555,6 @@ body {
   </div>
 </aside>
 
-<!-- Hauptbereich -->
 <main class="main-content">
 
   <section class="hero reveal">
@@ -606,14 +566,13 @@ body {
     </p>
   </section>
 
-  <!-- ===================== PHYSIK ===================== -->
   <section class="section reveal" id="physik">
     <div class="section__head">
       <div class="section__icon section__icon--physik">
         <i data-lucide="atom"></i>
       </div>
       <h2 class="section__title">Physik</h2>
-      <span class="section__count">1 Anwendung</span>
+      <span class="section__count">2 Anwendungen</span>
     </div>
 
     <div class="app-grid">
@@ -628,6 +587,18 @@ body {
         </span>
       </a>
 
+      <a href="Schaltplan.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="circuit-board"></i></div>
+        <h3 class="app-card__title">Schaltplan-Simulator</h3>
+        <p class="app-card__desc">
+          Interaktiver Gleichstrom-Schaltkreis-Baukasten mit Kabeln, Batterie, Lampe, Schaltern,
+          Wechselschaltern, Kreuzschaltern und Kurzschluss-Erkennung.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
       <div class="app-card app-card--placeholder">
         <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
         weitere Anwendungen folgen
@@ -635,7 +606,6 @@ body {
     </div>
   </section>
 
-  <!-- ===================== CHEMIE ===================== -->
   <section class="section reveal" id="chemie">
     <div class="section__head">
       <div class="section__icon section__icon--chemie">
@@ -675,7 +645,6 @@ body {
     </div>
   </section>
 
-  <!-- ===================== SONSTIGES ===================== -->
   <section class="section reveal" id="sonstiges">
     <div class="section__head">
       <div class="section__icon section__icon--sonstiges">
@@ -693,7 +662,6 @@ body {
     </div>
   </section>
 
-  <!-- ===================== IMPRESSUM ===================== -->
   <section class="legal reveal" id="impressum">
     <h3>Impressum</h3>
     <p>
@@ -725,7 +693,6 @@ body {
     </p>
   </section>
 
-  <!-- ===================== DATENSCHUTZ ===================== -->
   <section class="legal reveal" id="datenschutz">
     <h3>Datenschutzerklärung</h3>
     <p>
@@ -775,17 +742,14 @@ body {
 
 </main>
 
-<!-- Lucide-Icons lokal aus /fonts/ -->
 <script src="fonts/lucide.min.js"></script>
 <script>
-/* ===== Lucide sicher initialisieren ===== */
 function safeLucide() {
   if (window.lucide && lucide.createIcons) {
     try { lucide.createIcons(); } catch (e) {}
   }
 }
 
-/* ===== Dark Mode ===== */
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark');
   const icon = document.getElementById('theme-icon');
@@ -795,27 +759,24 @@ function toggleDarkMode() {
   safeLucide();
 }
 
-/* ===== Sidebar (mobil) ===== */
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }
 
-/* ===== Scroll-Progress ===== */
 window.addEventListener('scroll', () => {
   const total = document.documentElement.scrollHeight - window.innerHeight;
   const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
   document.getElementById('progress-bar').style.width = pct + '%';
 });
 
-/* ===== Reveal-Animation ===== */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) e.target.classList.add('visible');
   });
 }, { threshold: 0.15 });
+
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* ===== Sidebar nach Klick auf mobilem Link schließen ===== */
 document.querySelectorAll('.nav__link').forEach(link => {
   link.addEventListener('click', () => {
     if (window.innerWidth <= 900) {
@@ -824,7 +785,6 @@ document.querySelectorAll('.nav__link').forEach(link => {
   });
 });
 
-/* ===== Lucide initialisieren ===== */
 safeLucide();
 </script>
 </body>
