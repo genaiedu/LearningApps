@@ -263,8 +263,8 @@ function evaluateAt(freqOverride=null){
   });
   const source=sources[0];
   const f=freqOverride ?? (source?source.c.f:1000);
-  if(!source){return {ok:true,msg:"Keine Quelle",values:{},source:null,totalCurrent:0,nodes:0,scope:null,f}}
-  if(source.a===source.b){return {ok:false,msg:"Kurzschluss an der Spannungsquelle",values:{},source,totalCurrent:Infinity,nodes:0,scope:null,f}}
+  if(!source){return {ok:true,msg:"Keine Quelle",values:{},source:null,totalCurrent:0,nodes:0,scope:null,scopes:[],f}}
+  if(source.a===source.b){return {ok:false,msg:"Kurzschluss an der Spannungsquelle",values:{},source,totalCurrent:Infinity,nodes:0,scope:null,scopes:[],f}}
   const roots=[...active];
   const ground=source.b;
   const nodeMap=new Map(); let nidx=0;
@@ -289,15 +289,15 @@ function evaluateAt(freqOverride=null){
   for(let i=0;i<nidx;i++) A[i][i]=cadd(A[i][i],complex(1e-12,0));
   const sol=solveComplex(A,z);
   const Vroot=r=>r===ground?complex(0,0):sol[nodeMap.get(r)]||complex(0,0);
-  const values={}; let scope=null, totalCurrent=cabs(sol[nidx]||complex(0,0));
+  const values={}; let scopes=[], totalCurrent=cabs(sol[nidx]||complex(0,0));
   branches.forEach(br=>{
     const v=csub(Vroot(br.a),Vroot(br.b));
     const I=cmul(v,admittance(br.c,f));
     values[br.key]={V:cabs(v),I:cabs(I),phaseV:Math.atan2(v.im,v.re),phaseI:Math.atan2(I.im,I.re)};
-    if(br.c.type==="scope") scope={key:br.key,V:cabs(v),phase:Math.atan2(v.im,v.re),f};
+    if(br.c.type==="scope") scopes.push({key:br.key,V:cabs(v),phase:Math.atan2(v.im,v.re),f});
   });
   sources.forEach((s,si)=>values[s.key]={V:s.c.U||5,I:cabs(sol[nidx+si]||complex(0,0)),phaseI:Math.atan2((sol[nidx+si]||complex(0,0)).im,(sol[nidx+si]||complex(0,0)).re)});
-  return {ok:true,msg:"",values,source,totalCurrent,nodes:nidx,scope,f};
+  return {ok:true,msg:"",values,source,totalCurrent,nodes:nidx,scope:scopes[0]||null,scopes,f};
 }
 function evaluate(){state.sim=evaluateAt();}
 
@@ -324,14 +324,30 @@ function place(x,y){
     const nc=defaultCell(t); nc.rot=autoRot(x,y,t); state.cells[k]=nc; state.selected=k; evaluate(); render();
   }
 }
+function wireSegments(k0){
+  const [x,y]=xy(k0);
+  const g=state.cells;
+  const n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S);
+  const e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W);
+  const so=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N);
+  const w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
+  let out="";
+  if(n) out+='<line x1="20" y1="20" x2="20" y2="-1" class="wire"/>';
+  if(e) out+='<line x1="20" y1="20" x2="41" y2="20" class="wire"/>';
+  if(so) out+='<line x1="20" y1="20" x2="20" y2="41" class="wire"/>';
+  if(w) out+='<line x1="20" y1="20" x2="-1" y2="20" class="wire"/>';
+  if(!(n||e||so||w)) out+='<circle cx="20" cy="20" r="2.6" fill="var(--wire)" opacity=".75"/>';
+  if((n||e||so||w) && [n,e,so,w].filter(Boolean).length>2) out+='<circle cx="20" cy="20" r="3.2" fill="var(--wire)"/>';
+  return out;
+}
 function componentSvg(c,k0){
   const selected=state.selected===k0?" selected-cell":"";
   const v=state.sim.values[k0];
   const rot=`rotate(${c.rot*45} 20 20)`;
   const meter=v? (c.type==="ammeter"?fmt(v.I,"A"):c.type==="scope"?fmt(v.V,"V"):c.type==="speaker"?fmt(v.V,"V"):"") : "";
   let inner="";
-  if(c.type==="wire") inner='<line x1="20" y1="20" x2="20" y2="0" class="wire"/><line x1="20" y1="20" x2="40" y2="20" class="wire"/><line x1="20" y1="20" x2="20" y2="40" class="wire"/><line x1="20" y1="20" x2="0" y2="20" class="wire"/>';
-  if(c.type==="source") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="11" class="wire"/><line x1="20" y1="40" x2="20" y2="29" class="wire"/><line x1="10" y1="13" x2="30" y2="13" class="sym"/><line x1="14" y1="27" x2="26" y2="27" class="sym"/><text x="7" y="15" fill="var(--red)" font-size="9" font-weight="900">+</text><text x="29" y="31" fill="var(--accent)" font-size="10" font-weight="900">~</text></g>`;
+  if(c.type==="wire") inner=wireSegments(k0);
+  if(c.type==="source") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="40" x2="20" y2="32" class="wire"/><circle cx="20" cy="20" r="12" fill="var(--fill)" stroke="var(--accent)" stroke-width="2.5"/><path d="M12 20 C14 14,18 14,20 20 C22 26,26 26,28 20" stroke="var(--accent)" stroke-width="2.4" fill="none" stroke-linecap="round"/><text x="20" y="36" fill="var(--accent)" text-anchor="middle" font-size="8" font-weight="900">AC</text></g>`;
   if(c.type==="resistor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 L14 11 L26 15 L14 19 L26 23 L14 27 L20 32" class="sym"/></g>`;
   if(c.type==="inductor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 C12 11,12 17,20 20 C28 23,28 29,20 32" class="sym"/><path d="M20 8 C28 11,28 17,20 20 C12 23,12 29,20 32" class="sym" opacity=".55"/></g>`;
   if(c.type==="capacitor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="14" class="wire"/><line x1="20" y1="26" x2="20" y2="40" class="wire"/><line x1="10" y1="14" x2="30" y2="14" class="sym"/><line x1="10" y1="26" x2="30" y2="26" class="sym"/></g>`;
@@ -339,10 +355,11 @@ function componentSvg(c,k0){
   if(["ammeter","scope","speaker"].includes(c.type)){
     const letter=c.type==="ammeter"?"A":c.type==="scope"?"Ω":"L";
     const col=c.type==="ammeter"?"var(--green)":c.type==="scope"?"var(--accent)":"var(--amber)";
-    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="${col}" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="${col}" text-anchor="middle" font-size="13" font-weight="900">${letter}</text>${meter?`<rect x="-5" y="-12" width="50" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.3" font-weight="900">${meter}</text>`:""}</g></g>`;
+    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="${col}" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="${col}" text-anchor="middle" font-size="13" font-weight="900">${letter}</text>${meter?`<rect x="-6" y="-13" width="52" height="14" rx="5" fill="rgba(2,6,23,.78)" stroke="var(--border)"/><text x="20" y="-3" fill="white" text-anchor="middle" font-size="7.3" font-weight="900">${meter}</text>`:""}</g></g>`;
   }
   return `<svg class="comp${selected}" viewBox="0 0 40 40">${inner}</svg>`;
 }
+
 function renderCells(){
   let html="";
   for(let y=0;y<GRID_H;y++)for(let x=0;x<GRID_W;x++){
@@ -360,6 +377,7 @@ function selectedPanel(){
     rows+=num("U","Spannung U / V","V");
     rows+=num("f","Frequenz f / Hz","Hz","0.1");
     rows+=`<div class="row"><label>Signal</label><select data-edit="mode"><option value="sine"${c.mode==="sine"?" selected":""}>Sinus</option><option value="noise"${c.mode==="noise"?" selected":""}>weißes Rauschen</option></select></div>`;
+    rows+=`<button class="btn" data-action="freq" style="width:100%;margin-top:8px">Frequenzgang der Quelle anzeigen</button>`;
   }
   if(c.type==="resistor")rows+=num("R","Widerstand R / Ω","Ω","0.001");
   if(c.type==="inductor")rows+=num("L","Induktivität L / H","H","0.000001");
@@ -387,21 +405,25 @@ function drawScope(){
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
   for(let i=1;i<8;i++){ctx.beginPath();ctx.moveTo(rect.width*i/8,0);ctx.lineTo(rect.width*i/8,rect.height);ctx.stroke()}
   for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/4);ctx.lineTo(rect.width,rect.height*i/4);ctx.stroke()}
-  ctx.strokeStyle=getCss("--accent");ctx.lineWidth=2;
-  const source=state.sim.source, scope=state.sim.scope;
-  const amp=scope?scope.V:(source?source.c.U:1), f=state.sim.f||1000, mode=source?source.c.mode:"sine";
+  const source=state.sim.source, scopes=state.sim.scopes||[], f=state.sim.f||1000, mode=source?source.c.mode:"sine";
+  const traces=scopes.length?scopes:[{key:"Quelle",V:source?source.c.U:1,phase:0,f}];
+  const maxAmp=Math.max(...traces.map(t=>Math.max(t.V,1e-9)),1e-9);
+  const colors=[getCss("--accent"),getCss("--green"),getCss("--amber"),getCss("--violet"),getCss("--red")];
   const cycles=Math.max(1, Math.min(8, f/250));
-  ctx.beginPath();
-  for(let x=0;x<rect.width;x++){
-    const t=x/rect.width, noise=(Math.random()*2-1)*0.65;
-    const yv=mode==="noise"?noise:Math.sin(2*Math.PI*cycles*t+(scope?scope.phase:0));
-    const y=rect.height/2-yv*rect.height*.38;
-    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  }
-  ctx.stroke();
+  traces.forEach((tr,ti)=>{
+    ctx.strokeStyle=colors[ti%colors.length];ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let x=0;x<rect.width;x++){
+      const t=x/rect.width, noise=(Math.random()*2-1)*0.65;
+      const raw=mode==="noise"?noise:Math.sin(2*Math.PI*cycles*t+(tr.phase||0));
+      const yv=raw*(tr.V/maxAmp);
+      const y=rect.height/2-yv*rect.height*.38;
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  });
   ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
-  const sens=amp>0?amp:1;
-  ctx.fillText(`Auto: ${fmt(sens,"V")} Scheitelwert, ${fmt(f,"Hz")}`,12,20);
+  ctx.fillText(`Auto: ${fmt(maxAmp,"V")} max., ${fmt(f,"Hz")} · ${traces.length} Kurve(n)`,12,20);
 }
 function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
 function drawFreq(){
@@ -413,26 +435,34 @@ function drawFreq(){
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
   for(let i=0;i<=10;i++){let x=rect.width*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,rect.height);ctx.stroke()}
   for(let i=0;i<=6;i++){let y=rect.height*i/6;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(rect.width,y);ctx.stroke()}
-  const pts=[];
-  for(let i=0;i<240;i++){
-    const logF=Math.log10(10)+(Math.log10(50000)-Math.log10(10))*i/239;
+  const base=evaluateAt();
+  const scopeKeys=(base.scopes||[]).map(s=>s.key);
+  const targetKeys=scopeKeys.length?scopeKeys:["__current"];
+  const series=targetKeys.map(k=>[]);
+  for(let i=0;i<260;i++){
+    const logF=Math.log10(10)+(Math.log10(50000)-Math.log10(10))*i/259;
     const f=Math.pow(10,logF);
     const res=evaluateAt(f);
-    let yv=res.scope?res.scope.V:(isFinite(res.totalCurrent)?res.totalCurrent:0);
-    pts.push({f,yv});
+    targetKeys.forEach((tk,si)=>{
+      let yv=tk==="__current"?(isFinite(res.totalCurrent)?res.totalCurrent:0):(res.values[tk]?.V||0);
+      series[si].push({f,yv});
+    });
   }
-  const max=Math.max(...pts.map(p=>p.yv),1e-12);
-  ctx.strokeStyle=getCss("--accent");ctx.lineWidth=2;ctx.beginPath();
-  pts.forEach((p,i)=>{
-    const x=rect.width*i/(pts.length-1);
-    const db=20*Math.log10(Math.max(p.yv/max,1e-6));
-    const y=rect.height-(Math.max(-60,Math.min(0,db))+60)/60*rect.height;
-    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  const max=Math.max(...series.flat().map(p=>p.yv),1e-12);
+  const colors=[getCss("--accent"),getCss("--green"),getCss("--amber"),getCss("--violet"),getCss("--red")];
+  series.forEach((pts,si)=>{
+    ctx.strokeStyle=colors[si%colors.length];ctx.lineWidth=2;ctx.beginPath();
+    pts.forEach((p,i)=>{
+      const x=rect.width*i/(pts.length-1);
+      const db=20*Math.log10(Math.max(p.yv/max,1e-6));
+      const y=rect.height-(Math.max(-60,Math.min(0,db))+60)/60*rect.height;
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    });
+    ctx.stroke();
   });
-  ctx.stroke();
   ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
-  ctx.fillText("Frequenzgang: 10 Hz bis 50 kHz, normiert auf Maximum",14,22);
-  ctx.fillText("Bei angeschlossenem Oszilloskop: Spannung am Oszilloskop, sonst Gesamtstrom der Quelle",14,42);
+  ctx.fillText("Frequenzgang der Quelle: rechnerischer Sweep von 10 Hz bis 50 kHz",14,22);
+  ctx.fillText(scopeKeys.length?`${scopeKeys.length} Oszilloskop-Kurve(n), auf Maximum normiert`:"Kein Oszilloskop: dargestellt wird der Quellenstrom",14,42);
 }
 function startAudio(){
   const src=state.sim.source; if(!src)return;
@@ -467,7 +497,7 @@ function render(){
         <div class="section-title">Bauteilwerte</div>${selectedPanel()}
         <div class="panel">
           <div class="small"><b>Simulation</b><br>${sim.source?`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`:"Noch keine Quelle gesetzt."}<br>
-          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>${sim.scope?`Oszilloskop: ${fmt(sim.scope.V,"V")}`:"Oszilloskop anschließen, um lokale Spannungen sichtbar zu machen."}</div>
+          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>${(sim.scopes&&sim.scopes.length)?`Oszilloskope: ${sim.scopes.map((o,i)=>`Ω${i+1} ${fmt(o.V,"V")}`).join(" · ")}`:"Oszilloskope können mehrfach gesetzt werden. Frequenzgang nutzt alle angeschlossenen Messpunkte."}</div>
           <div class="actions">
             <button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"Signal hören"}</button>
             <button class="btn" data-action="freq">Frequenzgang</button>
@@ -484,7 +514,7 @@ function render(){
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
         <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
-        <div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">${sim.scope?"Messpunkt automatisch skaliert":"Setze ein Oszilloskop in eine Leitung oder parallel zu einem Bauteil."}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>
+        <div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">${(sim.scopes&&sim.scopes.length)?`${sim.scopes.length} Messpunkt(e), automatisch gemeinsam skaliert`:"Setze ein oder mehrere Oszilloskope in die Schaltung."}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
       ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
@@ -538,31 +568,33 @@ function action(a){
 function add(x,y,t,props={}){const c={...defaultCell(t),...props};state.cells[key(x,y)]=c;return c}
 function exampleLowpass(){
   stopAudio(); state.cells={}; state.selected=null;
-  add(5,7,"source",{rot:DIR_N,U:5,f:1000});
-  for(let y=8;y<=13;y++)add(5,y,"wire");
-  for(let x=6;x<=10;x++)add(x,7,"wire");
-  add(11,7,"resistor",{rot:DIR_E,R:1000});
-  for(let x=12;x<=15;x++)add(x,7,"wire");
-  add(16,7,"scope",{rot:DIR_N});
-  add(16,8,"capacitor",{rot:DIR_N,C:1e-6});
-  for(let y=9;y<=13;y++)add(16,y,"wire");
-  for(let x=6;x<=15;x++)add(x,13,"wire");
-  state.selected=key(11,7); render();
+  add(6,10,"source",{rot:DIR_E,U:5,f:1000});
+  for(let x=7;x<=10;x++)add(x,10,"wire");
+  add(11,10,"resistor",{rot:DIR_E,R:1000});
+  for(let x=12;x<=15;x++)add(x,10,"wire");
+  add(16,10,"scope",{rot:DIR_N});
+  add(16,11,"capacitor",{rot:DIR_N,C:1e-6});
+  for(let y=12;y<=15;y++)add(16,y,"wire");
+  for(let x=6;x<=15;x++)add(x,15,"wire");
+  for(let y=11;y<=14;y++)add(6,y,"wire");
+  add(12,9,"scope",{rot:DIR_E});
+  state.selected=key(6,10); render();
 }
 function exampleResonance(){
   stopAudio(); state.cells={}; state.selected=null;
-  add(5,9,"source",{rot:DIR_N,U:2,f:159});
-  for(let y=10;y<=15;y++)add(5,y,"wire");
-  for(let x=6;x<=9;x++)add(x,9,"wire");
-  add(10,9,"ammeter",{rot:DIR_E});
-  add(11,9,"resistor",{rot:DIR_E,R:20});
-  add(12,9,"inductor",{rot:DIR_E,L:0.1});
-  add(13,9,"capacitor",{rot:DIR_E,C:1e-5});
-  for(let x=14;x<=18;x++)add(x,9,"wire");
-  for(let y=10;y<=15;y++)add(18,y,"wire");
-  for(let x=6;x<=17;x++)add(x,15,"wire");
-  add(13,8,"scope",{rot:DIR_E});
-  state.selected=key(12,9); render();
+  add(6,12,"source",{rot:DIR_E,U:2,f:159});
+  for(let x=7;x<=9;x++)add(x,12,"wire");
+  add(10,12,"ammeter",{rot:DIR_E});
+  add(11,12,"resistor",{rot:DIR_E,R:20});
+  add(12,12,"inductor",{rot:DIR_E,L:0.1});
+  add(13,12,"capacitor",{rot:DIR_E,C:1e-5});
+  for(let x=14;x<=18;x++)add(x,12,"wire");
+  for(let y=13;y<=16;y++)add(18,y,"wire");
+  for(let x=6;x<=17;x++)add(x,16,"wire");
+  for(let y=13;y<=15;y++)add(6,y,"wire");
+  add(12,11,"scope",{rot:DIR_E});
+  add(13,11,"scope",{rot:DIR_E});
+  state.selected=key(6,12); render();
 }
 window.addEventListener("pointerup",()=>state.drawing=false);
 window.addEventListener("resize",()=>requestAnimationFrame(()=>{drawScope();drawFreq()}));
