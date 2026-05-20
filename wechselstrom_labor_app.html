@@ -3,23 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Wechselstrom-Labor · RLC, Oszilloskop und Frequenzgang</title>
+<title>Wechselstrom-Labor · RLC, Filter, Oszilloskop und Klang</title>
 <style>
 @font-face{font-family:Inter;src:url('Fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:Inter;src:url('Fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
 @font-face{font-family:Poppins;src:url('Fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
-
 :root{
-  --bg:#06101f;--bg2:#0b1730;--panel:rgba(15,23,42,.78);--panel2:rgba(2,6,23,.86);
+  --bg:#06101f;--bg2:#101a3a;--panel:rgba(15,23,42,.80);--panel2:rgba(2,6,23,.90);
   --border:rgba(255,255,255,.12);--text:#f8fafc;--muted:#94a3b8;--dim:#cbd5e1;
-  --accent:#38bdf8;--green:#34d399;--amber:#fbbf24;--red:#fb7185;--violet:#a78bfa;
-  --wire:#dbeafe;--grid:rgba(255,255,255,.07);--fill:rgba(2,6,23,.75);
-  --shadow:0 18px 55px rgba(0,0,0,.45);--side:340px;
+  --accent:#38bdf8;--green:#34d399;--amber:#fbbf24;--red:#fb7185;--violet:#a78bfa;--pink:#f472b6;
+  --wire:#dbeafe;--grid:rgba(255,255,255,.065);--fill:rgba(2,6,23,.75);
+  --shadow:0 18px 55px rgba(0,0,0,.45);--side:360px;
 }
 body.light{
-  --bg:#f8fafc;--bg2:#e0f2fe;--panel:rgba(255,255,255,.86);--panel2:rgba(255,255,255,.95);
-  --border:rgba(15,23,42,.12);--text:#0f172a;--muted:#64748b;--dim:#334155;
-  --accent:#0369a1;--green:#047857;--amber:#b45309;--red:#be123c;--violet:#6d28d9;
+  --bg:#f8fafc;--bg2:#dbeafe;--panel:rgba(255,255,255,.88);--panel2:rgba(255,255,255,.96);
+  --border:rgba(15,23,42,.13);--text:#0f172a;--muted:#64748b;--dim:#334155;
+  --accent:#0369a1;--green:#047857;--amber:#b45309;--red:#be123c;--violet:#6d28d9;--pink:#be185d;
   --wire:#1e293b;--grid:rgba(15,23,42,.09);--fill:rgba(255,255,255,.78);
   --shadow:0 14px 40px rgba(15,23,42,.14);
 }
@@ -27,10 +26,9 @@ body.light{
 html,body,#app{width:100%;height:100%;margin:0;overflow:hidden}
 body{
   font-family:Inter,system-ui,sans-serif;color:var(--text);
-  background:
-    radial-gradient(circle at 12% 8%, rgba(56,189,248,.22), transparent 32%),
-    radial-gradient(circle at 85% 80%, rgba(167,139,250,.20), transparent 36%),
-    linear-gradient(135deg,var(--bg),var(--bg2));
+  background:radial-gradient(circle at 12% 8%,rgba(56,189,248,.20),transparent 32%),
+             radial-gradient(circle at 85% 80%,rgba(167,139,250,.20),transparent 36%),
+             linear-gradient(135deg,var(--bg),var(--bg2));
 }
 button,input,select{font-family:inherit}
 .app{height:100%;display:flex}
@@ -40,29 +38,34 @@ button,input,select{font-family:inherit}
 }
 .brand{padding:28px 24px 18px;border-bottom:1px solid var(--border)}
 .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:800}
-h1{font-family:Poppins,Inter,sans-serif;font-size:29px;line-height:1.05;margin:8px 0 4px;letter-spacing:-.03em}
+h1{font-family:Poppins,Inter,sans-serif;font-size:28px;line-height:1.05;margin:8px 0 4px;letter-spacing:-.03em}
 .brand p{margin:0;color:var(--muted);font-size:13px}
 .side-scroll{overflow:auto;padding:18px 18px 26px}
 .section-title{margin:18px 4px 9px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
 .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .tool{
   border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--dim);
-  border-radius:14px;padding:10px 10px;display:flex;gap:8px;align-items:center;cursor:pointer;
+  border-radius:14px;padding:10px;display:flex;gap:8px;align-items:center;cursor:pointer;
   font-size:13px;font-weight:700;min-height:42px;transition:.18s
 }
 .tool:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
 .tool.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%, transparent)}
 .tool svg{width:18px;height:18px;flex:0 0 auto}
-.panel{
-  margin-top:12px;border:1px solid var(--border);border-radius:18px;background:var(--panel);
-  padding:14px;box-shadow:var(--shadow)
-}
+.panel{margin-top:12px;border:1px solid var(--border);border-radius:18px;background:var(--panel);padding:14px;box-shadow:var(--shadow)}
 .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:9px 0}
 .row label{font-size:12px;color:var(--dim);font-weight:700}
 .row input,.row select{
-  width:138px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);
+  width:150px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);
   border-radius:10px;padding:7px 9px;outline:none
 }
+.row select option{background:#0f172a;color:white}
+body.light .row select option{background:white;color:#0f172a}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.check{
+  display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:10px;
+  padding:7px 8px;font-size:12px;color:var(--dim);cursor:pointer
+}
+.check input{width:auto}
 .small{font-size:12px;color:var(--muted);line-height:1.45}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
 .btn{
@@ -80,28 +83,26 @@ h1{font-family:Poppins,Inter,sans-serif;font-size:29px;line-height:1.05;margin:8
 .top-actions{display:flex;gap:8px;align-items:center}
 .canvas-wrap{flex:1;position:relative;overflow:hidden;touch-action:none}
 .grid{
-  position:absolute;transform-origin:0 0;width:1600px;height:1200px;
+  position:absolute;transform-origin:0 0;width:1680px;height:1240px;
   background-image:radial-gradient(var(--grid) 2px,transparent 2px);background-size:40px 40px;background-position:19px 19px
 }
 .cell{position:absolute;width:40px;height:40px;border:.5px solid var(--grid)}
 .cell:hover{background:color-mix(in srgb,var(--accent) 11%, transparent)}
 .comp{position:absolute;width:40px;height:40px;overflow:visible;pointer-events:none}
-.wire{stroke:var(--wire);stroke-width:3.2;stroke-linecap:square}
+.wire{stroke:var(--wire);stroke-width:3.4;stroke-linecap:round}
 .sym{stroke:var(--wire);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .fill{fill:var(--fill);stroke:var(--wire);stroke-width:2.3}
 .term{fill:var(--wire);stroke:var(--bg);stroke-width:1}
-.selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 10%, transparent)}
+.selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 11%, transparent)}
 .hud{
-  position:absolute;left:20px;bottom:20px;z-index:4;width:min(560px,calc(100% - 40px));
+  position:absolute;left:20px;bottom:20px;z-index:4;width:min(720px,calc(100% - 40px));
   background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:var(--shadow);backdrop-filter:blur(20px)
 }
 .hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .hud-title{font-weight:900;color:var(--accent)}
-.scope{width:100%;height:150px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
+.scope{width:100%;height:180px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
 body.light .scope{background:rgba(255,255,255,.55)}
-.float{
-  position:absolute;right:20px;bottom:20px;z-index:4;display:flex;flex-direction:column;gap:8px
-}
+.float{position:absolute;right:20px;bottom:20px;z-index:4;display:flex;flex-direction:column;gap:8px}
 .float .btn{background:var(--panel);box-shadow:var(--shadow);width:44px;height:44px;padding:0}
 .badge{
   display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);
@@ -114,14 +115,14 @@ body.light .scope{background:rgba(255,255,255,.55)}
 .modal{
   position:absolute;inset:0;z-index:20;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)
 }
-.modal-card{max-width:920px;max-height:90vh;overflow:auto;background:var(--panel2);border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+.modal-card{max-width:980px;max-height:90vh;overflow:auto;background:var(--panel2);border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
 .modal-card h2{font-family:Poppins;margin:0 0 14px;color:var(--accent)}
-.freq-canvas{width:100%;height:290px;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:16px}
+.freq-canvas{width:100%;height:310px;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:16px}
 .help-list{padding-left:18px;color:var(--dim);line-height:1.5}
-@media(max-width:820px){
-  .app{flex-direction:column}.sidebar{width:100%;height:43%;border-right:0;border-bottom:1px solid var(--border)}
+@media(max-width:860px){
+  .app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}
   .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
-  .topbar{height:56px;padding:0 12px}.hud{display:none}.float{right:12px;bottom:12px}
+  .topbar{height:56px;padding:0 12px}.hud{left:10px;bottom:10px;width:calc(100% - 20px)}.float{right:12px;bottom:212px}
 }
 </style>
 </head>
@@ -129,392 +130,450 @@ body.light .scope{background:rgba(255,255,255,.55)}
 <div id="app"></div>
 <script>
 (() => {
-const GRID_W=40, GRID_H=30, CELL=40;
+const GRID_W=42, GRID_H=31, CELL=40;
 const DIR_N=0, DIR_E=2, DIR_S=4, DIR_W=6;
-const dirs=[DIR_N,DIR_E,DIR_S,DIR_W];
+const dirs=[DIR_N,DIR_E,DIR_S,DIR_W], colors=["#38bdf8","#fbbf24","#34d399","#f472b6","#a78bfa"];
 const opp=d=>(d+4)%8;
 const state={
-  cells:{}, selected:null, tool:"pan", scale:0.9, offset:{x:90,y:70}, dragging:false, dragStart:null,
+  cells:{}, selected:null, tool:"select", scale:0.9, offset:{x:80,y:70}, dragging:false, dragStart:null,
   drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false,
-  sim:{ok:true, msg:"", values:{}, scope:null, source:null, totalCurrent:0, nodes:0}
+  visibleScopes:[], audibleSpeaker:null,
+  sim:{ok:true,msg:"",values:{},scopes:[],speakers:[],source:null,totalCurrent:0,nodes:0}
 };
 const app=document.getElementById("app");
-
 const icons={
-  pan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></svg>',
-  wire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/><path d="M7 9v6"/><path d="M17 9v6"/></svg>',
-  source:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v5"/><path d="M12 16v5"/><path d="M7 8h10"/><path d="M9 16h6"/></svg>',
-  resistor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h4l2-4 4 8 4-8 2 4h2"/></svg>',
-  inductor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h3"/><path d="M6 12a3 3 0 0 1 6 0"/><path d="M12 12a3 3 0 0 1 6 0"/><path d="M18 12h3"/></svg>',
-  capacitor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h6"/><path d="M14 12h6"/><path d="M10 6v12"/><path d="M14 6v12"/></svg>',
-  ammeter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><path d="M9 15l3-7 3 7"/><path d="M10.2 13h3.6"/></svg>',
-  scope:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 12h3l2-4 3 8 2-4h2"/></svg>',
-  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9v6h4l5 4V5L9 9H5z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>',
-  switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17h5"/><path d="M15 17h5"/><path d="M9 17l6-8"/></svg>',
-  erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 21h10"/><path d="M4 15l8-8 6 6-8 8H6l-2-2z"/></svg>',
-  rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>',
-  select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3l7 17 2-7 7-2z"/></svg>',
-  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
-  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+pan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></svg>',
+wire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/><path d="M7 9v6"/><path d="M17 9v6"/></svg>',
+source:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"/><path d="M6 12c2-5 4 5 6 0s4 5 6 0"/></svg>',
+dcsource:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v5"/><path d="M12 16v5"/><path d="M7 8h10"/><path d="M9 16h6"/><path d="M5 5l14 14"/></svg>',
+threeway:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h5"/><path d="M15 6h5"/><path d="M15 18h5"/><path d="M9 12l6-6"/><circle cx="9" cy="12" r="1.5"/></svg>',
+resistor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h4l2-4 4 8 4-8 2 4h2"/></svg>',
+inductor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h3"/><path d="M6 12a3 3 0 0 1 6 0"/><path d="M12 12a3 3 0 0 1 6 0"/><path d="M18 12h3"/></svg>',
+capacitor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h6"/><path d="M14 12h6"/><path d="M10 6v12"/><path d="M14 6v12"/></svg>',
+ammeter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><path d="M9 15l3-7 3 7"/><path d="M10.2 13h3.6"/></svg>',
+scope:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 12h3l2-4 3 8 2-4h2"/></svg>',
+speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9v6h4l5 4V5L9 9H5z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>',
+switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17h5"/><path d="M15 17h5"/><path d="M9 17l6-8"/></svg>',
+erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 21h10"/><path d="M4 15l8-8 6 6-8 8H6l-2-2z"/></svg>',
+rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>',
+select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3l7 17 2-7 7-2z"/></svg>',
+sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
+moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
 };
-
 const complex=(re=0,im=0)=>({re,im});
 const cadd=(a,b)=>({re:a.re+b.re,im:a.im+b.im});
 const csub=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
 const cmul=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
-const cdiv=(a,b)=>{const d=b.re*b.re+b.im*b.im||1e-30;return {re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}};
+const cdiv=(a,b)=>{const d=b.re*b.re+b.im*b.im||1e-30;return{re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}};
 const cabs=a=>Math.hypot(a.re,a.im);
-const cneg=a=>({re:-a.re,im:-a.im});
 
 function defaultCell(type){
-  const base={type,rot:0,state:1,id:Math.random().toString(36).slice(2)};
+  const base={type,rot:DIR_E,state:1,id:Math.random().toString(36).slice(2,7),label:""};
   if(type==="source") return {...base,U:5,f:1000,mode:"sine"};
+  if(type==="dcsource") return {...base,U:5,charged:false};
+  if(type==="threeway") return {...base,state:0};
   if(type==="resistor") return {...base,R:1000};
   if(type==="inductor") return {...base,L:0.1};
   if(type==="capacitor") return {...base,C:1e-6};
   if(type==="ammeter") return {...base,R:0.05};
-  if(type==="scope") return {...base,R:1000000};
-  if(type==="speaker") return {...base,R:8};
+  if(type==="scope") return {...base,R:1000000,channel:1};
+  if(type==="speaker") return {...base,R:8,name:""};
   return base;
 }
 function key(x,y){return x+","+y}
 function xy(k){return k.split(",").map(Number)}
 function ports(c){if(!c)return[]; if(c.type==="wire")return dirs; return [c.rot,opp(c.rot)]}
 function hasPort(c,d){return ports(c).includes(d)}
-function branchType(t){return ["source","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)}
+function branchType(t){return ["source","dcsource","resistor","inductor","capacitor","ammeter","scope","speaker","switch","threeway"].includes(t)}
 function fmt(v,unit){
   const a=Math.abs(v);
-  if(!isFinite(a))return "–";
+  if(!isFinite(a))return "∞";
   if(a>=1000)return (v/1000).toFixed(2)+" k"+unit;
   if(a>=1)return v.toFixed(2)+" "+unit;
   if(a>=1e-3)return (v*1000).toFixed(2)+" m"+unit;
   if(a>=1e-6)return (v*1e6).toFixed(2)+" µ"+unit;
-  return (v*1e9).toFixed(2)+" n"+unit;
+  if(a>=1e-9)return (v*1e9).toFixed(2)+" n"+unit;
+  return "0 "+unit;
 }
 function admittance(c,f){
   if(c.type==="resistor") return complex(1/Math.max(c.R,1e-9),0);
   if(c.type==="ammeter") return complex(1/Math.max(c.R||0.05,1e-9),0);
   if(c.type==="scope") return complex(1/Math.max(c.R||1e6,1e-9),0);
   if(c.type==="speaker") return complex(1/Math.max(c.R||8,1e-9),0);
-  if(c.type==="switch") return c.state?complex(1e6,0):complex(1e-9,0);
-  if(c.type==="inductor"){
-    const w=2*Math.PI*f, X=w*Math.max(c.L,1e-12);
-    return cdiv(complex(1,0),complex(0,X));
-  }
-  if(c.type==="capacitor"){
-    const w=2*Math.PI*f, C=Math.max(c.C,1e-15);
-    return complex(0,w*C);
-  }
+  if(c.type==="switch") return c.state?complex(1e6,0):complex(1e-10,0);
+  if(c.type==="threeway") return c.state?complex(1e6,0):complex(1e-10,0);
+  if(c.type==="inductor"){const X=2*Math.PI*f*Math.max(c.L,1e-12);return cdiv(complex(1,0),complex(0,X))}
+  if(c.type==="capacitor"){const C=Math.max(c.C,1e-15);return complex(0,2*Math.PI*f*C)}
   return complex(0,0);
 }
 function solveComplex(A,b){
   const n=A.length;
   for(let i=0;i<n;i++){
-    let best=i, bestVal=cabs(A[i][i]);
-    for(let r=i+1;r<n;r++){const v=cabs(A[r][i]); if(v>bestVal){best=r;bestVal=v}}
+    let best=i,bv=cabs(A[i][i]);
+    for(let r=i+1;r<n;r++){const v=cabs(A[r][i]);if(v>bv){best=r;bv=v}}
     if(best!==i){[A[i],A[best]]=[A[best],A[i]];[b[i],b[best]]=[b[best],b[i]]}
-    if(cabs(A[i][i])<1e-18) continue;
+    if(cabs(A[i][i])<1e-18)continue;
     for(let r=i+1;r<n;r++){
       const fac=cdiv(A[r][i],A[i][i]);
-      for(let col=i;col<n;col++) A[r][col]=csub(A[r][col],cmul(fac,A[i][col]));
+      for(let col=i;col<n;col++)A[r][col]=csub(A[r][col],cmul(fac,A[i][col]));
       b[r]=csub(b[r],cmul(fac,b[i]));
     }
   }
   const x=Array(n).fill(0).map(()=>complex(0,0));
   for(let i=n-1;i>=0;i--){
     let sum=b[i];
-    for(let j=i+1;j<n;j++) sum=csub(sum,cmul(A[i][j],x[j]));
+    for(let j=i+1;j<n;j++)sum=csub(sum,cmul(A[i][j],x[j]));
     x[i]=cabs(A[i][i])<1e-18?complex(0,0):cdiv(sum,A[i][i]);
   }
   return x;
 }
 function evaluateAt(freqOverride=null){
-  const grid=state.cells;
-  const parent={};
-  const find=a=>{if(parent[a]===undefined)parent[a]=a; return parent[a]===a?a:parent[a]=find(parent[a])}
-  const union=(a,b)=>{const ra=find(a),rb=find(b); if(ra!==rb)parent[ra]=rb}
+  const grid=state.cells,parent={};
+  const find=a=>{if(parent[a]===undefined)parent[a]=a;return parent[a]===a?a:parent[a]=find(parent[a])}
+  const union=(a,b)=>{const ra=find(a),rb=find(b);if(ra!==rb)parent[ra]=rb}
   const node=(x,y,d)=>`${x},${y},${d}`;
-
   Object.entries(grid).forEach(([k0,c])=>{
     const [x,y]=xy(k0);
-    if(c.type==="wire"){
-      dirs.forEach(d=>union(node(x,y,d),node(x,y,DIR_N)));
-    }
+    if(c.type==="wire")dirs.forEach(d=>union(node(x,y,d),node(x,y,DIR_N)));
   });
   Object.entries(grid).forEach(([k0,c])=>{
     const [x,y]=xy(k0);
-    const checks=[
-      [x+1,y,DIR_E,DIR_W],[x,y+1,DIR_S,DIR_N]
-    ];
-    checks.forEach(([nx,ny,d,od])=>{
+    [[x+1,y,DIR_E,DIR_W],[x,y+1,DIR_S,DIR_N]].forEach(([nx,ny,d,od])=>{
       const n=grid[key(nx,ny)];
-      if(n && hasPort(c,d) && hasPort(n,od)) union(node(x,y,d),node(nx,ny,od));
+      if(n&&hasPort(c,d)&&hasPort(n,od))union(node(x,y,d),node(nx,ny,od));
     });
   });
-
-  const branches=[], sources=[], active=new Set();
+  const branches=[],sources=[],active=new Set();
   Object.entries(grid).forEach(([k0,c])=>{
     if(!branchType(c.type))return;
-    const [x,y]=xy(k0);
-    const a=find(node(x,y,c.rot)), b=find(node(x,y,opp(c.rot)));
+    const [x,y]=xy(k0), a=find(node(x,y,c.rot)), b=find(node(x,y,opp(c.rot)));
     active.add(a);active.add(b);
-    if(c.type==="source") sources.push({key:k0,c,a,b});
-    else branches.push({key:k0,c,a,b});
+    if(c.type==="source"||c.type==="dcsource")sources.push({key:k0,c,a,b}); else branches.push({key:k0,c,a,b});
   });
-  const source=sources[0];
-  const f=freqOverride ?? (source?source.c.f:1000);
-  if(!source){return {ok:true,msg:"Keine Quelle",values:{},source:null,totalCurrent:0,nodes:0,scope:null,scopes:[],f}}
-  if(source.a===source.b){return {ok:false,msg:"Kurzschluss an der Spannungsquelle",values:{},source,totalCurrent:Infinity,nodes:0,scope:null,scopes:[],f}}
-  const roots=[...active];
-  const ground=source.b;
-  const nodeMap=new Map(); let nidx=0;
-  roots.forEach(r=>{if(r!==ground) nodeMap.set(r,nidx++)});
-  const m=sources.length, N=nidx+m;
+  const acSource=sources.find(s=>s.c.type==="source");
+  const source=acSource||sources[0], f=freqOverride ?? (acSource?acSource.c.f:1);
+  if(!source)return {ok:true,msg:"Keine Quelle",values:{},source:null,totalCurrent:0,nodes:0,scopes:[],speakers:[],f};
+  if(source.a===source.b)return {ok:false,msg:"Kurzschluss an der Spannungsquelle",values:{},source,totalCurrent:Infinity,nodes:0,scopes:[],speakers:[],f};
+  const roots=[...active], ground=source.b, nodeMap=new Map(); let nidx=0;
+  roots.forEach(r=>{if(r!==ground)nodeMap.set(r,nidx++)});
+  const m=sources.length,N=nidx+m;
   const A=Array(N).fill(0).map(()=>Array(N).fill(0).map(()=>complex(0,0)));
   const z=Array(N).fill(0).map(()=>complex(0,0));
   const stampY=(ra,rb,Y)=>{
-    const ia=nodeMap.get(ra), ib=nodeMap.get(rb);
-    if(ia!==undefined) A[ia][ia]=cadd(A[ia][ia],Y);
-    if(ib!==undefined) A[ib][ib]=cadd(A[ib][ib],Y);
+    const ia=nodeMap.get(ra),ib=nodeMap.get(rb);
+    if(ia!==undefined)A[ia][ia]=cadd(A[ia][ia],Y);
+    if(ib!==undefined)A[ib][ib]=cadd(A[ib][ib],Y);
     if(ia!==undefined&&ib!==undefined){A[ia][ib]=csub(A[ia][ib],Y);A[ib][ia]=csub(A[ib][ia],Y)}
   };
   branches.forEach(br=>stampY(br.a,br.b,admittance(br.c,f)));
   sources.forEach((s,si)=>{
-    const row=nidx+si, col=nidx+si;
-    const ia=nodeMap.get(s.a), ib=nodeMap.get(s.b);
+    const row=nidx+si,col=nidx+si,ia=nodeMap.get(s.a),ib=nodeMap.get(s.b);
     if(ia!==undefined){A[ia][col]=cadd(A[ia][col],complex(1,0));A[row][ia]=cadd(A[row][ia],complex(1,0))}
     if(ib!==undefined){A[ib][col]=csub(A[ib][col],complex(1,0));A[row][ib]=csub(A[row][ib],complex(1,0))}
     z[row]=complex(s.c.U||5,0);
   });
-  for(let i=0;i<nidx;i++) A[i][i]=cadd(A[i][i],complex(1e-12,0));
-  const sol=solveComplex(A,z);
-  const Vroot=r=>r===ground?complex(0,0):sol[nodeMap.get(r)]||complex(0,0);
-  const values={}; let scopes=[], totalCurrent=cabs(sol[nidx]||complex(0,0));
+  for(let i=0;i<nidx;i++)A[i][i]=cadd(A[i][i],complex(1e-12,0));
+  const sol=solveComplex(A,z), Vroot=r=>r===ground?complex(0,0):sol[nodeMap.get(r)]||complex(0,0);
+  const values={}, scopes=[], speakers=[];
   branches.forEach(br=>{
-    const v=csub(Vroot(br.a),Vroot(br.b));
-    const I=cmul(v,admittance(br.c,f));
-    values[br.key]={V:cabs(v),I:cabs(I),phaseV:Math.atan2(v.im,v.re),phaseI:Math.atan2(I.im,I.re)};
-    if(br.c.type==="scope") scopes.push({key:br.key,V:cabs(v),phase:Math.atan2(v.im,v.re),f});
+    const v=csub(Vroot(br.a),Vroot(br.b)), I=cmul(v,admittance(br.c,f));
+    values[br.key]={V:cabs(v),I:cabs(I),phaseV:Math.atan2(v.im,v.re),phaseI:Math.atan2(I.im,I.re),complexV:v,complexI:I};
+    if(br.c.type==="scope")scopes.push({key:br.key,c:br.c,V:cabs(v),phase:Math.atan2(v.im,v.re),f,channel:br.c.channel||1});
+    if(br.c.type==="speaker")speakers.push({key:br.key,c:br.c,V:cabs(v),phase:Math.atan2(v.im,v.re),f});
   });
-  sources.forEach((s,si)=>values[s.key]={V:s.c.U||5,I:cabs(sol[nidx+si]||complex(0,0)),phaseI:Math.atan2((sol[nidx+si]||complex(0,0)).im,(sol[nidx+si]||complex(0,0)).re)});
-  return {ok:true,msg:"",values,source,totalCurrent,nodes:nidx,scope:scopes[0]||null,scopes,f};
+  sources.forEach((s,si)=>{
+    const I=sol[nidx+si]||complex(0,0);
+    values[s.key]={V:s.c.U||5,I:cabs(I),phaseI:Math.atan2(I.im,I.re),complexI:I};
+  });
+  return {ok:true,msg:"",values,source,totalCurrent:cabs(sol[nidx]||complex(0,0)),nodes:nidx,scopes,speakers,f};
 }
-function evaluate(){state.sim=evaluateAt();}
+function evaluate(){
+  state.sim=evaluateAt();
+  const keys=state.sim.scopes.map(s=>s.key);
+  state.visibleScopes=state.visibleScopes.filter(k=>keys.includes(k));
+  if(state.visibleScopes.length===0&&keys.length>0)state.visibleScopes=[...keys];
+  const sp=state.sim.speakers.map(s=>s.key);
+  if(state.audibleSpeaker&&!sp.includes(state.audibleSpeaker))state.audibleSpeaker=null;
+  if(!state.audibleSpeaker&&sp.length>0)state.audibleSpeaker=sp[0];
+}
+function nameOf(t){return({wire:"Kabel",source:"Wechselspannungsquelle",dcsource:"Gleichspannungsquelle",threeway:"Dreiwegeschalter",resistor:"Ohmscher Widerstand",inductor:"Induktivität",capacitor:"Kapazität",ammeter:"Amperemeter",scope:"Oszilloskop",speaker:"Lautsprecher",switch:"Schalter"})[t]||t}
 
-function autoRot(x,y,type){
-  const g=state.cells;
-  const n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S);
-  const e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W);
-  const s=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N);
-  const w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
-  if(n&&s)return DIR_N; if(e&&w)return DIR_E;
-  if(n)return DIR_N; if(e)return DIR_E; if(s)return DIR_S; if(w)return DIR_W;
-  return DIR_E;
+function getLCTransient(){
+  const cells=Object.values(state.cells);
+  const dc=cells.find(c=>c.type==="dcsource");
+  const sw=cells.find(c=>c.type==="threeway");
+  const L=cells.find(c=>c.type==="inductor");
+  const C=cells.find(c=>c.type==="capacitor");
+  if(!dc||!sw||!L||!C) return null;
+
+  const l=Math.max(L.L||1,1e-9);
+  const cap=Math.max(C.C||0.1,1e-12);
+  const U=dc.U||5;
+
+  // Vereinfachtes Serien-RLC-Modell für die freie Schwingung.
+  // Es werden alle ohmschen Widerstände im Aufbau als Dämpfungswiderstände aufsummiert.
+  // Das Amperemeter erhält zusätzlich seinen kleinen Innenwiderstand.
+  const explicitR=cells
+    .filter(c=>c.type==="resistor")
+    .reduce((s,c)=>s+Math.max(c.R||0,0),0);
+  const ammeterR=cells
+    .filter(c=>c.type==="ammeter")
+    .reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
+  const R=explicitR+ammeterR;
+
+  const omega0=1/Math.sqrt(l*cap);
+  const alpha=R/(2*l);
+  const underdamped=alpha<omega0;
+  const omegaD=underdamped?Math.sqrt(omega0*omega0-alpha*alpha):0;
+  const T=underdamped?2*Math.PI/omegaD:2*Math.PI/omega0;
+  const Imax=U*Math.sqrt(cap/l);
+
+  return {U,L:l,C:cap,R,omega0,alpha,omegaD,T,Imax,underdamped,active:sw.state===1};
 }
-function setTool(t){state.tool=t; render();}
+
+function autoRot(x,y){
+  const g=state.cells,n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S),e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W),s=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N),w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
+  if(n&&s)return DIR_N;if(e&&w)return DIR_E;if(e)return DIR_E;if(w)return DIR_E;if(n)return DIR_N;if(s)return DIR_N;return DIR_E;
+}
+function connectedDirs(x,y){
+  const g=state.cells,c=g[key(x,y)];
+  return {
+    n: c&&hasPort(c,DIR_N)&&g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S),
+    e: c&&hasPort(c,DIR_E)&&g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W),
+    s: c&&hasPort(c,DIR_S)&&g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N),
+    w: c&&hasPort(c,DIR_W)&&g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E)
+  };
+}
+function setTool(t){state.tool=t;render()}
 function place(x,y){
-  const k=key(x,y), c=state.cells[k], t=state.tool;
+  const k=key(x,y),c=state.cells[k],t=state.tool;
   if(t==="pan")return;
-  if(t==="select"){state.selected=k; if(c&&c.type==="switch")c.state=c.state?0:1; evaluate(); render(); return}
-  if(t==="erase"){delete state.cells[k]; if(state.selected===k)state.selected=null; evaluate(); render(); return}
-  if(t==="rotate"){if(c&&c.type!=="wire"){c.rot=(c.rot+2)%8; evaluate(); render()} return}
-  if(t==="wire"){if(!c)state.cells[k]=defaultCell("wire"); evaluate(); render(); return}
-  if(["source","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)){
+  if(t==="select"){state.selected=c?k:null;if(c&&c.type==="switch"){} evaluate();render();return}
+  if(t==="erase"){delete state.cells[k];if(state.selected===k)state.selected=null;evaluate();render();return}
+  if(t==="rotate"){if(c&&c.type!=="wire"){c.rot=(c.rot+2)%8;evaluate();render()}return}
+  if(t==="wire"){if(!c)state.cells[k]=defaultCell("wire");evaluate();render();return}
+  if(["source","dcsource","threeway","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)){
     if(c&&c.type!=="wire")return;
-    const nc=defaultCell(t); nc.rot=autoRot(x,y,t); state.cells[k]=nc; state.selected=k; evaluate(); render();
+    const nc=defaultCell(t);nc.rot=autoRot(x,y);state.cells[k]=nc;state.selected=k;evaluate();render();
   }
 }
-function wireSegments(k0){
-  const [x,y]=xy(k0);
-  const g=state.cells;
-  const n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S);
-  const e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W);
-  const so=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N);
-  const w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
-  let out="";
-  if(n) out+='<line x1="20" y1="20" x2="20" y2="-1" class="wire"/>';
-  if(e) out+='<line x1="20" y1="20" x2="41" y2="20" class="wire"/>';
-  if(so) out+='<line x1="20" y1="20" x2="20" y2="41" class="wire"/>';
-  if(w) out+='<line x1="20" y1="20" x2="-1" y2="20" class="wire"/>';
-  if(!(n||e||so||w)) out+='<circle cx="20" cy="20" r="2.6" fill="var(--wire)" opacity=".75"/>';
-  if((n||e||so||w) && [n,e,so,w].filter(Boolean).length>2) out+='<circle cx="20" cy="20" r="3.2" fill="var(--wire)"/>';
-  return out;
+function wireSvg(x,y){
+  const cd=connectedDirs(x,y);
+  let s="";
+  if(cd.n)s+='<line x1="20" y1="20" x2="20" y2="-1" class="wire"/>';
+  if(cd.e)s+='<line x1="20" y1="20" x2="41" y2="20" class="wire"/>';
+  if(cd.s)s+='<line x1="20" y1="20" x2="20" y2="41" class="wire"/>';
+  if(cd.w)s+='<line x1="20" y1="20" x2="-1" y2="20" class="wire"/>';
+  if(!s)s='<circle cx="20" cy="20" r="2.4" fill="var(--wire)" opacity=".7"/>';
+  return s;
 }
-function componentSvg(c,k0){
-  const selected=state.selected===k0?" selected-cell":"";
-  const v=state.sim.values[k0];
-  const rot=`rotate(${c.rot*45} 20 20)`;
-  const meter=v? (c.type==="ammeter"?fmt(v.I,"A"):c.type==="scope"?fmt(v.V,"V"):c.type==="speaker"?fmt(v.V,"V"):"") : "";
+function componentSvg(c,k0,x,y){
+  const selected=state.selected===k0?" selected-cell":"", v=state.sim.values[k0], rot=`rotate(${c.rot*45} 20 20)`;
   let inner="";
-  if(c.type==="wire") inner=wireSegments(k0);
-  if(c.type==="source") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="40" x2="20" y2="32" class="wire"/><circle cx="20" cy="20" r="12" fill="var(--fill)" stroke="var(--accent)" stroke-width="2.5"/><path d="M12 20 C14 14,18 14,20 20 C22 26,26 26,28 20" stroke="var(--accent)" stroke-width="2.4" fill="none" stroke-linecap="round"/><text x="20" y="36" fill="var(--accent)" text-anchor="middle" font-size="8" font-weight="900">AC</text></g>`;
-  if(c.type==="resistor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 L14 11 L26 15 L14 19 L26 23 L14 27 L20 32" class="sym"/></g>`;
-  if(c.type==="inductor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 C12 11,12 17,20 20 C28 23,28 29,20 32" class="sym"/><path d="M20 8 C28 11,28 17,20 20 C12 23,12 29,20 32" class="sym" opacity=".55"/></g>`;
-  if(c.type==="capacitor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="14" class="wire"/><line x1="20" y1="26" x2="20" y2="40" class="wire"/><line x1="10" y1="14" x2="30" y2="14" class="sym"/><line x1="10" y1="26" x2="30" y2="26" class="sym"/></g>`;
-  if(c.type==="switch") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="10" class="wire"/><line x1="20" y1="40" x2="20" y2="30" class="wire"/><circle cx="20" cy="12" r="3" class="term"/><circle cx="20" cy="28" r="3" class="term"/>${c.state?'<line x1="20" y1="12" x2="20" y2="28" stroke="var(--green)" stroke-width="3.2" stroke-linecap="round"/>':'<line x1="20" y1="28" x2="30" y2="13" class="sym"/>'}</g>`;
-  if(["ammeter","scope","speaker"].includes(c.type)){
-    const letter=c.type==="ammeter"?"A":c.type==="scope"?"Ω":"L";
-    const col=c.type==="ammeter"?"var(--green)":c.type==="scope"?"var(--accent)":"var(--amber)";
-    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="${col}" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="${col}" text-anchor="middle" font-size="13" font-weight="900">${letter}</text>${meter?`<rect x="-6" y="-13" width="52" height="14" rx="5" fill="rgba(2,6,23,.78)" stroke="var(--border)"/><text x="20" y="-3" fill="white" text-anchor="middle" font-size="7.3" font-weight="900">${meter}</text>`:""}</g></g>`;
+  if(c.type==="wire")inner=wireSvg(x,y);
+  if(c.type==="source")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="12.5" fill="var(--fill)" stroke="var(--accent)" stroke-width="2.6"/><path d="M11 20 C13 12,16 28,20 20 S27 12,29 20" stroke="var(--accent)" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
+  if(c.type==="dcsource")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="11" class="wire"/><line x1="20" y1="40" x2="20" y2="29" class="wire"/><line x1="10" y1="13" x2="30" y2="13" stroke="var(--red)" stroke-width="3.2" stroke-linecap="round"/><line x1="14" y1="27" x2="26" y2="27" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="8" y="14" fill="var(--red)" font-size="9" font-weight="900">+</text><text x="31" y="31" fill="var(--accent)" font-size="10" font-weight="900">−</text></g></g>`;
+  if(c.type==="threeway")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="9" class="wire"/><line x1="20" y1="40" x2="20" y2="31" class="wire"/><circle cx="20" cy="11" r="3" class="term"/><circle cx="20" cy="29" r="3" class="term"/><line x1="20" y1="11" x2="${c.state?20:31}" y2="${c.state?29:17}" stroke="${c.state?'var(--green)':'var(--amber)'}" stroke-width="3" stroke-linecap="round"/><g transform="rotate(${-c.rot*45} 20 20)"><rect x="-10" y="-12" width="60" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7" font-weight="900">${c.state?'LC frei':'Laden'}</text></g></g>`;
+  if(c.type==="resistor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 L14 11 L26 15 L14 19 L26 23 L14 27 L20 32" class="sym"/></g>`;
+  if(c.type==="inductor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 C12 11,12 17,20 20 C28 23,28 29,20 32" class="sym"/><path d="M20 8 C28 11,28 17,20 20 C12 23,12 29,20 32" class="sym" opacity=".55"/></g>`;
+  if(c.type==="capacitor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="14" class="wire"/><line x1="20" y1="26" x2="20" y2="40" class="wire"/><line x1="10" y1="14" x2="30" y2="14" class="sym"/><line x1="10" y1="26" x2="30" y2="26" class="sym"/></g>`;
+  if(c.type==="switch")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="10" class="wire"/><line x1="20" y1="40" x2="20" y2="30" class="wire"/><circle cx="20" cy="12" r="3" class="term"/><circle cx="20" cy="28" r="3" class="term"/>${c.state?'<line x1="20" y1="12" x2="20" y2="28" stroke="var(--green)" stroke-width="3.2" stroke-linecap="round"/>':'<line x1="20" y1="28" x2="30" y2="13" class="sym"/>'}</g>`;
+  if(c.type==="ammeter"){
+    const lc=getLCTransient();
+    const label=lc&&lc.active?`${lc.underdamped?"Imax":"Abkl."} ${fmt(lc.Imax,"A")}`:(v?fmt(v.I,"A"):"");
+    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="var(--green)" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="var(--green)" text-anchor="middle" font-size="13" font-weight="900">A</text>${label?`<rect x="-6" y="-12" width="52" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.3" font-weight="900">${label}</text>`:""}</g></g>`;
+  }
+  if(c.type==="scope"){
+    const ch=c.channel||1,col=colors[(ch-1)%colors.length], label=v?`K${ch} ${fmt(v.V,"V")}`:`K${ch}`;
+    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><rect x="6" y="8" width="28" height="24" rx="5" fill="var(--fill)" stroke="${col}" stroke-width="2.4"/><path d="M10 21h5l2-6 4 12 2-6h6" stroke="${col}" stroke-width="1.8" fill="none"/><g transform="rotate(${-c.rot*45} 20 20)"><rect x="-8" y="-12" width="56" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.1" font-weight="900">${label}</text></g></g>`;
+  }
+  if(c.type==="speaker"){
+    const label=v?fmt(v.V,"V"):"";
+    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="9" class="wire"/><line x1="20" y1="31" x2="20" y2="40" class="wire"/><path d="M13 16h5l7-6v20l-7-6h-5z" fill="var(--fill)" stroke="var(--amber)" stroke-width="2.2"/><path d="M27 15c3 3 3 7 0 10" stroke="var(--amber)" stroke-width="1.8" fill="none"/><g transform="rotate(${-c.rot*45} 20 20)">${label?`<rect x="-7" y="-12" width="54" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.1" font-weight="900">${label}</text>`:""}</g></g>`;
   }
   return `<svg class="comp${selected}" viewBox="0 0 40 40">${inner}</svg>`;
 }
-
+function tools(){
+ const items=[["select","select","Markieren"],["pan","pan","Navigieren"],["rotate","rotate","Rotieren"],["erase","erase","Löschen"],["wire","wire","Kabel"],["source","source","AC-Quelle"],["dcsource","dcsource","DC-Quelle"],["threeway","threeway","3-Wege"],["resistor","resistor","Widerstand"],["inductor","inductor","Spule"],["capacitor","capacitor","Kondensator"],["switch","switch","Schalter"],["ammeter","ammeter","Amperemeter"],["scope","scope","Oszilloskop"],["speaker","speaker","Lautsprecher"]];
+ return items.map(([t,i,l])=>`<button class="tool ${state.tool===t?"active":""}" data-tool="${t}">${icons[i]}<span>${l}</span></button>`).join("");
+}
+function selectedPanel(){
+  const k0=state.selected,c=k0?state.cells[k0]:null;
+  if(!c)return `<div class="panel"><div class="small">Mit „Markieren“ ein Bauteil anklicken. Danach erscheinen hier die Einstellungen genau dieses Bauteils.</div></div>`;
+  const num=(prop,label,min="0")=>`<div class="row"><label>${label}</label><input type="number" min="${min}" step="any" value="${c[prop]}" data-edit="${prop}"></div>`;
+  let rows=`<div class="small"><b>${nameOf(c.type)}</b><br>Position ${k0}</div>`;
+  if(c.type==="source"){
+    rows+=num("U","Spannung U / V");
+    rows+=num("f","Frequenz f / Hz","0.01");
+    rows+=`<div class="row"><label>Signal</label><select data-edit="mode"><option value="sine"${c.mode==="sine"?" selected":""}>Sinus</option><option value="noise"${c.mode==="noise"?" selected":""}>weißes Rauschen</option></select></div>`;
+    rows+=`<button class="btn" data-action="freq">Frequenzgang der Quelle anzeigen</button>`;
+  }
+  if(c.type==="dcsource"){
+    rows+=num("U","Ladespannung U / V");
+    rows+=`<div class="small">Diese Gleichspannungsquelle dient im Schwingkreis-Beispiel nur zum Aufladen des Kondensators.</div>`;
+  }
+  if(c.type==="threeway"){
+    rows+=`<button class="btn" data-action="toggle-threeway">${c.state?"auf Laden umschalten":"Quelle trennen und LC-Kreis schließen"}</button>`;
+    rows+=`<div class="small" style="margin-top:8px">${c.state?"Entladen: Die Quelle ist abgetrennt, der LC-Kreis ist geschlossen.":"Laden: Der Kondensator wird von der Gleichspannungsquelle geladen."}</div>`;
+  }
+  if(c.type==="resistor")rows+=num("R","Widerstand R / Ω","0.001");
+  if(c.type==="inductor")rows+=num("L","Induktivität L / H","0.000001");
+  if(c.type==="capacitor")rows+=num("C","Kapazität C / F","0.000000000001");
+  if(c.type==="scope")rows+=`<div class="row"><label>Kanal</label><select data-edit="channel"><option value="1"${c.channel==1?" selected":""}>Kanal 1</option><option value="2"${c.channel==2?" selected":""}>Kanal 2</option><option value="3"${c.channel==3?" selected":""}>Kanal 3</option><option value="4"${c.channel==4?" selected":""}>Kanal 4</option></select></div>`;
+  if(c.type==="speaker")rows+=num("R","Lautsprecher R / Ω","0.1");
+  if(c.type==="switch")rows+=`<button class="btn" data-action="toggle-switch">${c.state?"Schalter öffnen":"Schalter schließen"}</button>`;
+  const v=state.sim.values[k0];
+  if(v)rows+=`<div class="panel" style="box-shadow:none;margin-top:10px"><div class="small"><b>Messwerte bei ${fmt(state.sim.f,"Hz")}:</b><br>Spannung: ${fmt(v.V,"V")}<br>Strom: ${fmt(v.I,"A")}</div></div>`;
+  return `<div class="panel">${rows}</div>`;
+}
+function scopePanel(){
+  const scopes=state.sim.scopes;
+  if(scopes.length===0)return "";
+  return `<div class="panel"><div class="small"><b>Oszilloskop-Anzeige</b><br>Wähle, welche Kanäle sichtbar sind.</div><div class="checks">${
+    scopes.map((s,i)=>`<label class="check"><input type="checkbox" data-scope="${s.key}" ${state.visibleScopes.includes(s.key)?"checked":""}> K${s.channel} ${s.key}</label>`).join("")
+  }</div></div>`;
+}
+function speakerPanel(){
+  const speakers=state.sim.speakers;
+  if(speakers.length===0)return `<div class="panel"><div class="small">Kein Lautsprecher verbaut. Deshalb wird kein Tonsignal ausgegeben.</div></div>`;
+  return `<div class="panel"><div class="small"><b>Hörbares Signal</b><br>Wähle den Lautsprecher, dessen Signal du hören willst.</div><div class="row"><label>Lautsprecher</label><select id="speakerSelect">${
+    speakers.map((s,i)=>`<option value="${s.key}" ${state.audibleSpeaker===s.key?"selected":""}>Lautsprecher ${i+1} · ${s.key}</option>`).join("")
+  }</select></div><button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"ausgewählten Lautsprecher hören"}</button></div>`;
+}
 function renderCells(){
   let html="";
   for(let y=0;y<GRID_H;y++)for(let x=0;x<GRID_W;x++){
-    const k0=key(x,y), c=state.cells[k0];
-    html+=`<div class="cell" data-x="${x}" data-y="${y}" style="left:${x*CELL}px;top:${y*CELL}px">${c?componentSvg(c,k0):""}</div>`;
+    const k0=key(x,y),c=state.cells[k0];
+    html+=`<div class="cell" data-x="${x}" data-y="${y}" style="left:${x*CELL}px;top:${y*CELL}px">${c?componentSvg(c,k0,x,y):""}</div>`;
   }
   return html;
-}
-function selectedPanel(){
-  const k0=state.selected, c=k0?state.cells[k0]:null;
-  if(!c)return `<div class="panel"><div class="small">Klicke auf ein Bauteil mit „Auswählen“, um seine Werte zu ändern. Bauteile können direkt in eine vorhandene Leitung gesetzt werden.</div></div>`;
-  const num=(prop,label,unit,min="0")=>`<div class="row"><label>${label}</label><input type="number" min="${min}" step="any" value="${c[prop]}" data-edit="${prop}"></div>`;
-  let rows=`<div class="small"><b>Ausgewählt:</b> ${nameOf(c.type)}<br>Position ${k0}</div>`;
-  if(c.type==="source"){
-    rows+=num("U","Spannung U / V","V");
-    rows+=num("f","Frequenz f / Hz","Hz","0.1");
-    rows+=`<div class="row"><label>Signal</label><select data-edit="mode"><option value="sine"${c.mode==="sine"?" selected":""}>Sinus</option><option value="noise"${c.mode==="noise"?" selected":""}>weißes Rauschen</option></select></div>`;
-    rows+=`<button class="btn" data-action="freq" style="width:100%;margin-top:8px">Frequenzgang der Quelle anzeigen</button>`;
-  }
-  if(c.type==="resistor")rows+=num("R","Widerstand R / Ω","Ω","0.001");
-  if(c.type==="inductor")rows+=num("L","Induktivität L / H","H","0.000001");
-  if(c.type==="capacitor")rows+=num("C","Kapazität C / F","F","0.000000000001");
-  if(c.type==="switch")rows+=`<button class="btn" data-action="toggle-switch">${c.state?"Schalter öffnen":"Schalter schließen"}</button>`;
-  const v=state.sim.values[k0];
-  if(v) rows+=`<div class="panel" style="box-shadow:none;margin-top:10px"><div class="small"><b>Messwerte bei ${fmt(state.sim.f,"Hz")}:</b><br>Spannung: ${fmt(v.V,"V")}<br>Strom: ${fmt(v.I,"A")}</div></div>`;
-  return `<div class="panel">${rows}</div>`;
-}
-function nameOf(t){return({wire:"Kabel",source:"Wechselspannungsquelle",resistor:"Ohmscher Widerstand",inductor:"Induktivität",capacitor:"Kapazität",ammeter:"Amperemeter",scope:"Oszilloskop",speaker:"Lautsprecher",switch:"Schalter"})[t]||t}
-function tools(){
-  const items=[
-    ["pan","pan","Navigieren"],["select","select","Auswählen"],["rotate","rotate","Rotieren"],["erase","erase","Löschen"],
-    ["wire","wire","Kabel"],["source","source","Quelle"],["resistor","resistor","Widerstand"],["inductor","inductor","Spule"],
-    ["capacitor","capacitor","Kondensator"],["switch","switch","Schalter"],["ammeter","ammeter","Amperemeter"],["scope","scope","Oszilloskop"],["speaker","speaker","Lautsprecher"]
-  ];
-  return items.map(([t,i,l])=>`<button class="tool ${state.tool===t?"active":""}" data-tool="${t}">${icons[i]}<span>${l}</span></button>`).join("");
 }
 function drawScope(){
   const canvas=document.getElementById("scopeCanvas"); if(!canvas)return;
   const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
   canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,rect.width,rect.height);
+  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr); ctx.clearRect(0,0,rect.width,rect.height);
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
-  for(let i=1;i<8;i++){ctx.beginPath();ctx.moveTo(rect.width*i/8,0);ctx.lineTo(rect.width*i/8,rect.height);ctx.stroke()}
-  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/4);ctx.lineTo(rect.width,rect.height*i/4);ctx.stroke()}
-  const source=state.sim.source, scopes=state.sim.scopes||[], f=state.sim.f||1000, mode=source?source.c.mode:"sine";
-  const traces=scopes.length?scopes:[{key:"Quelle",V:source?source.c.U:1,phase:0,f}];
-  const maxAmp=Math.max(...traces.map(t=>Math.max(t.V,1e-9)),1e-9);
-  const colors=[getCss("--accent"),getCss("--green"),getCss("--amber"),getCss("--violet"),getCss("--red")];
-  const cycles=Math.max(1, Math.min(8, f/250));
-  traces.forEach((tr,ti)=>{
-    ctx.strokeStyle=colors[ti%colors.length];ctx.lineWidth=2;
-    ctx.beginPath();
+  for(let i=1;i<10;i++){ctx.beginPath();ctx.moveTo(rect.width*i/10,0);ctx.lineTo(rect.width*i/10,rect.height);ctx.stroke()}
+  for(let i=1;i<6;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/6);ctx.lineTo(rect.width,rect.height*i/6);ctx.stroke()}
+  const source=state.sim.source, active=state.sim.scopes.filter(s=>state.visibleScopes.includes(s.key));
+  const lc=getLCTransient();
+  const maxA=lc&&lc.active?Math.max(lc.U,1):Math.max(...active.map(s=>Math.max(s.V,1e-12)),1);
+  active.forEach((s,idx)=>{
+    const col=colors[(s.channel-1)%colors.length];ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();
+    const cycles=Math.max(.2,Math.min(8,(s.f||1)/250));
     for(let x=0;x<rect.width;x++){
-      const t=x/rect.width, noise=(Math.random()*2-1)*0.65;
-      const raw=mode==="noise"?noise:Math.sin(2*Math.PI*cycles*t+(tr.phase||0));
-      const yv=raw*(tr.V/maxAmp);
-      const y=rect.height/2-yv*rect.height*.38;
-      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      const t=x/rect.width;
+      let yv;
+      if(lc&&lc.active){
+        if(lc.underdamped){
+          // Das sichtbare Zeitfenster wird automatisch auf etwa sechs Perioden eingestellt.
+          const timeWindow=lc.T*6;
+          const realTime=t*timeWindow;
+          const damp=Math.exp(-lc.alpha*realTime);
+          yv=Math.cos(lc.omegaD*realTime)*damp;
+        } else {
+          // Bei zu großem Widerstand entsteht keine Schwingung mehr, sondern ein aperiodisches Abklingen.
+          const timeWindow=Math.max(6/Math.max(lc.omega0,1e-9),1);
+          const realTime=t*timeWindow;
+          yv=Math.exp(-lc.alpha*realTime);
+        }
+      } else if(source&&source.c.mode==="noise") yv=(Math.random()*2-1)*(s.V/maxA);
+      else yv=Math.sin(2*Math.PI*cycles*t+s.phase)*(s.V/maxA);
+      const y=rect.height/2-yv*rect.height*.40;
+      x?ctx.lineTo(x,y):ctx.moveTo(x,y);
     }
     ctx.stroke();
+    ctx.fillStyle=col;ctx.font="12px Inter";ctx.fillText(lc&&lc.active?`K${s.channel}: ${lc.underdamped?"gedämpfte Schwingung":"aperiodisches Abklingen"}, T ≈ ${lc.T.toFixed(2)} s, R = ${fmt(lc.R,"Ω")}`:`K${s.channel}: ${fmt(s.V,"V")}`,12,20+idx*17);
   });
-  ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
-  ctx.fillText(`Auto: ${fmt(maxAmp,"V")} max., ${fmt(f,"Hz")} · ${traces.length} Kurve(n)`,12,20);
 }
-function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
 function drawFreq(){
   const canvas=document.getElementById("freqCanvas"); if(!canvas)return;
   const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
   canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,rect.width,rect.height);
+  const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,rect.width,rect.height);
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
   for(let i=0;i<=10;i++){let x=rect.width*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,rect.height);ctx.stroke()}
   for(let i=0;i<=6;i++){let y=rect.height*i/6;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(rect.width,y);ctx.stroke()}
-  const base=evaluateAt();
-  const scopeKeys=(base.scopes||[]).map(s=>s.key);
-  const targetKeys=scopeKeys.length?scopeKeys:["__current"];
-  const series=targetKeys.map(k=>[]);
-  for(let i=0;i<260;i++){
-    const logF=Math.log10(10)+(Math.log10(50000)-Math.log10(10))*i/259;
-    const f=Math.pow(10,logF);
-    const res=evaluateAt(f);
-    targetKeys.forEach((tk,si)=>{
-      let yv=tk==="__current"?(isFinite(res.totalCurrent)?res.totalCurrent:0):(res.values[tk]?.V||0);
-      series[si].push({f,yv});
-    });
-  }
-  const max=Math.max(...series.flat().map(p=>p.yv),1e-12);
-  const colors=[getCss("--accent"),getCss("--green"),getCss("--amber"),getCss("--violet"),getCss("--red")];
-  series.forEach((pts,si)=>{
-    ctx.strokeStyle=colors[si%colors.length];ctx.lineWidth=2;ctx.beginPath();
-    pts.forEach((p,i)=>{
-      const x=rect.width*i/(pts.length-1);
-      const db=20*Math.log10(Math.max(p.yv/max,1e-6));
+  const selectedScopes=state.sim.scopes.filter(s=>state.visibleScopes.includes(s.key));
+  const traces=selectedScopes.length?selectedScopes.map(s=>({key:s.key,label:`K${s.channel}`,color:colors[(s.channel-1)%colors.length]})):[{key:null,label:"Quellenstrom",color:getCss("--accent")}];
+  traces.forEach(tr=>{
+    const pts=[];
+    for(let i=0;i<260;i++){
+      const logF=Math.log10(0.05)+(Math.log10(20000)-Math.log10(0.05))*i/259;
+      const f=Math.pow(10,logF), res=evaluateAt(f);
+      let yv=res.totalCurrent;
+      if(tr.key){const sc=res.scopes.find(s=>s.key===tr.key); yv=sc?sc.V:0}
+      pts.push(yv);
+    }
+    const max=Math.max(...pts,1e-12);
+    ctx.strokeStyle=tr.color;ctx.lineWidth=2;ctx.beginPath();
+    pts.forEach((yv,i)=>{
+      const x=rect.width*i/(pts.length-1), db=20*Math.log10(Math.max(yv/max,1e-6));
       const y=rect.height-(Math.max(-60,Math.min(0,db))+60)/60*rect.height;
       i?ctx.lineTo(x,y):ctx.moveTo(x,y);
     });
     ctx.stroke();
   });
   ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
-  ctx.fillText("Frequenzgang der Quelle: rechnerischer Sweep von 10 Hz bis 50 kHz",14,22);
-  ctx.fillText(scopeKeys.length?`${scopeKeys.length} Oszilloskop-Kurve(n), auf Maximum normiert`:"Kein Oszilloskop: dargestellt wird der Quellenstrom",14,42);
+  ctx.fillText("Frequenzgang der Quelle: 0,05 Hz bis 20 kHz, normiert je Kurve",14,22);
+  ctx.fillText("Wenn Oszilloskope sichtbar sind, werden deren Kanäle geplottet. Sonst wird der Quellenstrom angezeigt.",14,42);
 }
+function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
 function startAudio(){
-  const src=state.sim.source; if(!src)return;
+  const src=state.sim.source, sp=state.sim.speakers.find(s=>s.key===state.audibleSpeaker);
+  if(!src||!sp){stopAudio();render();return}
   stopAudio();
-  const AC=window.AudioContext||window.webkitAudioContext;
-  const ac=new AC();
-  const gain=ac.createGain(); gain.gain.value=0.08; gain.connect(ac.destination);
+  const AC=window.AudioContext||window.webkitAudioContext, ac=new AC(), gain=ac.createGain();
+  gain.gain.value=Math.min(.12,Math.max(.015,sp.V/(src.c.U||5)*.08)); gain.connect(ac.destination);
   if(src.c.mode==="noise"){
-    const buffer=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate);
-    const data=buffer.getChannelData(0);
+    const buffer=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate), data=buffer.getChannelData(0);
     for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
-    const n=ac.createBufferSource(); n.buffer=buffer; n.loop=true;
-    const filter=ac.createBiquadFilter(); filter.type="bandpass"; filter.frequency.value=1200; filter.Q.value=.7;
-    n.connect(filter); filter.connect(gain); n.start();
-    state.audio={ac,node:n};
+    const n=ac.createBufferSource();n.buffer=buffer;n.loop=true;
+    const filter=ac.createBiquadFilter();
+    filter.type="bandpass";
+    filter.frequency.value=Math.max(80,Math.min(8000,src.c.f||1000));
+    filter.Q.value=.8;
+    n.connect(filter);filter.connect(gain);n.start();state.audio={ac,node:n};
   }else{
-    const osc=ac.createOscillator(); osc.type="sine"; osc.frequency.value=Math.max(20,Math.min(20000,src.c.f||1000));
-    osc.connect(gain); osc.start(); state.audio={ac,node:osc};
+    const osc=ac.createOscillator();osc.type="sine";osc.frequency.value=Math.max(20,Math.min(20000,src.c.f||1000));
+    osc.connect(gain);osc.start();state.audio={ac,node:osc};
   }
-  state.audioOn=true; render();
+  state.audioOn=true;render();
 }
-function stopAudio(){if(state.audio){try{state.audio.node.stop()}catch(e){} try{state.audio.ac.close()}catch(e){}} state.audio=null; state.audioOn=false}
+function stopAudio(){if(state.audio){try{state.audio.node.stop()}catch(e){}try{state.audio.ac.close()}catch(e){}}state.audio=null;state.audioOn=false}
 function render(){
   evaluate();
   document.body.classList.toggle("light",state.light);
-  const sim=state.sim;
+  const sim=state.sim, scopes=sim.scopes.length;
   app.innerHTML=`<div class="app">
     <aside class="sidebar">
-      <div class="brand"><div class="kicker">Gymnasium Thomaeum</div><h1>Wechselstrom-Labor</h1><p>RLC-Schaltungen, Filter, Schwingkreise, Oszilloskop und Klang</p></div>
+      <div class="brand"><div class="kicker">Gymnasium Thomaeum</div><h1>Wechselstrom-Labor</h1><p>RLC-Schaltungen, Filter, Schwingkreise, Oszilloskope und Klang</p></div>
       <div class="side-scroll">
         <div class="section-title">Werkzeuge und Bauteile</div><div class="tool-grid">${tools()}</div>
-        <div class="section-title">Bauteilwerte</div>${selectedPanel()}
+        <div class="section-title">Markiertes Bauteil</div>${selectedPanel()}
+        <div class="section-title">Oszilloskop und Ton</div>${scopePanel()}${speakerPanel()}
         <div class="panel">
-          <div class="small"><b>Simulation</b><br>${sim.source?`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`:"Noch keine Quelle gesetzt."}<br>
-          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>${(sim.scopes&&sim.scopes.length)?`Oszilloskope: ${sim.scopes.map((o,i)=>`Ω${i+1} ${fmt(o.V,"V")}`).join(" · ")}`:"Oszilloskope können mehrfach gesetzt werden. Frequenzgang nutzt alle angeschlossenen Messpunkte."}</div>
+          <div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`}`:"Noch keine Quelle gesetzt."}<br>
+          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>
+          ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut.`:"Kein Oszilloskop verbaut."}</div>
           <div class="actions">
-            <button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"Signal hören"}</button>
+            <button class="btn" data-action="example-highlow">Hochpass/Tiefpass hören</button>
+            <button class="btn" data-action="example-res">langsamer Schwingkreis</button>
             <button class="btn" data-action="freq">Frequenzgang</button>
-            <button class="btn" data-action="example-low">Tiefpass</button>
-            <button class="btn" data-action="example-res">Schwingkreis</button>
-            <button class="btn red" data-action="clear">Alles löschen</button>
             <button class="btn" data-action="help">Hilfe</button>
+            <button class="btn red" data-action="clear">Alles löschen</button>
+            <button class="btn" data-action="theme">${state.light?"Dunkel":"Hell"}</button>
           </div>
         </div>
       </div>
     </aside>
     <main class="main">
-      <div class="topbar"><strong>Interaktives AC-Experimentierfeld</strong><div class="top-actions"><span class="badge">${sim.ok?"AC-Auswertung aktiv":"Fehler"}</span><button class="btn" data-action="theme">${state.light?icons.moon:icons.sun}</button></div></div>
+      <div class="topbar"><strong>Interaktives AC-Experimentierfeld</strong><div class="top-actions"><span class="badge">${sim.ok?"AC-Auswertung aktiv":"Fehler"}</span></div></div>
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
         <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
-        <div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">${(sim.scopes&&sim.scopes.length)?`${sim.scopes.length} Messpunkt(e), automatisch gemeinsam skaliert`:"Setze ein oder mehrere Oszilloskope in die Schaltung."}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>
+        ${scopes?`<div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>`:""}
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
       ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
@@ -524,28 +583,38 @@ function render(){
   requestAnimationFrame(()=>{drawScope();drawFreq()});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Kurzanleitung</h2><ul class="help-list">
-<li>Baue eine geschlossene Schaltung mit einer Wechselspannungsquelle und Bauteilen. Kabel verbinden immer die vier Haupt-Richtungen.</li>
-<li>Widerstände, Spulen und Kondensatoren sind einstellbar. Die Auswertung nutzt komplexe Impedanzen: R, jωL und 1/(jωC).</li>
-<li>Ein RC-Tiefpass entsteht zum Beispiel aus einem Serienwiderstand und einem Kondensator gegen Rückleitung. Ein Hochpass entsteht mit vertauschter Reihenfolge.</li>
-<li>Ein Serien- oder Parallelschwingkreis lässt sich mit Spule und Kondensator aufbauen. Die Resonanz ist im Amperemeter und im Frequenzgang sichtbar.</li>
-<li>Das Oszilloskop belastet die Schaltung nur schwach und stellt die Empfindlichkeit automatisch ein.</li>
-<li>Die Hörfunktion gibt das Signal der Quelle wieder. Bei weißem Rauschen wird ein breitbandiges Rauschsignal ausgegeben.</li>
+<li>Mit „Markieren“ klickst du ein Bauteil an und bekommst links genau dessen Einstellmenü.</li>
+<li>Mehrere Oszilloskope sind möglich. Jedes Oszilloskop kann einem Kanal zugeordnet werden. Sichtbar sind nur die im Seitenmenü aktivierten Kanäle.</li>
+<li>Mehrere Lautsprecher sind möglich. Im Seitenmenü wählst du, welchen Lautsprecher du hören willst.</li>
+<li>Ohne Oszilloskop erscheint keine Oszilloskop-Anzeige. Ohne Lautsprecher gibt es keine Hörfunktion.</li>
+<li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“ und schalte im Lautsprecher-Menü zwischen den beiden Lautsprechern um.</li>
+<li>Der langsame Schwingkreis wird mit Gleichspannung geladen. Danach trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Wenn ein ohmscher Widerstand eingebaut ist, zeigt das Oszilloskop eine gedämpfte Schwingung. Bei zu großem Widerstand geht die Schaltung in ein aperiodisches Abklingen über.</li>
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
-function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Sweep verändert rechnerisch die Frequenz der Quelle. Dadurch lassen sich Hochpass, Tiefpass und Resonanzbereiche untersuchen, ohne die eingestellte Frequenz dauerhaft zu verändern.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
+function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
 function bind(){
   document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
   document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
   document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{
-    const c=state.cells[state.selected]; if(!c)return;
-    c[inp.dataset.edit]=inp.tagName==="SELECT"?inp.value:parseFloat(inp.value);
-    evaluate(); render();
+    const c=state.cells[state.selected];if(!c)return;
+    let val=inp.tagName==="SELECT"?inp.value:parseFloat(inp.value);
+    if(inp.dataset.edit==="channel")val=parseInt(val,10);
+    c[inp.dataset.edit]=val;evaluate();render();
   });
+  document.querySelectorAll("[data-scope]").forEach(cb=>cb.onchange=()=>{
+    const k=cb.dataset.scope;
+    if(cb.checked&&!state.visibleScopes.includes(k))state.visibleScopes.push(k);
+    if(!cb.checked)state.visibleScopes=state.visibleScopes.filter(x=>x!==k);
+    render();
+  });
+  const ss=document.getElementById("speakerSelect");
+  if(ss)ss.onchange=()=>{state.audibleSpeaker=ss.value;if(state.audioOn)startAudio();else render()};
   const grid=document.getElementById("grid");
   grid.querySelectorAll(".cell").forEach(el=>{
     el.onpointerdown=e=>{e.stopPropagation();state.drawing=true;place(+el.dataset.x,+el.dataset.y)};
     el.onpointerenter=e=>{if(state.drawing&&(state.tool==="wire"||state.tool==="erase"))place(+el.dataset.x,+el.dataset.y)}
   });
   const wrap=document.getElementById("wrap");
+  wrap.onpointerdown=e=>{if(state.tool!=="pan")return;state.dragging=true;};
   wrap.onpointerdown=e=>{if(state.tool!=="pan")return;state.dragging=true;state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};wrap.setPointerCapture(e.pointerId)};
   wrap.onpointermove=e=>{if(!state.dragging)return;state.offset={x:e.clientX-state.dragStart.x,y:e.clientY-state.dragStart.y};const g=document.getElementById("grid");if(g)g.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`};
   wrap.onpointerup=e=>{state.dragging=false;state.drawing=false;try{wrap.releasePointerCapture(e.pointerId)}catch(_){}};
@@ -554,47 +623,49 @@ function bind(){
 }
 function action(a){
   if(a==="theme"){state.light=!state.light;render()}
-  if(a==="clear"){stopAudio();state.cells={};state.selected=null;render()}
+  if(a==="clear"){stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;render()}
   if(a==="help"){state.showHelp=!state.showHelp;render()}
   if(a==="freq"){state.showFreq=!state.showFreq;render()}
   if(a==="audio"){state.audioOn?stopAudio():startAudio();render()}
-  if(a==="toggle-switch"){const c=state.cells[state.selected]; if(c){c.state=c.state?0:1;render()}}
+  if(a==="toggle-switch"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
+  if(a==="toggle-threeway"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
   if(a==="zoom-in"){state.scale=Math.min(2.5,state.scale*1.18);render()}
   if(a==="zoom-out"){state.scale=Math.max(.25,state.scale/1.18);render()}
-  if(a==="center"){state.offset={x:90,y:70};state.scale=.9;render()}
-  if(a==="example-low")exampleLowpass();
+  if(a==="center"){state.offset={x:80,y:70};state.scale=.9;render()}
+  if(a==="example-highlow")exampleHighLow();
   if(a==="example-res")exampleResonance();
 }
 function add(x,y,t,props={}){const c={...defaultCell(t),...props};state.cells[key(x,y)]=c;return c}
-function exampleLowpass(){
-  stopAudio(); state.cells={}; state.selected=null;
-  add(6,10,"source",{rot:DIR_E,U:5,f:1000});
-  for(let x=7;x<=10;x++)add(x,10,"wire");
-  add(11,10,"resistor",{rot:DIR_E,R:1000});
-  for(let x=12;x<=15;x++)add(x,10,"wire");
-  add(16,10,"scope",{rot:DIR_N});
-  add(16,11,"capacitor",{rot:DIR_N,C:1e-6});
-  for(let y=12;y<=15;y++)add(16,y,"wire");
-  for(let x=6;x<=15;x++)add(x,15,"wire");
-  for(let y=11;y<=14;y++)add(6,y,"wire");
-  add(12,9,"scope",{rot:DIR_E});
-  state.selected=key(6,10); render();
+function lineH(x1,x2,y){for(let x=x1;x<=x2;x++)add(x,y,"wire")}
+function lineV(x,y1,y2){for(let y=y1;y<=y2;y++)add(x,y,"wire")}
+function exampleHighLow(){
+  stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
+  add(4,10,"source",{rot:DIR_N,U:5,f:1200,mode:"noise"});
+  lineV(4,11,18); lineH(5,15,10); lineH(5,15,18); lineV(16,10,18);
+  add(8,10,"resistor",{rot:DIR_E,R:1000});
+  add(12,10,"capacitor",{rot:DIR_N,C:0.22e-6});
+  add(16,10,"speaker",{rot:DIR_N,R:8});
+  add(9,18,"capacitor",{rot:DIR_E,C:0.22e-6});
+  add(13,18,"resistor",{rot:DIR_N,R:1000});
+  add(16,18,"speaker",{rot:DIR_N,R:8});
+  add(15,9,"scope",{rot:DIR_N,channel:1});
+  add(15,17,"scope",{rot:DIR_N,channel:2});
+  state.selected=key(4,10);state.offset={x:120,y:60};state.scale=.95;render();
 }
 function exampleResonance(){
-  stopAudio(); state.cells={}; state.selected=null;
-  add(6,12,"source",{rot:DIR_E,U:2,f:159});
-  for(let x=7;x<=9;x++)add(x,12,"wire");
-  add(10,12,"ammeter",{rot:DIR_E});
-  add(11,12,"resistor",{rot:DIR_E,R:20});
-  add(12,12,"inductor",{rot:DIR_E,L:0.1});
-  add(13,12,"capacitor",{rot:DIR_E,C:1e-5});
-  for(let x=14;x<=18;x++)add(x,12,"wire");
-  for(let y=13;y<=16;y++)add(18,y,"wire");
-  for(let x=6;x<=17;x++)add(x,16,"wire");
-  for(let y=13;y<=15;y++)add(6,y,"wire");
-  add(12,11,"scope",{rot:DIR_E});
-  add(13,11,"scope",{rot:DIR_E});
-  state.selected=key(6,12); render();
+  stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
+  add(5,14,"dcsource",{rot:DIR_N,U:5});
+  lineV(5,15,21);
+  lineH(6,10,14);
+  add(11,14,"threeway",{rot:DIR_E,state:0});
+  add(13,14,"ammeter",{rot:DIR_E});
+  add(15,14,"inductor",{rot:DIR_E,L:1});
+  add(17,14,"capacitor",{rot:DIR_E,C:1});
+  add(19,14,"scope",{rot:DIR_E,channel:1});
+  lineH(20,22,14);
+  lineV(22,14,21);
+  lineH(6,21,21);
+  state.selected=key(11,14);state.offset={x:95,y:25};state.scale=1;render();
 }
 window.addEventListener("pointerup",()=>state.drawing=false);
 window.addEventListener("resize",()=>requestAnimationFrame(()=>{drawScope();drawFreq()}));
