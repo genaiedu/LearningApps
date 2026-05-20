@@ -81,7 +81,8 @@ body.light .row select option{background:white;color:#0f172a}
 }
 .topbar strong{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
 .top-actions{display:flex;gap:8px;align-items:center}
-.canvas-wrap{flex:1;position:relative;overflow:hidden;touch-action:none}
+.canvas-wrap{flex:1;position:relative;overflow:hidden;touch-action:none;cursor:grab}
+.canvas-wrap.is-panning{cursor:grabbing}
 .grid{
   position:absolute;transform-origin:0 0;width:1680px;height:1240px;
   background-image:radial-gradient(var(--grid) 2px,transparent 2px);background-size:40px 40px;background-position:19px 19px
@@ -565,7 +566,7 @@ function render(){
           <div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`}`:"Noch keine Quelle gesetzt."}<br>
           ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>
           ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut.`:"Kein Oszilloskop verbaut."}<br>
-          Baufläche: Werkzeug „Navigieren“ wählen und die Schaltung frei verschieben.</div>
+          Baufläche: Werkzeug „Navigieren“ wählen, dann direkt auf der Baufläche ziehen. Das funktioniert auch auf Rasterzellen und leeren Bereichen.</div>
           <div class="actions">
             <button class="btn" data-action="example-highlow">Hochpass/Tiefpass hören</button>
             <button class="btn" data-action="example-res">langsamer Schwingkreis</button>
@@ -591,11 +592,11 @@ function render(){
   requestAnimationFrame(()=>{drawScope();drawFreq()});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Kurzanleitung</h2><ul class="help-list">
-<li>Mit „Markieren“ klickst du ein Bauteil an und bekommst links genau dessen Einstellmenü. Mit „Navigieren“ kannst du die gesamte Baufläche frei verschieben.</li>
+<li>Mit „Markieren“ klickst du ein Bauteil an und bekommst links genau dessen Einstellmenü. Mit „Navigieren“ kannst du die gesamte Baufläche frei verschieben, indem du direkt auf dem Raster ziehst.</li>
 <li>Mehrere Oszilloskope sind möglich. Jedes Oszilloskop kann einem Kanal zugeordnet werden. Die Anzeige liegt im Seitenmenü, damit sie die Schaltung nicht verdeckt. Sichtbar sind nur die dort aktivierten Kanäle.</li>
 <li>Mehrere Lautsprecher sind möglich. Im Seitenmenü wählst du, welchen Lautsprecher du hören willst.</li>
 <li>Ohne Oszilloskop erscheint keine Oszilloskop-Anzeige. Ohne Lautsprecher gibt es keine Hörfunktion.</li>
-<li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“ und schalte im Lautsprecher-Menü zwischen den beiden Lautsprechern um.</li>
+<li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“. Dort liegen Widerstand und Kondensator in Reihe. Ein Lautsprecher liegt parallel zum Widerstand, der andere parallel zum Kondensator. Im Lautsprecher-Menü kannst du zwischen beiden Signalen umschalten.</li>
 <li>Der langsame Schwingkreis wird mit Gleichspannung geladen. Danach trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Wenn ein ohmscher Widerstand eingebaut ist, zeigt das Oszilloskop eine gedämpfte Schwingung. Bei zu großem Widerstand geht die Schaltung in ein aperiodisches Abklingen über.</li>
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
 function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
@@ -614,20 +615,76 @@ function bind(){
     if(!cb.checked)state.visibleScopes=state.visibleScopes.filter(x=>x!==k);
     render();
   });
+
   const ss=document.getElementById("speakerSelect");
   if(ss)ss.onchange=()=>{state.audibleSpeaker=ss.value;if(state.audioOn)startAudio();else render()};
-  const grid=document.getElementById("grid");
-  grid.querySelectorAll(".cell").forEach(el=>{
-    el.onpointerdown=e=>{e.stopPropagation();state.drawing=true;place(+el.dataset.x,+el.dataset.y)};
-    el.onpointerenter=e=>{if(state.drawing&&(state.tool==="wire"||state.tool==="erase"))place(+el.dataset.x,+el.dataset.y)}
-  });
+
   const wrap=document.getElementById("wrap");
-  wrap.onpointerdown=e=>{if(state.tool!=="pan")return;state.dragging=true;};
-  wrap.onpointerdown=e=>{if(state.tool!=="pan")return;state.dragging=true;state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};wrap.setPointerCapture(e.pointerId)};
-  wrap.onpointermove=e=>{if(!state.dragging)return;state.offset={x:e.clientX-state.dragStart.x,y:e.clientY-state.dragStart.y};const g=document.getElementById("grid");if(g)g.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`};
-  wrap.onpointerup=e=>{state.dragging=false;state.drawing=false;try{wrap.releasePointerCapture(e.pointerId)}catch(_){}};
-  wrap.onpointerleave=()=>{state.dragging=false;state.drawing=false};
-  wrap.onwheel=e=>{e.preventDefault();const old=state.scale;state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));const r=wrap.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;state.offset.x=mx-(mx-state.offset.x)*(state.scale/old);state.offset.y=my-(my-state.offset.y)*(state.scale/old);render()},{passive:false};
+  const grid=document.getElementById("grid");
+
+  const updateGridTransform=()=>{
+    const g=document.getElementById("grid");
+    if(g)g.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`;
+  };
+
+  const startPan=(e)=>{
+    state.dragging=true;
+    state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};
+    wrap.classList.add("is-panning");
+    try{wrap.setPointerCapture(e.pointerId)}catch(_){}
+  };
+
+  grid.querySelectorAll(".cell").forEach(el=>{
+    el.onpointerdown=e=>{
+      if(state.tool==="pan"){
+        e.preventDefault();
+        e.stopPropagation();
+        startPan(e);
+        return;
+      }
+      e.stopPropagation();
+      state.drawing=true;
+      place(+el.dataset.x,+el.dataset.y);
+    };
+    el.onpointerenter=e=>{
+      if(state.tool==="pan")return;
+      if(state.drawing&&(state.tool==="wire"||state.tool==="erase"))place(+el.dataset.x,+el.dataset.y);
+    };
+  });
+
+  wrap.onpointerdown=e=>{
+    if(state.tool!=="pan")return;
+    e.preventDefault();
+    startPan(e);
+  };
+
+  wrap.onpointermove=e=>{
+    if(!state.dragging)return;
+    state.offset={x:e.clientX-state.dragStart.x,y:e.clientY-state.dragStart.y};
+    updateGridTransform();
+  };
+
+  const endPan=e=>{
+    state.dragging=false;
+    state.drawing=false;
+    wrap.classList.remove("is-panning");
+    try{wrap.releasePointerCapture(e.pointerId)}catch(_){}
+  };
+
+  wrap.onpointerup=endPan;
+  wrap.onpointercancel=endPan;
+  wrap.onpointerleave=()=>{state.dragging=false;state.drawing=false;wrap.classList.remove("is-panning")};
+
+  wrap.onwheel=e=>{
+    e.preventDefault();
+    const old=state.scale;
+    state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));
+    const r=wrap.getBoundingClientRect();
+    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    state.offset.x=mx-(mx-state.offset.x)*(state.scale/old);
+    state.offset.y=my-(my-state.offset.y)*(state.scale/old);
+    updateGridTransform();
+  };
 }
 function action(a){
   if(a==="theme"){state.light=!state.light;render()}
@@ -649,43 +706,42 @@ function lineV(x,y1,y2){for(let y=y1;y<=y2;y++)add(x,y,"wire")}
 function exampleHighLow(){
   stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
 
-  // Zwei saubere Rechteckschaltungen. Bauteile sitzen nur auf geraden Strecken, Ecken sind Kabel.
-  // Oben: Tiefpass, der Lautsprecher liegt am Kondensator-Zweig und klingt dumpfer.
-  // Unten: Hochpass, der Lautsprecher bekommt vor allem hohe Frequenzanteile.
-  add(5,8,"source",{rot:DIR_N,U:5,f:1400,mode:"noise"});
+  // Gewünschter Aufbau:
+  // Ein Widerstand und ein Kondensator liegen in Reihe.
+  // Lautsprecher 1 liegt parallel zum Widerstand: eher Hochpass-Anteil.
+  // Lautsprecher 2 liegt parallel zum Kondensator: eher Tiefpass-Anteil.
+  add(5,14,"source",{rot:DIR_N,U:5,f:1200,mode:"noise"});
 
-  // gemeinsamer linker und rechter Leiter
-  lineV(5,9,22);
-  lineV(24,8,22);
-
-  // oberer Tiefpass-Kreis
-  lineH(6,9,8);
-  add(10,8,"resistor",{rot:DIR_E,R:1200});
-  lineH(11,15,8);
-  add(16,8,"speaker",{rot:DIR_E,R:8});
-  lineH(17,20,8);
-  add(21,8,"capacitor",{rot:DIR_E,C:0.47e-6});
-  lineH(22,23,8);
-  lineV(24,9,13);
-  lineH(6,23,13);
-
-  // unterer Hochpass-Kreis
-  lineH(6,9,17);
-  add(10,17,"capacitor",{rot:DIR_E,C:0.47e-6});
-  lineH(11,15,17);
-  add(16,17,"speaker",{rot:DIR_E,R:8});
-  lineH(17,20,17);
-  add(21,17,"resistor",{rot:DIR_E,R:1200});
-  lineH(22,23,17);
-  lineV(24,18,22);
+  // Hauptkreis
+  lineV(5,15,22);
+  lineH(6,9,14);
+  add(10,14,"resistor",{rot:DIR_E,R:1000});
+  lineH(11,14,14);
+  add(15,14,"capacitor",{rot:DIR_E,C:0.47e-6});
+  lineH(16,23,14);
+  lineV(24,14,22);
   lineH(6,23,22);
 
-  // Oszilloskope auf geraden Strecken, nicht in Ecken
-  add(18,9,"scope",{rot:DIR_N,channel:1});
-  add(18,18,"scope",{rot:DIR_N,channel:2});
+  // Lautsprecher parallel zum Widerstand
+  lineV(9,11,13);
+  lineV(11,11,13);
+  lineH(10,10,11);
+  add(11,11,"speaker",{rot:DIR_E,R:8});
+  lineH(12,12,11);
 
-  state.selected=key(5,8);
-  state.offset={x:70,y:40};
+  // Lautsprecher parallel zum Kondensator
+  lineV(14,17,21);
+  lineV(16,17,21);
+  lineH(15,15,18);
+  add(16,18,"speaker",{rot:DIR_E,R:8});
+  lineH(17,17,18);
+
+  // Oszilloskope parallel zu den beiden Bauteilen, nur auf geraden Leitungsabschnitten
+  add(10,12,"scope",{rot:DIR_E,channel:1});
+  add(15,16,"scope",{rot:DIR_E,channel:2});
+
+  state.selected=key(5,14);
+  state.offset={x:75,y:35};
   state.scale=.95;
   render();
 }
