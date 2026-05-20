@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wechselstrom-Labor · RLC, Oszilloskop und Frequenzgang</title>
+<style>
+@font-face{font-family:Inter;src:url('Fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url('Fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:Poppins;src:url('Fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+
+:root{
+  --bg:#06101f;--bg2:#0b1730;--panel:rgba(15,23,42,.78);--panel2:rgba(2,6,23,.86);
+  --border:rgba(255,255,255,.12);--text:#f8fafc;--muted:#94a3b8;--dim:#cbd5e1;
+  --accent:#38bdf8;--green:#34d399;--amber:#fbbf24;--red:#fb7185;--violet:#a78bfa;
+  --wire:#dbeafe;--grid:rgba(255,255,255,.07);--fill:rgba(2,6,23,.75);
+  --shadow:0 18px 55px rgba(0,0,0,.45);--side:340px;
+}
+body.light{
+  --bg:#f8fafc;--bg2:#e0f2fe;--panel:rgba(255,255,255,.86);--panel2:rgba(255,255,255,.95);
+  --border:rgba(15,23,42,.12);--text:#0f172a;--muted:#64748b;--dim:#334155;
+  --accent:#0369a1;--green:#047857;--amber:#b45309;--red:#be123c;--violet:#6d28d9;
+  --wire:#1e293b;--grid:rgba(15,23,42,.09);--fill:rgba(255,255,255,.78);
+  --shadow:0 14px 40px rgba(15,23,42,.14);
+}
+*{box-sizing:border-box}
+html,body,#app{width:100%;height:100%;margin:0;overflow:hidden}
+body{
+  font-family:Inter,system-ui,sans-serif;color:var(--text);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(56,189,248,.22), transparent 32%),
+    radial-gradient(circle at 85% 80%, rgba(167,139,250,.20), transparent 36%),
+    linear-gradient(135deg,var(--bg),var(--bg2));
+}
+button,input,select{font-family:inherit}
+.app{height:100%;display:flex}
+.sidebar{
+  width:var(--side);height:100%;background:var(--panel2);backdrop-filter:blur(24px);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:5
+}
+.brand{padding:28px 24px 18px;border-bottom:1px solid var(--border)}
+.kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:800}
+h1{font-family:Poppins,Inter,sans-serif;font-size:29px;line-height:1.05;margin:8px 0 4px;letter-spacing:-.03em}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.side-scroll{overflow:auto;padding:18px 18px 26px}
+.section-title{margin:18px 4px 9px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tool{
+  border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--dim);
+  border-radius:14px;padding:10px 10px;display:flex;gap:8px;align-items:center;cursor:pointer;
+  font-size:13px;font-weight:700;min-height:42px;transition:.18s
+}
+.tool:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
+.tool.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%, transparent)}
+.tool svg{width:18px;height:18px;flex:0 0 auto}
+.panel{
+  margin-top:12px;border:1px solid var(--border);border-radius:18px;background:var(--panel);
+  padding:14px;box-shadow:var(--shadow)
+}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:9px 0}
+.row label{font-size:12px;color:var(--dim);font-weight:700}
+.row input,.row select{
+  width:138px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);
+  border-radius:10px;padding:7px 9px;outline:none
+}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.btn{
+  border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--dim);
+  border-radius:12px;padding:10px;font-weight:800;cursor:pointer
+}
+.btn:hover{background:color-mix(in srgb,var(--accent) 12%, transparent);color:var(--accent)}
+.btn.red:hover{background:color-mix(in srgb,var(--red) 16%, transparent);color:var(--red)}
+.main{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;position:relative}
+.topbar{
+  height:66px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;
+  background:var(--panel);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:3
+}
+.topbar strong{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+.top-actions{display:flex;gap:8px;align-items:center}
+.canvas-wrap{flex:1;position:relative;overflow:hidden;touch-action:none}
+.grid{
+  position:absolute;transform-origin:0 0;width:1600px;height:1200px;
+  background-image:radial-gradient(var(--grid) 2px,transparent 2px);background-size:40px 40px;background-position:19px 19px
+}
+.cell{position:absolute;width:40px;height:40px;border:.5px solid var(--grid)}
+.cell:hover{background:color-mix(in srgb,var(--accent) 11%, transparent)}
+.comp{position:absolute;width:40px;height:40px;overflow:visible;pointer-events:none}
+.wire{stroke:var(--wire);stroke-width:3.2;stroke-linecap:square}
+.sym{stroke:var(--wire);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.fill{fill:var(--fill);stroke:var(--wire);stroke-width:2.3}
+.term{fill:var(--wire);stroke:var(--bg);stroke-width:1}
+.selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 10%, transparent)}
+.hud{
+  position:absolute;left:20px;bottom:20px;z-index:4;width:min(560px,calc(100% - 40px));
+  background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:var(--shadow);backdrop-filter:blur(20px)
+}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.hud-title{font-weight:900;color:var(--accent)}
+.scope{width:100%;height:150px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
+body.light .scope{background:rgba(255,255,255,.55)}
+.float{
+  position:absolute;right:20px;bottom:20px;z-index:4;display:flex;flex-direction:column;gap:8px
+}
+.float .btn{background:var(--panel);box-shadow:var(--shadow);width:44px;height:44px;padding:0}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);
+  padding:7px 10px;border-radius:999px;color:var(--dim);font-size:12px;font-weight:800
+}
+.warning{
+  position:absolute;left:50%;top:86px;transform:translateX(-50%);z-index:10;
+  color:white;background:var(--red);padding:10px 18px;border-radius:14px;font-weight:900;box-shadow:0 0 35px rgba(251,113,133,.45)
+}
+.modal{
+  position:absolute;inset:0;z-index:20;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)
+}
+.modal-card{max-width:920px;max-height:90vh;overflow:auto;background:var(--panel2);border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+.modal-card h2{font-family:Poppins;margin:0 0 14px;color:var(--accent)}
+.freq-canvas{width:100%;height:290px;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:16px}
+.help-list{padding-left:18px;color:var(--dim);line-height:1.5}
+@media(max-width:820px){
+  .app{flex-direction:column}.sidebar{width:100%;height:43%;border-right:0;border-bottom:1px solid var(--border)}
+  .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
+  .topbar{height:56px;padding:0 12px}.hud{display:none}.float{right:12px;bottom:12px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(() => {
+const GRID_W=40, GRID_H=30, CELL=40;
+const DIR_N=0, DIR_E=2, DIR_S=4, DIR_W=6;
+const dirs=[DIR_N,DIR_E,DIR_S,DIR_W];
+const opp=d=>(d+4)%8;
+const state={
+  cells:{}, selected:null, tool:"pan", scale:0.9, offset:{x:90,y:70}, dragging:false, dragStart:null,
+  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false,
+  sim:{ok:true, msg:"", values:{}, scope:null, source:null, totalCurrent:0, nodes:0}
+};
+const app=document.getElementById("app");
+
+const icons={
+  pan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></svg>',
+  wire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/><path d="M7 9v6"/><path d="M17 9v6"/></svg>',
+  source:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v5"/><path d="M12 16v5"/><path d="M7 8h10"/><path d="M9 16h6"/></svg>',
+  resistor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h4l2-4 4 8 4-8 2 4h2"/></svg>',
+  inductor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h3"/><path d="M6 12a3 3 0 0 1 6 0"/><path d="M12 12a3 3 0 0 1 6 0"/><path d="M18 12h3"/></svg>',
+  capacitor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h6"/><path d="M14 12h6"/><path d="M10 6v12"/><path d="M14 6v12"/></svg>',
+  ammeter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><path d="M9 15l3-7 3 7"/><path d="M10.2 13h3.6"/></svg>',
+  scope:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 12h3l2-4 3 8 2-4h2"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9v6h4l5 4V5L9 9H5z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>',
+  switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17h5"/><path d="M15 17h5"/><path d="M9 17l6-8"/></svg>',
+  erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 21h10"/><path d="M4 15l8-8 6 6-8 8H6l-2-2z"/></svg>',
+  rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>',
+  select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3l7 17 2-7 7-2z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+};
+
+const complex=(re=0,im=0)=>({re,im});
+const cadd=(a,b)=>({re:a.re+b.re,im:a.im+b.im});
+const csub=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
+const cmul=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
+const cdiv=(a,b)=>{const d=b.re*b.re+b.im*b.im||1e-30;return {re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}};
+const cabs=a=>Math.hypot(a.re,a.im);
+const cneg=a=>({re:-a.re,im:-a.im});
+
+function defaultCell(type){
+  const base={type,rot:0,state:1,id:Math.random().toString(36).slice(2)};
+  if(type==="source") return {...base,U:5,f:1000,mode:"sine"};
+  if(type==="resistor") return {...base,R:1000};
+  if(type==="inductor") return {...base,L:0.1};
+  if(type==="capacitor") return {...base,C:1e-6};
+  if(type==="ammeter") return {...base,R:0.05};
+  if(type==="scope") return {...base,R:1000000};
+  if(type==="speaker") return {...base,R:8};
+  return base;
+}
+function key(x,y){return x+","+y}
+function xy(k){return k.split(",").map(Number)}
+function ports(c){if(!c)return[]; if(c.type==="wire")return dirs; return [c.rot,opp(c.rot)]}
+function hasPort(c,d){return ports(c).includes(d)}
+function branchType(t){return ["source","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)}
+function fmt(v,unit){
+  const a=Math.abs(v);
+  if(!isFinite(a))return "–";
+  if(a>=1000)return (v/1000).toFixed(2)+" k"+unit;
+  if(a>=1)return v.toFixed(2)+" "+unit;
+  if(a>=1e-3)return (v*1000).toFixed(2)+" m"+unit;
+  if(a>=1e-6)return (v*1e6).toFixed(2)+" µ"+unit;
+  return (v*1e9).toFixed(2)+" n"+unit;
+}
+function admittance(c,f){
+  if(c.type==="resistor") return complex(1/Math.max(c.R,1e-9),0);
+  if(c.type==="ammeter") return complex(1/Math.max(c.R||0.05,1e-9),0);
+  if(c.type==="scope") return complex(1/Math.max(c.R||1e6,1e-9),0);
+  if(c.type==="speaker") return complex(1/Math.max(c.R||8,1e-9),0);
+  if(c.type==="switch") return c.state?complex(1e6,0):complex(1e-9,0);
+  if(c.type==="inductor"){
+    const w=2*Math.PI*f, X=w*Math.max(c.L,1e-12);
+    return cdiv(complex(1,0),complex(0,X));
+  }
+  if(c.type==="capacitor"){
+    const w=2*Math.PI*f, C=Math.max(c.C,1e-15);
+    return complex(0,w*C);
+  }
+  return complex(0,0);
+}
+function solveComplex(A,b){
+  const n=A.length;
+  for(let i=0;i<n;i++){
+    let best=i, bestVal=cabs(A[i][i]);
+    for(let r=i+1;r<n;r++){const v=cabs(A[r][i]); if(v>bestVal){best=r;bestVal=v}}
+    if(best!==i){[A[i],A[best]]=[A[best],A[i]];[b[i],b[best]]=[b[best],b[i]]}
+    if(cabs(A[i][i])<1e-18) continue;
+    for(let r=i+1;r<n;r++){
+      const fac=cdiv(A[r][i],A[i][i]);
+      for(let col=i;col<n;col++) A[r][col]=csub(A[r][col],cmul(fac,A[i][col]));
+      b[r]=csub(b[r],cmul(fac,b[i]));
+    }
+  }
+  const x=Array(n).fill(0).map(()=>complex(0,0));
+  for(let i=n-1;i>=0;i--){
+    let sum=b[i];
+    for(let j=i+1;j<n;j++) sum=csub(sum,cmul(A[i][j],x[j]));
+    x[i]=cabs(A[i][i])<1e-18?complex(0,0):cdiv(sum,A[i][i]);
+  }
+  return x;
+}
+function evaluateAt(freqOverride=null){
+  const grid=state.cells;
+  const parent={};
+  const find=a=>{if(parent[a]===undefined)parent[a]=a; return parent[a]===a?a:parent[a]=find(parent[a])}
+  const union=(a,b)=>{const ra=find(a),rb=find(b); if(ra!==rb)parent[ra]=rb}
+  const node=(x,y,d)=>`${x},${y},${d}`;
+
+  Object.entries(grid).forEach(([k0,c])=>{
+    const [x,y]=xy(k0);
+    if(c.type==="wire"){
+      dirs.forEach(d=>union(node(x,y,d),node(x,y,DIR_N)));
+    }
+  });
+  Object.entries(grid).forEach(([k0,c])=>{
+    const [x,y]=xy(k0);
+    const checks=[
+      [x+1,y,DIR_E,DIR_W],[x,y+1,DIR_S,DIR_N]
+    ];
+    checks.forEach(([nx,ny,d,od])=>{
+      const n=grid[key(nx,ny)];
+      if(n && hasPort(c,d) && hasPort(n,od)) union(node(x,y,d),node(nx,ny,od));
+    });
+  });
+
+  const branches=[], sources=[], active=new Set();
+  Object.entries(grid).forEach(([k0,c])=>{
+    if(!branchType(c.type))return;
+    const [x,y]=xy(k0);
+    const a=find(node(x,y,c.rot)), b=find(node(x,y,opp(c.rot)));
+    active.add(a);active.add(b);
+    if(c.type==="source") sources.push({key:k0,c,a,b});
+    else branches.push({key:k0,c,a,b});
+  });
+  const source=sources[0];
+  const f=freqOverride ?? (source?source.c.f:1000);
+  if(!source){return {ok:true,msg:"Keine Quelle",values:{},source:null,totalCurrent:0,nodes:0,scope:null,f}}
+  if(source.a===source.b){return {ok:false,msg:"Kurzschluss an der Spannungsquelle",values:{},source,totalCurrent:Infinity,nodes:0,scope:null,f}}
+  const roots=[...active];
+  const ground=source.b;
+  const nodeMap=new Map(); let nidx=0;
+  roots.forEach(r=>{if(r!==ground) nodeMap.set(r,nidx++)});
+  const m=sources.length, N=nidx+m;
+  const A=Array(N).fill(0).map(()=>Array(N).fill(0).map(()=>complex(0,0)));
+  const z=Array(N).fill(0).map(()=>complex(0,0));
+  const stampY=(ra,rb,Y)=>{
+    const ia=nodeMap.get(ra), ib=nodeMap.get(rb);
+    if(ia!==undefined) A[ia][ia]=cadd(A[ia][ia],Y);
+    if(ib!==undefined) A[ib][ib]=cadd(A[ib][ib],Y);
+    if(ia!==undefined&&ib!==undefined){A[ia][ib]=csub(A[ia][ib],Y);A[ib][ia]=csub(A[ib][ia],Y)}
+  };
+  branches.forEach(br=>stampY(br.a,br.b,admittance(br.c,f)));
+  sources.forEach((s,si)=>{
+    const row=nidx+si, col=nidx+si;
+    const ia=nodeMap.get(s.a), ib=nodeMap.get(s.b);
+    if(ia!==undefined){A[ia][col]=cadd(A[ia][col],complex(1,0));A[row][ia]=cadd(A[row][ia],complex(1,0))}
+    if(ib!==undefined){A[ib][col]=csub(A[ib][col],complex(1,0));A[row][ib]=csub(A[row][ib],complex(1,0))}
+    z[row]=complex(s.c.U||5,0);
+  });
+  for(let i=0;i<nidx;i++) A[i][i]=cadd(A[i][i],complex(1e-12,0));
+  const sol=solveComplex(A,z);
+  const Vroot=r=>r===ground?complex(0,0):sol[nodeMap.get(r)]||complex(0,0);
+  const values={}; let scope=null, totalCurrent=cabs(sol[nidx]||complex(0,0));
+  branches.forEach(br=>{
+    const v=csub(Vroot(br.a),Vroot(br.b));
+    const I=cmul(v,admittance(br.c,f));
+    values[br.key]={V:cabs(v),I:cabs(I),phaseV:Math.atan2(v.im,v.re),phaseI:Math.atan2(I.im,I.re)};
+    if(br.c.type==="scope") scope={key:br.key,V:cabs(v),phase:Math.atan2(v.im,v.re),f};
+  });
+  sources.forEach((s,si)=>values[s.key]={V:s.c.U||5,I:cabs(sol[nidx+si]||complex(0,0)),phaseI:Math.atan2((sol[nidx+si]||complex(0,0)).im,(sol[nidx+si]||complex(0,0)).re)});
+  return {ok:true,msg:"",values,source,totalCurrent,nodes:nidx,scope,f};
+}
+function evaluate(){state.sim=evaluateAt();}
+
+function autoRot(x,y,type){
+  const g=state.cells;
+  const n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S);
+  const e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W);
+  const s=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N);
+  const w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
+  if(n&&s)return DIR_N; if(e&&w)return DIR_E;
+  if(n)return DIR_N; if(e)return DIR_E; if(s)return DIR_S; if(w)return DIR_W;
+  return DIR_E;
+}
+function setTool(t){state.tool=t; render();}
+function place(x,y){
+  const k=key(x,y), c=state.cells[k], t=state.tool;
+  if(t==="pan")return;
+  if(t==="select"){state.selected=k; if(c&&c.type==="switch")c.state=c.state?0:1; evaluate(); render(); return}
+  if(t==="erase"){delete state.cells[k]; if(state.selected===k)state.selected=null; evaluate(); render(); return}
+  if(t==="rotate"){if(c&&c.type!=="wire"){c.rot=(c.rot+2)%8; evaluate(); render()} return}
+  if(t==="wire"){if(!c)state.cells[k]=defaultCell("wire"); evaluate(); render(); return}
+  if(["source","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)){
+    if(c&&c.type!=="wire")return;
+    const nc=defaultCell(t); nc.rot=autoRot(x,y,t); state.cells[k]=nc; state.selected=k; evaluate(); render();
+  }
+}
+function componentSvg(c,k0){
+  const selected=state.selected===k0?" selected-cell":"";
+  const v=state.sim.values[k0];
+  const rot=`rotate(${c.rot*45} 20 20)`;
+  const meter=v? (c.type==="ammeter"?fmt(v.I,"A"):c.type==="scope"?fmt(v.V,"V"):c.type==="speaker"?fmt(v.V,"V"):"") : "";
+  let inner="";
+  if(c.type==="wire") inner='<line x1="20" y1="20" x2="20" y2="0" class="wire"/><line x1="20" y1="20" x2="40" y2="20" class="wire"/><line x1="20" y1="20" x2="20" y2="40" class="wire"/><line x1="20" y1="20" x2="0" y2="20" class="wire"/>';
+  if(c.type==="source") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="11" class="wire"/><line x1="20" y1="40" x2="20" y2="29" class="wire"/><line x1="10" y1="13" x2="30" y2="13" class="sym"/><line x1="14" y1="27" x2="26" y2="27" class="sym"/><text x="7" y="15" fill="var(--red)" font-size="9" font-weight="900">+</text><text x="29" y="31" fill="var(--accent)" font-size="10" font-weight="900">~</text></g>`;
+  if(c.type==="resistor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 L14 11 L26 15 L14 19 L26 23 L14 27 L20 32" class="sym"/></g>`;
+  if(c.type==="inductor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 C12 11,12 17,20 20 C28 23,28 29,20 32" class="sym"/><path d="M20 8 C28 11,28 17,20 20 C12 23,12 29,20 32" class="sym" opacity=".55"/></g>`;
+  if(c.type==="capacitor") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="14" class="wire"/><line x1="20" y1="26" x2="20" y2="40" class="wire"/><line x1="10" y1="14" x2="30" y2="14" class="sym"/><line x1="10" y1="26" x2="30" y2="26" class="sym"/></g>`;
+  if(c.type==="switch") inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="10" class="wire"/><line x1="20" y1="40" x2="20" y2="30" class="wire"/><circle cx="20" cy="12" r="3" class="term"/><circle cx="20" cy="28" r="3" class="term"/>${c.state?'<line x1="20" y1="12" x2="20" y2="28" stroke="var(--green)" stroke-width="3.2" stroke-linecap="round"/>':'<line x1="20" y1="28" x2="30" y2="13" class="sym"/>'}</g>`;
+  if(["ammeter","scope","speaker"].includes(c.type)){
+    const letter=c.type==="ammeter"?"A":c.type==="scope"?"Ω":"L";
+    const col=c.type==="ammeter"?"var(--green)":c.type==="scope"?"var(--accent)":"var(--amber)";
+    inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="${col}" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="${col}" text-anchor="middle" font-size="13" font-weight="900">${letter}</text>${meter?`<rect x="-5" y="-12" width="50" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.3" font-weight="900">${meter}</text>`:""}</g></g>`;
+  }
+  return `<svg class="comp${selected}" viewBox="0 0 40 40">${inner}</svg>`;
+}
+function renderCells(){
+  let html="";
+  for(let y=0;y<GRID_H;y++)for(let x=0;x<GRID_W;x++){
+    const k0=key(x,y), c=state.cells[k0];
+    html+=`<div class="cell" data-x="${x}" data-y="${y}" style="left:${x*CELL}px;top:${y*CELL}px">${c?componentSvg(c,k0):""}</div>`;
+  }
+  return html;
+}
+function selectedPanel(){
+  const k0=state.selected, c=k0?state.cells[k0]:null;
+  if(!c)return `<div class="panel"><div class="small">Klicke auf ein Bauteil mit „Auswählen“, um seine Werte zu ändern. Bauteile können direkt in eine vorhandene Leitung gesetzt werden.</div></div>`;
+  const num=(prop,label,unit,min="0")=>`<div class="row"><label>${label}</label><input type="number" min="${min}" step="any" value="${c[prop]}" data-edit="${prop}"></div>`;
+  let rows=`<div class="small"><b>Ausgewählt:</b> ${nameOf(c.type)}<br>Position ${k0}</div>`;
+  if(c.type==="source"){
+    rows+=num("U","Spannung U / V","V");
+    rows+=num("f","Frequenz f / Hz","Hz","0.1");
+    rows+=`<div class="row"><label>Signal</label><select data-edit="mode"><option value="sine"${c.mode==="sine"?" selected":""}>Sinus</option><option value="noise"${c.mode==="noise"?" selected":""}>weißes Rauschen</option></select></div>`;
+  }
+  if(c.type==="resistor")rows+=num("R","Widerstand R / Ω","Ω","0.001");
+  if(c.type==="inductor")rows+=num("L","Induktivität L / H","H","0.000001");
+  if(c.type==="capacitor")rows+=num("C","Kapazität C / F","F","0.000000000001");
+  if(c.type==="switch")rows+=`<button class="btn" data-action="toggle-switch">${c.state?"Schalter öffnen":"Schalter schließen"}</button>`;
+  const v=state.sim.values[k0];
+  if(v) rows+=`<div class="panel" style="box-shadow:none;margin-top:10px"><div class="small"><b>Messwerte bei ${fmt(state.sim.f,"Hz")}:</b><br>Spannung: ${fmt(v.V,"V")}<br>Strom: ${fmt(v.I,"A")}</div></div>`;
+  return `<div class="panel">${rows}</div>`;
+}
+function nameOf(t){return({wire:"Kabel",source:"Wechselspannungsquelle",resistor:"Ohmscher Widerstand",inductor:"Induktivität",capacitor:"Kapazität",ammeter:"Amperemeter",scope:"Oszilloskop",speaker:"Lautsprecher",switch:"Schalter"})[t]||t}
+function tools(){
+  const items=[
+    ["pan","pan","Navigieren"],["select","select","Auswählen"],["rotate","rotate","Rotieren"],["erase","erase","Löschen"],
+    ["wire","wire","Kabel"],["source","source","Quelle"],["resistor","resistor","Widerstand"],["inductor","inductor","Spule"],
+    ["capacitor","capacitor","Kondensator"],["switch","switch","Schalter"],["ammeter","ammeter","Amperemeter"],["scope","scope","Oszilloskop"],["speaker","speaker","Lautsprecher"]
+  ];
+  return items.map(([t,i,l])=>`<button class="tool ${state.tool===t?"active":""}" data-tool="${t}">${icons[i]}<span>${l}</span></button>`).join("");
+}
+function drawScope(){
+  const canvas=document.getElementById("scopeCanvas"); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,rect.width,rect.height);
+  ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
+  for(let i=1;i<8;i++){ctx.beginPath();ctx.moveTo(rect.width*i/8,0);ctx.lineTo(rect.width*i/8,rect.height);ctx.stroke()}
+  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/4);ctx.lineTo(rect.width,rect.height*i/4);ctx.stroke()}
+  ctx.strokeStyle=getCss("--accent");ctx.lineWidth=2;
+  const source=state.sim.source, scope=state.sim.scope;
+  const amp=scope?scope.V:(source?source.c.U:1), f=state.sim.f||1000, mode=source?source.c.mode:"sine";
+  const cycles=Math.max(1, Math.min(8, f/250));
+  ctx.beginPath();
+  for(let x=0;x<rect.width;x++){
+    const t=x/rect.width, noise=(Math.random()*2-1)*0.65;
+    const yv=mode==="noise"?noise:Math.sin(2*Math.PI*cycles*t+(scope?scope.phase:0));
+    const y=rect.height/2-yv*rect.height*.38;
+    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
+  const sens=amp>0?amp:1;
+  ctx.fillText(`Auto: ${fmt(sens,"V")} Scheitelwert, ${fmt(f,"Hz")}`,12,20);
+}
+function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
+function drawFreq(){
+  const canvas=document.getElementById("freqCanvas"); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,rect.width,rect.height);
+  ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){let x=rect.width*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,rect.height);ctx.stroke()}
+  for(let i=0;i<=6;i++){let y=rect.height*i/6;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(rect.width,y);ctx.stroke()}
+  const pts=[];
+  for(let i=0;i<240;i++){
+    const logF=Math.log10(10)+(Math.log10(50000)-Math.log10(10))*i/239;
+    const f=Math.pow(10,logF);
+    const res=evaluateAt(f);
+    let yv=res.scope?res.scope.V:(isFinite(res.totalCurrent)?res.totalCurrent:0);
+    pts.push({f,yv});
+  }
+  const max=Math.max(...pts.map(p=>p.yv),1e-12);
+  ctx.strokeStyle=getCss("--accent");ctx.lineWidth=2;ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x=rect.width*i/(pts.length-1);
+    const db=20*Math.log10(Math.max(p.yv/max,1e-6));
+    const y=rect.height-(Math.max(-60,Math.min(0,db))+60)/60*rect.height;
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
+  ctx.fillText("Frequenzgang: 10 Hz bis 50 kHz, normiert auf Maximum",14,22);
+  ctx.fillText("Bei angeschlossenem Oszilloskop: Spannung am Oszilloskop, sonst Gesamtstrom der Quelle",14,42);
+}
+function startAudio(){
+  const src=state.sim.source; if(!src)return;
+  stopAudio();
+  const AC=window.AudioContext||window.webkitAudioContext;
+  const ac=new AC();
+  const gain=ac.createGain(); gain.gain.value=0.08; gain.connect(ac.destination);
+  if(src.c.mode==="noise"){
+    const buffer=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+    const n=ac.createBufferSource(); n.buffer=buffer; n.loop=true;
+    const filter=ac.createBiquadFilter(); filter.type="bandpass"; filter.frequency.value=1200; filter.Q.value=.7;
+    n.connect(filter); filter.connect(gain); n.start();
+    state.audio={ac,node:n};
+  }else{
+    const osc=ac.createOscillator(); osc.type="sine"; osc.frequency.value=Math.max(20,Math.min(20000,src.c.f||1000));
+    osc.connect(gain); osc.start(); state.audio={ac,node:osc};
+  }
+  state.audioOn=true; render();
+}
+function stopAudio(){if(state.audio){try{state.audio.node.stop()}catch(e){} try{state.audio.ac.close()}catch(e){}} state.audio=null; state.audioOn=false}
+function render(){
+  evaluate();
+  document.body.classList.toggle("light",state.light);
+  const sim=state.sim;
+  app.innerHTML=`<div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="kicker">Gymnasium Thomaeum</div><h1>Wechselstrom-Labor</h1><p>RLC-Schaltungen, Filter, Schwingkreise, Oszilloskop und Klang</p></div>
+      <div class="side-scroll">
+        <div class="section-title">Werkzeuge und Bauteile</div><div class="tool-grid">${tools()}</div>
+        <div class="section-title">Bauteilwerte</div>${selectedPanel()}
+        <div class="panel">
+          <div class="small"><b>Simulation</b><br>${sim.source?`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`:"Noch keine Quelle gesetzt."}<br>
+          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>${sim.scope?`Oszilloskop: ${fmt(sim.scope.V,"V")}`:"Oszilloskop anschließen, um lokale Spannungen sichtbar zu machen."}</div>
+          <div class="actions">
+            <button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"Signal hören"}</button>
+            <button class="btn" data-action="freq">Frequenzgang</button>
+            <button class="btn" data-action="example-low">Tiefpass</button>
+            <button class="btn" data-action="example-res">Schwingkreis</button>
+            <button class="btn red" data-action="clear">Alles löschen</button>
+            <button class="btn" data-action="help">Hilfe</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar"><strong>Interaktives AC-Experimentierfeld</strong><div class="top-actions"><span class="badge">${sim.ok?"AC-Auswertung aktiv":"Fehler"}</span><button class="btn" data-action="theme">${state.light?icons.moon:icons.sun}</button></div></div>
+      <div class="canvas-wrap" id="wrap">
+        ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
+        <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
+        <div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">${sim.scope?"Messpunkt automatisch skaliert":"Setze ein Oszilloskop in eine Leitung oder parallel zu einem Bauteil."}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>
+        <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
+      </div>
+      ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
+    </main>
+  </div>`;
+  bind();
+  requestAnimationFrame(()=>{drawScope();drawFreq()});
+}
+function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Kurzanleitung</h2><ul class="help-list">
+<li>Baue eine geschlossene Schaltung mit einer Wechselspannungsquelle und Bauteilen. Kabel verbinden immer die vier Haupt-Richtungen.</li>
+<li>Widerstände, Spulen und Kondensatoren sind einstellbar. Die Auswertung nutzt komplexe Impedanzen: R, jωL und 1/(jωC).</li>
+<li>Ein RC-Tiefpass entsteht zum Beispiel aus einem Serienwiderstand und einem Kondensator gegen Rückleitung. Ein Hochpass entsteht mit vertauschter Reihenfolge.</li>
+<li>Ein Serien- oder Parallelschwingkreis lässt sich mit Spule und Kondensator aufbauen. Die Resonanz ist im Amperemeter und im Frequenzgang sichtbar.</li>
+<li>Das Oszilloskop belastet die Schaltung nur schwach und stellt die Empfindlichkeit automatisch ein.</li>
+<li>Die Hörfunktion gibt das Signal der Quelle wieder. Bei weißem Rauschen wird ein breitbandiges Rauschsignal ausgegeben.</li>
+</ul><button class="btn" data-action="help">Schließen</button></div></div>`}
+function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Sweep verändert rechnerisch die Frequenz der Quelle. Dadurch lassen sich Hochpass, Tiefpass und Resonanzbereiche untersuchen, ohne die eingestellte Frequenz dauerhaft zu verändern.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
+function bind(){
+  document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+  document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
+  document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{
+    const c=state.cells[state.selected]; if(!c)return;
+    c[inp.dataset.edit]=inp.tagName==="SELECT"?inp.value:parseFloat(inp.value);
+    evaluate(); render();
+  });
+  const grid=document.getElementById("grid");
+  grid.querySelectorAll(".cell").forEach(el=>{
+    el.onpointerdown=e=>{e.stopPropagation();state.drawing=true;place(+el.dataset.x,+el.dataset.y)};
+    el.onpointerenter=e=>{if(state.drawing&&(state.tool==="wire"||state.tool==="erase"))place(+el.dataset.x,+el.dataset.y)}
+  });
+  const wrap=document.getElementById("wrap");
+  wrap.onpointerdown=e=>{if(state.tool!=="pan")return;state.dragging=true;state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};wrap.setPointerCapture(e.pointerId)};
+  wrap.onpointermove=e=>{if(!state.dragging)return;state.offset={x:e.clientX-state.dragStart.x,y:e.clientY-state.dragStart.y};const g=document.getElementById("grid");if(g)g.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`};
+  wrap.onpointerup=e=>{state.dragging=false;state.drawing=false;try{wrap.releasePointerCapture(e.pointerId)}catch(_){}};
+  wrap.onpointerleave=()=>{state.dragging=false;state.drawing=false};
+  wrap.onwheel=e=>{e.preventDefault();const old=state.scale;state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));const r=wrap.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;state.offset.x=mx-(mx-state.offset.x)*(state.scale/old);state.offset.y=my-(my-state.offset.y)*(state.scale/old);render()},{passive:false};
+}
+function action(a){
+  if(a==="theme"){state.light=!state.light;render()}
+  if(a==="clear"){stopAudio();state.cells={};state.selected=null;render()}
+  if(a==="help"){state.showHelp=!state.showHelp;render()}
+  if(a==="freq"){state.showFreq=!state.showFreq;render()}
+  if(a==="audio"){state.audioOn?stopAudio():startAudio();render()}
+  if(a==="toggle-switch"){const c=state.cells[state.selected]; if(c){c.state=c.state?0:1;render()}}
+  if(a==="zoom-in"){state.scale=Math.min(2.5,state.scale*1.18);render()}
+  if(a==="zoom-out"){state.scale=Math.max(.25,state.scale/1.18);render()}
+  if(a==="center"){state.offset={x:90,y:70};state.scale=.9;render()}
+  if(a==="example-low")exampleLowpass();
+  if(a==="example-res")exampleResonance();
+}
+function add(x,y,t,props={}){const c={...defaultCell(t),...props};state.cells[key(x,y)]=c;return c}
+function exampleLowpass(){
+  stopAudio(); state.cells={}; state.selected=null;
+  add(5,7,"source",{rot:DIR_N,U:5,f:1000});
+  for(let y=8;y<=13;y++)add(5,y,"wire");
+  for(let x=6;x<=10;x++)add(x,7,"wire");
+  add(11,7,"resistor",{rot:DIR_E,R:1000});
+  for(let x=12;x<=15;x++)add(x,7,"wire");
+  add(16,7,"scope",{rot:DIR_N});
+  add(16,8,"capacitor",{rot:DIR_N,C:1e-6});
+  for(let y=9;y<=13;y++)add(16,y,"wire");
+  for(let x=6;x<=15;x++)add(x,13,"wire");
+  state.selected=key(11,7); render();
+}
+function exampleResonance(){
+  stopAudio(); state.cells={}; state.selected=null;
+  add(5,9,"source",{rot:DIR_N,U:2,f:159});
+  for(let y=10;y<=15;y++)add(5,y,"wire");
+  for(let x=6;x<=9;x++)add(x,9,"wire");
+  add(10,9,"ammeter",{rot:DIR_E});
+  add(11,9,"resistor",{rot:DIR_E,R:20});
+  add(12,9,"inductor",{rot:DIR_E,L:0.1});
+  add(13,9,"capacitor",{rot:DIR_E,C:1e-5});
+  for(let x=14;x<=18;x++)add(x,9,"wire");
+  for(let y=10;y<=15;y++)add(18,y,"wire");
+  for(let x=6;x<=17;x++)add(x,15,"wire");
+  add(13,8,"scope",{rot:DIR_E});
+  state.selected=key(12,9); render();
+}
+window.addEventListener("pointerup",()=>state.drawing=false);
+window.addEventListener("resize",()=>requestAnimationFrame(()=>{drawScope();drawFreq()}));
+render();
+})();
+</script>
+</body>
+</html>
