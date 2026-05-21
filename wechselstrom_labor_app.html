@@ -67,6 +67,7 @@ body.light .row select option{background:white;color:#0f172a}
 }
 .check input{width:auto}
 .small{font-size:12px;color:var(--muted);line-height:1.45}
+.sweep-readout{margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.04);font-size:12px;color:var(--dim);font-weight:700}\n.live-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;background:color-mix(in srgb,var(--green) 14%, transparent);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 28%, transparent);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
 .btn{
   border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--dim);
@@ -144,7 +145,7 @@ const dirs=[DIR_N,DIR_E,DIR_S,DIR_W], colors=["#38bdf8","#fbbf24","#34d399","#f4
 const opp=d=>(d+4)%8;
 const state={
   cells:{}, selected:null, tool:"select", scale:0.9, offset:{x:80,y:70}, dragging:false, dragStart:null,
-  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false,
+  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false,
   visibleScopes:[], audibleSpeaker:null,
   sim:{ok:true,msg:"",values:{},scopes:[],speakers:[],source:null,totalCurrent:0,nodes:0}
 };
@@ -185,7 +186,7 @@ function defaultCell(type){
   if(type==="capacitor") return {...base,C:1e-6};
   if(type==="ammeter") return {...base,R:0.05};
   if(type==="scope") return {...base,R:1000000,channel:1};
-  if(type==="speaker") return {...base,R:8,name:""};
+  if(type==="speaker") return {...base,R:100000,name:""};
   return base;
 }
 function key(x,y){return x+","+y}
@@ -318,15 +319,8 @@ function getLCTransient(){
   const cap=Math.max(C.C||0.1,1e-12);
   const U=dc.U||5;
 
-  // Vereinfachtes Serien-RLC-Modell für die freie Schwingung.
-  // Es werden alle ohmschen Widerstände im Aufbau als Dämpfungswiderstände aufsummiert.
-  // Das Amperemeter erhält zusätzlich seinen kleinen Innenwiderstand.
-  const explicitR=cells
-    .filter(c=>c.type==="resistor")
-    .reduce((s,c)=>s+Math.max(c.R||0,0),0);
-  const ammeterR=cells
-    .filter(c=>c.type==="ammeter")
-    .reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
+  const explicitR=cells.filter(c=>c.type==="resistor").reduce((s,c)=>s+Math.max(c.R||0,0),0);
+  const ammeterR=cells.filter(c=>c.type==="ammeter").reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
   const R=explicitR+ammeterR;
 
   const omega0=1/Math.sqrt(l*cap);
@@ -336,7 +330,25 @@ function getLCTransient(){
   const T=underdamped?2*Math.PI/omegaD:2*Math.PI/omega0;
   const Imax=U*Math.sqrt(cap/l);
 
-  return {U,L:l,C:cap,R,omega0,alpha,omegaD,T,Imax,underdamped,active:sw.state===1};
+  const active=sw.state===1;
+  const now=performance.now();
+  const t=active&&state.transientStart!==null?(now-state.transientStart)/1000:0;
+
+  let uC=active?0:U;
+  let i=0;
+  if(active){
+    if(underdamped){
+      const damp=Math.exp(-alpha*t);
+      uC=U*damp*Math.cos(omegaD*t);
+      i=-U*cap*damp*(-alpha*Math.cos(omegaD*t)-omegaD*Math.sin(omegaD*t));
+    }else{
+      const beta=Math.min(alpha,20);
+      uC=U*Math.exp(-beta*t);
+      i=-(U/Math.max(R,1e-9))*Math.exp(-beta*t);
+    }
+  }
+
+  return {U,L:l,C:cap,R,omega0,alpha,omegaD,T,Imax,underdamped,active,t,uC,i};
 }
 
 function autoRot(x,y){
@@ -388,7 +400,7 @@ function componentSvg(c,k0,x,y){
   if(c.type==="switch")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="10" class="wire"/><line x1="20" y1="40" x2="20" y2="30" class="wire"/><circle cx="20" cy="12" r="3" class="term"/><circle cx="20" cy="28" r="3" class="term"/>${c.state?'<line x1="20" y1="12" x2="20" y2="28" stroke="var(--green)" stroke-width="3.2" stroke-linecap="round"/>':'<line x1="20" y1="28" x2="30" y2="13" class="sym"/>'}</g>`;
   if(c.type==="ammeter"){
     const lc=getLCTransient();
-    const label=lc&&lc.active?`${lc.underdamped?"Imax":"Abkl."} ${fmt(lc.Imax,"A")}`:(v?fmt(v.I,"A"):"");
+    const label=lc&&lc.active?`I ${fmt(Math.abs(lc.i),"A")}`:(v?fmt(v.I,"A"):"");
     inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="7" class="wire"/><line x1="20" y1="33" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="14" fill="var(--fill)" stroke="var(--green)" stroke-width="2.5"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="20" y="24" fill="var(--green)" text-anchor="middle" font-size="13" font-weight="900">A</text>${label?`<rect x="-6" y="-12" width="52" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7.3" font-weight="900">${label}</text>`:""}</g></g>`;
   }
   if(c.type==="scope"){
@@ -421,8 +433,10 @@ function selectedPanel(){
     rows+=`<div class="small">Diese Gleichspannungsquelle dient im Schwingkreis-Beispiel nur zum Aufladen des Kondensators.</div>`;
   }
   if(c.type==="threeway"){
-    rows+=`<button class="btn" data-action="toggle-threeway">${c.state?"auf Laden umschalten":"Quelle trennen und LC-Kreis schließen"}</button>`;
+    rows+=`<button class="btn" data-action="toggle-threeway">${c.state?"auf Laden zurückschalten":"Entladen starten"}</button>`;
+    const lc=getLCTransient();
     rows+=`<div class="small" style="margin-top:8px">${c.state?"Entladen: Die Quelle ist abgetrennt, der LC-Kreis ist geschlossen.":"Laden: Der Kondensator wird von der Gleichspannungsquelle geladen."}</div>`;
+    if(lc) rows+=`<div class="live-badge">${c.state?"freie gedämpfte Schwingung":"Kondensator geladen"}</div><div class="sweep-readout" id="lcLiveReadout">${c.state?`Live-Schwingung: t = ${lc.t.toFixed(1)} s · U_C = ${fmt(lc.uC,"V")} · I = ${fmt(Math.abs(lc.i),"A")}`:`bereit: U_C ≈ ${fmt(lc.U,"V")}`}</div>`;
   }
   if(c.type==="resistor")rows+=num("R","Widerstand R / Ω","0.001");
   if(c.type==="inductor")rows+=num("L","Induktivität L / H","0.000001");
@@ -443,10 +457,10 @@ function scopePanel(){
 }
 function speakerPanel(){
   const speakers=state.sim.speakers;
-  if(speakers.length===0)return `<div class="panel"><div class="small">Kein Lautsprecher verbaut. Deshalb wird kein Tonsignal ausgegeben.</div></div>`;
-  return `<div class="panel"><div class="small"><b>Hörbares Signal</b><br>Wähle den Lautsprecher, dessen Signal du hören willst.</div><div class="row"><label>Lautsprecher</label><select id="speakerSelect">${
+  if(speakers.length===0)return `<div class="panel"><div class="small">Kein Lautsprecher verbaut. Deshalb wird kein Tonsignal und kein hörbarer Frequenzgang ausgegeben.</div></div>`;
+  return `<div class="panel"><div class="small"><b>Hörbares Signal</b><br>Wähle den Lautsprecher, dessen Signal du hören willst. Die Lautsprecher werden als hochohmige aktive Eingänge modelliert, damit sie den RC-Filter nicht kurzschließen. Der hörbare Frequenzgang scannt 20 Hz bis 20 kHz.</div><div class="row"><label>Lautsprecher</label><select id="speakerSelect">${
     speakers.map((s,i)=>`<option value="${s.key}" ${state.audibleSpeaker===s.key?"selected":""}>Lautsprecher ${i+1} · ${s.key}</option>`).join("")
-  }</select></div><button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"ausgewählten Lautsprecher hören"}</button></div>`;
+  }</select></div><div class="actions"><button class="btn" data-action="audio">${state.audioOn?"Ton stoppen":"ausgewählten Lautsprecher hören"}</button><button class="btn" data-action="sweep">${state.sweepOn?"Sweep stoppen":"Frequenzgang hörbar scannen"}</button></div>${state.sweepOn?`<div class="sweep-readout" id="sweepReadout">hörbarer Sweep läuft …</div>`:""}</div>`;
 }
 function renderCells(){
   let html="";
@@ -474,17 +488,14 @@ function drawScope(){
       const t=x/rect.width;
       let yv;
       if(lc&&lc.active){
+        const windowTime=lc.underdamped?Math.max(lc.T*4,4):6;
+        const tEnd=lc.t;
+        const realTime=Math.max(0,tEnd-windowTime)+t*windowTime;
         if(lc.underdamped){
-          // Das sichtbare Zeitfenster wird automatisch auf etwa sechs Perioden eingestellt.
-          const timeWindow=lc.T*6;
-          const realTime=t*timeWindow;
           const damp=Math.exp(-lc.alpha*realTime);
           yv=Math.cos(lc.omegaD*realTime)*damp;
         } else {
-          // Bei zu großem Widerstand entsteht keine Schwingung mehr, sondern ein aperiodisches Abklingen.
-          const timeWindow=Math.max(6/Math.max(lc.omega0,1e-9),1);
-          const realTime=t*timeWindow;
-          yv=Math.exp(-lc.alpha*realTime);
+          yv=Math.exp(-Math.min(lc.alpha,20)*realTime);
         }
       } else if(source&&source.c.mode==="noise") yv=(Math.random()*2-1)*(s.V/maxA);
       else yv=Math.sin(2*Math.PI*cycles*t+s.phase)*(s.V/maxA);
@@ -492,7 +503,7 @@ function drawScope(){
       x?ctx.lineTo(x,y):ctx.moveTo(x,y);
     }
     ctx.stroke();
-    ctx.fillStyle=col;ctx.font="12px Inter";ctx.fillText(lc&&lc.active?`K${s.channel}: ${lc.underdamped?"gedämpfte Schwingung":"aperiodisches Abklingen"}, T ≈ ${lc.T.toFixed(2)} s, R = ${fmt(lc.R,"Ω")}`:`K${s.channel}: ${fmt(s.V,"V")}`,12,20+idx*17);
+    ctx.fillStyle=col;ctx.font="12px Inter";ctx.fillText(lc&&lc.active?`K${s.channel}: live, t = ${lc.t.toFixed(1)} s, T ≈ ${lc.T.toFixed(2)} s, R = ${fmt(lc.R,"Ω")}`:`K${s.channel}: ${fmt(s.V,"V")}`,12,20+idx*17);
   });
 }
 function drawFreq(){
@@ -528,7 +539,82 @@ function drawFreq(){
   ctx.fillText("Wenn Oszilloskope sichtbar sind, werden deren Kanäle geplottet. Sonst wird der Quellenstrom angezeigt.",14,42);
 }
 function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
+
+function getSpeakerGainAt(speakerKey,f){
+  const res=evaluateAt(f);
+  const sp=res.speakers.find(s=>s.key===speakerKey);
+  const src=res.source;
+  if(!sp||!src) return 0;
+  return Math.min(1, Math.max(0, sp.V / Math.max(src.c.U||1,1e-9)));
+}
+function stopSweep(){
+  if(state.sweep){
+    try{state.sweep.osc&&state.sweep.osc.stop()}catch(e){}
+    try{state.sweep.noise&&state.sweep.noise.stop()}catch(e){}
+    try{state.sweep.ac&&state.sweep.ac.close()}catch(e){}
+  }
+  state.sweep=null;
+  state.sweepOn=false;
+}
+function startAudibleSweep(){
+  const src=state.sim.source;
+  const sp=state.sim.speakers.find(s=>s.key===state.audibleSpeaker);
+  if(!src||!sp){stopSweep();render();return}
+  stopAudio();
+  stopSweep();
+
+  const AC=window.AudioContext||window.webkitAudioContext;
+  const ac=new AC();
+  const gain=ac.createGain();
+  gain.gain.value=0.0001;
+  gain.connect(ac.destination);
+
+  const osc=ac.createOscillator();
+  osc.type="sine";
+  osc.frequency.value=20;
+  osc.connect(gain);
+  osc.start();
+
+  const duration=12;
+  const startF=20;
+  const endF=20000;
+  const t0=ac.currentTime;
+  const steps=180;
+
+  for(let i=0;i<=steps;i++){
+    const p=i/steps;
+    const f=startF*Math.pow(endF/startF,p);
+    const t=t0+p*duration;
+    const g=getSpeakerGainAt(sp.key,f);
+    osc.frequency.exponentialRampToValueAtTime(f,t);
+    gain.gain.linearRampToValueAtTime(Math.max(0.0001, Math.min(0.16, 0.02+0.14*g)),t);
+  }
+
+  const stopAt=t0+duration+.15;
+  osc.stop(stopAt);
+  state.sweep={ac,osc,start:performance.now(),duration,startF,endF,speakerKey:sp.key};
+  state.sweepOn=true;
+
+  const tick=()=>{
+    if(!state.sweepOn||!state.sweep)return;
+    const elapsed=(performance.now()-state.sweep.start)/1000;
+    const p=Math.min(1,elapsed/state.sweep.duration);
+    const f=state.sweep.startF*Math.pow(state.sweep.endF/state.sweep.startF,p);
+    const el=document.getElementById("sweepReadout");
+    if(el) el.textContent=`hörbarer Sweep läuft: ${fmt(f,"Hz")} am ausgewählten Lautsprecher`;
+    if(p>=1){
+      stopSweep();
+      render();
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  render();
+}
+
 function startAudio(){
+  stopSweep();
   const src=state.sim.source, sp=state.sim.speakers.find(s=>s.key===state.audibleSpeaker);
   if(!src||!sp){stopAudio();render();return}
   stopAudio();
@@ -550,6 +636,19 @@ function startAudio(){
   state.audioOn=true;render();
 }
 function stopAudio(){if(state.audio){try{state.audio.node.stop()}catch(e){}try{state.audio.ac.close()}catch(e){}}state.audio=null;state.audioOn=false}
+function liveTransientLoop(){
+  const lc=getLCTransient();
+  if(!state.transientRunning||!lc||!lc.active) return;
+  drawScope();
+  const el=document.getElementById("lcLiveReadout");
+  if(el) el.textContent=`Live-Schwingung: t = ${lc.t.toFixed(1)} s · U_C = ${fmt(lc.uC,"V")} · I = ${fmt(Math.abs(lc.i),"A")}`;
+  if(lc.t<Math.max(20,lc.T*8)){
+    requestAnimationFrame(liveTransientLoop);
+  }else{
+    state.transientRunning=false;
+  }
+}
+
 function render(){
   evaluate();
   document.body.classList.toggle("light",state.light);
@@ -589,17 +688,17 @@ function render(){
     </main>
   </div>`;
   bind();
-  requestAnimationFrame(()=>{drawScope();drawFreq()});
+  requestAnimationFrame(()=>{drawScope();drawFreq(); if(state.transientRunning){requestAnimationFrame(liveTransientLoop)}});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Kurzanleitung</h2><ul class="help-list">
 <li>Mit „Markieren“ klickst du ein Bauteil an und bekommst links genau dessen Einstellmenü. Mit „Navigieren“ kannst du die gesamte Baufläche frei verschieben, indem du direkt auf dem Raster ziehst.</li>
 <li>Mehrere Oszilloskope sind möglich. Jedes Oszilloskop kann einem Kanal zugeordnet werden. Die Anzeige liegt im Seitenmenü, damit sie die Schaltung nicht verdeckt. Sichtbar sind nur die dort aktivierten Kanäle.</li>
-<li>Mehrere Lautsprecher sind möglich. Im Seitenmenü wählst du, welchen Lautsprecher du hören willst.</li>
+<li>Mehrere Lautsprecher sind möglich. Im Seitenmenü wählst du, welchen Lautsprecher du hören willst. Dort kannst du auch einen hörbaren Frequenzgang einschalten, der den Bereich von 20 Hz bis 20 kHz scannt.</li>
 <li>Ohne Oszilloskop erscheint keine Oszilloskop-Anzeige. Ohne Lautsprecher gibt es keine Hörfunktion.</li>
-<li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“. Dort liegen Widerstand und Kondensator in Reihe. Ein Lautsprecher liegt parallel zum Widerstand, der andere parallel zum Kondensator. Im Lautsprecher-Menü kannst du zwischen beiden Signalen umschalten.</li>
-<li>Der langsame Schwingkreis wird mit Gleichspannung geladen. Danach trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Wenn ein ohmscher Widerstand eingebaut ist, zeigt das Oszilloskop eine gedämpfte Schwingung. Bei zu großem Widerstand geht die Schaltung in ein aperiodisches Abklingen über.</li>
+<li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“. Dort liegen Widerstand und Kondensator in Reihe. Ein Lautsprecher liegt parallel zum Widerstand, der andere parallel zum Kondensator. Die Werte sind so gewählt, dass die Grenzfrequenz im hörbaren Bereich liegt. Parallel zum Widerstand hörst du vor allem den Hochpass-Anteil, parallel zum Kondensator vor allem den Tiefpass-Anteil. Im Lautsprecher-Menü kannst du zwischen beiden Signalen umschalten und den hörbaren Frequenzgang starten.</li>
+<li>Der langsame Schwingkreis ist jetzt als reales Demonstrationsexperiment aufgebaut. Zuerst lädt die Gleichspannungsquelle den Kondensator. Beim Umschalten trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Dann startet die freie gedämpfte Schwingung live; Amperemeter und Oszilloskop laufen zeitlich mit.</li>
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
-function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
+function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt. Hörbar wird der Frequenzgang über den Knopf „Frequenzgang hörbar scannen“ im Lautsprecher-Bereich.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
 function bind(){
   document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
   document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
@@ -688,12 +787,26 @@ function bind(){
 }
 function action(a){
   if(a==="theme"){state.light=!state.light;render()}
-  if(a==="clear"){stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;render()}
+  if(a==="clear"){stopAudio();stopSweep();state.transientStart=null;state.transientRunning=false;state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;render()}
   if(a==="help"){state.showHelp=!state.showHelp;render()}
   if(a==="freq"){state.showFreq=!state.showFreq;render()}
   if(a==="audio"){state.audioOn?stopAudio():startAudio();render()}
+  if(a==="sweep"){state.sweepOn?stopSweep():startAudibleSweep();render()}
   if(a==="toggle-switch"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
-  if(a==="toggle-threeway"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
+  if(a==="toggle-threeway"){
+    const c=state.cells[state.selected];
+    if(c){
+      c.state=c.state?0:1;
+      if(c.state===1){
+        state.transientStart=performance.now();
+        state.transientRunning=true;
+      }else{
+        state.transientStart=null;
+        state.transientRunning=false;
+      }
+      render();
+    }
+  }
   if(a==="zoom-in"){state.scale=Math.min(2.5,state.scale*1.18);render()}
   if(a==="zoom-out"){state.scale=Math.max(.25,state.scale/1.18);render()}
   if(a==="center"){state.offset={x:70,y:40};state.scale=.95;render()}
@@ -708,8 +821,14 @@ function exampleHighLow(){
 
   // Gewünschter Aufbau:
   // Ein Widerstand und ein Kondensator liegen in Reihe.
-  // Lautsprecher 1 liegt parallel zum Widerstand: eher Hochpass-Anteil.
-  // Lautsprecher 2 liegt parallel zum Kondensator: eher Tiefpass-Anteil.
+  // Lautsprecher 1 liegt parallel zum Widerstand: Hochpass-Anteil, tiefe Frequenzen sind gedämpft.
+  // Lautsprecher 2 liegt parallel zum Kondensator: Tiefpass-Anteil, hohe Frequenzen sind gedämpft.
+  //
+  // Werte:
+  // R = 1 kΩ, C = 1 µF ergibt f_g ≈ 159 Hz.
+  // Dadurch ist beim Sweep von 20 Hz bis 20 kHz deutlich hörbar:
+  // am Widerstand kommt der Ton erst nach unten hin schwach, dann kräftig;
+  // am Kondensator ist der tiefe Bereich kräftiger, die Höhen werden deutlich leiser.
   add(5,14,"source",{rot:DIR_N,U:5,f:1200,mode:"noise"});
 
   // Hauptkreis
@@ -717,23 +836,23 @@ function exampleHighLow(){
   lineH(6,9,14);
   add(10,14,"resistor",{rot:DIR_E,R:1000});
   lineH(11,14,14);
-  add(15,14,"capacitor",{rot:DIR_E,C:0.47e-6});
+  add(15,14,"capacitor",{rot:DIR_E,C:1e-6});
   lineH(16,23,14);
   lineV(24,14,22);
   lineH(6,23,22);
 
-  // Lautsprecher parallel zum Widerstand
+  // Lautsprecher parallel zum Widerstand, hochohmig modelliert wie ein aktiver Eingang
   lineV(9,11,13);
   lineV(11,11,13);
   lineH(10,10,11);
-  add(11,11,"speaker",{rot:DIR_E,R:8});
+  add(11,11,"speaker",{rot:DIR_E,R:100000});
   lineH(12,12,11);
 
-  // Lautsprecher parallel zum Kondensator
+  // Lautsprecher parallel zum Kondensator, hochohmig modelliert wie ein aktiver Eingang
   lineV(14,17,21);
   lineV(16,17,21);
   lineH(15,15,18);
-  add(16,18,"speaker",{rot:DIR_E,R:8});
+  add(16,18,"speaker",{rot:DIR_E,R:100000});
   lineH(17,17,18);
 
   // Oszilloskope parallel zu den beiden Bauteilen, nur auf geraden Leitungsabschnitten
@@ -746,33 +865,42 @@ function exampleHighLow(){
   render();
 }
 function exampleResonance(){
-  stopAudio();state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
+  stopAudio();stopSweep();
+  state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
+  state.transientStart=null;state.transientRunning=false;
 
-  // Schwingkreis mit Gleichspannungsquelle zum Laden.
-  // Alle Bauteile liegen auf geraden Leitungsabschnitten. Ecken enthalten nur Kabel.
-  add(5,12,"dcsource",{rot:DIR_N,U:5});
-  lineV(5,13,22);
+  // Aufbau nach dem Demonstrationsexperiment:
+  // links Gleichspannungsquelle zum Laden, oben Amperemeter,
+  // rechts C und L im Schwingkreis, unten ohmscher Widerstand zur Dämpfung,
+  // Dreiwegeschalter: Laden oder Quelle trennen und LC-Kreis schließen.
+  add(5,14,"dcsource",{rot:DIR_N,U:5});
+  lineV(5,10,13);
+  lineV(5,15,22);
 
-  lineH(6,8,12);
-  add(9,12,"threeway",{rot:DIR_E,state:0});
-  lineH(10,12,12);
-  add(13,12,"ammeter",{rot:DIR_E});
-  lineH(14,15,12);
-  add(16,12,"resistor",{rot:DIR_E,R:0.4});
-  lineH(17,18,12);
-  add(19,12,"inductor",{rot:DIR_E,L:1});
-  lineH(20,21,12);
-  add(22,12,"capacitor",{rot:DIR_E,C:1});
-  lineH(23,26,12);
+  lineH(6,8,10);
+  add(9,10,"threeway",{rot:DIR_E,state:0});
+  lineH(10,12,10);
+  add(13,10,"ammeter",{rot:DIR_E});
+  lineH(14,23,10);
 
-  lineV(27,12,22);
-  lineH(6,26,22);
+  lineV(24,10,12);
+  add(24,13,"capacitor",{rot:DIR_N,C:1});
+  lineV(24,14,16);
+  add(24,17,"inductor",{rot:DIR_N,L:1});
+  lineV(24,18,22);
 
-  // Messung auf geradem Abschnitt, nicht in der Ecke.
-  add(24,13,"scope",{rot:DIR_N,channel:1});
+  lineH(6,11,22);
+  add(12,22,"resistor",{rot:DIR_E,R:0.35});
+  lineH(13,23,22);
 
-  state.selected=key(9,12);
-  state.offset={x:75,y:35};
+  lineV(10,11,21);
+
+  add(26,13,"scope",{rot:DIR_N,channel:1});
+  add(26,17,"scope",{rot:DIR_N,channel:2});
+
+  state.visibleScopes=[];
+  state.selected=key(9,10);
+  state.offset={x:95,y:25};
   state.scale=1;
   render();
 }
