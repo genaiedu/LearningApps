@@ -122,7 +122,7 @@ body.light .row select option{background:white;color:#0f172a}
 }
 .hud.is-dragging .hud-top{cursor:grabbing}
 .hud-body{padding:14px}
-.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0;cursor:grab;padding:14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.04)}
 .hud-title{font-weight:900;color:var(--accent)}
 .scope{width:100%;height:170px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
 body.light .scope{background:rgba(255,255,255,.55)}
@@ -143,6 +143,37 @@ body.light .scope{background:rgba(255,255,255,.55)}
 .modal-card h2{font-family:Poppins;margin:0 0 14px;color:var(--accent)}
 .freq-canvas{width:100%;height:310px;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:16px}
 .help-list{padding-left:18px;color:var(--dim);line-height:1.5}
+
+/* iPad-/Touch-Absicherung */
+.canvas-wrap,
+.grid,
+.cell,
+.hud,
+.hud-top {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.hud-top {
+  min-height: 58px;
+}
+.mode-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 14%, transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
 @media(max-width:860px){
   .app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}
   .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
@@ -816,9 +847,10 @@ function render(){
         <div class="section-title">Experiment</div>
         <div class="panel">
           <div class="small">
-            Der Schwingkreis ist fest aufgebaut: Gleichspannungsquelle, Dreiwegeschalter,
+            Der Schwingkreis ist fest aufgebaut. Zum Verschieben „Baufläche verschieben“ wählen. Gleichspannungsquelle, Dreiwegeschalter,
             Amperemeter, Kondensator, Spule und ohmscher Dämpfungswiderstand.
           </div>
+          <div class="mode-pill">Modus: ${state.tool==="pan"?"Baufläche verschieben":"Bauteile anklicken"}</div>
           <div class="actions">
             <button class="btn" data-action="load-circuit">Kondensator laden</button>
             <button class="btn" data-action="discharge-circuit">Entladen starten</button>
@@ -860,7 +892,7 @@ function render(){
   requestAnimationFrame(()=>{drawScope();drawFreq(); if(state.transientRunning){requestAnimationFrame(liveTransientLoop)}});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schwingkreis-Simulator</h2><ul class="help-list">
-<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Baufläche verschieben“ kannst du die Schaltung frei ziehen. Das Oszilloskop ist ein eigenes Fenster und lässt sich am Kopf verschieben.</li>
+<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Baufläche verschieben“ kannst du die Schaltung frei ziehen. Auf dem iPad funktioniert das mit dem Finger direkt auf der Baufläche. Das Oszilloskop ist ein eigenes Fenster und lässt sich am vergrößerten Kopfbereich verschieben.</li>
 <li>Mit „Kondensator laden“ wird der Kondensator an der Gleichspannungsquelle geladen.</li>
 <li>Mit „Entladen starten“ trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Die Schwingung beginnt dann live.</li>
 <li>Das Oszilloskop schreibt die Spur von links nach rechts. Kanal 1 zeigt U_C, Kanal 2 zeigt U_L und Kanal 3 zeigt U_R.</li>
@@ -902,7 +934,7 @@ function bind(){
     try{wrap.setPointerCapture(e.pointerId)}catch(_){}
   };
 
-  if(scopeHandle){
+  if(scopeHandle && scopeHud){
     scopeHandle.onpointerdown=e=>{
       e.preventDefault();
       e.stopPropagation();
@@ -940,6 +972,7 @@ function bind(){
         startPan(e);
         return;
       }
+      e.preventDefault();
       e.stopPropagation();
       state.drawing=true;
       place(+el.dataset.x,+el.dataset.y);
@@ -950,9 +983,11 @@ function bind(){
     };
   });
 
+  // Wichtig: Auch ein Klick auf den Hintergrund oder direkt auf das Raster startet das Verschieben.
   wrap.onpointerdown=e=>{
     if(state.tool!=="pan")return;
     e.preventDefault();
+    e.stopPropagation();
     startPan(e);
   };
 
@@ -1087,6 +1122,16 @@ function exampleResonance(){
   render();
 }
 window.addEventListener("pointerup",()=>state.drawing=false);
+
+// Zusätzliche Absicherung für iPadOS/Safari:
+// Zwei-Finger-Zoom und native Gesten werden im Simulationsbereich unterdrückt.
+document.addEventListener("touchmove", (e) => {
+  const wrap = document.getElementById("wrap");
+  if (wrap && wrap.contains(e.target)) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
 window.addEventListener("resize",()=>requestAnimationFrame(()=>{drawScope();drawFreq()}));
 buildFixedSchwingkreis();
 render();
