@@ -97,15 +97,17 @@ body.light .row select option{background:white;color:#0f172a}
 .term{fill:var(--wire);stroke:var(--bg);stroke-width:1}
 .selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 11%, transparent)}
 .hud{
-  position:relative;
-  width:100%;
+  position:absolute;
+  right:20px;
+  top:86px;
+  z-index:4;
+  width:min(620px,calc(100% - 40px));
   background:var(--panel);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:20px;
   padding:14px;
   box-shadow:var(--shadow);
   backdrop-filter:blur(20px);
-  margin-top:12px;
 }
 .hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .hud-title{font-weight:900;color:var(--accent)}
@@ -131,7 +133,7 @@ body.light .scope{background:rgba(255,255,255,.55)}
 @media(max-width:860px){
   .app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}
   .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
-  .topbar{height:56px;padding:0 12px}.float{right:12px;bottom:12px}
+  .topbar{height:56px;padding:0 12px}.hud{right:10px;top:68px;width:calc(100% - 20px)}.float{right:12px;bottom:12px}
 }
 </style>
 </head>
@@ -364,11 +366,26 @@ function connectedDirs(x,y){
     w: c&&hasPort(c,DIR_W)&&g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E)
   };
 }
+function toggleThreewayCell(c){
+  c.state=c.state?0:1;
+  if(c.state===1){
+    state.transientStart=performance.now();
+    state.transientRunning=true;
+  }else{
+    state.transientStart=null;
+    state.transientRunning=false;
+  }
+}
 function setTool(t){state.tool=t;render()}
 function place(x,y){
   const k=key(x,y),c=state.cells[k],t=state.tool;
   if(t==="pan")return;
-  if(t==="select"){state.selected=c?k:null;if(c&&c.type==="switch"){} evaluate();render();return}
+  if(t==="select"){
+    state.selected=c?k:null;
+    if(c&&c.type==="switch") c.state=c.state?0:1;
+    if(c&&c.type==="threeway") toggleThreewayCell(c);
+    evaluate();render();return;
+  }
   if(t==="erase"){delete state.cells[k];if(state.selected===k)state.selected=null;evaluate();render();return}
   if(t==="rotate"){if(c&&c.type!=="wire"){c.rot=(c.rot+2)%8;evaluate();render()}return}
   if(t==="wire"){if(!c)state.cells[k]=defaultCell("wire");evaluate();render();return}
@@ -434,6 +451,7 @@ function selectedPanel(){
   }
   if(c.type==="threeway"){
     rows+=`<button class="btn" data-action="toggle-threeway">${c.state?"auf Laden zurückschalten":"Entladen starten"}</button>`;
+    rows+=`<div class="small" style="margin-top:8px">Im Markierungsmodus schaltet ein direkter Klick auf den Dreiwegeschalter ebenfalls um.</div>`;
     const lc=getLCTransient();
     rows+=`<div class="small" style="margin-top:8px">${c.state?"Entladen: Die Quelle ist abgetrennt, der LC-Kreis ist geschlossen.":"Laden: Der Kondensator wird von der Gleichspannungsquelle geladen."}</div>`;
     if(lc) rows+=`<div class="live-badge">${c.state?"freie gedämpfte Schwingung":"Kondensator geladen"}</div><div class="sweep-readout" id="lcLiveReadout">${c.state?`Live-Schwingung: t = ${lc.t.toFixed(1)} s · U_C = ${fmt(lc.uC,"V")} · I = ${fmt(Math.abs(lc.i),"A")}`:`bereit: U_C ≈ ${fmt(lc.U,"V")}`}</div>`;
@@ -475,35 +493,70 @@ function drawScope(){
   const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
   canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
   const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr); ctx.clearRect(0,0,rect.width,rect.height);
+
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
   for(let i=1;i<10;i++){ctx.beginPath();ctx.moveTo(rect.width*i/10,0);ctx.lineTo(rect.width*i/10,rect.height);ctx.stroke()}
   for(let i=1;i<6;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/6);ctx.lineTo(rect.width,rect.height*i/6);ctx.stroke()}
-  const source=state.sim.source, active=state.sim.scopes.filter(s=>state.visibleScopes.includes(s.key));
+
+  const source=state.sim.source;
+  const active=state.sim.scopes.filter(s=>state.visibleScopes.includes(s.key));
   const lc=getLCTransient();
   const maxA=lc&&lc.active?Math.max(lc.U,1):Math.max(...active.map(s=>Math.max(s.V,1e-12)),1);
+
   active.forEach((s,idx)=>{
-    const col=colors[(s.channel-1)%colors.length];ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();
+    const col=colors[(s.channel-1)%colors.length];
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();
+
+    let started=false;
+
+    if(lc&&lc.active){
+      const windowTime=lc.underdamped?Math.max(lc.T*4,4):6;
+      const shownTime=Math.min(lc.t,windowTime);
+      const xMax=rect.width*(shownTime/windowTime);
+
+      for(let x=0;x<=xMax;x++){
+        const p=x/rect.width;
+        const realTime=p*windowTime;
+
+        let yv;
+        if(lc.underdamped){
+          const damp=Math.exp(-lc.alpha*realTime);
+          yv=Math.cos(lc.omegaD*realTime)*damp;
+        }else{
+          yv=Math.exp(-Math.min(lc.alpha,20)*realTime);
+        }
+
+        const y=rect.height/2-yv*rect.height*.40;
+        if(!started){ctx.moveTo(x,y);started=true;}else{ctx.lineTo(x,y);}
+      }
+
+      ctx.stroke();
+
+      // Schreibmarke am aktuellen Ende der Spur.
+      if(xMax>=0&&xMax<=rect.width){
+        ctx.fillStyle=col;
+        ctx.beginPath();
+        ctx.arc(xMax,rect.height/2,4,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle=col;ctx.font="12px Inter";
+      ctx.fillText(`K${s.channel}: live geschrieben, t = ${lc.t.toFixed(1)} s, T ≈ ${lc.T.toFixed(2)} s`,12,20+idx*17);
+      return;
+    }
+
     const cycles=Math.max(.2,Math.min(8,(s.f||1)/250));
     for(let x=0;x<rect.width;x++){
       const t=x/rect.width;
       let yv;
-      if(lc&&lc.active){
-        const windowTime=lc.underdamped?Math.max(lc.T*4,4):6;
-        const tEnd=lc.t;
-        const realTime=Math.max(0,tEnd-windowTime)+t*windowTime;
-        if(lc.underdamped){
-          const damp=Math.exp(-lc.alpha*realTime);
-          yv=Math.cos(lc.omegaD*realTime)*damp;
-        } else {
-          yv=Math.exp(-Math.min(lc.alpha,20)*realTime);
-        }
-      } else if(source&&source.c.mode==="noise") yv=(Math.random()*2-1)*(s.V/maxA);
+      if(source&&source.c.mode==="noise") yv=(Math.random()*2-1)*(s.V/maxA);
       else yv=Math.sin(2*Math.PI*cycles*t+s.phase)*(s.V/maxA);
       const y=rect.height/2-yv*rect.height*.40;
       x?ctx.lineTo(x,y):ctx.moveTo(x,y);
     }
     ctx.stroke();
-    ctx.fillStyle=col;ctx.font="12px Inter";ctx.fillText(lc&&lc.active?`K${s.channel}: live, t = ${lc.t.toFixed(1)} s, T ≈ ${lc.T.toFixed(2)} s, R = ${fmt(lc.R,"Ω")}`:`K${s.channel}: ${fmt(s.V,"V")}`,12,20+idx*17);
+    ctx.fillStyle=col;ctx.font="12px Inter";
+    ctx.fillText(`K${s.channel}: ${fmt(s.V,"V")}`,12,20+idx*17);
   });
 }
 function drawFreq(){
@@ -660,11 +713,10 @@ function render(){
         <div class="section-title">Werkzeuge und Bauteile</div><div class="tool-grid">${tools()}</div>
         <div class="section-title">Markiertes Bauteil</div>${selectedPanel()}
         <div class="section-title">Oszilloskop und Ton</div>${scopePanel()}${speakerPanel()}
-        ${scopes?`<div class="hud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>`:""}
         <div class="panel">
           <div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`}`:"Noch keine Quelle gesetzt."}<br>
           ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>
-          ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut.`:"Kein Oszilloskop verbaut."}<br>
+          ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut. Anzeige auf der Baufläche.`:"Kein Oszilloskop verbaut."}<br>
           Baufläche: Werkzeug „Navigieren“ wählen, dann direkt auf der Baufläche ziehen. Das funktioniert auch auf Rasterzellen und leeren Bereichen.</div>
           <div class="actions">
             <button class="btn" data-action="example-highlow">Hochpass/Tiefpass hören</button>
@@ -682,6 +734,7 @@ function render(){
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
         <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
+        ${scopes?`<div class="hud" id="scopeHud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>`:""}
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
       ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
@@ -692,11 +745,11 @@ function render(){
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Kurzanleitung</h2><ul class="help-list">
 <li>Mit „Markieren“ klickst du ein Bauteil an und bekommst links genau dessen Einstellmenü. Mit „Navigieren“ kannst du die gesamte Baufläche frei verschieben, indem du direkt auf dem Raster ziehst.</li>
-<li>Mehrere Oszilloskope sind möglich. Jedes Oszilloskop kann einem Kanal zugeordnet werden. Die Anzeige liegt im Seitenmenü, damit sie die Schaltung nicht verdeckt. Sichtbar sind nur die dort aktivierten Kanäle.</li>
+<li>Mehrere Oszilloskope sind möglich. Jedes Oszilloskop kann einem Kanal zugeordnet werden. Die Anzeige liegt direkt auf der Bauflächenebene. Sichtbar sind nur die im Seitenmenü aktivierten Kanäle.</li>
 <li>Mehrere Lautsprecher sind möglich. Im Seitenmenü wählst du, welchen Lautsprecher du hören willst. Dort kannst du auch einen hörbaren Frequenzgang einschalten, der den Bereich von 20 Hz bis 20 kHz scannt.</li>
 <li>Ohne Oszilloskop erscheint keine Oszilloskop-Anzeige. Ohne Lautsprecher gibt es keine Hörfunktion.</li>
 <li>Für hörbare Filter wähle das Beispiel „Hochpass/Tiefpass hören“. Dort liegen Widerstand und Kondensator in Reihe. Ein Lautsprecher liegt parallel zum Widerstand, der andere parallel zum Kondensator. Die Werte sind so gewählt, dass die Grenzfrequenz im hörbaren Bereich liegt. Parallel zum Widerstand hörst du vor allem den Hochpass-Anteil, parallel zum Kondensator vor allem den Tiefpass-Anteil. Im Lautsprecher-Menü kannst du zwischen beiden Signalen umschalten und den hörbaren Frequenzgang starten.</li>
-<li>Der langsame Schwingkreis ist jetzt als reales Demonstrationsexperiment aufgebaut. Zuerst lädt die Gleichspannungsquelle den Kondensator. Beim Umschalten trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Dann startet die freie gedämpfte Schwingung live; Amperemeter und Oszilloskop laufen zeitlich mit.</li>
+<li>Der langsame Schwingkreis ist jetzt als reales Demonstrationsexperiment aufgebaut. Zuerst lädt die Gleichspannungsquelle den Kondensator. Beim Umschalten trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Dann startet die freie gedämpfte Schwingung live; das Oszilloskop schreibt die Spur von links nach rechts, und der noch nicht erreichte Teil bleibt leer.</li>
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
 function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt. Hörbar wird der Frequenzgang über den Knopf „Frequenzgang hörbar scannen“ im Lautsprecher-Bereich.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
 function bind(){
@@ -795,17 +848,7 @@ function action(a){
   if(a==="toggle-switch"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
   if(a==="toggle-threeway"){
     const c=state.cells[state.selected];
-    if(c){
-      c.state=c.state?0:1;
-      if(c.state===1){
-        state.transientStart=performance.now();
-        state.transientRunning=true;
-      }else{
-        state.transientStart=null;
-        state.transientRunning=false;
-      }
-      render();
-    }
+    if(c){toggleThreewayCell(c);render();}
   }
   if(a==="zoom-in"){state.scale=Math.min(2.5,state.scale*1.18);render()}
   if(a==="zoom-out"){state.scale=Math.max(.25,state.scale/1.18);render()}
