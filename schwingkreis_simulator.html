@@ -68,6 +68,8 @@ body.light .row select option{background:white;color:#0f172a}
 .check input{width:auto}
 .small{font-size:12px;color:var(--muted);line-height:1.45}
 .sweep-readout{margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.04);font-size:12px;color:var(--dim);font-weight:700}\n.live-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;background:color-mix(in srgb,var(--green) 14%, transparent);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 28%, transparent);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.formula-box{margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.045);font-size:12px;color:var(--dim);line-height:1.55}
+.formula-box .formula{font-family:Georgia,serif;font-size:15px;color:var(--text);font-weight:700;margin:4px 0}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
 .btn{
   border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--dim);
@@ -98,18 +100,29 @@ body.light .row select option{background:white;color:#0f172a}
 .selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 11%, transparent)}
 .hud{
   position:absolute;
-  right:20px;
-  top:86px;
-  z-index:4;
-  width:min(620px,calc(100% - 40px));
+  z-index:8;
+  width:620px;
+  max-width:calc(100% - 40px);
   background:var(--panel);
   border:1px solid var(--border);
   border-radius:20px;
-  padding:14px;
+  padding:0;
   box-shadow:var(--shadow);
   backdrop-filter:blur(20px);
+  overflow:hidden;
+  resize:both;
+  min-width:360px;
+  min-height:240px;
 }
-.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.hud-top{
+  cursor:grab;
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+}
+.hud.is-dragging .hud-top{cursor:grabbing}
+.hud-body{padding:14px}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0}
 .hud-title{font-weight:900;color:var(--accent)}
 .scope{width:100%;height:170px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
 body.light .scope{background:rgba(255,255,255,.55)}
@@ -133,7 +146,7 @@ body.light .scope{background:rgba(255,255,255,.55)}
 @media(max-width:860px){
   .app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}
   .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
-  .topbar{height:56px;padding:0 12px}.hud{right:10px;top:68px;width:calc(100% - 20px)}.float{right:12px;bottom:12px}
+  .topbar{height:56px;padding:0 12px}.hud{width:calc(100% - 20px);max-width:calc(100% - 20px)}.float{right:12px;bottom:12px}
 }
 </style>
 </head>
@@ -147,7 +160,7 @@ const dirs=[DIR_N,DIR_E,DIR_S,DIR_W], colors=["#38bdf8","#fbbf24","#34d399","#f4
 const opp=d=>(d+4)%8;
 const state={
   cells:{}, selected:null, tool:"select", scale:0.9, offset:{x:80,y:70}, dragging:false, dragStart:null,
-  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false,
+  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false, scopeWindow:{x:620,y:90}, scopeDragging:false, scopeDragStart:null,
   visibleScopes:[], audibleSpeaker:null,
   sim:{ok:true,msg:"",values:{},scopes:[],speakers:[],source:null,totalCurrent:0,nodes:0}
 };
@@ -352,6 +365,51 @@ function getLCTransient(){
 
   return {U,L:l,C:cap,R,omega0,alpha,omegaD,T,Imax,underdamped,active,t,uC,i};
 }
+
+function getResonanceInfo(){
+  const cells=Object.values(state.cells);
+  const L=cells.find(c=>c.type==="inductor");
+  const C=cells.find(c=>c.type==="capacitor");
+  const R=cells.filter(c=>c.type==="resistor").reduce((s,c)=>s+Math.max(c.R||0,0),0)
+          + cells.filter(c=>c.type==="ammeter").reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
+  if(!L||!C) return null;
+
+  const l=Math.max(L.L||1,1e-12);
+  const cap=Math.max(C.C||1,1e-15);
+  const f0=1/(2*Math.PI*Math.sqrt(l*cap));
+  const T0=1/f0;
+
+  const omega0=1/Math.sqrt(l*cap);
+  const alpha=R/(2*l);
+  const underdamped=alpha<omega0;
+  const fd=underdamped?Math.sqrt(omega0*omega0-alpha*alpha)/(2*Math.PI):0;
+  const Td=underdamped?1/fd:Infinity;
+
+  return {L:l,C:cap,R,f0,T0,alpha,underdamped,fd,Td};
+}
+
+function resonancePanel(){
+  const r=getResonanceInfo();
+  if(!r) return `<div class="panel"><div class="small">Für die Berechnung der Resonanzfrequenz müssen Spule und Kondensator vorhanden sein.</div></div>`;
+
+  return `<div class="panel">
+    <div class="small"><b>Resonanzfrequenz</b></div>
+    <div class="formula-box">
+      <div>Idealer LC-Schwingkreis:</div>
+      <div class="formula">f₀ = 1 / (2π · √(L · C))</div>
+      <div>mit L = ${fmt(r.L,"H")} und C = ${fmt(r.C,"F")}</div>
+      <div><b>f₀ = ${fmt(r.f0,"Hz")}</b></div>
+      <div><b>T₀ = ${fmt(r.T0,"s")}</b></div>
+    </div>
+    <div class="formula-box">
+      <div>Mit ohmscher Dämpfung im Serienkreis:</div>
+      <div class="formula">f_d = 1/(2π) · √(1/(L·C) − (R/(2L))²)</div>
+      <div>mit R = ${fmt(r.R,"Ω")}</div>
+      <div>${r.underdamped ? `<b>gedämpfte Frequenz f_d = ${fmt(r.fd,"Hz")}</b><br><b>gedämpfte Periodendauer T_d = ${fmt(r.Td,"s")}</b>` : `<b>aperiodischer Fall: keine Schwingungsfrequenz</b>`}</div>
+    </div>
+  </div>`;
+}
+
 
 function lcTraceValueForScope(scope, lc, t){
   if(!lc) return 0;
@@ -764,16 +822,19 @@ function render(){
           <div class="actions">
             <button class="btn" data-action="load-circuit">Kondensator laden</button>
             <button class="btn" data-action="discharge-circuit">Entladen starten</button>
+            <button class="btn" data-action="tool-select">Bauteile anklicken</button>
+            <button class="btn" data-action="tool-pan">Baufläche verschieben</button>
           </div>
         </div>
 
         <div class="section-title">Bauteilwerte</div>${selectedPanel()}
+        <div class="section-title">Berechnung</div>${resonancePanel()}
         <div class="section-title">Oszilloskop</div>${scopePanel()}
         <div class="panel">
           <div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`}`:"Noch keine Quelle gesetzt."}<br>
           ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>
           ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut. Anzeige auf der Baufläche.`:"Kein Oszilloskop verbaut."}<br>
-          Baufläche: Werkzeug „Navigieren“ wählen, dann direkt auf der Baufläche ziehen. Das funktioniert auch auf Rasterzellen und leeren Bereichen.</div>
+          Baufläche: „Baufläche verschieben“ wählen und direkt auf der Schaltung ziehen. Das Oszilloskop-Fenster lässt sich am Kopf verschieben.</div>
           <div class="actions">
             <button class="btn" data-action="load-circuit">Laden</button>
             <button class="btn" data-action="discharge-circuit">Entladen</button>
@@ -789,7 +850,7 @@ function render(){
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
         <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
-        ${scopes?`<div class="hud" id="scopeHud"><div class="hud-top"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"}</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Sinus"}</span></div><canvas class="scope" id="scopeCanvas"></canvas></div>`:""}
+        ${scopes?`<div class="hud" id="scopeHud" style="left:${state.scopeWindow.x}px;top:${state.scopeWindow.y}px"><div class="hud-top" id="scopeDragHandle"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"} · Fenster am Kopf ziehen</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Live"}</span></div><div class="hud-body"><canvas class="scope" id="scopeCanvas"></canvas></div></div>`:""}
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
       ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
@@ -799,11 +860,11 @@ function render(){
   requestAnimationFrame(()=>{drawScope();drawFreq(); if(state.transientRunning){requestAnimationFrame(liveTransientLoop)}});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schwingkreis-Simulator</h2><ul class="help-list">
-<li>Das Programm zeigt nur noch einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment.</li>
+<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Baufläche verschieben“ kannst du die Schaltung frei ziehen. Das Oszilloskop ist ein eigenes Fenster und lässt sich am Kopf verschieben.</li>
 <li>Mit „Kondensator laden“ wird der Kondensator an der Gleichspannungsquelle geladen.</li>
 <li>Mit „Entladen starten“ trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Die Schwingung beginnt dann live.</li>
 <li>Das Oszilloskop schreibt die Spur von links nach rechts. Kanal 1 zeigt U_C, Kanal 2 zeigt U_L und Kanal 3 zeigt U_R.</li>
-<li>Über die markierten Bauteile kannst du L, C, R und die Ladespannung verändern. Für T ≈ 2 s eignen sich L = 1 H und C = 0,1 F.</li>
+<li>Über die markierten Bauteile kannst du L, C, R und die Ladespannung verändern. Die Resonanzfrequenz wird aus f₀ = 1/(2π√(LC)) berechnet und im Seitenbereich angezeigt. Für T ≈ 2 s eignen sich L = 1 H und C = 0,1 F.</li>
 <li>Der ohmsche Widerstand bestimmt die Dämpfung. Bei großem Widerstand wird aus der Schwingung ein aperiodisches Abklingen.</li>
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
 function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt. Hörbar wird der Frequenzgang über den Knopf „Frequenzgang hörbar scannen“ im Lautsprecher-Bereich.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
@@ -823,11 +884,10 @@ function bind(){
     render();
   });
 
-  const ss=document.getElementById("speakerSelect");
-  if(ss)ss.onchange=()=>{state.audibleSpeaker=ss.value;if(state.audioOn)startAudio();else render()};
-
   const wrap=document.getElementById("wrap");
   const grid=document.getElementById("grid");
+  const scopeHud=document.getElementById("scopeHud");
+  const scopeHandle=document.getElementById("scopeDragHandle");
 
   const updateGridTransform=()=>{
     const g=document.getElementById("grid");
@@ -835,11 +895,42 @@ function bind(){
   };
 
   const startPan=(e)=>{
+    if(scopeHud && scopeHud.contains(e.target)) return;
     state.dragging=true;
     state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};
     wrap.classList.add("is-panning");
     try{wrap.setPointerCapture(e.pointerId)}catch(_){}
   };
+
+  if(scopeHandle){
+    scopeHandle.onpointerdown=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      state.scopeDragging=true;
+      state.scopeDragStart={x:e.clientX-state.scopeWindow.x,y:e.clientY-state.scopeWindow.y};
+      scopeHud.classList.add("is-dragging");
+      try{scopeHud.setPointerCapture(e.pointerId)}catch(_){}
+    };
+    scopeHud.onpointermove=e=>{
+      if(!state.scopeDragging)return;
+      const wrapRect=wrap.getBoundingClientRect();
+      const hudRect=scopeHud.getBoundingClientRect();
+      let nx=e.clientX-state.scopeDragStart.x;
+      let ny=e.clientY-state.scopeDragStart.y;
+      nx=Math.max(8,Math.min(nx,wrapRect.width-hudRect.width-8));
+      ny=Math.max(8,Math.min(ny,wrapRect.height-hudRect.height-8));
+      state.scopeWindow={x:nx,y:ny};
+      scopeHud.style.left=nx+"px";
+      scopeHud.style.top=ny+"px";
+    };
+    const endScopeDrag=e=>{
+      state.scopeDragging=false;
+      scopeHud.classList.remove("is-dragging");
+      try{scopeHud.releasePointerCapture(e.pointerId)}catch(_){}
+    };
+    scopeHud.onpointerup=endScopeDrag;
+    scopeHud.onpointercancel=endScopeDrag;
+  }
 
   grid.querySelectorAll(".cell").forEach(el=>{
     el.onpointerdown=e=>{
@@ -883,6 +974,7 @@ function bind(){
   wrap.onpointerleave=()=>{state.dragging=false;state.drawing=false;wrap.classList.remove("is-panning")};
 
   wrap.onwheel=e=>{
+    if(scopeHud && scopeHud.contains(e.target)) return;
     e.preventDefault();
     const old=state.scale;
     state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));
@@ -897,6 +989,8 @@ function action(a){
   if(a==="theme"){state.light=!state.light;render()}
   if(a==="load-circuit"){setExperimentMode("load");return}
   if(a==="discharge-circuit"){setExperimentMode("discharge");return}
+  if(a==="tool-select"){state.tool="select";render();return}
+  if(a==="tool-pan"){state.tool="pan";render();return}
   if(a==="reset-experiment"){buildFixedSchwingkreis();render();return}
   if(a==="clear"){buildFixedSchwingkreis();render()}
   if(a==="help"){state.showHelp=!state.showHelp;render()}
