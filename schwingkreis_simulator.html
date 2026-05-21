@@ -179,6 +179,43 @@ body.light .scope{background:rgba(255,255,255,.55)}
   .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
   .topbar{height:56px;padding:0 12px}.hud{width:calc(100% - 20px);max-width:calc(100% - 20px)}.float{right:12px;bottom:12px}
 }
+
+/* Robustes Verschieben der Baufläche */
+.canvas-wrap,
+.grid,
+.cell {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.grid.pan-mode,
+.grid.pan-mode .cell {
+  cursor: grab;
+}
+.grid.pan-mode.dragging,
+.grid.pan-mode.dragging .cell {
+  cursor: grabbing;
+}
+.grid.pan-mode .cell {
+  pointer-events: auto;
+}
+.mode-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 14%, transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
 </style>
 </head>
 <body>
@@ -191,7 +228,7 @@ const dirs=[DIR_N,DIR_E,DIR_S,DIR_W], colors=["#38bdf8","#fbbf24","#34d399","#f4
 const opp=d=>(d+4)%8;
 const state={
   cells:{}, selected:null, tool:"select", scale:0.9, offset:{x:80,y:70}, dragging:false, dragStart:null,
-  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false, scopeWindow:{x:620,y:90}, scopeDragging:false, scopeDragStart:null,
+  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false, scopeWindow:{x:620,y:90}, scopeDragging:false, scopeDragStart:null, gridDragging:false, gridDragStart:null,
   visibleScopes:[], audibleSpeaker:null,
   sim:{ok:true,msg:"",values:{},scopes:[],speakers:[],source:null,totalCurrent:0,nodes:0}
 };
@@ -881,7 +918,7 @@ function render(){
       <div class="topbar"><strong>Live-Simulation eines Schwingkreises</strong><div class="top-actions"><span class="badge">${sim.ok?"AC-Auswertung aktiv":"Fehler"}</span></div></div>
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
-        <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
+        <div class="grid ${state.tool==='pan'?'pan-mode':''}" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
         ${scopes?`<div class="hud" id="scopeHud" style="left:${state.scopeWindow.x}px;top:${state.scopeWindow.y}px"><div class="hud-top" id="scopeDragHandle"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"} · Fenster am Kopf ziehen</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Live"}</span></div><div class="hud-body"><canvas class="scope" id="scopeCanvas"></canvas></div></div>`:""}
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
@@ -892,7 +929,7 @@ function render(){
   requestAnimationFrame(()=>{drawScope();drawFreq(); if(state.transientRunning){requestAnimationFrame(liveTransientLoop)}});
 }
 function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schwingkreis-Simulator</h2><ul class="help-list">
-<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Baufläche verschieben“ kannst du die Schaltung frei ziehen. Auf dem iPad funktioniert das mit dem Finger direkt auf der Baufläche. Das Oszilloskop ist ein eigenes Fenster und lässt sich am vergrößerten Kopfbereich verschieben.</li>
+<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Baufläche verschieben“ kannst du die gesamte Schaltung frei ziehen. Dazu direkt auf der Schaltung ziehen, nicht auf dem Oszilloskop. Auf dem iPad funktioniert das mit dem Finger direkt auf der Baufläche. Das Oszilloskop ist ein eigenes Fenster und lässt sich am vergrößerten Kopfbereich verschieben.</li>
 <li>Mit „Kondensator laden“ wird der Kondensator an der Gleichspannungsquelle geladen.</li>
 <li>Mit „Entladen starten“ trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Die Schwingung beginnt dann live.</li>
 <li>Das Oszilloskop schreibt die Spur von links nach rechts. Kanal 1 zeigt U_C, Kanal 2 zeigt U_L und Kanal 3 zeigt U_R.</li>
@@ -901,7 +938,6 @@ function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schw
 </ul><button class="btn" data-action="help">Schließen</button></div></div>`}
 function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt. Hörbar wird der Frequenzgang über den Knopf „Frequenzgang hörbar scannen“ im Lautsprecher-Bereich.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
 function bind(){
-  document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
   document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
   document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{
     const c=state.cells[state.selected];if(!c)return;
@@ -922,29 +958,97 @@ function bind(){
   const scopeHandle=document.getElementById("scopeDragHandle");
 
   const updateGridTransform=()=>{
-    const g=document.getElementById("grid");
-    if(g)g.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`;
+    grid.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`;
   };
 
-  const startPan=(e)=>{
-    if(scopeHud && scopeHud.contains(e.target)) return;
-    state.dragging=true;
-    state.dragStart={x:e.clientX-state.offset.x,y:e.clientY-state.offset.y};
-    wrap.classList.add("is-panning");
+  const beginGridDrag=(e)=>{
+    if(state.tool!=="pan")return false;
+    if(scopeHud && scopeHud.contains(e.target))return false;
+    e.preventDefault();
+    e.stopPropagation();
+    state.gridDragging=true;
+    state.gridDragStart={
+      pointerX:e.clientX,
+      pointerY:e.clientY,
+      offsetX:state.offset.x,
+      offsetY:state.offset.y
+    };
+    grid.classList.add("dragging");
+    try{grid.setPointerCapture(e.pointerId)}catch(_){}
+    return true;
+  };
+
+  grid.onpointerdown=(e)=>{
+    if(beginGridDrag(e))return;
+  };
+
+  grid.onpointermove=(e)=>{
+    if(!state.gridDragging)return;
+    e.preventDefault();
+    const dx=e.clientX-state.gridDragStart.pointerX;
+    const dy=e.clientY-state.gridDragStart.pointerY;
+    state.offset={
+      x:state.gridDragStart.offsetX+dx,
+      y:state.gridDragStart.offsetY+dy
+    };
+    updateGridTransform();
+  };
+
+  const endGridDrag=(e)=>{
+    state.gridDragging=false;
+    grid.classList.remove("dragging");
+    try{grid.releasePointerCapture(e.pointerId)}catch(_){}
+  };
+  grid.onpointerup=endGridDrag;
+  grid.onpointercancel=endGridDrag;
+  grid.onlostpointercapture=()=>{state.gridDragging=false;grid.classList.remove("dragging")};
+
+  // Auch auf der leeren Fläche außerhalb des Rasters kann man ziehen.
+  wrap.onpointerdown=(e)=>{
+    if(state.tool!=="pan")return;
+    if(e.target!==wrap)return;
+    e.preventDefault();
+    e.stopPropagation();
+    state.gridDragging=true;
+    state.gridDragStart={pointerX:e.clientX,pointerY:e.clientY,offsetX:state.offset.x,offsetY:state.offset.y};
     try{wrap.setPointerCapture(e.pointerId)}catch(_){}
   };
+  wrap.onpointermove=(e)=>{
+    if(!state.gridDragging)return;
+    e.preventDefault();
+    const dx=e.clientX-state.gridDragStart.pointerX;
+    const dy=e.clientY-state.gridDragStart.pointerY;
+    state.offset={x:state.gridDragStart.offsetX+dx,y:state.gridDragStart.offsetY+dy};
+    updateGridTransform();
+  };
+  wrap.onpointerup=(e)=>{state.gridDragging=false;try{wrap.releasePointerCapture(e.pointerId)}catch(_){}};
+  wrap.onpointercancel=wrap.onpointerup;
 
+  // Zellen: im Auswahlmodus Bauteile anklicken, im Verschiebemodus nichts blockieren.
+  grid.querySelectorAll(".cell").forEach(el=>{
+    el.onpointerdown=e=>{
+      if(state.tool==="pan")return;
+      e.preventDefault();
+      e.stopPropagation();
+      place(+el.dataset.x,+el.dataset.y);
+    };
+  });
+
+  // Oszilloskopfenster separat am Kopf verschieben.
   if(scopeHandle && scopeHud){
     scopeHandle.onpointerdown=e=>{
       e.preventDefault();
       e.stopPropagation();
       state.scopeDragging=true;
-      state.scopeDragStart={x:e.clientX-state.scopeWindow.x,y:e.clientY-state.scopeWindow.y};
+      const left=parseFloat(scopeHud.style.left)||state.scopeWindow.x||20;
+      const top=parseFloat(scopeHud.style.top)||state.scopeWindow.y||20;
+      state.scopeDragStart={x:e.clientX-left,y:e.clientY-top};
       scopeHud.classList.add("is-dragging");
       try{scopeHud.setPointerCapture(e.pointerId)}catch(_){}
     };
     scopeHud.onpointermove=e=>{
       if(!state.scopeDragging)return;
+      e.preventDefault();
       const wrapRect=wrap.getBoundingClientRect();
       const hudRect=scopeHud.getBoundingClientRect();
       let nx=e.clientX-state.scopeDragStart.x;
@@ -964,52 +1068,8 @@ function bind(){
     scopeHud.onpointercancel=endScopeDrag;
   }
 
-  grid.querySelectorAll(".cell").forEach(el=>{
-    el.onpointerdown=e=>{
-      if(state.tool==="pan"){
-        e.preventDefault();
-        e.stopPropagation();
-        startPan(e);
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      state.drawing=true;
-      place(+el.dataset.x,+el.dataset.y);
-    };
-    el.onpointerenter=e=>{
-      if(state.tool==="pan")return;
-      if(state.drawing&&(state.tool==="wire"||state.tool==="erase"))place(+el.dataset.x,+el.dataset.y);
-    };
-  });
-
-  // Wichtig: Auch ein Klick auf den Hintergrund oder direkt auf das Raster startet das Verschieben.
-  wrap.onpointerdown=e=>{
-    if(state.tool!=="pan")return;
-    e.preventDefault();
-    e.stopPropagation();
-    startPan(e);
-  };
-
-  wrap.onpointermove=e=>{
-    if(!state.dragging)return;
-    state.offset={x:e.clientX-state.dragStart.x,y:e.clientY-state.dragStart.y};
-    updateGridTransform();
-  };
-
-  const endPan=e=>{
-    state.dragging=false;
-    state.drawing=false;
-    wrap.classList.remove("is-panning");
-    try{wrap.releasePointerCapture(e.pointerId)}catch(_){}
-  };
-
-  wrap.onpointerup=endPan;
-  wrap.onpointercancel=endPan;
-  wrap.onpointerleave=()=>{state.dragging=false;state.drawing=false;wrap.classList.remove("is-panning")};
-
   wrap.onwheel=e=>{
-    if(scopeHud && scopeHud.contains(e.target)) return;
+    if(scopeHud && scopeHud.contains(e.target))return;
     e.preventDefault();
     const old=state.scale;
     state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));
@@ -1127,7 +1187,7 @@ window.addEventListener("pointerup",()=>state.drawing=false);
 // Zwei-Finger-Zoom und native Gesten werden im Simulationsbereich unterdrückt.
 document.addEventListener("touchmove", (e) => {
   const wrap = document.getElementById("wrap");
-  if (wrap && wrap.contains(e.target)) {
+  if (wrap && wrap.contains(e.target) && e.touches && e.touches.length > 1) {
     e.preventDefault();
   }
 }, { passive: false });
