@@ -919,7 +919,7 @@ function render(){
         <div class="section-title">Experiment</div>
         <div class="panel">
           <div class="small">
-            Der Schwingkreis ist fest aufgebaut. Das Schaltplanfenster lässt sich am Kopf ziehen. Mit „Schaltplaninhalt verschieben“ verschiebst du den Inhalt innerhalb des Fensters. Gleichspannungsquelle, Dreiwegeschalter,
+            Der Schwingkreis ist fest aufgebaut. Das Schaltplanfenster lässt sich am Kopf ziehen. Mit „einpassen“ wird der komplette Schwingkreis automatisch in das Fenster zentriert. Mit „Schaltplaninhalt verschieben“ verschiebst du den Inhalt innerhalb des Fensters. Gleichspannungsquelle, Dreiwegeschalter,
             Amperemeter, Kondensator, Spule und ohmscher Dämpfungswiderstand.
           </div>
           <div class="mode-pill">Modus: ${state.tool==="pan"?"Schaltplaninhalt verschieben":"Bauteile anklicken"}</div>
@@ -957,9 +957,12 @@ function render(){
           <div class="circuit-window__head" id="circuitDragHandle">
             <div>
               <div class="circuit-window__title">Schwingkreis</div>
-              <div class="small">Fenster am Kopf ziehen · Mausrad/Trackpad skaliert den Schaltplan</div>
+              <div class="small">Fenster am Kopf ziehen · „einpassen“ zeigt den ganzen Schaltkreis</div>
             </div>
-            <span class="badge">${state.tool==="pan"?"Fenster bewegen":"Bauteile anklicken"}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="btn" data-action="fit-circuit" style="padding:7px 10px;font-size:12px">einpassen</button>
+              <span class="badge">${state.tool==="pan"?"Inhalt bewegen":"Bauteile anklicken"}</span>
+            </div>
           </div>
           <div class="circuit-window__body" id="circuitBody">
             <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
@@ -1092,6 +1095,24 @@ function endCircuitWindowDrag(){
   }
 }
 
+
+let circuitResizeObserver=null;
+function attachCircuitResizeObserver(){
+  const win=document.getElementById("circuitWindow");
+  if(!win || typeof ResizeObserver==="undefined") return;
+  if(circuitResizeObserver) circuitResizeObserver.disconnect();
+  circuitResizeObserver=new ResizeObserver(entries=>{
+    for(const entry of entries){
+      const r=entry.contentRect;
+      if(r.width>0&&r.height>0){
+        state.circuitWindow.w=r.width;
+        state.circuitWindow.h=r.height;
+      }
+    }
+  });
+  circuitResizeObserver.observe(win);
+}
+
 function bind(){
   document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
   document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{
@@ -1114,6 +1135,7 @@ function bind(){
   const circuitBody=document.getElementById("circuitBody");
   const scopeHud=document.getElementById("scopeHud");
   const scopeHandle=document.getElementById("scopeDragHandle");
+  attachCircuitResizeObserver();
 
   if(circuitHandle){
     circuitHandle.onpointerdown=startCircuitWindowDrag;
@@ -1184,6 +1206,7 @@ function action(a){
   if(a==="discharge-circuit"){setExperimentMode("discharge");return}
   if(a==="tool-select"){state.tool="select";render();return}
   if(a==="tool-pan"){state.tool="pan";render();return}
+  if(a==="fit-circuit"){refitCircuitAndRender();return}
   if(a==="reset-experiment"){buildFixedSchwingkreis();render();return}
   if(a==="clear"){buildFixedSchwingkreis();render()}
   if(a==="help"){state.showHelp=!state.showHelp;render()}
@@ -1204,6 +1227,52 @@ function action(a){
 function add(x,y,t,props={}){const c={...defaultCell(t),...props};state.cells[key(x,y)]=c;return c}
 function lineH(x1,x2,y){for(let x=x1;x<=x2;x++)add(x,y,"wire")}
 function lineV(x,y1,y2){for(let y=y1;y<=y2;y++)add(x,y,"wire")}
+
+
+function fitCircuitToWindow(){
+  const keys=Object.keys(state.cells);
+  if(!keys.length) return;
+
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  keys.forEach(k=>{
+    const [x,y]=k.split(",").map(Number);
+    minX=Math.min(minX,x);
+    minY=Math.min(minY,y);
+    maxX=Math.max(maxX,x);
+    maxY=Math.max(maxY,y);
+  });
+
+  const cell=40;
+  const padding=42;
+  const headH=58;
+  const bodyW=Math.max(240,(state.circuitWindow&&state.circuitWindow.w?state.circuitWindow.w:620));
+  const bodyH=Math.max(180,(state.circuitWindow&&state.circuitWindow.h?state.circuitWindow.h:500)-headH);
+
+  const circuitW=(maxX-minX+1)*cell;
+  const circuitH=(maxY-minY+1)*cell;
+
+  const scale=Math.min(
+    1.35,
+    Math.max(0.25, Math.min((bodyW-padding*2)/circuitW, (bodyH-padding*2)/circuitH))
+  );
+
+  state.scale=scale;
+  state.offset={
+    x:(bodyW-circuitW*scale)/2-minX*cell*scale,
+    y:(bodyH-circuitH*scale)/2-minY*cell*scale
+  };
+}
+
+function refitCircuitAndRender(){
+  const win=document.getElementById("circuitWindow");
+  if(win){
+    const rect=win.getBoundingClientRect();
+    state.circuitWindow.w=rect.width;
+    state.circuitWindow.h=rect.height;
+  }
+  fitCircuitToWindow();
+  render();
+}
 
 function buildFixedSchwingkreis(){
   stopAudio();stopSweep();
@@ -1238,8 +1307,9 @@ function buildFixedSchwingkreis(){
 
   state.visibleScopes=[];
   state.selected=key(9,10);
-  state.offset={x:95,y:25};
-  state.scale=1;
+
+  // Automatisch so zentrieren, dass der gesamte Schwingkreis im Fenster sichtbar ist.
+  fitCircuitToWindow();
 }
 
 function findThreewayKey(){
