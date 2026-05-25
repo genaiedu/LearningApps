@@ -32,64 +32,38 @@ body{
 }
 button,input,select{font-family:inherit}
 .app{height:100%;display:flex}
-.sidebar{
-  width:var(--side);height:100%;background:var(--panel2);backdrop-filter:blur(24px);
-  border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:5
-}
+.sidebar{width:var(--side);height:100%;background:var(--panel2);backdrop-filter:blur(24px);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:5}
 .brand{padding:28px 24px 18px;border-bottom:1px solid var(--border)}
 .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:800}
 h1{font-family:Poppins,Inter,sans-serif;font-size:28px;line-height:1.05;margin:8px 0 4px;letter-spacing:-.03em}
 .brand p{margin:0;color:var(--muted);font-size:13px}
 .side-scroll{overflow:auto;padding:18px 18px 26px}
 .section-title{margin:18px 4px 9px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.tool{
-  border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--dim);
-  border-radius:14px;padding:10px;display:flex;gap:8px;align-items:center;cursor:pointer;
-  font-size:13px;font-weight:700;min-height:42px;transition:.18s
-}
-.tool:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
-.tool.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%, transparent)}
-.tool svg{width:18px;height:18px;flex:0 0 auto}
 .panel{margin-top:12px;border:1px solid var(--border);border-radius:18px;background:var(--panel);padding:14px;box-shadow:var(--shadow)}
 .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:9px 0}
 .row label{font-size:12px;color:var(--dim);font-weight:700}
-.row input,.row select{
-  width:150px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);
-  border-radius:10px;padding:7px 9px;outline:none
-}
+.row input,.row select{width:150px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);border-radius:10px;padding:7px 9px;outline:none}
 .row select option{background:#0f172a;color:white}
 body.light .row select option{background:white;color:#0f172a}
 .checks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
-.check{
-  display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:10px;
-  padding:7px 8px;font-size:12px;color:var(--dim);cursor:pointer
-}
+.check{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:10px;padding:7px 8px;font-size:12px;color:var(--dim);cursor:pointer}
 .check input{width:auto}
 .small{font-size:12px;color:var(--muted);line-height:1.45}
-.sweep-readout{margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.04);font-size:12px;color:var(--dim);font-weight:700}\n.live-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;background:color-mix(in srgb,var(--green) 14%, transparent);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 28%, transparent);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.sweep-readout{margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.04);font-size:12px;color:var(--dim);font-weight:700}
+.live-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;background:color-mix(in srgb,var(--green) 14%, transparent);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 28%, transparent);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
 .formula-box{margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.045);font-size:12px;color:var(--dim);line-height:1.55}
 .formula-box .formula{font-family:Georgia,serif;font-size:15px;color:var(--text);font-weight:700;margin:4px 0}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-.btn{
-  border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--dim);
-  border-radius:12px;padding:10px;font-weight:800;cursor:pointer
-}
+.btn{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--dim);border-radius:12px;padding:10px;font-weight:800;cursor:pointer}
 .btn:hover{background:color-mix(in srgb,var(--accent) 12%, transparent);color:var(--accent)}
 .btn.red:hover{background:color-mix(in srgb,var(--red) 16%, transparent);color:var(--red)}
 .main{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;position:relative}
-.topbar{
-  height:66px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;
-  background:var(--panel);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:3
-}
+.topbar{height:66px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;background:var(--panel);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:3}
 .topbar strong{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
 .top-actions{display:flex;gap:8px;align-items:center}
 .canvas-wrap{flex:1;position:relative;overflow:hidden;touch-action:none;cursor:grab}
 .canvas-wrap.is-panning{cursor:grabbing}
-.grid{
-  position:absolute;transform-origin:0 0;width:1680px;height:1240px;
-  background-image:radial-gradient(var(--grid) 2px,transparent 2px);background-size:40px 40px;background-position:19px 19px
-}
+.grid{position:absolute;transform-origin:0 0;width:1680px;height:1240px;background-image:radial-gradient(var(--grid) 2px,transparent 2px);background-size:40px 40px;background-position:19px 19px}
 .cell{position:absolute;width:40px;height:40px;border:.5px solid var(--grid)}
 .cell:hover{background:color-mix(in srgb,var(--accent) 11%, transparent)}
 .comp{position:absolute;width:40px;height:40px;overflow:visible;pointer-events:none}
@@ -98,159 +72,31 @@ body.light .row select option{background:white;color:#0f172a}
 .fill{fill:var(--fill);stroke:var(--wire);stroke-width:2.3}
 .term{fill:var(--wire);stroke:var(--bg);stroke-width:1}
 .selected-cell{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 11%, transparent)}
-.hud{
-  position:absolute;
-  z-index:20;
-  width:620px;
-  max-width:calc(100% - 40px);
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:0;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(20px);
-  overflow:hidden;
-  resize:both;
-  min-width:360px;
-  min-height:240px;
-}
-.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0;cursor:grab;padding:16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.05);touch-action:none;-webkit-user-select:none;user-select:none}
+.hud{position:absolute;z-index:20;width:620px;max-width:calc(100% - 40px);background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:0;box-shadow:var(--shadow);backdrop-filter:blur(20px);overflow:hidden;resize:both;min-width:360px;min-height:240px}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0;cursor:grab;padding:14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.04);touch-action:none;-webkit-user-select:none;user-select:none;min-height:58px}
 .hud.is-dragging .hud-top{cursor:grabbing}
 .hud-body{padding:14px}
-.hud-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0;cursor:grab;padding:14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.04)}
 .hud-title{font-weight:900;color:var(--accent)}
 .scope{width:100%;height:170px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid var(--border)}
 body.light .scope{background:rgba(255,255,255,.55)}
 .float{position:absolute;right:20px;bottom:20px;z-index:4;display:flex;flex-direction:column;gap:8px}
 .float .btn{background:var(--panel);box-shadow:var(--shadow);width:44px;height:44px;padding:0}
-.badge{
-  display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);
-  padding:7px 10px;border-radius:999px;color:var(--dim);font-size:12px;font-weight:800
-}
-.warning{
-  position:absolute;left:50%;top:86px;transform:translateX(-50%);z-index:10;
-  color:white;background:var(--red);padding:10px 18px;border-radius:14px;font-weight:900;box-shadow:0 0 35px rgba(251,113,133,.45)
-}
-.modal{
-  position:absolute;inset:0;z-index:20;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)
-}
+.badge{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);padding:7px 10px;border-radius:999px;color:var(--dim);font-size:12px;font-weight:800}
+.warning{position:absolute;left:50%;top:86px;transform:translateX(-50%);z-index:10;color:white;background:var(--red);padding:10px 18px;border-radius:14px;font-weight:900;box-shadow:0 0 35px rgba(251,113,133,.45)}
+.modal{position:absolute;inset:0;z-index:20;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
 .modal-card{max-width:980px;max-height:90vh;overflow:auto;background:var(--panel2);border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
 .modal-card h2{font-family:Poppins;margin:0 0 14px;color:var(--accent)}
 .freq-canvas{width:100%;height:310px;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:16px}
 .help-list{padding-left:18px;color:var(--dim);line-height:1.5}
-
-/* iPad-/Touch-Absicherung */
-.canvas-wrap,
-.grid,
-.cell,
-.hud,
-.hud-top {
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-.hud-top {
-  min-height: 58px;
-}
-.mode-pill {
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  margin-top:8px;
-  padding:7px 10px;
-  border-radius:999px;
-  background:color-mix(in srgb,var(--accent) 14%, transparent);
-  border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
-  color:var(--accent);
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-
-@media(max-width:860px){
-  .app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}
-  .brand{display:none}.tool-grid{grid-template-columns:repeat(3,1fr)}.tool{font-size:11px;padding:8px;min-height:38px}
-  .topbar{height:56px;padding:0 12px}.hud{width:calc(100% - 20px);max-width:calc(100% - 20px)}.float{right:12px;bottom:12px}
-}
-
-/* Robustes Verschieben der Baufläche */
-.canvas-wrap,
-.grid,
-.cell {
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-.
-.mode-pill {
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  margin-top:8px;
-  padding:7px 10px;
-  border-radius:999px;
-  background:color-mix(in srgb,var(--accent) 14%, transparent);
-  border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
-  color:var(--accent);
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-
-
-/* Fenster für den Schaltplan */
-.circuit-window {
-  position:absolute;
-  z-index:5;
-  width:620px;
-  height:500px;
-  min-width:420px;
-  min-height:320px;
-  max-width:calc(100% - 40px);
-  max-height:calc(100% - 40px);
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:22px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(20px);
-  overflow:hidden;
-  resize:both;
-}
-.circuit-window__head {
-  height:58px;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  cursor:grab;
-  background:rgba(255,255,255,.05);
-  border-bottom:1px solid var(--border);
-  touch-action:none;
-  -webkit-user-select:none;
-  user-select:none;
-}
-.circuit-window.is-dragging .circuit-window__head {
-  cursor:grabbing;
-}
-.circuit-window__title {
-  font-weight:900;
-  color:var(--accent);
-}
-.circuit-window__body {
-  position:relative;
-  height:calc(100% - 58px);
-  overflow:hidden;
-  background:rgba(0,0,0,.08);
-}
-.circuit-window__body .grid {
-  position:absolute;
-}
-
+.canvas-wrap,.grid,.cell,.hud,.hud-top{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.mode-pill{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 10px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%, transparent);border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);color:var(--accent);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.circuit-window{position:absolute;z-index:5;width:620px;height:500px;min-width:420px;min-height:320px;max-width:calc(100% - 40px);max-height:calc(100% - 40px);background:var(--panel);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);backdrop-filter:blur(20px);overflow:hidden;resize:both}
+.circuit-window__head{height:58px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:grab;background:rgba(255,255,255,.05);border-bottom:1px solid var(--border);touch-action:none;-webkit-user-select:none;user-select:none}
+.circuit-window.is-dragging .circuit-window__head{cursor:grabbing}
+.circuit-window__title{font-weight:900;color:var(--accent)}
+.circuit-window__body{position:relative;height:calc(100% - 58px);overflow:hidden;background:rgba(0,0,0,.08)}
+.circuit-window__body .grid{position:absolute}
+@media(max-width:860px){.app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}.brand{display:none}.topbar{height:56px;padding:0 12px}.hud{width:calc(100% - 20px);max-width:calc(100% - 20px)}.float{right:12px;bottom:12px}}
 </style>
 </head>
 <body>
@@ -263,30 +109,13 @@ const dirs=[DIR_N,DIR_E,DIR_S,DIR_W], colors=["#38bdf8","#fbbf24","#34d399","#f4
 const opp=d=>(d+4)%8;
 const state={
   cells:{}, selected:null, tool:"select", scale:0.9, offset:{x:80,y:70}, dragging:false, dragStart:null,
-  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false, transientStart:null, transientRunning:false, scopeWindow:{x:720,y:90}, scopeDragging:false, scopeDragStart:null, circuitWindow:{x:40,y:60,w:620,h:500}, circuitDragging:false, circuitDragStart:null, gridDragging:false, gridDragStart:null,
+  drawing:false, light:false, showHelp:false, showFreq:false, audio:null, audioOn:false, sweep:null, sweepOn:false,
+  transientStart:null, transientRunning:false, scopeWindow:{x:720,y:90}, scopeDragging:false, scopeDragStart:null,
+  circuitWindow:{x:40,y:60,w:620,h:500}, circuitDragging:false, circuitDragStart:null, gridDragging:false, gridDragStart:null,
   visibleScopes:[], audibleSpeaker:null,
   sim:{ok:true,msg:"",values:{},scopes:[],speakers:[],source:null,totalCurrent:0,nodes:0}
 };
 const app=document.getElementById("app");
-const icons={
-pan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></svg>',
-wire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/><path d="M7 9v6"/><path d="M17 9v6"/></svg>',
-source:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"/><path d="M6 12c2-5 4 5 6 0s4 5 6 0"/></svg>',
-dcsource:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v5"/><path d="M12 16v5"/><path d="M7 8h10"/><path d="M9 16h6"/><path d="M5 5l14 14"/></svg>',
-threeway:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h5"/><path d="M15 6h5"/><path d="M15 18h5"/><path d="M9 12l6-6"/><circle cx="9" cy="12" r="1.5"/></svg>',
-resistor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h4l2-4 4 8 4-8 2 4h2"/></svg>',
-inductor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h3"/><path d="M6 12a3 3 0 0 1 6 0"/><path d="M12 12a3 3 0 0 1 6 0"/><path d="M18 12h3"/></svg>',
-capacitor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h6"/><path d="M14 12h6"/><path d="M10 6v12"/><path d="M14 6v12"/></svg>',
-ammeter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><path d="M9 15l3-7 3 7"/><path d="M10.2 13h3.6"/></svg>',
-scope:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 12h3l2-4 3 8 2-4h2"/></svg>',
-speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 9v6h4l5 4V5L9 9H5z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>',
-switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17h5"/><path d="M15 17h5"/><path d="M9 17l6-8"/></svg>',
-erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 21h10"/><path d="M4 15l8-8 6 6-8 8H6l-2-2z"/></svg>',
-rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>',
-select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3l7 17 2-7 7-2z"/></svg>',
-sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
-moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
-};
 const complex=(re=0,im=0)=>({re,im});
 const cadd=(a,b)=>({re:a.re+b.re,im:a.im+b.im});
 const csub=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
@@ -309,9 +138,15 @@ function defaultCell(type){
 }
 function key(x,y){return x+","+y}
 function xy(k){return k.split(",").map(Number)}
-function ports(c){if(!c)return[]; if(c.type==="wire")return dirs; return [c.rot,opp(c.rot)]}
+function ports(c){
+  if(!c)return[];
+  if(c.type==="wire")return dirs;
+  if(c.type==="threeway")return [DIR_W,DIR_E,DIR_S];
+  return [c.rot,opp(c.rot)];
+}
+function activeThreewayConnection(c){return c.state?[DIR_E,DIR_S]:[DIR_E,DIR_W]}
 function hasPort(c,d){return ports(c).includes(d)}
-function branchType(t){return ["source","dcsource","resistor","inductor","capacitor","ammeter","scope","speaker","switch","threeway"].includes(t)}
+function branchType(t){return ["source","dcsource","resistor","inductor","capacitor","ammeter","scope","speaker","switch"].includes(t)}
 function fmt(v,unit){
   const a=Math.abs(v);
   if(!isFinite(a))return "∞";
@@ -328,7 +163,6 @@ function admittance(c,f){
   if(c.type==="scope") return complex(1/Math.max(c.R||1e6,1e-9),0);
   if(c.type==="speaker") return complex(1/Math.max(c.R||8,1e-9),0);
   if(c.type==="switch") return c.state?complex(1e6,0):complex(1e-10,0);
-  if(c.type==="threeway") return c.state?complex(1e6,0):complex(1e-10,0);
   if(c.type==="inductor"){const X=2*Math.PI*f*Math.max(c.L,1e-12);return cdiv(complex(1,0),complex(0,X))}
   if(c.type==="capacitor"){const C=Math.max(c.C,1e-15);return complex(0,2*Math.PI*f*C)}
   return complex(0,0);
@@ -356,12 +190,17 @@ function solveComplex(A,b){
 }
 function evaluateAt(freqOverride=null){
   const grid=state.cells,parent={};
-  const find=a=>{if(parent[a]===undefined)parent[a]=a;return parent[a]===a?a:parent[a]=find(parent[a])}
-  const union=(a,b)=>{const ra=find(a),rb=find(b);if(ra!==rb)parent[ra]=rb}
+  const find=a=>{if(parent[a]===undefined)parent[a]=a;return parent[a]===a?a:parent[a]=find(parent[a])};
+  const union=(a,b)=>{const ra=find(a),rb=find(b);if(ra!==rb)parent[ra]=rb};
   const node=(x,y,d)=>`${x},${y},${d}`;
+
   Object.entries(grid).forEach(([k0,c])=>{
     const [x,y]=xy(k0);
     if(c.type==="wire")dirs.forEach(d=>union(node(x,y,d),node(x,y,DIR_N)));
+    if(c.type==="threeway"){
+      const [a,b]=activeThreewayConnection(c);
+      union(node(x,y,a),node(x,y,b));
+    }
   });
   Object.entries(grid).forEach(([k0,c])=>{
     const [x,y]=xy(k0);
@@ -432,28 +271,18 @@ function getLCTransient(){
   const L=cells.find(c=>c.type==="inductor");
   const C=cells.find(c=>c.type==="capacitor");
   if(!dc||!sw||!L||!C) return null;
-
-  const l=Math.max(L.L||1,1e-9);
-  const cap=Math.max(C.C||0.1,1e-12);
-  const U=dc.U||5;
-
+  const l=Math.max(L.L||1,1e-9), cap=Math.max(C.C||0.1,1e-12), U=dc.U||5;
   const explicitR=cells.filter(c=>c.type==="resistor").reduce((s,c)=>s+Math.max(c.R||0,0),0);
   const ammeterR=cells.filter(c=>c.type==="ammeter").reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
   const R=explicitR+ammeterR;
-
-  const omega0=1/Math.sqrt(l*cap);
-  const alpha=R/(2*l);
-  const underdamped=alpha<omega0;
+  const omega0=1/Math.sqrt(l*cap), alpha=R/(2*l), underdamped=alpha<omega0;
   const omegaD=underdamped?Math.sqrt(omega0*omega0-alpha*alpha):0;
   const T=underdamped?2*Math.PI/omegaD:2*Math.PI/omega0;
   const Imax=U*Math.sqrt(cap/l);
-
   const active=sw.state===1;
   const now=performance.now();
   const t=active&&state.transientStart!==null?(now-state.transientStart)/1000:0;
-
-  let uC=active?0:U;
-  let i=0;
+  let uC=active?0:U, i=0;
   if(active){
     if(underdamped){
       const damp=Math.exp(-alpha*t);
@@ -465,60 +294,32 @@ function getLCTransient(){
       i=-(U/Math.max(R,1e-9))*Math.exp(-beta*t);
     }
   }
-
   return {U,L:l,C:cap,R,omega0,alpha,omegaD,T,Imax,underdamped,active,t,uC,i};
 }
-
 function getResonanceInfo(){
   const cells=Object.values(state.cells);
-  const L=cells.find(c=>c.type==="inductor");
-  const C=cells.find(c=>c.type==="capacitor");
-  const R=cells.filter(c=>c.type==="resistor").reduce((s,c)=>s+Math.max(c.R||0,0),0)
-          + cells.filter(c=>c.type==="ammeter").reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
+  const L=cells.find(c=>c.type==="inductor"), C=cells.find(c=>c.type==="capacitor");
+  const R=cells.filter(c=>c.type==="resistor").reduce((s,c)=>s+Math.max(c.R||0,0),0)+cells.filter(c=>c.type==="ammeter").reduce((s,c)=>s+Math.max(c.R||0.05,0),0);
   if(!L||!C) return null;
-
-  const l=Math.max(L.L||1,1e-12);
-  const cap=Math.max(C.C||1,1e-15);
-  const f0=1/(2*Math.PI*Math.sqrt(l*cap));
-  const T0=1/f0;
-
-  const omega0=1/Math.sqrt(l*cap);
-  const alpha=R/(2*l);
-  const underdamped=alpha<omega0;
+  const l=Math.max(L.L||1,1e-12), cap=Math.max(C.C||1,1e-15);
+  const f0=1/(2*Math.PI*Math.sqrt(l*cap)), T0=1/f0;
+  const omega0=1/Math.sqrt(l*cap), alpha=R/(2*l), underdamped=alpha<omega0;
   const fd=underdamped?Math.sqrt(omega0*omega0-alpha*alpha)/(2*Math.PI):0;
   const Td=underdamped?1/fd:Infinity;
-
   return {L:l,C:cap,R,f0,T0,alpha,underdamped,fd,Td};
 }
-
 function resonancePanel(){
   const r=getResonanceInfo();
   if(!r) return `<div class="panel"><div class="small">Für die Berechnung der Resonanzfrequenz müssen Spule und Kondensator vorhanden sein.</div></div>`;
-
   return `<div class="panel">
     <div class="small"><b>Resonanzfrequenz</b></div>
-    <div class="formula-box">
-      <div>Idealer LC-Schwingkreis:</div>
-      <div class="formula">f₀ = 1 / (2π · √(L · C))</div>
-      <div>mit L = ${fmt(r.L,"H")} und C = ${fmt(r.C,"F")}</div>
-      <div><b>f₀ = ${fmt(r.f0,"Hz")}</b></div>
-      <div><b>T₀ = ${fmt(r.T0,"s")}</b></div>
-    </div>
-    <div class="formula-box">
-      <div>Mit ohmscher Dämpfung im Serienkreis:</div>
-      <div class="formula">f_d = 1/(2π) · √(1/(L·C) − (R/(2L))²)</div>
-      <div>mit R = ${fmt(r.R,"Ω")}</div>
-      <div>${r.underdamped ? `<b>gedämpfte Frequenz f_d = ${fmt(r.fd,"Hz")}</b><br><b>gedämpfte Periodendauer T_d = ${fmt(r.Td,"s")}</b>` : `<b>aperiodischer Fall: keine Schwingungsfrequenz</b>`}</div>
-    </div>
+    <div class="formula-box"><div>Idealer LC-Schwingkreis:</div><div class="formula">f₀ = 1 / (2π · √(L · C))</div><div>mit L = ${fmt(r.L,"H")} und C = ${fmt(r.C,"F")}</div><div><b>f₀ = ${fmt(r.f0,"Hz")}</b></div><div><b>T₀ = ${fmt(r.T0,"s")}</b></div></div>
+    <div class="formula-box"><div>Mit ohmscher Dämpfung im Serienkreis:</div><div class="formula">f_d = 1/(2π) · √(1/(L·C) − (R/(2L))²)</div><div>mit R = ${fmt(r.R,"Ω")}</div><div>${r.underdamped ? `<b>gedämpfte Frequenz f_d = ${fmt(r.fd,"Hz")}</b><br><b>gedämpfte Periodendauer T_d = ${fmt(r.Td,"s")}</b>` : `<b>aperiodischer Fall: keine Schwingungsfrequenz</b>`}</div></div>
   </div>`;
 }
-
-
 function lcTraceValueForScope(scope, lc, t){
   if(!lc) return 0;
-
   let uC=0, i=0, uR=0, uL=0;
-
   if(lc.active){
     if(lc.underdamped){
       const damp=Math.exp(-lc.alpha*t);
@@ -529,21 +330,13 @@ function lcTraceValueForScope(scope, lc, t){
       uC=lc.U*Math.exp(-beta*t);
       i=-(lc.U/Math.max(lc.R,1e-9))*Math.exp(-beta*t);
     }
-  }else{
-    uC=lc.U;
-    i=0;
-  }
-
+  }else{uC=lc.U;i=0}
   uR=lc.R*i;
   uL=-uC-uR;
-
   const kind=scope.c && scope.c.measure ? scope.c.measure : "";
   if(kind==="C") return uC;
   if(kind==="L") return uL;
   if(kind==="R") return uR;
-
-  // Fallback für ältere oder frei gesetzte Oszilloskope:
-  // Kanal 1 zeigt U_C, Kanal 2 U_L, Kanal 3 U_R.
   if(scope.channel===1) return uC;
   if(scope.channel===2) return uL;
   if(scope.channel===3) return uR;
@@ -559,12 +352,6 @@ function lcTraceLabelForScope(scope){
   if(scope.channel===3) return "U_R";
   return "U";
 }
-
-
-function autoRot(x,y){
-  const g=state.cells,n=g[key(x,y-1)]&&hasPort(g[key(x,y-1)],DIR_S),e=g[key(x+1,y)]&&hasPort(g[key(x+1,y)],DIR_W),s=g[key(x,y+1)]&&hasPort(g[key(x,y+1)],DIR_N),w=g[key(x-1,y)]&&hasPort(g[key(x-1,y)],DIR_E);
-  if(n&&s)return DIR_N;if(e&&w)return DIR_E;if(e)return DIR_E;if(w)return DIR_E;if(n)return DIR_N;if(s)return DIR_N;return DIR_E;
-}
 function connectedDirs(x,y){
   const g=state.cells,c=g[key(x,y)];
   return {
@@ -576,28 +363,18 @@ function connectedDirs(x,y){
 }
 function toggleThreewayCell(c){
   c.state=c.state?0:1;
-  if(c.state===1){
-    state.transientStart=performance.now();
-    state.transientRunning=true;
-  }else{
-    state.transientStart=null;
-    state.transientRunning=false;
-  }
+  if(c.state===1){state.transientStart=performance.now();state.transientRunning=true}else{state.transientStart=null;state.transientRunning=false}
 }
-function setTool(t){state.tool=t;render()}
 function place(x,y){
-  const k=key(x,y),c=state.cells[k],t=state.tool;
-  if(t==="pan")return;
-  // In der Schwingkreis-Version wird nicht frei gebaut.
-  // Anklicken dient nur zum Markieren und beim Dreiwegeschalter zum Umschalten.
+  const k=key(x,y),c=state.cells[k];
+  if(state.tool==="pan")return;
   state.selected=c?k:null;
   if(c&&c.type==="switch") c.state=c.state?0:1;
   if(c&&c.type==="threeway") toggleThreewayCell(c);
-  evaluate();render();return;
+  evaluate();render();
 }
 function wireSvg(x,y){
-  const cd=connectedDirs(x,y);
-  let s="";
+  const cd=connectedDirs(x,y);let s="";
   if(cd.n)s+='<line x1="20" y1="20" x2="20" y2="-1" class="wire"/>';
   if(cd.e)s+='<line x1="20" y1="20" x2="41" y2="20" class="wire"/>';
   if(cd.s)s+='<line x1="20" y1="20" x2="20" y2="41" class="wire"/>';
@@ -611,7 +388,17 @@ function componentSvg(c,k0,x,y){
   if(c.type==="wire")inner=wireSvg(x,y);
   if(c.type==="source")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><circle cx="20" cy="20" r="12.5" fill="var(--fill)" stroke="var(--accent)" stroke-width="2.6"/><path d="M11 20 C13 12,16 28,20 20 S27 12,29 20" stroke="var(--accent)" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
   if(c.type==="dcsource")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="11" class="wire"/><line x1="20" y1="40" x2="20" y2="29" class="wire"/><line x1="10" y1="13" x2="30" y2="13" stroke="var(--red)" stroke-width="3.2" stroke-linecap="round"/><line x1="14" y1="27" x2="26" y2="27" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/><g transform="rotate(${-c.rot*45} 20 20)"><text x="8" y="14" fill="var(--red)" font-size="9" font-weight="900">+</text><text x="31" y="31" fill="var(--accent)" font-size="10" font-weight="900">−</text></g></g>`;
-  if(c.type==="threeway")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="9" class="wire"/><line x1="20" y1="40" x2="20" y2="31" class="wire"/><circle cx="20" cy="11" r="3" class="term"/><circle cx="20" cy="29" r="3" class="term"/><line x1="20" y1="11" x2="${c.state?20:31}" y2="${c.state?29:17}" stroke="${c.state?'var(--green)':'var(--amber)'}" stroke-width="3" stroke-linecap="round"/><g transform="rotate(${-c.rot*45} 20 20)"><rect x="-10" y="-12" width="60" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/><text x="20" y="-3" fill="var(--text)" text-anchor="middle" font-size="7" font-weight="900">${c.state?'LC frei':'Laden'}</text></g></g>`;
+  if(c.type==="threeway")inner=`<g>
+    <line x1="0" y1="20" x2="8" y2="20" class="wire"/>
+    <line x1="32" y1="20" x2="40" y2="20" class="wire"/>
+    <line x1="20" y1="32" x2="20" y2="40" class="wire"/>
+    <circle cx="8" cy="20" r="3" class="term"/>
+    <circle cx="32" cy="20" r="3" class="term"/>
+    <circle cx="20" cy="32" r="3" class="term"/>
+    ${c.state?'<line x1="32" y1="20" x2="20" y2="32" stroke="var(--green)" stroke-width="3.2" stroke-linecap="round"/>':'<line x1="32" y1="20" x2="8" y2="20" stroke="var(--amber)" stroke-width="3.2" stroke-linecap="round"/>'}
+    <rect x="-14" y="-10" width="68" height="13" rx="4" fill="var(--fill)" stroke="var(--border)"/>
+    <text x="20" y="-1" fill="var(--text)" text-anchor="middle" font-size="7" font-weight="900">${c.state?'LC frei':'Laden'}</text>
+  </g>`;
   if(c.type==="resistor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 L14 11 L26 15 L14 19 L26 23 L14 27 L20 32" class="sym"/></g>`;
   if(c.type==="inductor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="8" class="wire"/><line x1="20" y1="32" x2="20" y2="40" class="wire"/><path d="M20 8 C12 11,12 17,20 20 C28 23,28 29,20 32" class="sym"/><path d="M20 8 C28 11,28 17,20 20 C12 23,12 29,20 32" class="sym" opacity=".55"/></g>`;
   if(c.type==="capacitor")inner=`<g transform="${rot}"><line x1="20" y1="0" x2="20" y2="14" class="wire"/><line x1="20" y1="26" x2="20" y2="40" class="wire"/><line x1="10" y1="14" x2="30" y2="14" class="sym"/><line x1="10" y1="26" x2="30" y2="26" class="sym"/></g>`;
@@ -631,34 +418,15 @@ function componentSvg(c,k0,x,y){
   }
   return `<svg class="comp${selected}" viewBox="0 0 40 40">${inner}</svg>`;
 }
-/*
-Alte Baukasten-Werkzeuge aus der Wechselstrom-Labor-Version, vorläufig deaktiviert:
-function tools(){
- const items=[["select","select","Markieren"],["pan","pan","Navigieren"],["rotate","rotate","Rotieren"],["erase","erase","Löschen"],["wire","wire","Kabel"],["source","source","AC-Quelle"],["dcsource","dcsource","DC-Quelle"],["threeway","threeway","3-Wege"],["resistor","resistor","Widerstand"],["inductor","inductor","Spule"],["capacitor","capacitor","Kondensator"],["switch","switch","Schalter"],["ammeter","ammeter","Amperemeter"],["scope","scope","Oszilloskop"],["speaker","speaker","Lautsprecher"]];
- return items.map(([t,i,l])=>`<button class="tool ${state.tool===t?"active":""}" data-tool="${t}">${icons[i]}<span>${l}</span></button>`).join("");
-}
-*/
-function tools(){
-  return "";
-}
 function selectedPanel(){
   const k0=state.selected,c=k0?state.cells[k0]:null;
   if(!c)return `<div class="panel"><div class="small">Mit „Markieren“ ein Bauteil anklicken. Danach erscheinen hier die Einstellungen genau dieses Bauteils.</div></div>`;
   const num=(prop,label,min="0")=>`<div class="row"><label>${label}</label><input type="number" min="${min}" step="any" value="${c[prop]}" data-edit="${prop}"></div>`;
   let rows=`<div class="small"><b>${nameOf(c.type)}</b><br>Position ${k0}</div>`;
-  if(c.type==="source"){
-    rows+=num("U","Spannung U / V");
-    rows+=num("f","Frequenz f / Hz","0.01");
-    rows+=`<div class="row"><label>Signal</label><select data-edit="mode"><option value="sine"${c.mode==="sine"?" selected":""}>Sinus</option><option value="noise"${c.mode==="noise"?" selected":""}>weißes Rauschen</option></select></div>`;
-    rows+=`<button class="btn" data-action="freq">Frequenzgang der Quelle anzeigen</button>`;
-  }
-  if(c.type==="dcsource"){
-    rows+=num("U","Ladespannung U / V");
-    rows+=`<div class="small">Diese Gleichspannungsquelle dient im Schwingkreis-Beispiel nur zum Aufladen des Kondensators.</div>`;
-  }
+  if(c.type==="dcsource"){rows+=num("U","Ladespannung U / V");rows+=`<div class="small">Diese Gleichspannungsquelle dient im Schwingkreis-Beispiel nur zum Aufladen des Kondensators.</div>`}
   if(c.type==="threeway"){
     rows+=`<button class="btn" data-action="toggle-threeway">${c.state?"auf Laden zurückschalten":"Entladen starten"}</button>`;
-    rows+=`<div class="small" style="margin-top:8px">Im Markierungsmodus schaltet ein direkter Klick auf den Dreiwegeschalter ebenfalls um.</div>`;
+    rows+=`<div class="small" style="margin-top:8px">Der Dreiwegeschalter sitzt an der T-Kreuzung. Laden: Verbindung Quelle ↔ Schwingkreis. Entladen: Quelle getrennt, Schwingkreis über den unteren Zweig geschlossen.</div>`;
     const lc=getLCTransient();
     rows+=`<div class="small" style="margin-top:8px">${c.state?"Entladen: Die Quelle ist abgetrennt, der LC-Kreis ist geschlossen.":"Laden: Der Kondensator wird von der Gleichspannungsquelle geladen."}</div>`;
     if(lc) rows+=`<div class="live-badge">${c.state?"freie gedämpfte Schwingung":"Kondensator geladen"}</div><div class="sweep-readout" id="lcLiveReadout">${c.state?`Live-Schwingung: t = ${lc.t.toFixed(1)} s · U_C = ${fmt(lc.uC,"V")} · I = ${fmt(Math.abs(lc.i),"A")}`:`bereit: U_C ≈ ${fmt(lc.U,"V")}`}</div>`;
@@ -670,7 +438,6 @@ function selectedPanel(){
     rows+=`<div class="row"><label>Kanal</label><select data-edit="channel"><option value="1"${c.channel==1?" selected":""}>Kanal 1</option><option value="2"${c.channel==2?" selected":""}>Kanal 2</option><option value="3"${c.channel==3?" selected":""}>Kanal 3</option><option value="4"${c.channel==4?" selected":""}>Kanal 4</option></select></div>`;
     rows+=`<div class="row"><label>Schwingkreis-Messung</label><select data-edit="measure"><option value=""${!c.measure?" selected":""}>automatisch</option><option value="C"${c.measure==="C"?" selected":""}>U_C am Kondensator</option><option value="L"${c.measure==="L"?" selected":""}>U_L an der Spule</option><option value="R"${c.measure==="R"?" selected":""}>U_R am Widerstand</option></select></div>`;
   }
-  if(c.type==="speaker")rows+=num("R","Lautsprecher R / Ω","0.1");
   if(c.type==="switch")rows+=`<button class="btn" data-action="toggle-switch">${c.state?"Schalter öffnen":"Schalter schließen"}</button>`;
   const v=state.sim.values[k0];
   if(v)rows+=`<div class="panel" style="box-shadow:none;margin-top:10px"><div class="small"><b>Messwerte bei ${fmt(state.sim.f,"Hz")}:</b><br>Spannung: ${fmt(v.V,"V")}<br>Strom: ${fmt(v.I,"A")}</div></div>`;
@@ -679,12 +446,7 @@ function selectedPanel(){
 function scopePanel(){
   const scopes=state.sim.scopes;
   if(scopes.length===0)return "";
-  return `<div class="panel"><div class="small"><b>Oszilloskop-Anzeige</b><br>Wähle, welche Kanäle sichtbar sind.</div><div class="checks">${
-    scopes.map((s,i)=>`<label class="check"><input type="checkbox" data-scope="${s.key}" ${state.visibleScopes.includes(s.key)?"checked":""}> K${s.channel} ${s.key}</label>`).join("")
-  }</div></div>`;
-}
-function speakerPanel(){
-  return "";
+  return `<div class="panel"><div class="small"><b>Oszilloskop-Anzeige</b><br>Wähle, welche Kanäle sichtbar sind.</div><div class="checks">${scopes.map(s=>`<label class="check"><input type="checkbox" data-scope="${s.key}" ${state.visibleScopes.includes(s.key)?"checked":""}> K${s.channel} ${s.key}</label>`).join("")}</div></div>`;
 }
 function renderCells(){
   let html="";
@@ -694,63 +456,44 @@ function renderCells(){
   }
   return html;
 }
+function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
 function drawScope(){
   const canvas=document.getElementById("scopeCanvas"); if(!canvas)return;
   const dpr=window.devicePixelRatio||1, rect=canvas.getBoundingClientRect();
   canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
   const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr); ctx.clearRect(0,0,rect.width,rect.height);
-
   ctx.strokeStyle=getCss("--grid");ctx.lineWidth=1;
   for(let i=1;i<10;i++){ctx.beginPath();ctx.moveTo(rect.width*i/10,0);ctx.lineTo(rect.width*i/10,rect.height);ctx.stroke()}
   for(let i=1;i<6;i++){ctx.beginPath();ctx.moveTo(0,rect.height*i/6);ctx.lineTo(rect.width,rect.height*i/6);ctx.stroke()}
-
   const source=state.sim.source;
   const active=state.sim.scopes.filter(s=>state.visibleScopes.includes(s.key));
   const lc=getLCTransient();
   const maxA=lc&&lc.active?Math.max(lc.U,Math.abs(lc.R*lc.Imax),1):Math.max(...active.map(s=>Math.max(s.V,1e-12)),1);
-
   active.forEach((s,idx)=>{
     const col=colors[(s.channel-1)%colors.length];
     ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();
-
     let started=false;
-
     if(lc&&lc.active){
       const windowTime=lc.underdamped?Math.max(lc.T*4,4):6;
       const shownTime=Math.min(lc.t,windowTime);
       const xMax=rect.width*(shownTime/windowTime);
-
-      // Gemeinsame Skalierung für U_C, U_L und U_R.
-      // Dadurch sieht man realistisch, dass U_C und U_L gegensinnig verlaufen
-      // und U_R kleiner ist, wenn der Dämpfungswiderstand klein ist.
       const scaleV=Math.max(lc.U, Math.abs(lc.R*lc.Imax), 1e-9);
-
       let lastY=rect.height/2;
       for(let x=0;x<=xMax;x++){
-        const p=x/rect.width;
-        const realTime=p*windowTime;
+        const p=x/rect.width, realTime=p*windowTime;
         const val=lcTraceValueForScope(s,lc,realTime);
         const yv=Math.max(-1.2,Math.min(1.2,val/scaleV));
         const y=rect.height/2-yv*rect.height*.36;
         lastY=y;
-        if(!started){ctx.moveTo(x,y);started=true;}else{ctx.lineTo(x,y);}
+        if(!started){ctx.moveTo(x,y);started=true}else{ctx.lineTo(x,y)}
       }
-
       ctx.stroke();
-
-      if(xMax>=0&&xMax<=rect.width){
-        ctx.fillStyle=col;
-        ctx.beginPath();
-        ctx.arc(xMax,lastY,4,0,Math.PI*2);
-        ctx.fill();
-      }
-
+      if(xMax>=0&&xMax<=rect.width){ctx.fillStyle=col;ctx.beginPath();ctx.arc(xMax,lastY,4,0,Math.PI*2);ctx.fill()}
       const currentValue=lcTraceValueForScope(s,lc,lc.t);
       ctx.fillStyle=col;ctx.font="12px Inter";
       ctx.fillText(`K${s.channel} ${lcTraceLabelForScope(s)}: ${fmt(currentValue,"V")} · t = ${lc.t.toFixed(1)} s`,12,20+idx*17);
       return;
     }
-
     const cycles=Math.max(.2,Math.min(8,(s.f||1)/250));
     for(let x=0;x<rect.width;x++){
       const t=x/rect.width;
@@ -795,104 +538,10 @@ function drawFreq(){
   });
   ctx.fillStyle=getCss("--dim");ctx.font="12px Inter";
   ctx.fillText("Frequenzgang der Quelle: 0,05 Hz bis 20 kHz, normiert je Kurve",14,22);
-  ctx.fillText("Wenn Oszilloskope sichtbar sind, werden deren Kanäle geplottet. Sonst wird der Quellenstrom angezeigt.",14,42);
-}
-function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim()}
-
-function getSpeakerGainAt(speakerKey,f){
-  const res=evaluateAt(f);
-  const sp=res.speakers.find(s=>s.key===speakerKey);
-  const src=res.source;
-  if(!sp||!src) return 0;
-  return Math.min(1, Math.max(0, sp.V / Math.max(src.c.U||1,1e-9)));
 }
 function stopSweep(){
-  if(state.sweep){
-    try{state.sweep.osc&&state.sweep.osc.stop()}catch(e){}
-    try{state.sweep.noise&&state.sweep.noise.stop()}catch(e){}
-    try{state.sweep.ac&&state.sweep.ac.close()}catch(e){}
-  }
-  state.sweep=null;
-  state.sweepOn=false;
-}
-function startAudibleSweep(){
-  const src=state.sim.source;
-  const sp=state.sim.speakers.find(s=>s.key===state.audibleSpeaker);
-  if(!src||!sp){stopSweep();render();return}
-  stopAudio();
-  stopSweep();
-
-  const AC=window.AudioContext||window.webkitAudioContext;
-  const ac=new AC();
-  const gain=ac.createGain();
-  gain.gain.value=0.0001;
-  gain.connect(ac.destination);
-
-  const osc=ac.createOscillator();
-  osc.type="sine";
-  osc.frequency.value=20;
-  osc.connect(gain);
-  osc.start();
-
-  const duration=12;
-  const startF=20;
-  const endF=20000;
-  const t0=ac.currentTime;
-  const steps=180;
-
-  for(let i=0;i<=steps;i++){
-    const p=i/steps;
-    const f=startF*Math.pow(endF/startF,p);
-    const t=t0+p*duration;
-    const g=getSpeakerGainAt(sp.key,f);
-    osc.frequency.exponentialRampToValueAtTime(f,t);
-    gain.gain.linearRampToValueAtTime(Math.max(0.0001, Math.min(0.16, 0.02+0.14*g)),t);
-  }
-
-  const stopAt=t0+duration+.15;
-  osc.stop(stopAt);
-  state.sweep={ac,osc,start:performance.now(),duration,startF,endF,speakerKey:sp.key};
-  state.sweepOn=true;
-
-  const tick=()=>{
-    if(!state.sweepOn||!state.sweep)return;
-    const elapsed=(performance.now()-state.sweep.start)/1000;
-    const p=Math.min(1,elapsed/state.sweep.duration);
-    const f=state.sweep.startF*Math.pow(state.sweep.endF/state.sweep.startF,p);
-    const el=document.getElementById("sweepReadout");
-    if(el) el.textContent=`hörbarer Sweep läuft: ${fmt(f,"Hz")} am ausgewählten Lautsprecher`;
-    if(p>=1){
-      stopSweep();
-      render();
-      return;
-    }
-    requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-  render();
-}
-
-function startAudio(){
-  stopSweep();
-  const src=state.sim.source, sp=state.sim.speakers.find(s=>s.key===state.audibleSpeaker);
-  if(!src||!sp){stopAudio();render();return}
-  stopAudio();
-  const AC=window.AudioContext||window.webkitAudioContext, ac=new AC(), gain=ac.createGain();
-  gain.gain.value=Math.min(.12,Math.max(.015,sp.V/(src.c.U||5)*.08)); gain.connect(ac.destination);
-  if(src.c.mode==="noise"){
-    const buffer=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate), data=buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
-    const n=ac.createBufferSource();n.buffer=buffer;n.loop=true;
-    const filter=ac.createBiquadFilter();
-    filter.type="bandpass";
-    filter.frequency.value=Math.max(80,Math.min(8000,src.c.f||1000));
-    filter.Q.value=.8;
-    n.connect(filter);filter.connect(gain);n.start();state.audio={ac,node:n};
-  }else{
-    const osc=ac.createOscillator();osc.type="sine";osc.frequency.value=Math.max(20,Math.min(20000,src.c.f||1000));
-    osc.connect(gain);osc.start();state.audio={ac,node:osc};
-  }
-  state.audioOn=true;render();
+  if(state.sweep){try{state.sweep.osc&&state.sweep.osc.stop()}catch(e){}try{state.sweep.noise&&state.sweep.noise.stop()}catch(e){}try{state.sweep.ac&&state.sweep.ac.close()}catch(e){}}
+  state.sweep=null;state.sweepOn=false;
 }
 function stopAudio(){if(state.audio){try{state.audio.node.stop()}catch(e){}try{state.audio.ac.close()}catch(e){}}state.audio=null;state.audioOn=false}
 function liveTransientLoop(){
@@ -901,13 +550,8 @@ function liveTransientLoop(){
   drawScope();
   const el=document.getElementById("lcLiveReadout");
   if(el) el.textContent=`Live-Schwingung: t = ${lc.t.toFixed(1)} s · U_C = ${fmt(lc.uC,"V")} · I = ${fmt(Math.abs(lc.i),"A")}`;
-  if(lc.t<Math.max(20,lc.T*8)){
-    requestAnimationFrame(liveTransientLoop);
-  }else{
-    state.transientRunning=false;
-  }
+  if(lc.t<Math.max(20,lc.T*8)){requestAnimationFrame(liveTransientLoop)}else{state.transientRunning=false}
 }
-
 function render(){
   evaluate();
   document.body.classList.toggle("light",state.light);
@@ -918,57 +562,25 @@ function render(){
       <div class="side-scroll">
         <div class="section-title">Experiment</div>
         <div class="panel">
-          <div class="small">
-            Der Schwingkreis ist fest aufgebaut. Das Schaltplanfenster lässt sich am Kopf ziehen. Mit „einpassen“ wird der komplette Schwingkreis automatisch in das Fenster zentriert. Mit „Schaltplaninhalt verschieben“ verschiebst du den Inhalt innerhalb des Fensters. Gleichspannungsquelle, Dreiwegeschalter,
-            Amperemeter, Kondensator, Spule und ohmscher Dämpfungswiderstand.
-          </div>
+          <div class="small">Der Schwingkreis ist fest aufgebaut. Der Dreiwegeschalter sitzt an der T-Kreuzung zwischen Gleichspannungsquelle, Schwingkreis und kurzschließendem Rückleiter. Das Schaltplanfenster lässt sich am Kopf ziehen. Mit „einpassen“ wird der komplette Schwingkreis automatisch in das Fenster zentriert. Mit „Schaltplaninhalt verschieben“ verschiebst du den Inhalt innerhalb des Fensters.</div>
           <div class="mode-pill">Modus: ${state.tool==="pan"?"Schaltplaninhalt verschieben":"Bauteile anklicken"}</div>
-          <div class="actions">
-            <button class="btn" data-action="load-circuit">Kondensator laden</button>
-            <button class="btn" data-action="discharge-circuit">Entladen starten</button>
-            <button class="btn" data-action="tool-select">Bauteile anklicken</button>
-            <button class="btn" data-action="tool-pan">Schaltplaninhalt verschieben</button>
-          </div>
+          <div class="actions"><button class="btn" data-action="load-circuit">Kondensator laden</button><button class="btn" data-action="discharge-circuit">Entladen starten</button><button class="btn" data-action="tool-select">Bauteile anklicken</button><button class="btn" data-action="tool-pan">Schaltplaninhalt verschieben</button></div>
         </div>
-
         <div class="section-title">Bauteilwerte</div>${selectedPanel()}
         <div class="section-title">Berechnung</div>${resonancePanel()}
         <div class="section-title">Oszilloskop</div>${scopePanel()}
-        <div class="panel">
-          <div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")} · ${sim.source.c.mode==="noise"?"weißes Rauschen":"Sinus"}`}`:"Noch keine Quelle gesetzt."}<br>
-          ${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>
-          ${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut. Anzeige auf der Baufläche.`:"Kein Oszilloskop verbaut."}<br>
-          Baufläche: „Schaltplaninhalt verschieben“ wählen und direkt auf der Schaltung ziehen. Das Oszilloskop-Fenster lässt sich am Kopf verschieben.</div>
-          <div class="actions">
-            <button class="btn" data-action="load-circuit">Laden</button>
-            <button class="btn" data-action="discharge-circuit">Entladen</button>
-            <button class="btn" data-action="reset-experiment">Experiment zurücksetzen</button>
-            <button class="btn" data-action="help">Hilfe</button>
-            <button class="btn" data-action="theme">${state.light?"Dunkel":"Hell"}</button>
-          </div>
-        </div>
+        <div class="panel"><div class="small"><b>Simulation</b><br>${sim.source?`${sim.source.c.type==="dcsource"?`Gleichspannungsquelle: ${fmt(sim.source.c.U,"V")}`:`Quelle: ${fmt(sim.source.c.U,"V")} bei ${fmt(sim.f,"Hz")}`}`:"Noch keine Quelle gesetzt."}<br>${sim.source?`Quellenstrom: ${isFinite(sim.totalCurrent)?fmt(sim.totalCurrent,"A"):"Kurzschluss"}`:""}<br>${scopes?`${scopes} Oszilloskop${scopes>1?"e":""} verbaut. Anzeige auf der Baufläche.`:"Kein Oszilloskop verbaut."}<br>Baufläche: „Schaltplaninhalt verschieben“ wählen und direkt auf der Schaltung ziehen. Das Oszilloskop-Fenster lässt sich am Kopf verschieben.</div><div class="actions"><button class="btn" data-action="load-circuit">Laden</button><button class="btn" data-action="discharge-circuit">Entladen</button><button class="btn" data-action="reset-experiment">Experiment zurücksetzen</button><button class="btn" data-action="help">Hilfe</button><button class="btn" data-action="theme">${state.light?"Dunkel":"Hell"}</button></div></div>
       </div>
     </aside>
     <main class="main">
-      <div class="topbar"><strong>Live-Simulation eines Schwingkreises</strong><div class="top-actions"><span class="badge">${sim.ok?"AC-Auswertung aktiv":"Fehler"}</span></div></div>
+      <div class="topbar"><strong>Live-Simulation eines Schwingkreises</strong><div class="top-actions"><span class="badge">${sim.ok?"Auswertung aktiv":"Fehler"}</span></div></div>
       <div class="canvas-wrap" id="wrap">
         ${!sim.ok?`<div class="warning">${sim.msg}</div>`:""}
         <div class="circuit-window" id="circuitWindow" style="left:${state.circuitWindow.x}px;top:${state.circuitWindow.y}px;width:${state.circuitWindow.w}px;height:${state.circuitWindow.h}px">
-          <div class="circuit-window__head" id="circuitDragHandle">
-            <div>
-              <div class="circuit-window__title">Schwingkreis</div>
-              <div class="small">Fenster am Kopf ziehen · „einpassen“ zeigt den ganzen Schaltkreis</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <button class="btn" data-action="fit-circuit" style="padding:7px 10px;font-size:12px">einpassen</button>
-              <span class="badge">${state.tool==="pan"?"Inhalt bewegen":"Bauteile anklicken"}</span>
-            </div>
-          </div>
-          <div class="circuit-window__body" id="circuitBody">
-            <div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div>
-          </div>
+          <div class="circuit-window__head" id="circuitDragHandle"><div><div class="circuit-window__title">Schwingkreis</div><div class="small">Fenster am Kopf ziehen · „einpassen“ zeigt den ganzen Schaltkreis</div></div><div style="display:flex;align-items:center;gap:8px"><button class="btn" data-action="fit-circuit" style="padding:7px 10px;font-size:12px">einpassen</button><span class="badge">${state.tool==="pan"?"Inhalt bewegen":"Bauteile anklicken"}</span></div></div>
+          <div class="circuit-window__body" id="circuitBody"><div class="grid" id="grid" style="transform:translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})">${renderCells()}</div></div>
         </div>
-        ${scopes?`<div class="hud" id="scopeHud" style="left:${state.scopeWindow.x}px;top:${state.scopeWindow.y}px"><div class="hud-top" id="scopeDragHandle"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"} · Fenster hier ziehen</div></div><span class="badge">${sim.source?.c.mode==="noise"?"Rauschen":"Live"}</span></div><div class="hud-body"><canvas class="scope" id="scopeCanvas"></canvas></div></div>`:""}
+        ${scopes?`<div class="hud" id="scopeHud" style="left:${state.scopeWindow.x}px;top:${state.scopeWindow.y}px"><div class="hud-top" id="scopeDragHandle"><div><div class="hud-title">Oszilloskop</div><div class="small">Sichtbare Kanäle: ${state.visibleScopes.length?state.visibleScopes.map(k=>{const s=sim.scopes.find(x=>x.key===k);return s?"K"+s.channel:""}).filter(Boolean).join(", "):"keine"} · Fenster hier ziehen</div></div><span class="badge">Live</span></div><div class="hud-body"><canvas class="scope" id="scopeCanvas"></canvas></div></div>`:""}
         <div class="float"><button class="btn" data-action="zoom-in">+</button><button class="btn" data-action="center">⌖</button><button class="btn" data-action="zoom-out">−</button></div>
       </div>
       ${state.showHelp?helpModal():""}${state.showFreq?freqModal():""}
@@ -977,228 +589,75 @@ function render(){
   bind();
   requestAnimationFrame(()=>{drawScope();drawFreq(); if(state.transientRunning){requestAnimationFrame(liveTransientLoop)}});
 }
-function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schwingkreis-Simulator</h2><ul class="help-list">
-<li>Das Programm zeigt einen festen Schwingkreis-Aufbau als reales Demonstrationsexperiment. Mit „Schaltplaninhalt verschieben“ kannst du die gesamte Schaltung frei ziehen. Dazu direkt auf der Schaltung ziehen, nicht auf dem Oszilloskop. Auf dem iPad funktioniert das mit dem Finger direkt auf der Baufläche. Das Oszilloskop ist ein eigenes Fenster und lässt sich am vergrößerten Kopfbereich verschieben.</li>
-<li>Mit „Kondensator laden“ wird der Kondensator an der Gleichspannungsquelle geladen.</li>
-<li>Mit „Entladen starten“ trennt der Dreiwegeschalter die Quelle ab und schließt den LC-Kreis. Die Schwingung beginnt dann live.</li>
-<li>Das Oszilloskop schreibt die Spur von links nach rechts. Kanal 1 zeigt U_C, Kanal 2 zeigt U_L und Kanal 3 zeigt U_R.</li>
-<li>Über die markierten Bauteile kannst du L, C, R und die Ladespannung verändern. Die Resonanzfrequenz wird aus f₀ = 1/(2π√(LC)) berechnet und im Seitenbereich angezeigt. Für T ≈ 2 s eignen sich L = 1 H und C = 0,1 F.</li>
-<li>Der ohmsche Widerstand bestimmt die Dämpfung. Bei großem Widerstand wird aus der Schwingung ein aperiodisches Abklingen.</li>
-</ul><button class="btn" data-action="help">Schließen</button></div></div>`}
-function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt. Wenn Oszilloskop-Kanäle ausgewählt sind, werden diese Kanäle dargestellt. Sonst wird der Gesamtstrom durch die Quelle gezeigt. Hörbar wird der Frequenzgang über den Knopf „Frequenzgang hörbar scannen“ im Lautsprecher-Bereich.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
-
+function helpModal(){return `<div class="modal"><div class="modal-card"><h2>Schwingkreis-Simulator</h2><ul class="help-list"><li>Der Dreiwegeschalter sitzt an der T-Kreuzung. In Stellung „Laden“ verbindet er Quelle und Schwingkreis. In Stellung „LC frei“ trennt er die Quelle ab und schließt den Schwingkreis über den unteren Rückleiter.</li><li>Mit „Kondensator laden“ wird der Kondensator an der Gleichspannungsquelle geladen.</li><li>Mit „Entladen starten“ beginnt die freie gedämpfte LC-Schwingung live.</li><li>Kanal 1 zeigt U_C, Kanal 2 zeigt U_L und Kanal 3 zeigt U_R.</li><li>Für T ≈ 2 s eignen sich L = 1 H und C = 0,1 F.</li></ul><button class="btn" data-action="help">Schließen</button></div></div>`}
+function freqModal(){return `<div class="modal"><div class="modal-card" style="width:min(980px,96vw)"><h2>Frequenzgang der Quelle</h2><canvas class="freq-canvas" id="freqCanvas"></canvas><p class="small" style="margin:14px 0">Der Frequenzgang wird rechnerisch über die Frequenz der Spannungsquelle erzeugt.</p><button class="btn" data-action="freq">Schließen</button></div></div>`}
 function startScopeWindowDrag(e){
-  const scopeHud=document.getElementById("scopeHud");
-  if(!scopeHud) return;
-  e.preventDefault();
-  e.stopPropagation();
-
+  const scopeHud=document.getElementById("scopeHud"); if(!scopeHud) return;
+  e.preventDefault();e.stopPropagation();
   const rect=scopeHud.getBoundingClientRect();
-  const wrap=document.getElementById("wrap");
-  const wrapRect=wrap.getBoundingClientRect();
-
-  state.scopeDragging=true;
-  state.scopeDragStart={
-    dx:e.clientX-rect.left,
-    dy:e.clientY-rect.top,
-    wrapLeft:wrapRect.left,
-    wrapTop:wrapRect.top
-  };
+  state.scopeDragging=true;state.scopeDragStart={dx:e.clientX-rect.left,dy:e.clientY-rect.top};
   scopeHud.classList.add("is-dragging");
 }
-
 function moveScopeWindow(e){
   if(!state.scopeDragging) return;
-  const scopeHud=document.getElementById("scopeHud");
-  const wrap=document.getElementById("wrap");
-  if(!scopeHud||!wrap) return;
-
+  const scopeHud=document.getElementById("scopeHud"), wrap=document.getElementById("wrap"); if(!scopeHud||!wrap) return;
   e.preventDefault();
-
-  const wrapRect=wrap.getBoundingClientRect();
-  const hudRect=scopeHud.getBoundingClientRect();
-
-  let nx=e.clientX-wrapRect.left-state.scopeDragStart.dx;
-  let ny=e.clientY-wrapRect.top-state.scopeDragStart.dy;
-
+  const wrapRect=wrap.getBoundingClientRect(), hudRect=scopeHud.getBoundingClientRect();
+  let nx=e.clientX-wrapRect.left-state.scopeDragStart.dx, ny=e.clientY-wrapRect.top-state.scopeDragStart.dy;
   nx=Math.max(8,Math.min(nx,wrapRect.width-hudRect.width-8));
   ny=Math.max(8,Math.min(ny,wrapRect.height-hudRect.height-8));
-
-  state.scopeWindow={x:nx,y:ny};
-  scopeHud.style.left=nx+"px";
-  scopeHud.style.top=ny+"px";
+  state.scopeWindow={x:nx,y:ny}; scopeHud.style.left=nx+"px"; scopeHud.style.top=ny+"px";
 }
-
-function endScopeWindowDrag(){
-  if(!state.scopeDragging) return;
-  state.scopeDragging=false;
-  const scopeHud=document.getElementById("scopeHud");
-  if(scopeHud) scopeHud.classList.remove("is-dragging");
-}
-
-
+function endScopeWindowDrag(){if(!state.scopeDragging) return;state.scopeDragging=false;const scopeHud=document.getElementById("scopeHud");if(scopeHud) scopeHud.classList.remove("is-dragging")}
 function startCircuitWindowDrag(e){
-  const win=document.getElementById("circuitWindow");
-  const wrap=document.getElementById("wrap");
-  if(!win||!wrap) return;
-  e.preventDefault();
-  e.stopPropagation();
-
+  const win=document.getElementById("circuitWindow"); if(!win) return;
+  e.preventDefault();e.stopPropagation();
   const rect=win.getBoundingClientRect();
-  const wrapRect=wrap.getBoundingClientRect();
-
-  state.circuitDragging=true;
-  state.circuitDragStart={
-    dx:e.clientX-rect.left,
-    dy:e.clientY-rect.top,
-    wrapLeft:wrapRect.left,
-    wrapTop:wrapRect.top
-  };
+  state.circuitDragging=true;state.circuitDragStart={dx:e.clientX-rect.left,dy:e.clientY-rect.top};
   win.classList.add("is-dragging");
 }
-
 function moveCircuitWindow(e){
   if(!state.circuitDragging) return;
-  const win=document.getElementById("circuitWindow");
-  const wrap=document.getElementById("wrap");
-  if(!win||!wrap) return;
-
+  const win=document.getElementById("circuitWindow"), wrap=document.getElementById("wrap"); if(!win||!wrap) return;
   e.preventDefault();
-
-  const wrapRect=wrap.getBoundingClientRect();
-  const winRect=win.getBoundingClientRect();
-
-  let nx=e.clientX-wrapRect.left-state.circuitDragStart.dx;
-  let ny=e.clientY-wrapRect.top-state.circuitDragStart.dy;
-
+  const wrapRect=wrap.getBoundingClientRect(), winRect=win.getBoundingClientRect();
+  let nx=e.clientX-wrapRect.left-state.circuitDragStart.dx, ny=e.clientY-wrapRect.top-state.circuitDragStart.dy;
   nx=Math.max(8,Math.min(nx,wrapRect.width-winRect.width-8));
   ny=Math.max(8,Math.min(ny,wrapRect.height-winRect.height-8));
-
-  state.circuitWindow.x=nx;
-  state.circuitWindow.y=ny;
-  state.circuitWindow.w=winRect.width;
-  state.circuitWindow.h=winRect.height;
-
-  win.style.left=nx+"px";
-  win.style.top=ny+"px";
+  state.circuitWindow.x=nx;state.circuitWindow.y=ny;state.circuitWindow.w=winRect.width;state.circuitWindow.h=winRect.height;
+  win.style.left=nx+"px";win.style.top=ny+"px";
 }
-
 function endCircuitWindowDrag(){
   if(!state.circuitDragging) return;
   state.circuitDragging=false;
   const win=document.getElementById("circuitWindow");
-  if(win) {
-    const rect=win.getBoundingClientRect();
-    state.circuitWindow.w=rect.width;
-    state.circuitWindow.h=rect.height;
-    win.classList.remove("is-dragging");
-  }
+  if(win){const rect=win.getBoundingClientRect();state.circuitWindow.w=rect.width;state.circuitWindow.h=rect.height;win.classList.remove("is-dragging")}
 }
-
-
 let circuitResizeObserver=null;
 function attachCircuitResizeObserver(){
   const win=document.getElementById("circuitWindow");
   if(!win || typeof ResizeObserver==="undefined") return;
   if(circuitResizeObserver) circuitResizeObserver.disconnect();
-  circuitResizeObserver=new ResizeObserver(entries=>{
-    for(const entry of entries){
-      const r=entry.contentRect;
-      if(r.width>0&&r.height>0){
-        state.circuitWindow.w=r.width;
-        state.circuitWindow.h=r.height;
-      }
-    }
-  });
+  circuitResizeObserver=new ResizeObserver(entries=>{for(const entry of entries){const r=entry.contentRect;if(r.width>0&&r.height>0){state.circuitWindow.w=r.width;state.circuitWindow.h=r.height}}});
   circuitResizeObserver.observe(win);
 }
-
 function bind(){
   document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(b.dataset.action));
-  document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{
-    const c=state.cells[state.selected];if(!c)return;
-    let val=inp.tagName==="SELECT"?inp.value:parseFloat(inp.value);
-    if(inp.dataset.edit==="channel")val=parseInt(val,10);
-    c[inp.dataset.edit]=val;evaluate();render();
-  });
-  document.querySelectorAll("[data-scope]").forEach(cb=>cb.onchange=()=>{
-    const k=cb.dataset.scope;
-    if(cb.checked&&!state.visibleScopes.includes(k))state.visibleScopes.push(k);
-    if(!cb.checked)state.visibleScopes=state.visibleScopes.filter(x=>x!==k);
-    render();
-  });
-
-  const wrap=document.getElementById("wrap");
-  const grid=document.getElementById("grid");
-  const circuitWindow=document.getElementById("circuitWindow");
-  const circuitHandle=document.getElementById("circuitDragHandle");
-  const circuitBody=document.getElementById("circuitBody");
-  const scopeHud=document.getElementById("scopeHud");
-  const scopeHandle=document.getElementById("scopeDragHandle");
+  document.querySelectorAll("[data-edit]").forEach(inp=>inp.onchange=()=>{const c=state.cells[state.selected];if(!c)return;let val=inp.tagName==="SELECT"?inp.value:parseFloat(inp.value);if(inp.dataset.edit==="channel")val=parseInt(val,10);c[inp.dataset.edit]=val;evaluate();render()});
+  document.querySelectorAll("[data-scope]").forEach(cb=>cb.onchange=()=>{const k=cb.dataset.scope;if(cb.checked&&!state.visibleScopes.includes(k))state.visibleScopes.push(k);if(!cb.checked)state.visibleScopes=state.visibleScopes.filter(x=>x!==k);render()});
+  const grid=document.getElementById("grid"), circuitHandle=document.getElementById("circuitDragHandle"), circuitBody=document.getElementById("circuitBody"), scopeHandle=document.getElementById("scopeDragHandle");
   attachCircuitResizeObserver();
-
-  if(circuitHandle){
-    circuitHandle.onpointerdown=startCircuitWindowDrag;
-    circuitHandle.onmousedown=startCircuitWindowDrag;
-    circuitHandle.ontouchstart=(ev)=>{ if(ev.touches&&ev.touches[0]) startCircuitWindowDrag(ev.touches[0]); };
-  }
-
-  if(scopeHandle){
-    scopeHandle.onpointerdown=startScopeWindowDrag;
-    scopeHandle.onmousedown=startScopeWindowDrag;
-    scopeHandle.ontouchstart=(ev)=>{ if(ev.touches&&ev.touches[0]) startScopeWindowDrag(ev.touches[0]); };
-  }
-
-  const updateGridTransform=()=>{
-    if(grid) grid.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`;
-  };
-
-  // Im Schaltplanfenster wird nur der Inhalt verschoben, wenn "Schaltplaninhalt verschieben" aktiv ist.
+  if(circuitHandle){circuitHandle.onpointerdown=startCircuitWindowDrag;circuitHandle.onmousedown=startCircuitWindowDrag;circuitHandle.ontouchstart=ev=>{if(ev.touches&&ev.touches[0]) startCircuitWindowDrag(ev.touches[0])}}
+  if(scopeHandle){scopeHandle.onpointerdown=startScopeWindowDrag;scopeHandle.onmousedown=startScopeWindowDrag;scopeHandle.ontouchstart=ev=>{if(ev.touches&&ev.touches[0]) startScopeWindowDrag(ev.touches[0])}}
+  const updateGridTransform=()=>{if(grid) grid.style.transform=`translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`};
   if(circuitBody){
-    circuitBody.onpointerdown=e=>{
-      if(state.tool!=="pan")return;
-      e.preventDefault();
-      e.stopPropagation();
-      state.gridDragging=true;
-      state.gridDragStart={pointerX:e.clientX,pointerY:e.clientY,offsetX:state.offset.x,offsetY:state.offset.y};
-      try{circuitBody.setPointerCapture(e.pointerId)}catch(_){}
-    };
-    circuitBody.onpointermove=e=>{
-      if(!state.gridDragging)return;
-      e.preventDefault();
-      const dx=e.clientX-state.gridDragStart.pointerX;
-      const dy=e.clientY-state.gridDragStart.pointerY;
-      state.offset={x:state.gridDragStart.offsetX+dx,y:state.gridDragStart.offsetY+dy};
-      updateGridTransform();
-    };
-    const endGrid=e=>{
-      state.gridDragging=false;
-      try{circuitBody.releasePointerCapture(e.pointerId)}catch(_){}
-    };
-    circuitBody.onpointerup=endGrid;
-    circuitBody.onpointercancel=endGrid;
-
-    circuitBody.onwheel=e=>{
-      e.preventDefault();
-      const old=state.scale;
-      state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));
-      const r=circuitBody.getBoundingClientRect();
-      const mx=e.clientX-r.left,my=e.clientY-r.top;
-      state.offset.x=mx-(mx-state.offset.x)*(state.scale/old);
-      state.offset.y=my-(my-state.offset.y)*(state.scale/old);
-      updateGridTransform();
-    };
+    circuitBody.onpointerdown=e=>{if(state.tool!=="pan")return;e.preventDefault();e.stopPropagation();state.gridDragging=true;state.gridDragStart={pointerX:e.clientX,pointerY:e.clientY,offsetX:state.offset.x,offsetY:state.offset.y};try{circuitBody.setPointerCapture(e.pointerId)}catch(_){}};
+    circuitBody.onpointermove=e=>{if(!state.gridDragging)return;e.preventDefault();const dx=e.clientX-state.gridDragStart.pointerX,dy=e.clientY-state.gridDragStart.pointerY;state.offset={x:state.gridDragStart.offsetX+dx,y:state.gridDragStart.offsetY+dy};updateGridTransform()};
+    const endGrid=e=>{state.gridDragging=false;try{circuitBody.releasePointerCapture(e.pointerId)}catch(_){}};
+    circuitBody.onpointerup=endGrid;circuitBody.onpointercancel=endGrid;
+    circuitBody.onwheel=e=>{e.preventDefault();const old=state.scale;state.scale=Math.max(.25,Math.min(2.5,state.scale*(e.deltaY<0?1.12:.89)));const r=circuitBody.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;state.offset.x=mx-(mx-state.offset.x)*(state.scale/old);state.offset.y=my-(my-state.offset.y)*(state.scale/old);updateGridTransform()};
   }
-
-  // Im Auswahlmodus Bauteile anklicken.
-  grid.querySelectorAll(".cell").forEach(el=>{
-    el.onpointerdown=e=>{
-      if(state.tool==="pan")return;
-      e.preventDefault();
-      e.stopPropagation();
-      place(+el.dataset.x,+el.dataset.y);
-    };
-  });
+  if(grid) grid.querySelectorAll(".cell").forEach(el=>{el.onpointerdown=e=>{if(state.tool==="pan")return;e.preventDefault();e.stopPropagation();place(+el.dataset.x,+el.dataset.y)}});
 }
 function action(a){
   if(a==="theme"){state.light=!state.light;render()}
@@ -1208,185 +667,103 @@ function action(a){
   if(a==="tool-pan"){state.tool="pan";render();return}
   if(a==="fit-circuit"){refitCircuitAndRender();return}
   if(a==="reset-experiment"){buildFixedSchwingkreis();render();return}
-  if(a==="clear"){buildFixedSchwingkreis();render()}
   if(a==="help"){state.showHelp=!state.showHelp;render()}
   if(a==="freq"){state.showFreq=!state.showFreq;render()}
-  if(a==="audio"){state.audioOn?stopAudio():startAudio();render()}
-  if(a==="sweep"){state.sweepOn?stopSweep():startAudibleSweep();render()}
   if(a==="toggle-switch"){const c=state.cells[state.selected];if(c){c.state=c.state?0:1;render()}}
-  if(a==="toggle-threeway"){
-    const c=state.cells[state.selected];
-    if(c){toggleThreewayCell(c);render();}
-  }
+  if(a==="toggle-threeway"){const c=state.cells[state.selected];if(c){toggleThreewayCell(c);render()}}
   if(a==="zoom-in"){state.scale=Math.min(2.5,state.scale*1.18);render()}
   if(a==="zoom-out"){state.scale=Math.max(.25,state.scale/1.18);render()}
   if(a==="center"){state.offset={x:70,y:40};state.scale=.95;render()}
-  if(a==="example-highlow")exampleHighLow();
-  if(a==="example-res")exampleResonance();
 }
 function add(x,y,t,props={}){const c={...defaultCell(t),...props};state.cells[key(x,y)]=c;return c}
 function lineH(x1,x2,y){for(let x=x1;x<=x2;x++)add(x,y,"wire")}
 function lineV(x,y1,y2){for(let y=y1;y<=y2;y++)add(x,y,"wire")}
-
-
 function fitCircuitToWindow(){
-  const keys=Object.keys(state.cells);
-  if(!keys.length) return;
-
+  const keys=Object.keys(state.cells); if(!keys.length) return;
   let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-  keys.forEach(k=>{
-    const [x,y]=k.split(",").map(Number);
-    minX=Math.min(minX,x);
-    minY=Math.min(minY,y);
-    maxX=Math.max(maxX,x);
-    maxY=Math.max(maxY,y);
-  });
-
-  const cell=40;
-  const padding=42;
-  const headH=58;
+  keys.forEach(k=>{const [x,y]=k.split(",").map(Number);minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y)});
+  const cell=40,padding=42,headH=58;
   const bodyW=Math.max(240,(state.circuitWindow&&state.circuitWindow.w?state.circuitWindow.w:620));
   const bodyH=Math.max(180,(state.circuitWindow&&state.circuitWindow.h?state.circuitWindow.h:500)-headH);
-
-  const circuitW=(maxX-minX+1)*cell;
-  const circuitH=(maxY-minY+1)*cell;
-
-  const scale=Math.min(
-    1.35,
-    Math.max(0.25, Math.min((bodyW-padding*2)/circuitW, (bodyH-padding*2)/circuitH))
-  );
-
+  const circuitW=(maxX-minX+1)*cell,circuitH=(maxY-minY+1)*cell;
+  const scale=Math.min(1.35,Math.max(0.25,Math.min((bodyW-padding*2)/circuitW,(bodyH-padding*2)/circuitH)));
   state.scale=scale;
-  state.offset={
-    x:(bodyW-circuitW*scale)/2-minX*cell*scale,
-    y:(bodyH-circuitH*scale)/2-minY*cell*scale
-  };
+  state.offset={x:(bodyW-circuitW*scale)/2-minX*cell*scale,y:(bodyH-circuitH*scale)/2-minY*cell*scale};
 }
-
 function refitCircuitAndRender(){
   const win=document.getElementById("circuitWindow");
-  if(win){
-    const rect=win.getBoundingClientRect();
-    state.circuitWindow.w=rect.width;
-    state.circuitWindow.h=rect.height;
-  }
-  fitCircuitToWindow();
-  render();
+  if(win){const rect=win.getBoundingClientRect();state.circuitWindow.w=rect.width;state.circuitWindow.h=rect.height}
+  fitCircuitToWindow();render();
 }
-
 function buildFixedSchwingkreis(){
   stopAudio();stopSweep();
   state.cells={};state.selected=null;state.visibleScopes=[];state.audibleSpeaker=null;
   state.transientStart=null;state.transientRunning=false;
 
-  add(5,14,"dcsource",{rot:DIR_N,U:5});
-  lineV(5,10,13);
-  lineV(5,15,22);
+  // Gleichspannungsquelle links
+  add(5,16,"dcsource",{rot:DIR_N,U:5});
+  lineV(5,10,15);
+  lineV(5,17,22);
 
-  lineH(6,8,10);
-  add(9,10,"threeway",{rot:DIR_E,state:0});
-  lineH(10,12,10);
+  // obere Leitung von der Quelle zur T-Kreuzung
+  lineH(6,9,10);
+
+  // Dreiwegeschalter an der T-Kreuzung:
+  // links Quelle, rechts Schwingkreis, unten kurzschließende Leitung.
+  add(10,10,"threeway",{state:0});
+
+  // oberer Schwingkreiszweig nach rechts
+  lineH(11,12,10);
   add(13,10,"ammeter",{rot:DIR_E});
   lineH(14,23,10);
 
+  // rechter LC-Zweig
   lineV(24,10,12);
   add(24,13,"capacitor",{rot:DIR_N,C:0.1});
   lineV(24,14,16);
   add(24,17,"inductor",{rot:DIR_N,L:1});
   lineV(24,18,22);
 
+  // unterer Rückleiter mit Dämpfungswiderstand
   lineH(6,11,22);
   add(12,22,"resistor",{rot:DIR_E,R:0.35});
   lineH(13,23,22);
 
+  // kurzschließende Leitung des Schwingkreises direkt vom Dreiwegeschalter nach unten
   lineV(10,11,21);
 
+  // Oszilloskopkanäle
   add(26,13,"scope",{rot:DIR_N,channel:1,measure:"C"});
   add(26,17,"scope",{rot:DIR_N,channel:2,measure:"L"});
   add(12,20,"scope",{rot:DIR_E,channel:3,measure:"R"});
 
   state.visibleScopes=[];
-  state.selected=key(9,10);
-
-  // Automatisch so zentrieren, dass der gesamte Schwingkreis im Fenster sichtbar ist.
+  state.selected=key(10,10);
   fitCircuitToWindow();
 }
-
-function findThreewayKey(){
-  const entry=Object.entries(state.cells).find(([k,c])=>c.type==="threeway");
-  return entry?entry[0]:null;
-}
+function findThreewayKey(){const entry=Object.entries(state.cells).find(([k,c])=>c.type==="threeway");return entry?entry[0]:null}
 function setExperimentMode(mode){
-  const k=findThreewayKey();
-  if(!k)return;
-  const c=state.cells[k];
-  state.selected=k;
-  if(mode==="load"){
-    c.state=0;
-    state.transientStart=null;
-    state.transientRunning=false;
-  }
-  if(mode==="discharge"){
-    c.state=1;
-    state.transientStart=performance.now();
-    state.transientRunning=true;
-  }
-  render();
-}
-
-/*
-Alte Beispiele aus der Wechselstrom-Labor-Version sind bewusst deaktiviert.
-Sie bleiben hier als Entwicklungshinweis erhalten:
-- Hochpass/Tiefpass mit RC-Reihenschaltung und Lautsprechern
-- hörbarer Frequenzgang
-- freier Schaltungsbau mit R, L, C, AC-Quelle, Lautsprechern
-*/
-
-function exampleHighLow(){
-  // deaktiviert: Fokus liegt derzeit ausschließlich auf dem Schwingkreis.
-}
-function exampleResonance(){
-  buildFixedSchwingkreis();
+  const k=findThreewayKey(); if(!k)return;
+  const c=state.cells[k]; state.selected=k;
+  if(mode==="load"){c.state=0;state.transientStart=null;state.transientRunning=false}
+  if(mode==="discharge"){c.state=1;state.transientStart=performance.now();state.transientRunning=true}
   render();
 }
 window.addEventListener("pointerup",()=>state.drawing=false);
-
-// Zusätzliche Absicherung für iPadOS/Safari:
-// Zwei-Finger-Zoom und native Gesten werden im Simulationsbereich unterdrückt.
-document.addEventListener("touchmove", (e) => {
-  const wrap = document.getElementById("wrap");
-  if (wrap && wrap.contains(e.target) && e.touches && e.touches.length > 1) {
-    e.preventDefault();
-  }
-}, { passive: false });
-
+document.addEventListener("touchmove",e=>{const wrap=document.getElementById("wrap");if(wrap&&wrap.contains(e.target)&&e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 window.addEventListener("resize",()=>requestAnimationFrame(()=>{drawScope();drawFreq()}));
-
 document.addEventListener("pointermove", moveScopeWindow, { passive:false });
 document.addEventListener("pointerup", endScopeWindowDrag, { passive:false });
 document.addEventListener("mousemove", moveScopeWindow, { passive:false });
 document.addEventListener("mouseup", endScopeWindowDrag, { passive:false });
-document.addEventListener("touchmove", (e)=>{
-  if(state.scopeDragging && e.touches && e.touches[0]){
-    moveScopeWindow(e.touches[0]);
-    e.preventDefault();
-  }
-}, { passive:false });
+document.addEventListener("touchmove", e=>{if(state.scopeDragging&&e.touches&&e.touches[0]){moveScopeWindow(e.touches[0]);e.preventDefault()}}, { passive:false });
 document.addEventListener("touchend", endScopeWindowDrag, { passive:false });
-
-
 document.addEventListener("pointermove", moveCircuitWindow, { passive:false });
 document.addEventListener("pointerup", endCircuitWindowDrag, { passive:false });
 document.addEventListener("mousemove", moveCircuitWindow, { passive:false });
 document.addEventListener("mouseup", endCircuitWindowDrag, { passive:false });
-document.addEventListener("touchmove", (e)=>{
-  if(state.circuitDragging && e.touches && e.touches[0]){
-    moveCircuitWindow(e.touches[0]);
-    e.preventDefault();
-  }
-}, { passive:false });
+document.addEventListener("touchmove", e=>{if(state.circuitDragging&&e.touches&&e.touches[0]){moveCircuitWindow(e.touches[0]);e.preventDefault()}}, { passive:false });
 document.addEventListener("touchend", endCircuitWindowDrag, { passive:false });
-
 buildFixedSchwingkreis();
 render();
 })();
