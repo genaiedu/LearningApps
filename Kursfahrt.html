@@ -106,6 +106,35 @@ tr:last-child td{border-bottom:0}
 .note{color:var(--muted);font-size:.9rem;line-height:1.45}
 .footer{margin-top:16px;text-align:center;color:var(--muted);font-family:"Dancing Script",cursive;font-size:1.45rem}
 .studentEditRow{display:grid;grid-template-columns:1fr 112px auto;gap:8px;align-items:center;margin-bottom:8px}
+
+.modalBackdrop{
+  position:fixed;inset:0;background:rgba(5,10,20,.48);backdrop-filter:blur(10px);
+  z-index:50;display:none;align-items:center;justify-content:center;padding:18px;
+}
+.modalBackdrop.show{display:flex}
+.modal{
+  width:min(720px,100%);max-height:min(86vh,820px);overflow:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:28px;
+  box-shadow:0 28px 90px rgba(0,0,0,.35);backdrop-filter:blur(22px);padding:18px;
+}
+.modalHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.modalHeader h2{font-family:Poppins,Inter,sans-serif;margin:0;font-size:1.35rem}
+.modalStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.modalStat{border:1px solid var(--line);border-radius:18px;padding:12px;background:var(--card2)}
+.modalStat small{display:block;color:var(--muted);font-weight:700}
+.modalStat strong{display:block;font-family:Poppins,Inter,sans-serif;font-size:1.25rem;margin-top:3px}
+.copyText{
+  width:100%;min-height:240px;resize:vertical;white-space:pre-wrap;
+  font-family:Inter,system-ui,sans-serif;line-height:1.45;
+}
+.clickableName{cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.copyToast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);border-radius:999px;padding:10px 14px;
+  font-weight:800;z-index:80;display:none;
+}
+.copyToast.show{display:block}
+
 @media(max-width:960px){.grid{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.actions{justify-content:flex-start}.formGrid{grid-template-columns:1fr}.studentPick{max-height:260px}.studentEditRow{grid-template-columns:1fr}}
 @media print{
   body:before,body:after,.header .actions,.panel.inputPanel,.historyPanel,.footer{display:none!important}
@@ -128,6 +157,7 @@ tr:last-child td{border-bottom:0}
     <div class="actions">
       <button id="themeBtn" type="button"><i data-lucide="moon"></i>Design</button>
       <button id="chooseSaveFile" type="button"><i data-lucide="folder-open"></i>Speicherdatei wählen</button>
+      <button id="copyOverview" type="button"><i data-lucide="clipboard-copy"></i>Übersicht kopieren</button>
       <button id="exportJson" type="button"><i data-lucide="download"></i>Daten sichern</button>
       <label class="fileBtn"><i data-lucide="upload"></i>Daten laden<input id="importFile" class="hidden" type="file" accept=".json,application/json"></label>
       <button onclick="window.print()" type="button"><i data-lucide="printer"></i>Drucken</button>
@@ -213,6 +243,25 @@ tr:last-child td{border-bottom:0}
     </section>
   </main>
 
+
+<div id="studentModal" class="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modalHeader">
+      <div>
+        <h2 id="modalTitle">Buchungsverlauf</h2>
+        <p id="modalSubtitle" class="note" style="margin:4px 0 0"></p>
+      </div>
+      <button id="closeModal" type="button" aria-label="Schließen"><i data-lucide="x"></i></button>
+    </div>
+    <div id="modalStats" class="modalStats"></div>
+    <textarea id="studentCopyText" class="copyText" readonly></textarea>
+    <div class="toolbar">
+      <button id="copyStudentHistory" class="primary" type="button"><i data-lucide="clipboard-copy"></i>Verlauf kopieren</button>
+      <button id="printStudentHistory" type="button"><i data-lucide="printer"></i>Drucken</button>
+    </div>
+  </div>
+</div>
+<div id="copyToast" class="copyToast">In die Zwischenablage kopiert</div>
   <div class="footer">Klare Kasse, ruhige Kursfahrt</div>
 </div>
 
@@ -353,6 +402,19 @@ function icons(){
 
 function bind(){
   document.getElementById("chooseSaveFile").addEventListener("click", chooseSaveFile);
+  document.getElementById("copyOverview").addEventListener("click", copyOverview);
+  document.getElementById("closeModal").addEventListener("click", closeStudentModal);
+  document.getElementById("studentModal").addEventListener("click", e => {
+    if(e.target.id === "studentModal") closeStudentModal();
+  });
+  document.getElementById("copyStudentHistory").addEventListener("click", () => {
+    const text = document.getElementById("studentCopyText").value;
+    copyText(text);
+  });
+  document.getElementById("printStudentHistory").addEventListener("click", printStudentHistory);
+  document.addEventListener("keydown", e => {
+    if(e.key === "Escape") closeStudentModal();
+  });
 
   document.getElementById("themeBtn").addEventListener("click", () => {
     state.theme = (state.theme || "light") === "light" ? "dark" : "light";
@@ -497,12 +559,15 @@ function renderAll(){
     const cls = rest < 0 ? "rest-neg" : rest < 10 ? "rest-low" : "rest-ok";
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="name">${escapeHtml(s.name)}</td>
+      <td class="name clickableName" data-student-id="${s.id}" title="Buchungsverlauf anzeigen">${escapeHtml(s.name)}</td>
       <td class="money">${euro(budget)}</td>
       <td class="money">${euro(sp)}</td>
       <td class="money ${cls}">${euro(rest)}</td>
       <td>${escapeHtml(last[s.id] || "—")}</td>`;
     body.appendChild(tr);
+  });
+  body.querySelectorAll("[data-student-id]").forEach(cell => {
+    cell.addEventListener("click", e => openStudentModal(e.currentTarget.dataset.studentId));
   });
   document.getElementById("sumStart").textContent = euro(sumBudget);
   document.getElementById("sumSpent").textContent = euro(sumSpent);
@@ -545,6 +610,138 @@ function renderHistory(){
     });
   });
   icons();
+}
+
+
+function getStudentTransactions(studentId){
+  return state.transactions
+    .filter(t => t.studentIds.includes(studentId))
+    .slice()
+    .sort((a,b) => String(a.date).localeCompare(String(b.date)) || String(a.created).localeCompare(String(b.created)));
+}
+
+function makeStudentHistoryText(studentId){
+  const student = state.students.find(s => s.id === studentId);
+  if(!student) return "";
+  const {spent} = calc();
+  const budget = Number(student.budget)||0;
+  const used = Number(spent[student.id])||0;
+  const rest = budget - used;
+  const lines = [];
+  lines.push(student.name);
+  lines.push("");
+  lines.push("Zusatzbudget: " + euro(budget));
+  lines.push("Ausgegeben: " + euro(used));
+  lines.push("Restbestand: " + euro(rest));
+  lines.push("");
+  lines.push("Buchungen");
+  lines.push("");
+  const txs = getStudentTransactions(studentId);
+  if(!txs.length){
+    lines.push("Keine Buchungen vorhanden.");
+  }else{
+    txs.forEach(t => {
+      lines.push(formatDate(t.date));
+      lines.push(t.description);
+      lines.push(euro(t.perStudent));
+      if(t.mode === "split"){
+        lines.push("Anteil aus Gesamtbetrag " + euro(t.amountTotal) + " für " + t.studentIds.length + " Person(en)");
+      }
+      lines.push("");
+    });
+  }
+  return lines.join("\n").trim();
+}
+
+function makeOverviewText(){
+  const {spent} = calc();
+  const rows = [];
+  rows.push("Kursfahrt Budget");
+  rows.push("Zusatzbudget: 480 € - 412 € = 68 € pro Person");
+  rows.push("");
+  rows.push("Name\tZusatzbudget\tAusgegeben\tRestbestand");
+  state.students.slice().sort(byName).forEach(s => {
+    const budget = Number(s.budget)||0;
+    const used = Number(spent[s.id])||0;
+    rows.push(`${s.name}\t${euro(budget)}\t${euro(used)}\t${euro(budget-used)}`);
+  });
+  return rows.join("\n");
+}
+
+function openStudentModal(studentId){
+  const student = state.students.find(s => s.id === studentId);
+  if(!student) return;
+  const {spent} = calc();
+  const budget = Number(student.budget)||0;
+  const used = Number(spent[student.id])||0;
+  const rest = budget - used;
+  document.getElementById("modalTitle").textContent = student.name;
+  document.getElementById("modalSubtitle").textContent = "Buchungsverlauf und Restbestand";
+  document.getElementById("modalStats").innerHTML = `
+    <div class="modalStat"><small>Zusatzbudget</small><strong>${euro(budget)}</strong></div>
+    <div class="modalStat"><small>Ausgegeben</small><strong>${euro(used)}</strong></div>
+    <div class="modalStat"><small>Restbestand</small><strong class="${rest < 0 ? "rest-neg" : rest < 10 ? "rest-low" : "rest-ok"}">${euro(rest)}</strong></div>
+  `;
+  document.getElementById("studentCopyText").value = makeStudentHistoryText(studentId);
+  document.getElementById("studentModal").classList.add("show");
+  icons();
+}
+
+function closeStudentModal(){
+  document.getElementById("studentModal").classList.remove("show");
+}
+
+async function copyOverview(){
+  await copyText(makeOverviewText());
+}
+
+async function copyText(text){
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+    }else{
+      const tmp = document.createElement("textarea");
+      tmp.value = text;
+      tmp.style.position = "fixed";
+      tmp.style.left = "-9999px";
+      document.body.appendChild(tmp);
+      tmp.focus();
+      tmp.select();
+      document.execCommand("copy");
+      tmp.remove();
+    }
+    showCopyToast();
+  }catch(err){
+    alert("Kopieren war nicht möglich. Der Text kann im Feld markiert und manuell kopiert werden.");
+    console.warn(err);
+  }
+}
+
+function showCopyToast(){
+  const toast = document.getElementById("copyToast");
+  toast.classList.add("show");
+  clearTimeout(showCopyToast.timer);
+  showCopyToast.timer = setTimeout(() => toast.classList.remove("show"), 1600);
+}
+
+function printStudentHistory(){
+  const text = document.getElementById("studentCopyText").value;
+  const win = window.open("", "_blank");
+  if(!win){
+    alert("Das Druckfenster wurde vom Browser blockiert.");
+    return;
+  }
+  win.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Buchungsverlauf</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.45;padding:24px;color:#111}</style></head><body>${escapeHtml(text)}</body></html>`);
+  win.document.close();
+  win.focus();
+  win.print();
+}
+
+function formatDate(value){
+  if(!value) return "";
+  const parts = String(value).split("-");
+  if(parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  return String(value);
 }
 
 function exportJson(){
