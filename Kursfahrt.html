@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#13233a">
+<title>Kursfahrt Budget</title>
+<style>
+@font-face{font-family:"Inter";src:url("fonts/Inter-v20-Latin-regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Inter";src:url("fonts/Inter-v20-Latin-500.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Inter";src:url("fonts/Inter-v20-Latin-600.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Poppins";src:url("fonts/poppins-v24-Latin-regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Poppins";src:url("fonts/poppins-v24-Latin-600.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Poppins";src:url("fonts/poppins-v24-Latin-700.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Poppins";src:url("fonts/poppins-v24-Latin-800.woff2") format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Poppins";src:url("fonts/poppins-v24-Latin-900.woff2") format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"Caveat";src:url("fonts/caveat-v23-Latin-regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Caveat";src:url("fonts/caveat-v23-Latin-500.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Caveat";src:url("fonts/caveat-v23-Latin-600.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Caveat";src:url("fonts/caveat-v23-Latin-700.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Dancing Script";src:url("fonts/dancing-script-v29-Latin-regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Dancing Script";src:url("fonts/dancing-script-v29-Latin-600.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Dancing Script";src:url("fonts/dancing-script-v29-Latin-700.woff2") format("woff2");font-weight:700;font-display:swap}
+
+:root{
+  --bg:#f4f7fb;--ink:#172033;--muted:#667085;--line:rgba(39,55,77,.14);
+  --card:rgba(255,255,255,.84);--card2:rgba(255,255,255,.66);
+  --accent:#2663ff;--accent2:#00a6a6;--danger:#b42318;--ok:#087443;
+  --warning:#b54708;--shadow:0 18px 55px rgba(25,41,70,.16);--radius:24px;
+}
+[data-theme="dark"]{
+  --bg:#08101f;--ink:#edf4ff;--muted:#aab7cc;--line:rgba(255,255,255,.13);
+  --card:rgba(17,31,52,.78);--card2:rgba(17,31,52,.56);
+  --accent:#70a5ff;--accent2:#33d7d0;--danger:#ff9a8e;--ok:#66e0a3;--warning:#ffc777;
+  --shadow:0 18px 55px rgba(0,0,0,.38);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+body:before,body:after{
+  content:"";position:fixed;inset:auto;z-index:-2;border-radius:50%;filter:blur(48px);opacity:.48;
+  animation:float 18s ease-in-out infinite alternate;
+}
+body:before{width:42vw;height:42vw;left:-12vw;top:-12vw;background:radial-gradient(circle,#ff8a00,transparent 68%)}
+body:after{width:50vw;height:50vw;right:-16vw;bottom:-18vw;background:radial-gradient(circle,#0077ff,transparent 68%);animation-duration:22s}
+@keyframes float{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(4vw,3vh,0) scale(1.12)}}
+
+.app{max-width:1340px;margin:0 auto;padding:18px}
+.header{
+  display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:16px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:16px 18px;backdrop-filter:blur(20px);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:white}
+h1{font-family:Poppins,Inter,sans-serif;font-size:clamp(1.45rem,3vw,2.35rem);margin:0;letter-spacing:-.04em}
+.subtitle{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+button,.fileBtn{
+  border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:16px;padding:10px 12px;
+  font:600 .92rem Inter;display:inline-flex;align-items:center;gap:8px;cursor:pointer;backdrop-filter:blur(12px);
+}
+button:hover,.fileBtn:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-1px)}
+.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border-color:transparent}
+.danger{color:var(--danger)}
+.warning{color:var(--warning)}
+input,select,textarea{
+  width:100%;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:16px;
+  padding:11px 12px;font:500 .95rem Inter;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+label{font-size:.82rem;color:var(--muted);font-weight:600;display:block;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:390px 1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;backdrop-filter:blur(20px)}
+.panel h2{font-family:Poppins,Inter,sans-serif;margin:0 0 12px;font-size:1.15rem;display:flex;gap:8px;align-items:center}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.full{grid-column:1/-1}
+.studentPick{max-height:310px;overflow:auto;border:1px solid var(--line);border-radius:18px;padding:8px;background:rgba(255,255,255,.06)}
+.checkrow{display:flex;gap:10px;align-items:center;padding:8px 7px;border-radius:12px}
+.checkrow:hover{background:rgba(120,150,200,.12)}
+.checkrow input{width:auto}
+.checkrow span{font-weight:600}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow);backdrop-filter:blur(20px)}
+.metric small{color:var(--muted);font-weight:700}
+.metric strong{display:block;font-family:Poppins,Inter,sans-serif;font-size:1.8rem;margin-top:4px}
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:20px;background:var(--card2)}
+table{width:100%;border-collapse:collapse;min-width:780px}
+th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:rgba(120,150,200,.08);position:sticky;top:0}
+td.money,th.money{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.rest-ok{color:var(--ok);font-weight:800}
+.rest-low{color:var(--warning);font-weight:800}
+.rest-neg{color:var(--danger);font-weight:800}
+.name{font-weight:800}
+.hand{font-family:Caveat,cursive;font-size:1.25rem;font-weight:500}
+.history{max-height:390px;overflow:auto}
+.event{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid var(--line);padding:10px 2px}
+.event:last-child{border-bottom:0}
+.event b{display:block}
+.event small{color:var(--muted)}
+.pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;padding:3px 8px;font-size:.78rem;margin:2px 4px 0 0}
+.hidden{display:none!important}
+.note{color:var(--muted);font-size:.9rem;line-height:1.45}
+.footer{margin-top:16px;text-align:center;color:var(--muted);font-family:"Dancing Script",cursive;font-size:1.45rem}
+.studentEditRow{display:grid;grid-template-columns:1fr 112px auto;gap:8px;align-items:center;margin-bottom:8px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.actions{justify-content:flex-start}.formGrid{grid-template-columns:1fr}.studentPick{max-height:260px}.studentEditRow{grid-template-columns:1fr}}
+@media print{
+  body:before,body:after,.header .actions,.panel.inputPanel,.historyPanel,.footer{display:none!important}
+  body{background:white;color:black}
+  .app{padding:0}.header,.panel,.metric{box-shadow:none;border:1px solid #999;background:white}
+  .grid{display:block}table{min-width:0;font-size:11px}th,td{padding:6px}
+}
+</style>
+</head>
+<body data-theme="light">
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo"><i data-lucide="wallet-cards"></i></div>
+      <div>
+        <h1>Kursfahrt Budget</h1>
+        <p class="subtitle">Lokale Speicherung im Browser. Sicherung über JSON-Datei, Auswertung über CSV.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="themeBtn" type="button"><i data-lucide="moon"></i>Design</button>
+      <button id="exportJson" type="button"><i data-lucide="download"></i>Daten sichern</button>
+      <button id="exportCsv" type="button"><i data-lucide="file-spreadsheet"></i>CSV</button>
+      <label class="fileBtn"><i data-lucide="upload"></i>Daten laden<input id="importFile" class="hidden" type="file" accept=".json,application/json"></label>
+      <button onclick="window.print()" type="button"><i data-lucide="printer"></i>Drucken</button>
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="metric"><small>Gesamtbudget</small><strong id="sumStart">0,00 €</strong></div>
+    <div class="metric"><small>Ausgegeben</small><strong id="sumSpent">0,00 €</strong></div>
+    <div class="metric"><small>Restbestand</small><strong id="sumRest">0,00 €</strong></div>
+    <div class="metric"><small>Buchungen</small><strong id="countTx">0</strong></div>
+  </section>
+
+  <main class="grid">
+    <section class="panel inputPanel">
+      <h2><i data-lucide="plus-circle"></i>Ausgabe eintragen</h2>
+      <div class="formGrid">
+        <div>
+          <label for="date">Datum</label>
+          <input id="date" type="date">
+        </div>
+        <div>
+          <label for="amount">Betrag in €</label>
+          <input id="amount" type="number" min="0" step="0.01" placeholder="z. B. 12,50">
+        </div>
+        <div class="full">
+          <label for="description">Bezeichnung</label>
+          <input id="description" type="text" placeholder="z. B. Metro, Eintritt, Picknick">
+        </div>
+        <div class="full">
+          <label for="mode">Wie soll der Betrag verbucht werden?</label>
+          <select id="mode">
+            <option value="perStudent">Betrag gilt pro ausgewählter Person</option>
+            <option value="split">Gesamtbetrag wird auf ausgewählte Personen verteilt</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Schülerinnen und Schüler auswählen</label>
+          <div class="toolbar">
+            <button id="selectAll" type="button"><i data-lucide="check-square"></i>Alle</button>
+            <button id="selectNone" type="button"><i data-lucide="square"></i>Keine</button>
+          </div>
+          <div id="studentPick" class="studentPick"></div>
+        </div>
+        <button id="addTx" class="primary full" type="button"><i data-lucide="save"></i>Ausgabe speichern</button>
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+
+      <h2><i data-lucide="users"></i>Personen und Startbeträge</h2>
+      <p class="note">Die Startbeträge können pro Person angepasst werden. Über „Person hinzufügen“ kannst du die fehlende zehnte Person ergänzen.</p>
+      <div id="startEditor"></div>
+      <div class="toolbar">
+        <button id="addStudent" type="button"><i data-lucide="user-plus"></i>Person hinzufügen</button>
+        <button id="setAll480" type="button">Alle auf 480 €</button>
+        <button id="resetDemo" class="danger" type="button"><i data-lucide="rotate-ccw"></i>Zurücksetzen</button>
+      </div>
+    </section>
+
+    <section>
+      <section class="panel">
+        <h2><i data-lucide="table-properties"></i>Übersicht</h2>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th class="money">Start</th>
+                <th class="money">Ausgegeben</th>
+                <th class="money">Rest</th>
+                <th>Letzte Buchung</th>
+              </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel historyPanel" style="margin-top:16px">
+        <h2><i data-lucide="history"></i>Buchungsverlauf</h2>
+        <div id="history" class="history"></div>
+      </section>
+    </section>
+  </main>
+
+  <div class="footer">Klare Kasse, ruhige Kursfahrt</div>
+</div>
+
+<script src="fonts/lucide.min.js"></script>
+<script>
+const STORAGE_KEY = "kursfahrt_budget_q1_chemie_lk_v2";
+const defaultStudents = [
+  "Anna Jablonsky",
+  "Cennet Gencer",
+  "Julian Herbst",
+  "Konstantin Grebhahn",
+  "Linus In der Heiden",
+  "Melina Mittendorf",
+  "Moritz Geiter",
+  "Sebastian Holzhauer",
+  "Viviana Tropmann"
+];
+
+let state = loadState();
+
+function makeInitialState(){
+  return {
+    version:2,
+    created:new Date().toISOString(),
+    students: defaultStudents.map(name => ({id:makeId(), name, start:480})),
+    transactions:[],
+    theme:"light"
+  };
+}
+
+function makeId(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "id_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+    const old = localStorage.getItem("kursfahrt_budget_q1_chemie_lk_v1");
+    if(old){
+      const data = JSON.parse(old);
+      data.version = 2;
+      return data;
+    }
+  }catch(e){console.warn(e)}
+  return makeInitialState();
+}
+function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+function euro(n){return (Number(n)||0).toLocaleString("de-DE",{style:"currency",currency:"EUR"});}
+function byName(a,b){return a.name.localeCompare(b.name,"de");}
+
+function init(){
+  document.body.dataset.theme = state.theme || "light";
+  document.getElementById("date").valueAsDate = new Date();
+  renderPicker();
+  renderStartEditor();
+  renderAll();
+  bind();
+  icons();
+}
+
+function icons(){
+  if(window.lucide) window.lucide.createIcons();
+}
+
+function bind(){
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    state.theme = (state.theme || "light") === "light" ? "dark" : "light";
+    document.body.dataset.theme = state.theme;
+    save(); icons();
+  });
+
+  document.getElementById("selectAll").addEventListener("click", () => {
+    document.querySelectorAll(".studentCheck").forEach(c => c.checked = true);
+  });
+  document.getElementById("selectNone").addEventListener("click", () => {
+    document.querySelectorAll(".studentCheck").forEach(c => c.checked = false);
+  });
+
+  document.getElementById("addTx").addEventListener("click", addTransaction);
+  document.getElementById("addStudent").addEventListener("click", addStudent);
+  document.getElementById("setAll480").addEventListener("click", () => {
+    state.students.forEach(s => s.start = 480);
+    save(); renderStartEditor(); renderAll();
+  });
+  document.getElementById("resetDemo").addEventListener("click", () => {
+    if(confirm("Alle Buchungen und geänderten Startbeträge löschen?")){
+      state = makeInitialState(); save(); renderPicker(); renderStartEditor(); renderAll(); icons();
+    }
+  });
+  document.getElementById("exportJson").addEventListener("click", exportJson);
+  document.getElementById("exportCsv").addEventListener("click", exportCsv);
+  document.getElementById("importFile").addEventListener("change", importJson);
+}
+
+function renderPicker(){
+  const box = document.getElementById("studentPick");
+  box.innerHTML = "";
+  state.students.slice().sort(byName).forEach(s => {
+    const label = document.createElement("label");
+    label.className = "checkrow";
+    label.innerHTML = `<input class="studentCheck" type="checkbox" value="${s.id}"><span>${escapeHtml(s.name)}</span>`;
+    box.appendChild(label);
+  });
+}
+
+function renderStartEditor(){
+  const box = document.getElementById("startEditor");
+  box.innerHTML = "";
+  state.students.slice().sort(byName).forEach(s => {
+    const wrap = document.createElement("div");
+    wrap.className = "studentEditRow";
+    wrap.innerHTML = `
+      <input type="text" value="${escapeAttr(s.name)}" data-name-id="${s.id}" aria-label="Name">
+      <input type="number" step="0.01" value="${s.start}" data-start-id="${s.id}" aria-label="Startbetrag">
+      <button class="danger" type="button" data-remove-id="${s.id}" title="Person löschen"><i data-lucide="trash-2"></i></button>`;
+    box.appendChild(wrap);
+  });
+  box.querySelectorAll("[data-name-id]").forEach(inp => {
+    inp.addEventListener("change", e => {
+      const s = state.students.find(x => x.id === e.target.dataset.nameId);
+      const value = e.target.value.trim();
+      if(!value){e.target.value = s.name; return;}
+      s.name = value;
+      save(); renderPicker(); renderAll();
+    });
+  });
+  box.querySelectorAll("[data-start-id]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const s = state.students.find(x => x.id === e.target.dataset.startId);
+      s.start = parseFloat(e.target.value || "0");
+      save(); renderAll();
+    });
+  });
+  box.querySelectorAll("[data-remove-id]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const id = e.currentTarget.dataset.removeId;
+      const s = state.students.find(x => x.id === id);
+      const used = state.transactions.some(t => t.studentIds.includes(id));
+      const msg = used
+        ? `${s.name} kommt in Buchungen vor. Beim Löschen werden diese Zuordnungen aus den Buchungen entfernt. Fortfahren?`
+        : `${s.name} löschen?`;
+      if(confirm(msg)){
+        state.students = state.students.filter(x => x.id !== id);
+        state.transactions.forEach(t => t.studentIds = t.studentIds.filter(x => x !== id));
+        state.transactions = state.transactions.filter(t => t.studentIds.length > 0);
+        save(); renderPicker(); renderStartEditor(); renderAll(); icons();
+      }
+    });
+  });
+  icons();
+}
+
+function addStudent(){
+  const name = prompt("Name der Person:");
+  if(!name || !name.trim()) return;
+  const amountRaw = prompt("Startbetrag in Euro:", "480");
+  const amount = parseFloat(String(amountRaw || "480").replace(",","."));
+  state.students.push({id:makeId(), name:name.trim(), start:isNaN(amount) ? 480 : amount});
+  save(); renderPicker(); renderStartEditor(); renderAll(); icons();
+}
+
+function addTransaction(){
+  const amount = parseFloat(String(document.getElementById("amount").value).replace(",","."));
+  const description = document.getElementById("description").value.trim();
+  const date = document.getElementById("date").value || new Date().toISOString().slice(0,10);
+  const mode = document.getElementById("mode").value;
+  const selected = Array.from(document.querySelectorAll(".studentCheck:checked")).map(x => x.value);
+  if(!amount || amount <= 0){alert("Bitte einen Betrag größer als 0 eingeben.");return;}
+  if(!description){alert("Bitte eine Bezeichnung eingeben.");return;}
+  if(selected.length === 0){alert("Bitte mindestens eine Person auswählen.");return;}
+
+  const perStudent = mode === "split" ? amount / selected.length : amount;
+  state.transactions.unshift({
+    id: makeId(),
+    date, description, amountTotal: amount, perStudent,
+    mode, studentIds:selected,
+    created:new Date().toISOString()
+  });
+  save();
+  document.getElementById("amount").value = "";
+  document.getElementById("description").value = "";
+  renderAll();
+}
+
+function calc(){
+  const spent = Object.fromEntries(state.students.map(s => [s.id,0]));
+  const last = Object.fromEntries(state.students.map(s => [s.id,""]));
+  state.transactions.slice().reverse().forEach(t => {
+    t.studentIds.forEach(id => {
+      spent[id] = (spent[id] || 0) + Number(t.perStudent || 0);
+      last[id] = t.date + " · " + t.description;
+    });
+  });
+  return {spent,last};
+}
+
+function renderAll(){
+  const {spent,last} = calc();
+  let sumStart=0,sumSpent=0;
+  const body = document.getElementById("summaryBody");
+  body.innerHTML = "";
+  state.students.slice().sort(byName).forEach(s => {
+    const st = Number(s.start)||0;
+    const sp = Number(spent[s.id])||0;
+    const rest = st - sp;
+    sumStart += st; sumSpent += sp;
+    const cls = rest < 0 ? "rest-neg" : rest < 30 ? "rest-low" : "rest-ok";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="name">${escapeHtml(s.name)}</td>
+      <td class="money">${euro(st)}</td>
+      <td class="money">${euro(sp)}</td>
+      <td class="money ${cls}">${euro(rest)}</td>
+      <td>${escapeHtml(last[s.id] || "—")}</td>`;
+    body.appendChild(tr);
+  });
+  document.getElementById("sumStart").textContent = euro(sumStart);
+  document.getElementById("sumSpent").textContent = euro(sumSpent);
+  document.getElementById("sumRest").textContent = euro(sumStart - sumSpent);
+  document.getElementById("countTx").textContent = state.transactions.length;
+  renderHistory();
+}
+
+function renderHistory(){
+  const box = document.getElementById("history");
+  if(!state.transactions.length){
+    box.innerHTML = `<p class="note">Noch keine Ausgaben eingetragen.</p>`;
+    return;
+  }
+  box.innerHTML = "";
+  state.transactions.forEach(t => {
+    const names = t.studentIds.map(id => state.students.find(s => s.id === id)?.name).filter(Boolean);
+    const div = document.createElement("div");
+    div.className = "event";
+    div.innerHTML = `
+      <div>
+        <b>${escapeHtml(t.description)}</b>
+        <small>${escapeHtml(t.date)} · ${t.mode === "split" ? "Gesamtbetrag verteilt" : "Betrag pro Person"} · ${names.length} Person(en)</small><br>
+        ${names.slice(0,8).map(n => `<span class="pill">${escapeHtml(n)}</span>`).join("")}
+        ${names.length > 8 ? `<span class="pill">+${names.length-8}</span>` : ""}
+      </div>
+      <div style="text-align:right">
+        <b>${euro(t.amountTotal)}</b>
+        <small>${euro(t.perStudent)} pro Person</small><br>
+        <button class="danger" type="button" data-del="${t.id}" title="Buchung löschen"><i data-lucide="trash-2"></i></button>
+      </div>`;
+    box.appendChild(div);
+  });
+  box.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const id = e.currentTarget.dataset.del;
+      if(confirm("Diese Buchung löschen?")){
+        state.transactions = state.transactions.filter(t => t.id !== id);
+        save(); renderAll(); icons();
+      }
+    });
+  });
+  icons();
+}
+
+function exportJson(){
+  download("kursfahrt-budget.json", JSON.stringify(state,null,2), "application/json");
+}
+
+function exportCsv(){
+  const {spent} = calc();
+  const rows = [["Name","Startbetrag","Ausgegeben","Restbestand"]];
+  state.students.slice().sort(byName).forEach(s => {
+    const sp = Number(spent[s.id])||0;
+    rows.push([s.name, formatNum(s.start), formatNum(sp), formatNum(Number(s.start)-sp)]);
+  });
+  rows.push([]);
+  rows.push(["Buchungsverlauf"]);
+  rows.push(["Datum","Bezeichnung","Modus","Gesamtbetrag","Betrag pro Person","Personen"]);
+  state.transactions.forEach(t => {
+    const names = t.studentIds.map(id => state.students.find(s => s.id === id)?.name).filter(Boolean).join("; ");
+    rows.push([t.date,t.description,t.mode,formatNum(t.amountTotal),formatNum(t.perStudent),names]);
+  });
+  const csv = rows.map(r => r.map(csvCell).join(";")).join("\n");
+  download("kursfahrt-budget.csv", csv, "text/csv;charset=utf-8");
+}
+function formatNum(n){return String((Number(n)||0).toFixed(2)).replace(".",",");}
+function csvCell(v){return `"${String(v ?? "").replaceAll('"','""')}"`;}
+
+function importJson(evt){
+  const file = evt.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data.students) || !Array.isArray(data.transactions)) throw new Error("Ungültiges Format");
+      state = data; 
+      state.version = 2;
+      save(); renderPicker(); renderStartEditor(); renderAll(); icons();
+    }catch(e){alert("Die Datei konnte nicht importiert werden.");}
+  };
+  reader.readAsText(file);
+  evt.target.value = "";
+}
+
+function download(filename, content, type){
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function escapeAttr(str){
+  return escapeHtml(str).replace(/"/g,"&quot;");
+}
+
+init();
+</script>
+</body>
+</html>
