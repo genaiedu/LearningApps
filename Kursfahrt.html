@@ -96,7 +96,6 @@ tr:last-child td{border-bottom:0}
 .rest-low{color:var(--warning);font-weight:800}
 .rest-neg{color:var(--danger);font-weight:800}
 .name{font-weight:800}
-.hand{font-family:Caveat,cursive;font-size:1.25rem;font-weight:500}
 .history{max-height:390px;overflow:auto}
 .event{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid var(--line);padding:10px 2px}
 .event:last-child{border-bottom:0}
@@ -123,23 +122,22 @@ tr:last-child td{border-bottom:0}
       <div class="logo"><i data-lucide="wallet-cards"></i></div>
       <div>
         <h1>Kursfahrt Budget</h1>
-        <p class="subtitle">Lokale Speicherung im Browser. Sicherung über JSON-Datei, Auswertung über CSV.</p>
+        <p class="subtitle">Verfügbarer Zusatzbetrag: 480 € minus 412 € = 68 € pro Person. Speicherung lokal, Sicherung über JSON-Datei.</p>
       </div>
     </div>
     <div class="actions">
       <button id="themeBtn" type="button"><i data-lucide="moon"></i>Design</button>
       <button id="exportJson" type="button"><i data-lucide="download"></i>Daten sichern</button>
-      <button id="exportCsv" type="button"><i data-lucide="file-spreadsheet"></i>CSV</button>
       <label class="fileBtn"><i data-lucide="upload"></i>Daten laden<input id="importFile" class="hidden" type="file" accept=".json,application/json"></label>
       <button onclick="window.print()" type="button"><i data-lucide="printer"></i>Drucken</button>
     </div>
   </header>
 
   <section class="cards">
-    <div class="metric"><small>Gesamtbudget</small><strong id="sumStart">0,00 €</strong></div>
-    <div class="metric"><small>Ausgegeben</small><strong id="sumSpent">0,00 €</strong></div>
+    <div class="metric"><small>Zusatzbudget pro Person</small><strong>68,00 €</strong></div>
+    <div class="metric"><small>Gesamter Zusatzbetrag</small><strong id="sumStart">0,00 €</strong></div>
+    <div class="metric"><small>Davon ausgegeben</small><strong id="sumSpent">0,00 €</strong></div>
     <div class="metric"><small>Restbestand</small><strong id="sumRest">0,00 €</strong></div>
-    <div class="metric"><small>Buchungen</small><strong id="countTx">0</strong></div>
   </section>
 
   <main class="grid">
@@ -178,12 +176,12 @@ tr:last-child td{border-bottom:0}
 
       <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
 
-      <h2><i data-lucide="users"></i>Personen und Startbeträge</h2>
-      <p class="note">Die Startbeträge können pro Person angepasst werden. Über „Person hinzufügen“ kannst du die fehlende zehnte Person ergänzen.</p>
+      <h2><i data-lucide="users"></i>Personen</h2>
+      <p class="note">Jede Person hat standardmäßig 68 € Zusatzbudget. Der Betrag kann nur bei Bedarf verändert werden.</p>
       <div id="startEditor"></div>
       <div class="toolbar">
         <button id="addStudent" type="button"><i data-lucide="user-plus"></i>Person hinzufügen</button>
-        <button id="setAll480" type="button">Alle auf 480 €</button>
+        <button id="setAll68" type="button">Alle auf 68 €</button>
         <button id="resetDemo" class="danger" type="button"><i data-lucide="rotate-ccw"></i>Zurücksetzen</button>
       </div>
     </section>
@@ -196,7 +194,7 @@ tr:last-child td{border-bottom:0}
             <thead>
               <tr>
                 <th>Name</th>
-                <th class="money">Start</th>
+                <th class="money">Zusatzbudget</th>
                 <th class="money">Ausgegeben</th>
                 <th class="money">Rest</th>
                 <th>Letzte Buchung</th>
@@ -219,7 +217,8 @@ tr:last-child td{border-bottom:0}
 
 <script src="fonts/lucide.min.js"></script>
 <script>
-const STORAGE_KEY = "kursfahrt_budget_q1_chemie_lk_v2";
+const STORAGE_KEY = "kursfahrt_budget_68_v1";
+const DEFAULT_BUDGET = 68;
 const defaultStudents = [
   "Anna Jablonsky",
   "Cennet Gencer",
@@ -236,9 +235,12 @@ let state = loadState();
 
 function makeInitialState(){
   return {
-    version:2,
+    version:1,
     created:new Date().toISOString(),
-    students: defaultStudents.map(name => ({id:makeId(), name, start:480})),
+    baseCost:412,
+    paidAmount:480,
+    defaultBudget:DEFAULT_BUDGET,
+    students: defaultStudents.map(name => ({id:makeId(), name, budget:DEFAULT_BUDGET})),
     transactions:[],
     theme:"light"
   };
@@ -249,16 +251,24 @@ function makeId(){
   return "id_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
+function normalizeState(data){
+  data.defaultBudget = data.defaultBudget ?? DEFAULT_BUDGET;
+  data.baseCost = data.baseCost ?? 412;
+  data.paidAmount = data.paidAmount ?? 480;
+  data.students = (data.students || []).map(s => ({
+    id:s.id || makeId(),
+    name:s.name || "Unbenannt",
+    budget: Number(s.budget ?? s.start ?? DEFAULT_BUDGET)
+  }));
+  data.transactions = data.transactions || [];
+  data.theme = data.theme || "light";
+  return data;
+}
+
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-    const old = localStorage.getItem("kursfahrt_budget_q1_chemie_lk_v1");
-    if(old){
-      const data = JSON.parse(old);
-      data.version = 2;
-      return data;
-    }
+    if(raw) return normalizeState(JSON.parse(raw));
   }catch(e){console.warn(e)}
   return makeInitialState();
 }
@@ -296,17 +306,16 @@ function bind(){
 
   document.getElementById("addTx").addEventListener("click", addTransaction);
   document.getElementById("addStudent").addEventListener("click", addStudent);
-  document.getElementById("setAll480").addEventListener("click", () => {
-    state.students.forEach(s => s.start = 480);
+  document.getElementById("setAll68").addEventListener("click", () => {
+    state.students.forEach(s => s.budget = DEFAULT_BUDGET);
     save(); renderStartEditor(); renderAll();
   });
   document.getElementById("resetDemo").addEventListener("click", () => {
-    if(confirm("Alle Buchungen und geänderten Startbeträge löschen?")){
+    if(confirm("Alle Buchungen und geänderten Beträge löschen?")){
       state = makeInitialState(); save(); renderPicker(); renderStartEditor(); renderAll(); icons();
     }
   });
   document.getElementById("exportJson").addEventListener("click", exportJson);
-  document.getElementById("exportCsv").addEventListener("click", exportCsv);
   document.getElementById("importFile").addEventListener("change", importJson);
 }
 
@@ -329,7 +338,7 @@ function renderStartEditor(){
     wrap.className = "studentEditRow";
     wrap.innerHTML = `
       <input type="text" value="${escapeAttr(s.name)}" data-name-id="${s.id}" aria-label="Name">
-      <input type="number" step="0.01" value="${s.start}" data-start-id="${s.id}" aria-label="Startbetrag">
+      <input type="number" step="0.01" value="${s.budget}" data-budget-id="${s.id}" aria-label="Zusatzbudget">
       <button class="danger" type="button" data-remove-id="${s.id}" title="Person löschen"><i data-lucide="trash-2"></i></button>`;
     box.appendChild(wrap);
   });
@@ -342,10 +351,10 @@ function renderStartEditor(){
       save(); renderPicker(); renderAll();
     });
   });
-  box.querySelectorAll("[data-start-id]").forEach(inp => {
+  box.querySelectorAll("[data-budget-id]").forEach(inp => {
     inp.addEventListener("input", e => {
-      const s = state.students.find(x => x.id === e.target.dataset.startId);
-      s.start = parseFloat(e.target.value || "0");
+      const s = state.students.find(x => x.id === e.target.dataset.budgetId);
+      s.budget = parseFloat(e.target.value || "0");
       save(); renderAll();
     });
   });
@@ -371,9 +380,9 @@ function renderStartEditor(){
 function addStudent(){
   const name = prompt("Name der Person:");
   if(!name || !name.trim()) return;
-  const amountRaw = prompt("Startbetrag in Euro:", "480");
-  const amount = parseFloat(String(amountRaw || "480").replace(",","."));
-  state.students.push({id:makeId(), name:name.trim(), start:isNaN(amount) ? 480 : amount});
+  const amountRaw = prompt("Zusatzbudget in Euro:", String(DEFAULT_BUDGET));
+  const amount = parseFloat(String(amountRaw || DEFAULT_BUDGET).replace(",","."));
+  state.students.push({id:makeId(), name:name.trim(), budget:isNaN(amount) ? DEFAULT_BUDGET : amount});
   save(); renderPicker(); renderStartEditor(); renderAll(); icons();
 }
 
@@ -414,28 +423,27 @@ function calc(){
 
 function renderAll(){
   const {spent,last} = calc();
-  let sumStart=0,sumSpent=0;
+  let sumBudget=0,sumSpent=0;
   const body = document.getElementById("summaryBody");
   body.innerHTML = "";
   state.students.slice().sort(byName).forEach(s => {
-    const st = Number(s.start)||0;
+    const budget = Number(s.budget)||0;
     const sp = Number(spent[s.id])||0;
-    const rest = st - sp;
-    sumStart += st; sumSpent += sp;
-    const cls = rest < 0 ? "rest-neg" : rest < 30 ? "rest-low" : "rest-ok";
+    const rest = budget - sp;
+    sumBudget += budget; sumSpent += sp;
+    const cls = rest < 0 ? "rest-neg" : rest < 10 ? "rest-low" : "rest-ok";
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="name">${escapeHtml(s.name)}</td>
-      <td class="money">${euro(st)}</td>
+      <td class="money">${euro(budget)}</td>
       <td class="money">${euro(sp)}</td>
       <td class="money ${cls}">${euro(rest)}</td>
       <td>${escapeHtml(last[s.id] || "—")}</td>`;
     body.appendChild(tr);
   });
-  document.getElementById("sumStart").textContent = euro(sumStart);
+  document.getElementById("sumStart").textContent = euro(sumBudget);
   document.getElementById("sumSpent").textContent = euro(sumSpent);
-  document.getElementById("sumRest").textContent = euro(sumStart - sumSpent);
-  document.getElementById("countTx").textContent = state.transactions.length;
+  document.getElementById("sumRest").textContent = euro(sumBudget - sumSpent);
   renderHistory();
 }
 
@@ -480,36 +488,14 @@ function exportJson(){
   download("kursfahrt-budget.json", JSON.stringify(state,null,2), "application/json");
 }
 
-function exportCsv(){
-  const {spent} = calc();
-  const rows = [["Name","Startbetrag","Ausgegeben","Restbestand"]];
-  state.students.slice().sort(byName).forEach(s => {
-    const sp = Number(spent[s.id])||0;
-    rows.push([s.name, formatNum(s.start), formatNum(sp), formatNum(Number(s.start)-sp)]);
-  });
-  rows.push([]);
-  rows.push(["Buchungsverlauf"]);
-  rows.push(["Datum","Bezeichnung","Modus","Gesamtbetrag","Betrag pro Person","Personen"]);
-  state.transactions.forEach(t => {
-    const names = t.studentIds.map(id => state.students.find(s => s.id === id)?.name).filter(Boolean).join("; ");
-    rows.push([t.date,t.description,t.mode,formatNum(t.amountTotal),formatNum(t.perStudent),names]);
-  });
-  const csv = rows.map(r => r.map(csvCell).join(";")).join("\n");
-  download("kursfahrt-budget.csv", csv, "text/csv;charset=utf-8");
-}
-function formatNum(n){return String((Number(n)||0).toFixed(2)).replace(".",",");}
-function csvCell(v){return `"${String(v ?? "").replaceAll('"','""')}"`;}
-
 function importJson(evt){
   const file = evt.target.files?.[0];
   if(!file) return;
   const reader = new FileReader();
   reader.onload = () => {
     try{
-      const data = JSON.parse(reader.result);
-      if(!Array.isArray(data.students) || !Array.isArray(data.transactions)) throw new Error("Ungültiges Format");
-      state = data; 
-      state.version = 2;
+      const data = normalizeState(JSON.parse(reader.result));
+      state = data;
       save(); renderPicker(); renderStartEditor(); renderAll(); icons();
     }catch(e){alert("Die Datei konnte nicht importiert werden.");}
   };
