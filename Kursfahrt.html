@@ -122,11 +122,12 @@ tr:last-child td{border-bottom:0}
       <div class="logo"><i data-lucide="wallet-cards"></i></div>
       <div>
         <h1>Kursfahrt Budget</h1>
-        <p class="subtitle">Verfügbarer Zusatzbetrag: 480 € minus 412 € = 68 € pro Person. Speicherung lokal, Sicherung über JSON-Datei.</p>
+        <p class="subtitle">Verfügbarer Zusatzbetrag: 480 € minus 412 € = 68 € pro Person. <span id="saveStatus">Speicherung lokal.</span></p>
       </div>
     </div>
     <div class="actions">
       <button id="themeBtn" type="button"><i data-lucide="moon"></i>Design</button>
+      <button id="chooseSaveFile" type="button"><i data-lucide="folder-open"></i>Speicherdatei wählen</button>
       <button id="exportJson" type="button"><i data-lucide="download"></i>Daten sichern</button>
       <label class="fileBtn"><i data-lucide="upload"></i>Daten laden<input id="importFile" class="hidden" type="file" accept=".json,application/json"></label>
       <button onclick="window.print()" type="button"><i data-lucide="printer"></i>Drucken</button>
@@ -232,6 +233,8 @@ const defaultStudents = [
 ];
 
 let state = loadState();
+let saveFileHandle = null;
+let autoSaveTimer = null;
 
 function makeInitialState(){
   return {
@@ -272,7 +275,62 @@ function loadState(){
   }catch(e){console.warn(e)}
   return makeInitialState();
 }
-function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  queueAutoSaveToFile();
+}
+
+function updateSaveStatus(text){
+  const el = document.getElementById("saveStatus");
+  if(el) el.textContent = text;
+}
+
+function supportsFileSystemAccess(){
+  return "showSaveFilePicker" in window;
+}
+
+function queueAutoSaveToFile(){
+  if(!saveFileHandle) return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => saveToChosenFile(false), 350);
+}
+
+async function chooseSaveFile(){
+  if(!supportsFileSystemAccess()){
+    alert("Dieser Browser unterstützt das direkte Speichern in eine gewählte Datei nicht. Verwende Chrome oder Edge auf Android. Der normale JSON-Export funktioniert weiterhin.");
+    return;
+  }
+  try{
+    saveFileHandle = await window.showSaveFilePicker({
+      suggestedName:"kursfahrt-budget.json",
+      types:[{
+        description:"JSON-Datei",
+        accept:{"application/json":[".json"]}
+      }]
+    });
+    await saveToChosenFile(true);
+  }catch(err){
+    if(err && err.name !== "AbortError"){
+      alert("Die Speicherdatei konnte nicht eingerichtet werden.");
+      console.warn(err);
+    }
+  }
+}
+
+async function saveToChosenFile(showMessage){
+  if(!saveFileHandle) return;
+  try{
+    const writable = await saveFileHandle.createWritable();
+    await writable.write(JSON.stringify(state,null,2));
+    await writable.close();
+    const time = new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    updateSaveStatus("Automatisch gespeichert: " + time);
+    if(showMessage) alert("Speicherdatei eingerichtet. Änderungen werden nun automatisch in diese Datei geschrieben.");
+  }catch(err){
+    updateSaveStatus("Automatisches Speichern fehlgeschlagen.");
+    console.warn(err);
+  }
+}
 function euro(n){return (Number(n)||0).toLocaleString("de-DE",{style:"currency",currency:"EUR"});}
 function byName(a,b){return a.name.localeCompare(b.name,"de");}
 
@@ -284,6 +342,9 @@ function init(){
   renderAll();
   bind();
   icons();
+  if(!supportsFileSystemAccess()){
+    updateSaveStatus("Speicherung lokal. Direkte Speicherdatei wird von diesem Browser evtl. nicht unterstützt.");
+  }
 }
 
 function icons(){
@@ -291,6 +352,8 @@ function icons(){
 }
 
 function bind(){
+  document.getElementById("chooseSaveFile").addEventListener("click", chooseSaveFile);
+
   document.getElementById("themeBtn").addEventListener("click", () => {
     state.theme = (state.theme || "light") === "light" ? "dark" : "light";
     document.body.dataset.theme = state.theme;
