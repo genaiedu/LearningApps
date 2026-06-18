@@ -433,6 +433,59 @@ margin:0;
     }
 
 
+
+    .solution-notice{
+      border-left:5px solid var(--red);
+      background:#fff8f6;
+    }
+
+    .solution-notice h3{
+      margin-top:0;
+    }
+
+    details.control-hidden{
+      margin-top:.75rem;
+      padding:0;
+      background:transparent;
+      border:0;
+      color:inherit;
+    }
+
+    details.control-hidden summary{
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:.4rem;
+      padding:.45rem .7rem;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--blue-dark);
+      font-family:'Poppins', 'Inter', system-ui, sans-serif;
+      font-size:.88rem;
+      font-weight:700;
+      user-select:none;
+    }
+
+    details.control-hidden summary:hover{
+      background:#f3f8ff;
+    }
+
+    details.control-hidden[open] summary{
+      border-bottom-left-radius:10px;
+      border-bottom-right-radius:10px;
+    }
+
+    details.control-hidden > div{
+      margin-top:.55rem;
+      padding:.65rem .75rem;
+      border-left:4px solid var(--blue);
+      background:#f7fbff;
+      border-radius:10px;
+      font-size:.92rem;
+      color:#334155;
+    }
+
     .diagram-img{
       display:block;
       width:100%;
@@ -847,94 +900,180 @@ margin:0;
     
     <section id="konzeptaufgaben">
       <h2><i data-lucide="list-checks" class="section-heading-icon"></i>Übungsaufgaben zum Konzeptpapier</h2>
+
+      <div class="box solution-notice">
+        <p>
+          Auch hier gilt: Die Kontrollwerte sind nur zur Selbstkontrolle gedacht. Entscheidend ist,
+          dass der Lösungsweg mit gegebenen und gesuchten Größen sauber dokumentiert wird.
+        </p>
+      </div>
+
       <p class="small">Diese Aufgaben gehören unmittelbar zum Konzeptpapier. Sie sichern den Übergang vom Doppelspalt zum optischen Gitter und bereiten die größere Aufgabensammlung vor.</p>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 1</div>
         Ein Gitter trägt \(600\) Linien pro Millimeter. Bestimme die Gitterkonstante \(d\) in Nanometern.
-        <div class="control"><strong>Selbstkontrolle:</strong> \(d\approx1667\,\mathrm{nm}\approx1{,}67\,\mu\mathrm{m}\)</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> \(d\approx1667\,\mathrm{nm}\approx1{,}67\,\mu\mathrm{m}\)</div>
+        </details>
       </div>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 2: Kernaufgabe</div>
         Dasselbe Gitter mit \(600\) Linien pro Millimeter wird mit rotem Laserlicht der Wellenlänge \(\lambda=633\,\mathrm{nm}\) bestrahlt. Der Schirm steht im Abstand \(L=1{,}5\,\mathrm{m}\). Bestimme zunächst den Winkel \(\alpha\) des Maximums 1. Ordnung. Berechne anschließend die Schirmposition \(x\) exakt mit \(\displaystyle x=L\tan\alpha\). Berechne zum Vergleich auch den Wert der Kleinwinkelnäherung \(x_1=\lambda L/d\) und die Abweichung.
-        <div class="control"><strong>Selbstkontrolle:</strong> \(\alpha\approx22{,}3^\circ\), \(x\approx61{,}6\,\mathrm{cm}\), Näherung \(\approx57{,}0\,\mathrm{cm}\), Abweichung \(\approx4{,}6\,\mathrm{cm}\) beziehungsweise \(\approx7{,}5\,\%\)</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> \(\alpha\approx22{,}3^\circ\), \(x\approx61{,}6\,\mathrm{cm}\), Näherung \(\approx57{,}0\,\mathrm{cm}\), Abweichung \(\approx4{,}6\,\mathrm{cm}\) beziehungsweise \(\approx7{,}5\,\%\)</div>
+        </details>
       </div>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 3</div>
         Wie viele Hauptmaxima sind mit dem Gitter aus Konzeptaufgabe 2 bei grünem Licht mit \(\lambda=532\,\mathrm{nm}\) insgesamt beobachtbar, wenn das nullte Maximum mitgezählt wird?
-        <div class="control"><strong>Selbstkontrolle:</strong> \(k_{\max}=3\), also 7 Maxima</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> \(k_{\max}=3\), also 7 Maxima</div>
+        </details>
       </div>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 4</div>
         Bei einem Gitter erscheint das Maximum 1. Ordnung von grünem Licht mit \(\lambda=532\,\mathrm{nm}\) unter dem Winkel \(\alpha=18{,}6^\circ\). Bestimme die Gitterkonstante \(d\) und die Strichzahl \(g\) in Linien pro Millimeter.
-        <div class="control"><strong>Selbstkontrolle:</strong> \(d\approx1668\,\mathrm{nm}\), \(g\approx600\) Linien pro Millimeter</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> \(d\approx1668\,\mathrm{nm}\), \(g\approx600\) Linien pro Millimeter</div>
+        </details>
       </div>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 5</div>
         Ein Gitter mit \(300\) Linien pro Millimeter wird mit grünem Licht der Wellenlänge \(\lambda=532\,\mathrm{nm}\) beleuchtet. Unter welchen Winkeln liegen das Maximum 1. und 2. Ordnung?
-        <div class="control"><strong>Selbstkontrolle:</strong> \(\alpha_1\approx9{,}2^\circ\), \(\alpha_2\approx18{,}6^\circ\)</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> \(\alpha_1\approx9{,}2^\circ\), \(\alpha_2\approx18{,}6^\circ\)</div>
+        </details>
       </div>
 
       <div class="task">
         <div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Konzeptaufgabe 6: Gegenprobe am Doppelspalt</div>
         Zeige am Doppelspalt mit \(d=0{,}1\,\mathrm{mm}\), \(\lambda=633\,\mathrm{nm}\) und \(L=1{,}5\,\mathrm{m}\), dass die Kleinwinkelnäherung hier praktisch keinen Fehler macht. Vergleiche \(x_1=\lambda L/d\) mit dem exakten Wert \(\displaystyle x=L\tan\alpha\). Erkläre, warum die Näherung am Doppelspalt erlaubt ist, am Gitter aber oft nicht.
-        <div class="control"><strong>Selbstkontrolle:</strong> exakt \(\approx9{,}4952\,\mathrm{mm}\), Näherung \(\approx9{,}4950\,\mathrm{mm}\), Abweichung \(\approx0{,}002\,\%\)</div>
+        <details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Selbstkontrolle:</strong> exakt \(\approx9{,}4952\,\mathrm{mm}\), Näherung \(\approx9{,}4950\,\mathrm{mm}\), Abweichung \(\approx0{,}002\,\%\)</div>
+        </details>
       </div>
     </section>
 
     <section id="aufgaben">
       <h2><i data-lucide="clipboard-list" class="section-heading-icon"></i>Aufgabensammlung</h2>
+
+      <div class="box solution-notice">
+        <h3><i data-lucide="circle-alert" class="section-heading-icon"></i>Hinweis zu den Endergebnissen</h3>
+        <p>
+          Die reinen Endergebnisse können zur Kontrolle eingeblendet werden. Es ist aber sinnvoll,
+          sie erst nach dem eigenen Rechnen anzuschauen. In einer Prüfungssituation würden reine
+          Endergebnisse nicht bepunktet. Punkte gibt es nur im Zusammenhang mit einem nachvollziehbar
+          dokumentierten Rechenweg, also mit Angaben zu <strong>gegeben</strong>, <strong>gesucht</strong>,
+          Formelansatz, Einheitenumrechnung, Einsetzen und Antwortsatz.
+        </p>
+      </div>
+
       <p class="small">Notiere bei jeder Aufgabe gegeben, gesucht, die Formel und einen Antwortsatz. Prüfe stets, ob die Kleinwinkelnäherung erlaubt ist. Die Kontrollwerte dienen nur zum Abgleich. Sie ersetzen den Rechenweg nicht.</p>
 
       <div class="cluster">
         <h3>Cluster 1: Grundlagen</h3>
         <p>Kleine Winkel, klare Vorgaben. Hier geht es darum, die Gleichung für Hauptmaxima und die Kleinwinkelnäherung sicher zu beherrschen.</p>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Ein Gitter trägt der Reihe nach 100, 300, 600 und 1000 Linien pro Millimeter. Bestimme jeweils die Gitterkonstante \(d\) in Mikrometern.<div class="control"><strong>Kontrolle:</strong> \(10{,}0\,\mu\mathrm{m}\) | \(3{,}33\,\mu\mathrm{m}\) | \(1{,}67\,\mu\mathrm{m}\) | \(1{,}00\,\mu\mathrm{m}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Ein Gitter trägt der Reihe nach 100, 300, 600 und 1000 Linien pro Millimeter. Bestimme jeweils die Gitterkonstante \(d\) in Mikrometern.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(10{,}0\,\mu\mathrm{m}\) | \(3{,}33\,\mu\mathrm{m}\) | \(1{,}67\,\mu\mathrm{m}\) | \(1{,}00\,\mu\mathrm{m}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>An einem Doppelspalt mit Spaltabstand \(d=0{,}10\,\mathrm{mm}\) wird rotes Laserlicht mit \(\lambda=633\,\mathrm{nm}\) gebeugt. Der Schirm steht im Abstand \(L=1{,}5\,\mathrm{m}\). Berechne mit der Kleinwinkelnäherung den Abstand des 1. und des 5. Maximums von der Mitte.<div class="control"><strong>Kontrolle:</strong> \(x_1\approx9{,}5\,\mathrm{mm}\); \(x_5\approx47{,}5\,\mathrm{mm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>An einem Doppelspalt mit Spaltabstand \(d=0{,}10\,\mathrm{mm}\) wird rotes Laserlicht mit \(\lambda=633\,\mathrm{nm}\) gebeugt. Der Schirm steht im Abstand \(L=1{,}5\,\mathrm{m}\). Berechne mit der Kleinwinkelnäherung den Abstand des 1. und des 5. Maximums von der Mitte.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(x_1\approx9{,}5\,\mathrm{mm}\); \(x_5\approx47{,}5\,\mathrm{mm}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Bei einem Doppelspalt mit \(d=0{,}20\,\mathrm{mm}\) und \(L=2{,}0\,\mathrm{m}\) liegt das 4. Maximum \(19{,}0\,\mathrm{mm}\) von der Mitte entfernt. Welche Wellenlänge hat das Licht?<div class="control"><strong>Kontrolle:</strong> \(\lambda\approx475\,\mathrm{nm}\), blau</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Bei einem Doppelspalt mit \(d=0{,}20\,\mathrm{mm}\) und \(L=2{,}0\,\mathrm{m}\) liegt das 4. Maximum \(19{,}0\,\mathrm{mm}\) von der Mitte entfernt. Welche Wellenlänge hat das Licht?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\lambda\approx475\,\mathrm{nm}\), blau</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>Natriumlicht mit \(\lambda=589\,\mathrm{nm}\) erzeugt an einem Doppelspalt im Abstand \(L=1{,}0\,\mathrm{m}\) ein 3. Maximum bei \(8{,}84\,\mathrm{mm}\). Bestimme den Spaltabstand \(d\).<div class="control"><strong>Kontrolle:</strong> \(d\approx0{,}20\,\mathrm{mm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>Natriumlicht mit \(\lambda=589\,\mathrm{nm}\) erzeugt an einem Doppelspalt im Abstand \(L=1{,}0\,\mathrm{m}\) ein 3. Maximum bei \(8{,}84\,\mathrm{mm}\). Bestimme den Spaltabstand \(d\).<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(d\approx0{,}20\,\mathrm{mm}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Ein grobes Gitter mit 100 Linien pro Millimeter wird mit Licht der Wellenlänge \(\lambda=600\,\mathrm{nm}\) beleuchtet. Unter welchem Winkel liegt das Maximum 1. Ordnung? Prüfe, ob die Kleinwinkelnäherung hier noch vertretbar ist.<div class="control"><strong>Kontrolle:</strong> \(\alpha_1\approx3{,}44^\circ\). Näherung noch brauchbar.</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Ein grobes Gitter mit 100 Linien pro Millimeter wird mit Licht der Wellenlänge \(\lambda=600\,\mathrm{nm}\) beleuchtet. Unter welchem Winkel liegt das Maximum 1. Ordnung? Prüfe, ob die Kleinwinkelnäherung hier noch vertretbar ist.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\alpha_1\approx3{,}44^\circ\). Näherung noch brauchbar.</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 6</div>Erkläre in eigenen Worten, warum am \(k\)-ten Hauptmaximum konstruktive Interferenz auftritt. Welchen Gangunterschied \(\Delta s\) haben benachbarte Strahlen im 3. Maximum bei \(\lambda=500\,\mathrm{nm}\)?<div class="control"><strong>Kontrolle:</strong> \(\Delta s=k\lambda=1500\,\mathrm{nm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 6</div>Erkläre in eigenen Worten, warum am \(k\)-ten Hauptmaximum konstruktive Interferenz auftritt. Welchen Gangunterschied \(\Delta s\) haben benachbarte Strahlen im 3. Maximum bei \(\lambda=500\,\mathrm{nm}\)?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\Delta s=k\lambda=1500\,\mathrm{nm}\)</div>
+        </details></div>
       </div>
 
       <div class="cluster">
         <h3>Cluster 2: Erweiterte Anwendung</h3>
         <p>Jetzt wird \(d\) klein und die Winkel werden groß. Achte darauf, wann du exakt über arcsin und tan rechnen musst.</p>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Ein Gitter mit 600 Linien pro Millimeter wird mit rotem Licht der Wellenlänge \(\lambda=633\,\mathrm{nm}\) beleuchtet. Berechne den exakten Beugungswinkel des Maximums 1. Ordnung.<div class="control"><strong>Kontrolle:</strong> \(\alpha_1\approx22{,}3^\circ\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Ein Gitter mit 600 Linien pro Millimeter wird mit rotem Licht der Wellenlänge \(\lambda=633\,\mathrm{nm}\) beleuchtet. Berechne den exakten Beugungswinkel des Maximums 1. Ordnung.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\alpha_1\approx22{,}3^\circ\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>Beim Gitter aus Aufgabe 1 steht der Schirm in \(L=1{,}5\,\mathrm{m}\) Abstand. Berechne die Position \(x\) des 1. Maximums erst exakt über \(\displaystyle x=L\tan\alpha\) und dann näherungsweise über \(x_1=\lambda L/d\). Wie groß ist die prozentuale Abweichung bezogen auf den exakten Wert?<div class="control"><strong>Kontrolle:</strong> exakt \(\approx61{,}6\,\mathrm{cm}\); näherungsweise \(\approx57{,}0\,\mathrm{cm}\); Abweichung \(\approx7{,}5\,\%\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>Beim Gitter aus Aufgabe 1 steht der Schirm in \(L=1{,}5\,\mathrm{m}\) Abstand. Berechne die Position \(x\) des 1. Maximums erst exakt über \(\displaystyle x=L\tan\alpha\) und dann näherungsweise über \(x_1=\lambda L/d\). Wie groß ist die prozentuale Abweichung bezogen auf den exakten Wert?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> exakt \(\approx61{,}6\,\mathrm{cm}\); näherungsweise \(\approx57{,}0\,\mathrm{cm}\); Abweichung \(\approx7{,}5\,\%\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Wie viele Hauptmaxima liefert ein Gitter mit 600 Linien pro Millimeter bei grünem Licht mit \(\lambda=532\,\mathrm{nm}\), wenn das nullte Maximum mitgezählt wird?<div class="control"><strong>Kontrolle:</strong> \(k_{\max}=3\), also 7 Maxima</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Wie viele Hauptmaxima liefert ein Gitter mit 600 Linien pro Millimeter bei grünem Licht mit \(\lambda=532\,\mathrm{nm}\), wenn das nullte Maximum mitgezählt wird?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(k_{\max}=3\), also 7 Maxima</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>An einem Gitter mit 600 Linien pro Millimeter erscheint eine Spektrallinie in 2. Ordnung unter dem Winkel \(\alpha=44{,}0^\circ\). Welche Wellenlänge hat sie? Ordne sie einer Linie der Quecksilberlampe zu.<div class="control"><strong>Kontrolle:</strong> \(\lambda\approx579\,\mathrm{nm}\). Gelbe Hg-Linie.</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>An einem Gitter mit 600 Linien pro Millimeter erscheint eine Spektrallinie in 2. Ordnung unter dem Winkel \(\alpha=44{,}0^\circ\). Welche Wellenlänge hat sie? Ordne sie einer Linie der Quecksilberlampe zu.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\lambda\approx579\,\mathrm{nm}\). Gelbe Hg-Linie.</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Ein Gitter mit 300 Linien pro Millimeter wird mit grünem Hg-Licht der Wellenlänge \(\lambda=546{,}1\,\mathrm{nm}\) beleuchtet. Berechne die Winkel aller sichtbaren Ordnungen auf einer Seite des Zentralmaximums. Begründe, warum die Maxima auf dem Schirm nicht gleichabständig liegen.<div class="control"><strong>Kontrolle:</strong> \(9{,}4^\circ\) | \(19{,}1^\circ\) | \(29{,}4^\circ\) | \(40{,}9^\circ\) | \(55{,}0^\circ\) | \(79{,}4^\circ\), \(k_{\max}=6\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Ein Gitter mit 300 Linien pro Millimeter wird mit grünem Hg-Licht der Wellenlänge \(\lambda=546{,}1\,\mathrm{nm}\) beleuchtet. Berechne die Winkel aller sichtbaren Ordnungen auf einer Seite des Zentralmaximums. Begründe, warum die Maxima auf dem Schirm nicht gleichabständig liegen.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(9{,}4^\circ\) | \(19{,}1^\circ\) | \(29{,}4^\circ\) | \(40{,}9^\circ\) | \(55{,}0^\circ\) | \(79{,}4^\circ\), \(k_{\max}=6\)</div>
+        </details></div>
       </div>
 
       <div class="cluster">
         <h3>Cluster 3: Mehrstufige Aufgaben und Elektronenbeugung</h3>
         <p>Mehrere Schritte, kombinierte Größen und der Übergang zur Materiewelle. Bei Elektronen zuerst die de-Broglie-Wellenlänge bestimmen.</p>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Berechne für ein Gitter mit 600 Linien pro Millimeter bei \(\lambda=633\,\mathrm{nm}\) und \(L=1{,}5\,\mathrm{m}\) die Schirmpositionen aller Hauptmaxima auf einer Seite des Zentralmaximums. Bestimme die Abstände benachbarter Maxima und zeige, dass sie nach außen zunehmen.<div class="control"><strong>Kontrolle:</strong> \(x_0=0\); \(x_1\approx61{,}6\,\mathrm{cm}\); \(x_2\approx175{,}2\,\mathrm{cm}\). Abstände \(61{,}6\,\mathrm{cm}\) und \(113{,}6\,\mathrm{cm}\).</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Berechne für ein Gitter mit 600 Linien pro Millimeter bei \(\lambda=633\,\mathrm{nm}\) und \(L=1{,}5\,\mathrm{m}\) die Schirmpositionen aller Hauptmaxima auf einer Seite des Zentralmaximums. Bestimme die Abstände benachbarter Maxima und zeige, dass sie nach außen zunehmen.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(x_0=0\); \(x_1\approx61{,}6\,\mathrm{cm}\); \(x_2\approx175{,}2\,\mathrm{cm}\). Abstände \(61{,}6\,\mathrm{cm}\) und \(113{,}6\,\mathrm{cm}\).</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>Elektronen werden mit der Spannung \(U=100\,\mathrm{V}\) beschleunigt. Berechne ihre de-Broglie-Wellenlänge. Leite außerdem die Faustformel \(\lambda\approx1{,}226\,\mathrm{nm}/\sqrt{U[\mathrm{V}]}\) her und vergleiche.<div class="control"><strong>Kontrolle:</strong> \(\lambda\approx123\,\mathrm{pm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>Elektronen werden mit der Spannung \(U=100\,\mathrm{V}\) beschleunigt. Berechne ihre de-Broglie-Wellenlänge. Leite außerdem die Faustformel \(\lambda\approx1{,}226\,\mathrm{nm}/\sqrt{U[\mathrm{V}]}\) her und vergleiche.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\lambda\approx123\,\mathrm{pm}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Die Elektronen aus Aufgabe 2 treffen auf einen Doppelspalt mit \(d=500\,\mathrm{nm}\). Der Detektorschirm steht in \(L=1{,}0\,\mathrm{m}\) Abstand. Berechne den Abstand benachbarter Maxima. Begründe, warum die Kleinwinkelnäherung hier zulässig ist, obwohl sie beim optischen Gitter oft unzulässig ist.<div class="control"><strong>Kontrolle:</strong> \(\Delta x\approx0{,}25\,\mathrm{mm}\); \(\sin\alpha_1\approx2{,}5\cdot10^{-4}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Die Elektronen aus Aufgabe 2 treffen auf einen Doppelspalt mit \(d=500\,\mathrm{nm}\). Der Detektorschirm steht in \(L=1{,}0\,\mathrm{m}\) Abstand. Berechne den Abstand benachbarter Maxima. Begründe, warum die Kleinwinkelnäherung hier zulässig ist, obwohl sie beim optischen Gitter oft unzulässig ist.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\Delta x\approx0{,}25\,\mathrm{mm}\); \(\sin\alpha_1\approx2{,}5\cdot10^{-4}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>In einem Elektronen-Doppelspaltversuch mit \(d=500\,\mathrm{nm}\) und \(L=1{,}0\,\mathrm{m}\) misst man einen Streifenabstand von \(0{,}246\,\mathrm{mm}\). Bestimme zuerst die de-Broglie-Wellenlänge und daraus die Beschleunigungsspannung der Elektronen.<div class="control"><strong>Kontrolle:</strong> \(\lambda\approx123\,\mathrm{pm}\); \(U\approx100\,\mathrm{V}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>In einem Elektronen-Doppelspaltversuch mit \(d=500\,\mathrm{nm}\) und \(L=1{,}0\,\mathrm{m}\) misst man einen Streifenabstand von \(0{,}246\,\mathrm{mm}\). Bestimme zuerst die de-Broglie-Wellenlänge und daraus die Beschleunigungsspannung der Elektronen.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(\lambda\approx123\,\mathrm{pm}\); \(U\approx100\,\mathrm{V}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Welche Beschleunigungsspannung wäre nötig, damit Elektronen dieselbe Wellenlänge wie grünes Hg-Licht mit \(\lambda=546{,}1\,\mathrm{nm}\) hätten? Interpretiere das überraschend kleine Ergebnis.<div class="control"><strong>Kontrolle:</strong> \(U\approx5{,}0\,\mu\mathrm{V}\). Solche Elektronen wären extrem langsam.</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 5</div>Welche Beschleunigungsspannung wäre nötig, damit Elektronen dieselbe Wellenlänge wie grünes Hg-Licht mit \(\lambda=546{,}1\,\mathrm{nm}\) hätten? Interpretiere das überraschend kleine Ergebnis.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(U\approx5{,}0\,\mu\mathrm{V}\). Solche Elektronen wären extrem langsam.</div>
+        </details></div>
       </div>
 
       <div class="cluster">
@@ -942,13 +1081,25 @@ margin:0;
         <p>Hier werden verschiedene Farben und verschiedene Ordnungen miteinander verglichen. Wichtig ist oft das Produkt \(k\lambda\).</p>
         <a class="video-link" href="https://www.youtube.com/watch?v=bjE9R3YEfyQ" target="_blank" rel="noopener"><i data-lucide="play-circle" class="icon-inline"></i>Video: Interferenz am Gitter mit weißem Licht <span>Passend zu Spektren höherer Ordnung und zur Überlappung bei Weißlicht.</span></a>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Eine Quecksilberlampe mit den Linien violett \(404{,}7\,\mathrm{nm}\), blau \(435{,}8\,\mathrm{nm}\), grün \(546{,}1\,\mathrm{nm}\), gelb \(577{,}0\,\mathrm{nm}\) und \(579{,}1\,\mathrm{nm}\) beleuchtet ein Gitter mit 300 Linien pro Millimeter. Der Schirm steht in \(L=1{,}2\,\mathrm{m}\) Abstand. Untersuche, ob die grüne Linie in 4. Ordnung und die blaue Linie in 5. Ordnung praktisch am selben Ort erscheinen. Berechne beide Beugungswinkel und den verbleibenden Abstand auf dem Schirm. Prüfe vorher, ob beide Ordnungen überhaupt auftreten.<div class="control"><strong>Kontrolle:</strong> grün \(k=4\): \(\alpha\approx40{,}94^\circ\); blau \(k=5\): \(\alpha\approx40{,}82^\circ\); \(\Delta x\approx4{,}5\,\mathrm{mm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 1</div>Eine Quecksilberlampe mit den Linien violett \(404{,}7\,\mathrm{nm}\), blau \(435{,}8\,\mathrm{nm}\), grün \(546{,}1\,\mathrm{nm}\), gelb \(577{,}0\,\mathrm{nm}\) und \(579{,}1\,\mathrm{nm}\) beleuchtet ein Gitter mit 300 Linien pro Millimeter. Der Schirm steht in \(L=1{,}2\,\mathrm{m}\) Abstand. Untersuche, ob die grüne Linie in 4. Ordnung und die blaue Linie in 5. Ordnung praktisch am selben Ort erscheinen. Berechne beide Beugungswinkel und den verbleibenden Abstand auf dem Schirm. Prüfe vorher, ob beide Ordnungen überhaupt auftreten.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> grün \(k=4\): \(\alpha\approx40{,}94^\circ\); blau \(k=5\): \(\alpha\approx40{,}82^\circ\); \(\Delta x\approx4{,}5\,\mathrm{mm}\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>An einer Stelle des Schirms fallen eine grüne und eine blaue Hg-Linie nahezu zusammen. Ohne die Geometrie zu kennen: Bestimme allein aus den Wellenlängen \(546{,}1\,\mathrm{nm}\) und \(435{,}8\,\mathrm{nm}\) das Verhältnis der beteiligten Ordnungen. Welche kleinsten ganzzahligen Ordnungen kommen in Frage?<div class="control"><strong>Kontrolle:</strong> \(k_{\mathrm{gr}}/k_{\mathrm{bl}}=\lambda_{\mathrm{bl}}/\lambda_{\mathrm{gr}}\approx0{,}798\approx4/5\), also \(k_{\mathrm{gr}}=4\) und \(k_{\mathrm{bl}}=5\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 2</div>An einer Stelle des Schirms fallen eine grüne und eine blaue Hg-Linie nahezu zusammen. Ohne die Geometrie zu kennen: Bestimme allein aus den Wellenlängen \(546{,}1\,\mathrm{nm}\) und \(435{,}8\,\mathrm{nm}\) das Verhältnis der beteiligten Ordnungen. Welche kleinsten ganzzahligen Ordnungen kommen in Frage?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(k_{\mathrm{gr}}/k_{\mathrm{bl}}=\lambda_{\mathrm{bl}}/\lambda_{\mathrm{gr}}\approx0{,}798\approx4/5\), also \(k_{\mathrm{gr}}=4\) und \(k_{\mathrm{bl}}=5\)</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Ein Gitter zerlegt weißes Licht von \(400\,\mathrm{nm}\) bis \(700\,\mathrm{nm}\). Zeige durch Rechnung, dass sich das Spektrum 3. Ordnung mit dem Spektrum 2. Ordnung überlappt. Gib an, welcher Wellenlängenbereich der 3. Ordnung mit der 2. Ordnung überlappt.<div class="control"><strong>Kontrolle:</strong> Die 3. Ordnung überlappt mit der 2. Ordnung im Bereich von etwa \(400\,\mathrm{nm}\) bis \(467\,\mathrm{nm}\).</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 3</div>Ein Gitter zerlegt weißes Licht von \(400\,\mathrm{nm}\) bis \(700\,\mathrm{nm}\). Zeige durch Rechnung, dass sich das Spektrum 3. Ordnung mit dem Spektrum 2. Ordnung überlappt. Gib an, welcher Wellenlängenbereich der 3. Ordnung mit der 2. Ordnung überlappt.<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> Die 3. Ordnung überlappt mit der 2. Ordnung im Bereich von etwa \(400\,\mathrm{nm}\) bis \(467\,\mathrm{nm}\).</div>
+        </details></div>
 
-        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>Die gelbe Natrium-Doppellinie besteht aus \(589{,}0\,\mathrm{nm}\) und \(589{,}6\,\mathrm{nm}\). Mit dem Auflösungsvermögen \(R=\lambda/\Delta\lambda=kN\) und \(N\) als Zahl der beleuchteten Spalte: Wie viele Spalte muss ein Gitter in 1. Ordnung mindestens beleuchten, um die beiden Linien zu trennen? Welche beleuchtete Breite entspricht das bei einem Gitter mit 600 Linien pro Millimeter?<div class="control"><strong>Kontrolle:</strong> \(R\approx982\), also \(N\approx982\) Spalte; Breite \(b\approx1{,}6\,\mathrm{mm}\)</div></div>
+        <div class="task"><div class="task-title"><i data-lucide="circle-dot" class="icon-inline"></i>Aufgabe 4</div>Die gelbe Natrium-Doppellinie besteht aus \(589{,}0\,\mathrm{nm}\) und \(589{,}6\,\mathrm{nm}\). Mit dem Auflösungsvermögen \(R=\lambda/\Delta\lambda=kN\) und \(N\) als Zahl der beleuchteten Spalte: Wie viele Spalte muss ein Gitter in 1. Ordnung mindestens beleuchten, um die beiden Linien zu trennen? Welche beleuchtete Breite entspricht das bei einem Gitter mit 600 Linien pro Millimeter?<details class="control control-hidden">
+          <summary>Endergebnis zur Kontrolle anzeigen</summary>
+          <div><strong>Kontrolle:</strong> \(R\approx982\), also \(N\approx982\) Spalte; Breite \(b\approx1{,}6\,\mathrm{mm}\)</div>
+        </details></div>
       </div>
     </section>
 
