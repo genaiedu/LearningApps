@@ -432,6 +432,23 @@ margin:0;
       margin-right:.35em;
     }
 
+
+    .diagram-img{
+      display:block;
+      width:100%;
+      max-width:1100px;
+      height:auto;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fffdf8;
+    }
+
+    @media (max-width: 900px){
+      .diagram-img{
+        min-width:720px;
+      }
+    }
+
     .table-scroll{
       width:100%;
       overflow-x:auto;
@@ -765,89 +782,12 @@ margin:0;
       <h2>Zusammenfassung im Bild</h2>
       <p class="small">Die Skizze zeigt nur die Geometrie. Sie ist nicht maßstabsgerecht.</p>
       <div class="figure-wrap">
-        <svg class="diagram" viewBox="0 0 900 520" role="img" aria-label="Skizze zur Gitterbeugung mit korrekt eingezeichnetem Gangunterschied">
-          <defs>
-            <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-              <path d="M0,0 L0,6 L9,3 z" fill="#c0392b"></path>
-            </marker>
-            <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-              <path d="M0,0 L0,6 L9,3 z" fill="#1a6fb5"></path>
-            </marker>
-            <marker id="arrow-dark" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-              <path d="M0,0 L0,6 L9,3 z" fill="#333"></path>
-            </marker>
-          </defs>
-
-          <rect x="18" y="18" width="864" height="484" rx="20" fill="#fffdf8" stroke="#e0d3bd"></rect>
-
-          <!-- Gitter -->
-          <line x1="135" y1="70" x2="135" y2="265" stroke="#333" stroke-width="5"></line>
-          <line x1="118" y1="115" x2="152" y2="115" stroke="#fffdf8" stroke-width="9"></line>
-          <line x1="118" y1="175" x2="152" y2="175" stroke="#fffdf8" stroke-width="9"></line>
-          <line x1="118" y1="235" x2="152" y2="235" stroke="#fffdf8" stroke-width="9"></line>
-          <text x="92" y="58" font-size="18" fill="#333">Gitter</text>
-
-          <!-- Zentralstrahl und gebeugter Strahl -->
-          <line x1="135" y1="175" x2="800" y2="175" stroke="#1a6fb5" stroke-width="3" marker-end="url(#arrow-blue)"></line>
-          <line x1="135" y1="175" x2="795" y2="87" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
-          <text x="810" y="180" font-size="17" fill="#1a6fb5">0. Ordnung</text>
-          <text x="805" y="88" font-size="17" fill="#c0392b">1. Ordnung</text>
-
-          <!-- Winkel alpha am gemeinsamen Ursprung -->
-          <path d="M190 175 A55 55 0 0 1 189 168" fill="none" stroke="#333" stroke-width="2"></path>
-          <text x="202" y="166" font-size="20" fill="#333">α</text>
-
-          <!-- Schirm -->
-          <line x1="820" y1="55" x2="820" y2="285" stroke="#555" stroke-width="4"></line>
-          <text x="792" y="310" font-size="18" fill="#333">Schirm</text>
-
-          <!-- Abstand L -->
-          <line x1="135" y1="292" x2="820" y2="292" stroke="#555" stroke-width="2" marker-start="url(#arrow-dark)" marker-end="url(#arrow-dark)"></line>
-          <text x="468" y="322" font-size="20" fill="#333">L</text>
-
-          <!-- Abstand x -->
-          <line x1="845" y1="175" x2="845" y2="87" stroke="#555" stroke-width="2" marker-start="url(#arrow-dark)" marker-end="url(#arrow-dark)"></line>
-          <text x="857" y="135" font-size="20" fill="#333">x</text>
-
-          <!-- Detailzeichnung Gangunterschied -->
-          <g transform="translate(78,350)">
-            <text x="0" y="-16" font-size="18" fill="#333">Detail: Gangunterschied benachbarter Spalte</text>
-
-            <!-- zwei parallele Strahlen in Richtung des Maximums -->
-            <line x1="112" y1="52" x2="350" y2="2" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
-            <line x1="112" y1="132" x2="350" y2="82" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
-            <text x="362" y="7" font-size="16" fill="#c0392b">Richtung zum Maximum</text>
-
-            <!-- benachbarte Spalte -->
-            <circle cx="112" cy="52" r="5" fill="#333"></circle>
-            <circle cx="112" cy="132" r="5" fill="#333"></circle>
-
-            <!-- d als Hypotenuse -->
-            <line x1="112" y1="52" x2="112" y2="132" stroke="#333" stroke-width="3"></line>
-            <text x="82" y="96" font-size="22" fill="#333">d</text>
-
-            <!-- Projektion: vom oberen Spalt senkrecht auf den unteren Strahl -->
-            <!-- Schnittpunkt der Senkrechten durch oberen Spalt mit unterem Strahl: P ≈ (127.7,128.7) -->
-            <line x1="112" y1="52" x2="127.7" y2="128.7" stroke="#f59e0b" stroke-width="3"></line>
-
-            <!-- Delta s ist die Kathete parallel zur Ausbreitungsrichtung -->
-            <line x1="112" y1="132" x2="127.7" y2="128.7" stroke="#1a6fb5" stroke-width="5"></line>
-            <text x="121" y="151" font-size="20" fill="#1a6fb5">Δs</text>
-
-            <!-- rechter Winkel am Projektionspunkt -->
-            <path d="M122.9 124.5 L131.0 122.8 L132.8 130.9" fill="none" stroke="#333" stroke-width="1.8"></path>
-
-            <!-- alpha am oberen Spalt zwischen d und senkrechter Kathete; gleich groß zum Beugungswinkel -->
-            <path d="M112 78 A26 26 0 0 0 117.1 77.5" fill="none" stroke="#333" stroke-width="1.8"></path>
-            <text x="121" y="71" font-size="18" fill="#333">α</text>
-
-            <text x="420" y="45" font-size="17" fill="#333">Rechtwinkliges Dreieck:</text>
-            <text x="420" y="70" font-size="17" fill="#333">d ist die Hypotenuse.</text>
-            <text x="420" y="95" font-size="17" fill="#333">Δs liegt parallel zur Ausbreitungsrichtung.</text>
-            <text x="420" y="120" font-size="17" fill="#333">Δs ist die Gegenkathete zu α.</text>
-            <text x="420" y="145" font-size="17" fill="#333">Daher gilt: Δs = d · sin(α)</text>
-          </g>
-        </svg>
+        <img
+          class="diagram diagram-img"
+          src="gitterbeugung_gangunterschied_dreieck.png"
+          alt="Gitterbeugung: Gangunterschied als rechtwinkliges Dreieck mit d als Hypotenuse und Δs als Kathete"
+          loading="lazy"
+        >
       </div>
     </section>
 
