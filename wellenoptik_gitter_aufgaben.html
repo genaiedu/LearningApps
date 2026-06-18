@@ -765,99 +765,88 @@ margin:0;
       <h2>Zusammenfassung im Bild</h2>
       <p class="small">Die Skizze zeigt nur die Geometrie. Sie ist nicht maßstabsgerecht.</p>
       <div class="figure-wrap">
-        <svg class="diagram" viewBox="0 0 980 560" role="img" aria-label="Schematische Darstellung von Beugung am optischen Gitter">
+        <svg class="diagram" viewBox="0 0 900 520" role="img" aria-label="Skizze zur Gitterbeugung mit korrekt eingezeichnetem Gangunterschied">
           <defs>
-            <marker id="arrBlue" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
-              <path d="M0,0 L0,8 L11,4 z" fill="#00549f"></path>
+            <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#c0392b"></path>
             </marker>
-            <marker id="arrRed" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
-              <path d="M0,0 L0,8 L11,4 z" fill="#aa2828"></path>
+            <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#1a6fb5"></path>
             </marker>
-            <marker id="arrGray" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
-              <path d="M0,0 L0,8 L11,4 z" fill="#555"></path>
+            <marker id="arrow-dark" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#333"></path>
             </marker>
-            <style>
-              .lbl{font: 18px Arial, sans-serif; fill:#1d1d1f}
-              .lbls{font: 15px Arial, sans-serif; fill:#1d1d1f}
-              .blue{fill:#00549f}
-              .red{fill:#aa2828}
-              .gray{fill:#555}
-            </style>
           </defs>
 
-          <rect x="0" y="0" width="980" height="560" fill="#fff"></rect>
+          <rect x="18" y="18" width="864" height="484" rx="20" fill="#fffdf8" stroke="#e0d3bd"></rect>
 
-          <!-- incoming wavefronts -->
-          <g stroke="#6da0d3" stroke-width="2">
-            <line x1="70" y1="108" x2="70" y2="278"></line>
-            <line x1="105" y1="108" x2="105" y2="278"></line>
-            <line x1="140" y1="108" x2="140" y2="278"></line>
+          <!-- Gitter -->
+          <line x1="135" y1="70" x2="135" y2="265" stroke="#333" stroke-width="5"></line>
+          <line x1="118" y1="115" x2="152" y2="115" stroke="#fffdf8" stroke-width="9"></line>
+          <line x1="118" y1="175" x2="152" y2="175" stroke="#fffdf8" stroke-width="9"></line>
+          <line x1="118" y1="235" x2="152" y2="235" stroke="#fffdf8" stroke-width="9"></line>
+          <text x="92" y="58" font-size="18" fill="#333">Gitter</text>
+
+          <!-- Zentralstrahl und gebeugter Strahl -->
+          <line x1="135" y1="175" x2="800" y2="175" stroke="#1a6fb5" stroke-width="3" marker-end="url(#arrow-blue)"></line>
+          <line x1="135" y1="175" x2="795" y2="87" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
+          <text x="810" y="180" font-size="17" fill="#1a6fb5">0. Ordnung</text>
+          <text x="805" y="88" font-size="17" fill="#c0392b">1. Ordnung</text>
+
+          <!-- Winkel alpha am gemeinsamen Ursprung -->
+          <path d="M190 175 A55 55 0 0 1 189 168" fill="none" stroke="#333" stroke-width="2"></path>
+          <text x="202" y="166" font-size="20" fill="#333">α</text>
+
+          <!-- Schirm -->
+          <line x1="820" y1="55" x2="820" y2="285" stroke="#555" stroke-width="4"></line>
+          <text x="792" y="310" font-size="18" fill="#333">Schirm</text>
+
+          <!-- Abstand L -->
+          <line x1="135" y1="292" x2="820" y2="292" stroke="#555" stroke-width="2" marker-start="url(#arrow-dark)" marker-end="url(#arrow-dark)"></line>
+          <text x="468" y="322" font-size="20" fill="#333">L</text>
+
+          <!-- Abstand x -->
+          <line x1="845" y1="175" x2="845" y2="87" stroke="#555" stroke-width="2" marker-start="url(#arrow-dark)" marker-end="url(#arrow-dark)"></line>
+          <text x="857" y="135" font-size="20" fill="#333">x</text>
+
+          <!-- Detailzeichnung Gangunterschied -->
+          <g transform="translate(78,350)">
+            <text x="0" y="-16" font-size="18" fill="#333">Detail: Gangunterschied benachbarter Spalte</text>
+
+            <!-- zwei parallele Strahlen in Richtung des Maximums -->
+            <line x1="112" y1="52" x2="350" y2="2" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
+            <line x1="112" y1="132" x2="350" y2="82" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow-red)"></line>
+            <text x="362" y="7" font-size="16" fill="#c0392b">Richtung zum Maximum</text>
+
+            <!-- benachbarte Spalte -->
+            <circle cx="112" cy="52" r="5" fill="#333"></circle>
+            <circle cx="112" cy="132" r="5" fill="#333"></circle>
+
+            <!-- d als Hypotenuse -->
+            <line x1="112" y1="52" x2="112" y2="132" stroke="#333" stroke-width="3"></line>
+            <text x="82" y="96" font-size="22" fill="#333">d</text>
+
+            <!-- Projektion: vom oberen Spalt senkrecht auf den unteren Strahl -->
+            <!-- Schnittpunkt der Senkrechten durch oberen Spalt mit unterem Strahl: P ≈ (127.7,128.7) -->
+            <line x1="112" y1="52" x2="127.7" y2="128.7" stroke="#f59e0b" stroke-width="3"></line>
+
+            <!-- Delta s ist die Kathete parallel zur Ausbreitungsrichtung -->
+            <line x1="112" y1="132" x2="127.7" y2="128.7" stroke="#1a6fb5" stroke-width="5"></line>
+            <text x="121" y="151" font-size="20" fill="#1a6fb5">Δs</text>
+
+            <!-- rechter Winkel am Projektionspunkt -->
+            <path d="M122.9 124.5 L131.0 122.8 L132.8 130.9" fill="none" stroke="#333" stroke-width="1.8"></path>
+
+            <!-- alpha am oberen Spalt zwischen d und senkrechter Kathete; gleich groß zum Beugungswinkel -->
+            <path d="M112 78 A26 26 0 0 0 117.1 77.5" fill="none" stroke="#333" stroke-width="1.8"></path>
+            <text x="121" y="71" font-size="18" fill="#333">α</text>
+
+            <text x="420" y="45" font-size="17" fill="#333">Rechtwinkliges Dreieck:</text>
+            <text x="420" y="70" font-size="17" fill="#333">d ist die Hypotenuse.</text>
+            <text x="420" y="95" font-size="17" fill="#333">Δs liegt parallel zur Ausbreitungsrichtung.</text>
+            <text x="420" y="120" font-size="17" fill="#333">Δs ist die Gegenkathete zu α.</text>
+            <text x="420" y="145" font-size="17" fill="#333">Daher gilt: Δs = d · sin(α)</text>
           </g>
-          <line x1="45" y1="70" x2="160" y2="70" stroke="#00549f" stroke-width="5" marker-end="url(#arrBlue)"></line>
-          <text x="45" y="48" class="lbl blue">einfallendes Licht</text>
-
-          <!-- grating -->
-          <rect x="210" y="96" width="30" height="210" fill="#dadada"></rect>
-          <g fill="#fff">
-            <rect x="210" y="110" width="30" height="13"></rect>
-            <rect x="210" y="145" width="30" height="13"></rect>
-            <rect x="210" y="180" width="30" height="13"></rect>
-            <rect x="210" y="215" width="30" height="13"></rect>
-            <rect x="210" y="250" width="30" height="13"></rect>
-            <rect x="210" y="285" width="30" height="13"></rect>
-          </g>
-          <text x="185" y="91" class="lbl">Gitter</text>
-          <text x="165" y="326" class="lbls">viele Spalte im Abstand d</text>
-
-          <!-- screen -->
-          <line x1="790" y1="65" x2="790" y2="355" stroke="#555" stroke-width="6"></line>
-          <text x="804" y="55" class="lbl gray">Schirm</text>
-
-          <!-- rays -->
-          <line x1="240" y1="215" x2="790" y2="215" stroke="#555" stroke-width="3" marker-end="url(#arrGray)"></line>
-          <text x="510" y="203" class="lbl gray">0. Ordnung, k=0</text>
-
-          <line x1="240" y1="215" x2="790" y2="95" stroke="#aa2828" stroke-width="4" marker-end="url(#arrRed)"></line>
-          <text x="565" y="126" class="lbl red">1. Ordnung, k=1</text>
-
-          <!-- angle: centered exactly at the grating point, between k=0 and k=1 -->
-          <path d="M330 215 A90 90 0 0 0 327.9 195.4" fill="none" stroke="#1d1d1f" stroke-width="3"></path>
-          <rect x="327" y="197" width="28" height="28" fill="#fff" opacity="0.92"></rect>
-          <text x="334" y="218" class="lbl">α</text>
-
-          <!-- x and L -->
-          <line x1="240" y1="390" x2="790" y2="390" stroke="#555" stroke-width="2"></line>
-          <line x1="240" y1="382" x2="240" y2="398" stroke="#555" stroke-width="2"></line>
-          <line x1="790" y1="382" x2="790" y2="398" stroke="#555" stroke-width="2"></line>
-          <text x="488" y="420" class="lbl">Abstand L</text>
-
-          <line x1="830" y1="215" x2="830" y2="95" stroke="#aa2828" stroke-width="3"></line>
-          <line x1="820" y1="215" x2="840" y2="215" stroke="#aa2828" stroke-width="3"></line>
-          <line x1="820" y1="95" x2="840" y2="95" stroke="#aa2828" stroke-width="3"></line>
-          <text x="848" y="158" class="lbl red">x = L·tan(α)</text>
-
-          <!-- lower detail: gang difference, separated from arrows and labels -->
-          <g transform="translate(58,440)">
-            <circle cx="70" cy="28" r="5" fill="#1d1d1f"></circle>
-            <circle cx="70" cy="98" r="5" fill="#1d1d1f"></circle>
-
-            <!-- spacing d -->
-            <line x1="42" y1="28" x2="42" y2="98" stroke="#555" stroke-width="3"></line>
-            <line x1="30" y1="28" x2="54" y2="28" stroke="#555" stroke-width="3"></line>
-            <line x1="30" y1="98" x2="54" y2="98" stroke="#555" stroke-width="3"></line>
-            <text x="12" y="69" class="lbl">d</text>
-
-            <!-- two parallel outgoing rays -->
-            <line x1="70" y1="28" x2="350" y2="-12" stroke="#aa2828" stroke-width="4" marker-end="url(#arrRed)"></line>
-            <line x1="70" y1="98" x2="350" y2="58" stroke="#aa2828" stroke-width="4" marker-end="url(#arrRed)"></line>
-
-            <!-- projection / path difference drawn below the lower ray -->
-            <line x1="70" y1="118" x2="190" y2="101" stroke="#00549f" stroke-width="4"></line>
-            <text x="205" y="108" class="lbl blue">Δs = d·sin(α)</text>
-          </g>
-
-          <text x="520" y="486" class="lbl">Konstruktive Interferenz:</text>
-          <text x="520" y="515" class="lbl">Δs = k·λ</text>
         </svg>
       </div>
     </section>
