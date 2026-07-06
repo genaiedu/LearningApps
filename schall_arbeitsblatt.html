@@ -872,6 +872,16 @@ async function startMic(){
   drawMicLoop();
 }
 
+function findTriggerIndex(dataArray, drawLength){
+  const searchLimit = dataArray.length - drawLength;
+  for (let i = 1; i < searchLimit; i++){
+    if (dataArray[i - 1] < 128 && dataArray[i] >= 128){
+      return i;
+    }
+  }
+  return 0; // kein eindeutiger Nulldurchgang gefunden -> von vorne zeichnen
+}
+
 function drawMicLoop(){
   if (!micAnalyser) return;
   const bufferLength = micAnalyser.fftSize;
@@ -891,17 +901,30 @@ function drawMicLoop(){
     const w = micCanvas.width, h = micCanvas.height;
     micCtx2d.clearRect(0, 0, w, h);
     const isDark = document.body.classList.contains('dark');
+
+    // Trigger: nur die Hälfte des Puffers zum Zeichnen nutzen, damit genug Raum für die Suche bleibt
+    const drawLength = Math.floor(bufferLength / 2);
+    const triggerIndex = findTriggerIndex(dataArray, drawLength);
+
     micCtx2d.strokeStyle = isDark ? '#38bdf8' : '#1a6fb5';
     micCtx2d.lineWidth = 2;
     micCtx2d.beginPath();
-    const sliceWidth = w / bufferLength;
+    const sliceWidth = w / drawLength;
     let x = 0;
-    for (let i = 0; i < bufferLength; i++){
-      const v = dataArray[i] / 128.0;
+    for (let i = 0; i < drawLength; i++){
+      const v = dataArray[triggerIndex + i] / 128.0;
       const y = (v * h) / 2;
       if (i === 0) micCtx2d.moveTo(x, y); else micCtx2d.lineTo(x, y);
       x += sliceWidth;
     }
+    micCtx2d.stroke();
+
+    // Mittellinie zur Orientierung
+    micCtx2d.strokeStyle = isDark ? 'rgba(255,255,255,.15)' : 'rgba(0,0,0,.1)';
+    micCtx2d.lineWidth = 1;
+    micCtx2d.beginPath();
+    micCtx2d.moveTo(0, h / 2);
+    micCtx2d.lineTo(w, h / 2);
     micCtx2d.stroke();
   }
 
