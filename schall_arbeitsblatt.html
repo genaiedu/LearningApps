@@ -198,6 +198,17 @@ body.dark canvas#micCanvas{ background:#0b1120; }
 .audio-note{ font-size:.85rem; color:var(--text-muted); }
 .mic-error{ color:var(--wrong); font-weight:600; margin:10px 0; min-height:1.3em; }
 
+.partner-hinweis{
+  border-left:4px solid var(--accent); background:rgba(245,158,11,.12); border-radius:0 12px 12px 0;
+  padding:16px 20px; margin:16px 0; display:flex; gap:12px; align-items:flex-start;
+}
+.partner-hinweis i{ flex-shrink:0; margin-top:2px; color:var(--accent); }
+.distance-table{ width:100%; border-collapse:collapse; margin:14px 0; font-size:.9rem; }
+.distance-table th, .distance-table td{ border-bottom:1px solid var(--glass-border); padding:8px 10px; text-align:left; }
+canvas#distanceChart{ width:100%; height:280px; border-radius:12px; background:#fff; box-shadow:var(--shadow); margin:10px 0; }
+body.dark canvas#distanceChart{ background:#0b1120; }
+#distance-task-status{ font-size:1.02rem; }
+
 /* ============ Rechenaufgaben ============ */
 .task-item{ border-top:1px solid var(--glass-border); padding-top:18px; margin-top:18px; }
 .task-item:first-child{ border-top:none; padding-top:0; margin-top:0; }
@@ -540,6 +551,36 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
         <p style="margin-bottom:10px;">Hier siehst du die echte Schallwelle deiner Stimme – vergleiche sie mit der Simulation weiter oben.</p>
         <canvas id="micCanvas" width="800" height="200"></canvas>
       </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:10px;">Partneraufgabe: Lautstärke und Entfernung</h4>
+        <div class="partner-hinweis">
+          <i data-lucide="users"></i>
+          <div>Diese Aufgabe machst du <strong>zu zweit</strong>: Eine Person bedient das Gerät und startet jede Messung, die andere Person klatscht im jeweils angesagten Abstand <strong>immer möglichst gleich laut</strong> einmal kräftig in die Hände.</div>
+        </div>
+        <p>Ihr messt die Lautstärke des Klatschens bei fünf Abständen zum Gerät, die sich jedes Mal verdoppeln: 20 cm, 40 cm, 80 cm, 160 cm und 320 cm. Klickt bei jedem Abstand auf „Messen", wartet kurz auf das Startsignal und klatscht dann einmal.</p>
+
+        <div id="distance-task-status"></div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin:14px 0;">
+          <button class="btn-primary" id="distanceMeasureBtn" onclick="startDistanceMeasurement()">Messen</button>
+          <button class="btn-secondary" onclick="resetDistanceTask()">Neu starten</button>
+        </div>
+
+        <div id="distance-table-wrap" style="display:none; overflow-x:auto;">
+          <table class="distance-table">
+            <thead>
+              <tr>
+                <th>Abstand</th>
+                <th>Gemessener Pegel (relativ)</th>
+                <th>Idealwert (relativ)</th>
+              </tr>
+            </thead>
+            <tbody id="distance-table-body"></tbody>
+          </table>
+        </div>
+        <canvas id="distanceChart" width="800" height="280" style="display:none;"></canvas>
+        <div id="distance-summary"></div>
+      </div>
     </section>
 
     <!-- 7. Ultraschall -->
@@ -881,6 +922,184 @@ function stopMic(){
   document.getElementById('volumeMeterBar').style.width = '0%';
   if (micCtx2d) micCtx2d.clearRect(0, 0, micCanvas.width, micCanvas.height);
 }
+
+/* ---------- Partneraufgabe: Lautstärke und Entfernung ---------- */
+const distanceSteps = [20, 40, 80, 160, 320];
+let distanceIndex = 0;
+let distanceMeasurements = [];
+let distanceBusy = false;
+
+function updateDistanceStatus(){
+  const status = document.getElementById('distance-task-status');
+  const btn = document.getElementById('distanceMeasureBtn');
+  if (distanceIndex < distanceSteps.length){
+    status.textContent = `Abstand ${distanceIndex + 1} von ${distanceSteps.length}: Stellt euch in ${distanceSteps[distanceIndex]} cm Abstand vom Gerät auf. Klickt auf „Messen" und klatscht direkt nach dem Startsignal einmal kräftig.`;
+    btn.disabled = false;
+  } else {
+    status.textContent = 'Alle Abstände gemessen! Unten seht ihr die Tabelle und das Diagramm mit dem Vergleich zu den Idealwerten.';
+    btn.disabled = true;
+  }
+}
+
+function capturePeakRMS(durationMs){
+  return new Promise(resolve => {
+    if (!micAnalyser){ resolve(0); return; }
+    let peak = 0;
+    const bufferLength = micAnalyser.fftSize;
+    const dataArray = new Uint8Array(bufferLength);
+    const startTime = performance.now();
+    function loop(){
+      micAnalyser.getByteTimeDomainData(dataArray);
+      let sumSquares = 0;
+      for (let i = 0; i < bufferLength; i++){
+        const norm = (dataArray[i] - 128) / 128;
+        sumSquares += norm * norm;
+      }
+      const rms = Math.sqrt(sumSquares / bufferLength);
+      if (rms > peak) peak = rms;
+      if (performance.now() - startTime < durationMs){
+        requestAnimationFrame(loop);
+      } else {
+        resolve(peak);
+      }
+    }
+    loop();
+  });
+}
+
+async function startDistanceMeasurement(){
+  if (distanceBusy || distanceIndex >= distanceSteps.length) return;
+  distanceBusy = true;
+  const btn = document.getElementById('distanceMeasureBtn');
+  btn.disabled = true;
+  const status = document.getElementById('distance-task-status');
+
+  if (!micStream){
+    await startMic();
+    if (!micStream){
+      distanceBusy = false;
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  status.textContent = `Bereit machen ... jetzt klatschen! (${distanceSteps[distanceIndex]} cm)`;
+  await new Promise(r => setTimeout(r, 600));
+  const peak = await capturePeakRMS(1200);
+  distanceMeasurements.push(peak);
+
+  distanceIndex++;
+  distanceBusy = false;
+  updateDistanceStatus();
+
+  if (distanceIndex === distanceSteps.length){
+    buildDistanceResults();
+  }
+}
+
+function buildDistanceResults(){
+  const ref = Math.max(distanceMeasurements[0], 0.0001);
+  const tableWrap = document.getElementById('distance-table-wrap');
+  const tbody = document.getElementById('distance-table-body');
+  tbody.innerHTML = '';
+
+  const measuredDb = [];
+  const idealDb = [];
+
+  distanceSteps.forEach((d, i) => {
+    const m = Math.max(distanceMeasurements[i], 0.0001);
+    const mDb = 20 * Math.log10(m / ref);
+    const iDb = 20 * Math.log10(distanceSteps[0] / d);
+    measuredDb.push(mDb);
+    idealDb.push(iDb);
+
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${d} cm</td><td>${mDb.toFixed(1)} dB</td><td>${iDb.toFixed(1)} dB</td>`;
+    tbody.appendChild(row);
+  });
+
+  tableWrap.style.display = 'block';
+  drawDistanceChart(measuredDb, idealDb);
+
+  document.getElementById('distance-summary').innerHTML =
+    '<p style="margin-top:14px;">Je größer der Abstand, desto leiser wird es – bei einer Verdopplung des Abstands nimmt der Pegel theoretisch um etwa 6 dB ab (Kugelwellen-Ausbreitung). Eure gemessenen Werte weichen davon vermutlich etwas ab: Nebengeräusche, Echos im Klassenraum und unterschiedlich lautes Klatschen beeinflussen die Messung.</p>';
+}
+
+function drawDistanceChart(measuredDb, idealDb){
+  const canvas = document.getElementById('distanceChart');
+  canvas.style.display = 'block';
+  canvas.width = canvas.clientWidth;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const isDark = document.body.classList.contains('dark');
+  const padding = { left: 50, right: 20, top: 26, bottom: 40 };
+  const plotW = w - padding.left - padding.right;
+  const plotH = h - padding.top - padding.bottom;
+
+  const allValues = measuredDb.concat(idealDb, [0]);
+  const minVal = Math.min(...allValues) - 2;
+  const maxVal = Math.max(...allValues) + 2;
+
+  const xPos = i => padding.left + (i / (distanceSteps.length - 1)) * plotW;
+  const yPos = val => padding.top + (1 - (val - minVal) / (maxVal - minVal)) * plotH;
+
+  ctx.strokeStyle = isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padding.left, padding.top);
+  ctx.lineTo(padding.left, h - padding.bottom);
+  ctx.lineTo(w - padding.right, h - padding.bottom);
+  ctx.stroke();
+
+  ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+  ctx.font = '12px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  distanceSteps.forEach((d, i) => { ctx.fillText(d + ' cm', xPos(i), h - padding.bottom + 18); });
+
+  function drawLine(values, color){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    values.forEach((v, i) => {
+      const x = xPos(i), y = yPos(v);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    values.forEach((v, i) => {
+      ctx.beginPath();
+      ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+  }
+
+  drawLine(idealDb, '#f59e0b');
+  drawLine(measuredDb, isDark ? '#38bdf8' : '#1a6fb5');
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = isDark ? '#38bdf8' : '#1a6fb5';
+  ctx.fillRect(padding.left, 4, 10, 10);
+  ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+  ctx.fillText('Gemessen', padding.left + 16, 13);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(padding.left + 100, 4, 10, 10);
+  ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+  ctx.fillText('Idealwert', padding.left + 116, 13);
+}
+
+function resetDistanceTask(){
+  distanceIndex = 0;
+  distanceMeasurements = [];
+  distanceBusy = false;
+  document.getElementById('distance-table-wrap').style.display = 'none';
+  document.getElementById('distanceChart').style.display = 'none';
+  document.getElementById('distance-summary').innerHTML = '';
+  updateDistanceStatus();
+}
+
+updateDistanceStatus();
 
 /* ---------- Rechenaufgaben ---------- */
 const speedTasks = [
