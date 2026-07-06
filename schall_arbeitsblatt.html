@@ -149,7 +149,7 @@ body.dark .merksatz{ background:rgba(56,189,248,.10); }
 .qa-block{ margin-bottom:12px; border-radius:10px; overflow:hidden; }
 .qa-block.open .reveal-question{ border-radius:10px 10px 0 0; }
 
-/* ============ Zuordnung (Auswahl je Begriff, Auswertung am Ende) ============ */
+/* ============ Zuordnung ============ */
 .match-row{
   border:2px solid var(--glass-border); border-radius:10px; padding:14px 16px; margin-bottom:12px;
   transition:border-color .2s, background .2s;
@@ -230,6 +230,60 @@ body.dark canvas#waveCanvas{ background:#0b1120; }
 .slider-row input[type=range]{ flex:1; accent-color:var(--primary); }
 .slider-row .val{ width:70px; text-align:right; font-weight:700; color:var(--primary); }
 
+/* ============ Audio-Labor ============ */
+.audio-controls{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:14px 0;
+}
+
+.level-meter{
+  width:100%;
+  height:28px;
+  border-radius:999px;
+  background:var(--primary-light);
+  border:1px solid var(--glass-border);
+  overflow:hidden;
+}
+
+#micLevelBar{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  transition:width .08s linear;
+}
+
+#micLevelText{
+  margin-top:8px;
+  font-weight:600;
+  color:var(--primary);
+}
+
+.audio-task-list{
+  padding-left:20px;
+  line-height:1.7;
+  margin-bottom:14px;
+}
+
+canvas#oscCanvas{
+  width:100%;
+  height:220px;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:var(--shadow);
+  display:block;
+  margin:16px 0 10px;
+}
+body.dark canvas#oscCanvas{ background:#0b1120; }
+
+.osc-hint{
+  font-size:.9rem;
+  color:var(--text-muted);
+  line-height:1.55;
+  margin-bottom:12px;
+}
+
 /* ============ Fakten-Grid ============ */
 .fact-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:12px; }
 .fact-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:16px; text-align:center; }
@@ -288,6 +342,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       <a href="#experimente"><i data-lucide="flask-conical"></i> Experimente: Schallleitung</a>
       <a href="#geschwindigkeit"><i data-lucide="gauge"></i> Schallgeschwindigkeit</a>
       <a href="#tonhoehe"><i data-lucide="sliders-horizontal"></i> Tonhöhe &amp; Lautstärke</a>
+      <a href="#audio-labor"><i data-lucide="mic"></i> Audio-Labor</a>
       <a href="#ultraschall"><i data-lucide="ear"></i> Schall in der Natur</a>
       <a href="#quiz"><i data-lucide="check-circle"></i> Abschlussquiz</a>
     </nav>
@@ -501,9 +556,149 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <!-- 6. Ultraschall -->
+    <!-- 6. Audio-Labor -->
+    <section id="audio-labor">
+      <div class="section-head"><div class="num">6</div><h2>Audio-Labor: Lautsprecher, Mikrofon und Oszilloskop</h2></div>
+
+      <div class="card reveal">
+        <p>In dieser Station wird dein Gerät selbst zum Experimentiergerät: Der <strong>Lautsprecher</strong> erzeugt einen Ton, das <strong>Mikrofon</strong> misst Schall in der Umgebung. Im Oszilloskop kannst du die Schwingung als Kurve sichtbar machen.</p>
+        <div class="merksatz">
+          Hinweis: Dein Browser fragt nach der Erlaubnis für das Mikrofon. Die Aufnahme wird nicht gespeichert, sondern nur direkt im Browser als Pegel und Kurve ausgewertet.
+        </div>
+
+        <h4 style="margin:20px 0 10px;">1. Ton über den Lautsprecher erzeugen</h4>
+        <p>Starte den Ton und verändere zuerst die Frequenz. Danach verändere die Lautstärke. Achte darauf, was sich jeweils am Klang ändert.</p>
+
+        <div class="audio-controls">
+          <button class="btn-primary" onclick="startTone()">Ton starten</button>
+          <button class="btn-secondary" onclick="stopTone()">Ton stoppen</button>
+        </div>
+
+        <div class="slider-row" style="margin-top:14px;">
+          <label for="toneFreqSlider">Frequenz</label>
+          <input type="range" id="toneFreqSlider" min="100" max="1200" value="440">
+          <span class="val" id="toneFreqVal">440 Hz</span>
+        </div>
+
+        <div class="slider-row">
+          <label for="toneVolSlider">Lautstärke</label>
+          <input type="range" id="toneVolSlider" min="0" max="100" value="20">
+          <span class="val" id="toneVolVal">20 %</span>
+        </div>
+
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Was verändert sich, wenn du die Frequenz erhöhst? Was verändert sich, wenn du die Lautstärke erhöhst?"></textarea>
+
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">
+            Eine höhere Frequenz bedeutet: Der Lautsprecher schwingt öfter pro Sekunde. Deshalb klingt der Ton höher.
+            Eine größere Lautstärke bedeutet: Die Schwingung ist stärker. Deshalb klingt der Ton lauter. Physikalisch entspricht das einer größeren Amplitude.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:10px;">2. Schall mit dem Mikrofon messen</h4>
+        <p>Starte das Mikrofon. Erzeuge dann selbst Schall: sprich, summe, klatsche leise oder schnipse mit den Fingern. Beobachte dabei den Pegel.</p>
+
+        <div class="audio-controls">
+          <button class="btn-primary" onclick="startMic()">Mikrofon starten</button>
+          <button class="btn-secondary" onclick="stopMic()">Mikrofon stoppen</button>
+        </div>
+
+        <div class="level-meter" style="margin-top:16px;">
+          <div id="micLevelBar"></div>
+        </div>
+        <div id="micLevelText">Mikrofon noch nicht gestartet.</div>
+
+        <textarea class="obs-textarea" style="margin-top:14px;" placeholder="Deine Beobachtung: Welche Schallquelle erzeugt den größten Ausschlag?"></textarea>
+
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">
+            Das Mikrofon misst Druckschwankungen in der Luft. Je stärker die Luft am Mikrofon schwingt, desto größer wird der angezeigte Pegel.
+            Ein lautes Klatschen erzeugt meistens einen kurzen, starken Ausschlag. Summen oder Sprechen erzeugt oft einen gleichmäßigeren Ausschlag.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:10px;">3. Oszilloskop: Schall sichtbar machen</h4>
+        <p>Das Oszilloskop zeigt nicht den Schall selbst, sondern das elektrische Signal, das das Mikrofon aus dem Schall erzeugt. So kannst du sehen, ob ein Schall eher regelmäßig oder unregelmäßig ist.</p>
+
+        <div class="merksatz">
+          Eine Sinuswelle sieht aus wie eine gleichmäßige, runde Wellenlinie: hoch – runter – hoch – runter, immer in etwa gleichem Abstand und mit ähnlicher Höhe. Ein möglichst gleichmäßiger Ton erzeugt eine regelmäßigere Kurve als Sprache oder Klatschen.
+        </div>
+
+        <canvas id="oscCanvas" width="800" height="220"></canvas>
+        <div class="osc-hint" id="oscStatus">Starte das Mikrofon und summe einen möglichst gleichmäßigen Ton. Die Kurve sollte dann regelmäßiger werden.</div>
+
+        <ol class="audio-task-list">
+          <li>Summe einen möglichst gleichmäßigen Ton. Versuche, eine möglichst regelmäßige Wellenlinie zu erzeugen.</li>
+          <li>Sprich danach ein kurzes Wort. Vergleiche die Kurve mit dem Summen.</li>
+          <li>Klatsche einmal leise. Beobachte, warum diese Kurve nicht wie eine regelmäßige Sinuswelle aussieht.</li>
+          <li>Verändere die Lautstärke deines Summens. Beobachte, ob die Ausschläge größer oder kleiner werden.</li>
+        </ol>
+
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Wann ist die Kurve regelmäßig? Wann ist sie unregelmäßig?"></textarea>
+
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">
+            Ein gleichmäßiger Ton besteht aus einer regelmäßigen Schwingung. Deshalb sieht die Kurve beim Summen oft geordneter aus.
+            Sprache besteht aus vielen verschiedenen Lauten und Frequenzen. Deshalb ist die Kurve unregelmäßiger.
+            Ein Klatschen ist ein kurzes Geräusch mit einem starken Ausschlag, aber keine gleichmäßige Schwingung.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:10px;">4. Forschungsauftrag: Abstand und Lautstärke</h4>
+        <p>Untersuche, wie sich der Abstand zwischen Schallquelle und Mikrofon auf die gemessene Lautstärke auswirkt.</p>
+
+        <ol class="audio-task-list">
+          <li>Starte das Mikrofon.</li>
+          <li>Klatsche einmal in etwa 20 cm Entfernung vom Gerät.</li>
+          <li>Klatsche danach in etwa 1 m Entfernung vom Gerät.</li>
+          <li>Vergleiche den Ausschlag des Mikrofon-Pegels.</li>
+          <li>Wiederhole den Versuch mit Sprechen oder Summen.</li>
+        </ol>
+
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Wie verändert sich der Ausschlag, wenn die Schallquelle weiter vom Mikrofon entfernt ist?"></textarea>
+
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">
+            Je weiter die Schallquelle vom Mikrofon entfernt ist, desto kleiner wird in der Regel der gemessene Pegel.
+            Der Schall breitet sich im Raum aus. Dadurch verteilt sich die Schallenergie auf einen größeren Bereich.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:10px;">Zusatzversuch mit zwei Geräten</h4>
+        <p>Wenn zwei Geräte vorhanden sind, kann ein Gerät einen gleichbleibenden Ton abspielen und ein zweites Gerät den Pegel oder die Kurve mit dem Mikrofon anzeigen. Verändere dann den Abstand zwischen beiden Geräten.</p>
+        <div class="merksatz">
+          Wichtig: Mit nur einem Gerät ist dieser Versuch weniger geeignet, weil Lautsprecher und Mikrofon sehr nahe beieinander liegen. Für die Abstandsmessung ist Klatschen, Sprechen oder Summen zuverlässiger.
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Ultraschall -->
     <section id="ultraschall">
-      <div class="section-head"><div class="num">6</div><h2>Schall in der Natur</h2></div>
+      <div class="section-head"><div class="num">7</div><h2>Schall in der Natur</h2></div>
       <div class="card reveal">
         <p>Manche Tiere nutzen Schall, den wir Menschen gar nicht hören können:</p>
         <ul>
@@ -523,9 +718,9 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <!-- 7. Quiz -->
+    <!-- 8. Quiz -->
     <section id="quiz">
-      <div class="section-head"><div class="num">7</div><h2>Abschlussquiz</h2></div>
+      <div class="section-head"><div class="num">8</div><h2>Abschlussquiz</h2></div>
       <div class="card reveal">
         <div id="quiz-container"></div>
         <div id="quiz-score-box" style="display:none;">
@@ -577,7 +772,7 @@ function toggleQA(header){
   answer.style.maxHeight = isOpen ? answer.scrollHeight + 'px' : null;
 }
 
-/* ---------- Zuordnungsspiel (Auswahl je Begriff, Auswertung am Ende) ---------- */
+/* ---------- Zuordnungsspiel ---------- */
 const matchTerms = [
   { id:'quelle', term:'Schallquelle', expl:'Der schwingende Körper, der den Schall erzeugt – z. B. eine Gitarrensaite.', fact:'Deine Stimmbänder schwingen beim Sprechen bis zu mehreren Hundert Mal pro Sekunde.' },
   { id:'schwingung', term:'Schwingung', expl:'Die regelmäßige Hin- und Herbewegung eines Körpers.', fact:'Ohne Schwingung gäbe es keinen Schall – das gilt für jedes Musikinstrument und jede Stimme.' },
@@ -592,7 +787,6 @@ function buildMatching(){
   list.innerHTML = '';
   document.getElementById('match-status').textContent = '';
 
-  // Erklärungen in fester, gemischter Reihenfolge (nicht identisch zur Begriffs-Reihenfolge)
   const shuffledOrder = ['welle','trommelfell','schwingung','innenohr','quelle','medium'];
   const options = shuffledOrder.map(id => matchTerms.find(t => t.id === id));
 
@@ -807,7 +1001,7 @@ function calcThunder(){
   result.textContent = `≈ ${meters.toFixed(0)} m (${km.toFixed(2)} km) entfernt`;
 }
 
-/* ---------- Rangfolge-Aufgabe (Schallgeschwindigkeit) ---------- */
+/* ---------- Rangfolge-Aufgabe ---------- */
 const correctOrder = ['luft', 'wasser', 'stahl'];
 let pickedOrder = [];
 
@@ -862,7 +1056,7 @@ function resizeCanvas(){
   canvas.width = canvas.clientWidth;
   canvas.height = 200;
 }
-window.addEventListener('resize', () => { resizeCanvas(); drawWave(); });
+window.addEventListener('resize', () => { resizeCanvas(); drawWave(); resizeOscCanvas(); });
 
 function drawWave(){
   const w = canvas.width, h = canvas.height;
@@ -894,6 +1088,288 @@ freqSlider.addEventListener('input', drawWave);
 ampSlider.addEventListener('input', drawWave);
 resizeCanvas();
 drawWave();
+
+/* ---------- Audio-Labor: Lautsprecher ---------- */
+let audioCtx = null;
+let oscillator = null;
+let gainNode = null;
+
+const toneFreqSlider = document.getElementById('toneFreqSlider');
+const toneVolSlider = document.getElementById('toneVolSlider');
+const toneFreqVal = document.getElementById('toneFreqVal');
+const toneVolVal = document.getElementById('toneVolVal');
+
+function ensureAudioContext(){
+  if (!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+async function startTone(){
+  ensureAudioContext();
+
+  if (audioCtx.state === 'suspended'){
+    await audioCtx.resume();
+  }
+
+  if (oscillator){
+    stopTone();
+  }
+
+  oscillator = audioCtx.createOscillator();
+  gainNode = audioCtx.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.value = parseFloat(toneFreqSlider.value);
+  gainNode.gain.value = parseFloat(toneVolSlider.value) / 100;
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillator.start();
+}
+
+function stopTone(){
+  if (oscillator){
+    oscillator.stop();
+    oscillator.disconnect();
+    oscillator = null;
+  }
+  if (gainNode){
+    gainNode.disconnect();
+    gainNode = null;
+  }
+}
+
+if (toneFreqSlider && toneVolSlider){
+  toneFreqSlider.addEventListener('input', () => {
+    const freq = parseFloat(toneFreqSlider.value);
+    toneFreqVal.textContent = freq + ' Hz';
+    if (oscillator && audioCtx){
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    }
+  });
+
+  toneVolSlider.addEventListener('input', () => {
+    const vol = parseFloat(toneVolSlider.value);
+    toneVolVal.textContent = vol + ' %';
+    if (gainNode && audioCtx){
+      gainNode.gain.setValueAtTime(vol / 100, audioCtx.currentTime);
+    }
+  });
+}
+
+/* ---------- Audio-Labor: Mikrofon-Pegel und Oszilloskop ---------- */
+let micStream = null;
+let micSource = null;
+let analyser = null;
+let micAnimation = null;
+
+const oscCanvas = document.getElementById('oscCanvas');
+const oscCtx = oscCanvas ? oscCanvas.getContext('2d') : null;
+
+function resizeOscCanvas(){
+  if (!oscCanvas) return;
+  oscCanvas.width = oscCanvas.clientWidth;
+  oscCanvas.height = 220;
+  drawOscPlaceholder();
+}
+
+function drawOscPlaceholder(){
+  if (!oscCanvas || !oscCtx || analyser) return;
+
+  const w = oscCanvas.width;
+  const h = oscCanvas.height;
+  const isDark = document.body.classList.contains('dark');
+
+  oscCtx.clearRect(0, 0, w, h);
+  oscCtx.fillStyle = isDark ? '#0b1120' : '#ffffff';
+  oscCtx.fillRect(0, 0, w, h);
+
+  oscCtx.strokeStyle = isDark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.10)';
+  oscCtx.lineWidth = 1;
+  for (let y = 20; y < h; y += 40){
+    oscCtx.beginPath();
+    oscCtx.moveTo(0, y);
+    oscCtx.lineTo(w, y);
+    oscCtx.stroke();
+  }
+  for (let x = 40; x < w; x += 80){
+    oscCtx.beginPath();
+    oscCtx.moveTo(x, 0);
+    oscCtx.lineTo(x, h);
+    oscCtx.stroke();
+  }
+
+  oscCtx.strokeStyle = isDark ? '#38bdf8' : '#1a6fb5';
+  oscCtx.lineWidth = 3;
+  oscCtx.beginPath();
+  const midY = h / 2;
+  for (let x = 0; x <= w; x++){
+    const y = midY + 45 * Math.sin((x / w) * Math.PI * 2 * 4);
+    if (x === 0) oscCtx.moveTo(x, y); else oscCtx.lineTo(x, y);
+  }
+  oscCtx.stroke();
+
+  oscCtx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+  oscCtx.font = '14px Inter, system-ui, sans-serif';
+  oscCtx.fillText('Beispiel einer regelmäßigen Sinuswelle', 16, 24);
+}
+
+function drawOscilloscope(){
+  if (!oscCanvas || !oscCtx || !analyser) return;
+
+  const w = oscCanvas.width;
+  const h = oscCanvas.height;
+  const isDark = document.body.classList.contains('dark');
+  const data = new Uint8Array(analyser.fftSize);
+
+  analyser.getByteTimeDomainData(data);
+
+  oscCtx.clearRect(0, 0, w, h);
+  oscCtx.fillStyle = isDark ? '#0b1120' : '#ffffff';
+  oscCtx.fillRect(0, 0, w, h);
+
+  oscCtx.strokeStyle = isDark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.10)';
+  oscCtx.lineWidth = 1;
+
+  for (let y = 20; y < h; y += 40){
+    oscCtx.beginPath();
+    oscCtx.moveTo(0, y);
+    oscCtx.lineTo(w, y);
+    oscCtx.stroke();
+  }
+
+  for (let x = 40; x < w; x += 80){
+    oscCtx.beginPath();
+    oscCtx.moveTo(x, 0);
+    oscCtx.lineTo(x, h);
+    oscCtx.stroke();
+  }
+
+  oscCtx.strokeStyle = isDark ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.18)';
+  oscCtx.beginPath();
+  oscCtx.moveTo(0, h / 2);
+  oscCtx.lineTo(w, h / 2);
+  oscCtx.stroke();
+
+  oscCtx.strokeStyle = isDark ? '#38bdf8' : '#1a6fb5';
+  oscCtx.lineWidth = 3;
+  oscCtx.beginPath();
+
+  const sliceWidth = w / data.length;
+  let x = 0;
+
+  for (let i = 0; i < data.length; i++){
+    const v = data[i] / 128.0;
+    const y = v * h / 2;
+
+    if (i === 0){
+      oscCtx.moveTo(x, y);
+    } else {
+      oscCtx.lineTo(x, y);
+    }
+    x += sliceWidth;
+  }
+
+  oscCtx.stroke();
+}
+
+async function startMic(){
+  try {
+    ensureAudioContext();
+
+    if (audioCtx.state === 'suspended'){
+      await audioCtx.resume();
+    }
+
+    if (micStream){
+      stopMic();
+    }
+
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    });
+
+    micSource = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser();
+
+    analyser.fftSize = 1024;
+    micSource.connect(analyser);
+
+    document.getElementById('oscStatus').textContent =
+      'Oszilloskop läuft: Summe einen gleichmäßigen Ton, sprich ein Wort oder klatsche leise.';
+
+    updateMicDisplays();
+  } catch (err) {
+    document.getElementById('micLevelText').textContent =
+      'Mikrofon konnte nicht gestartet werden. Bitte Berechtigung prüfen.';
+    if (document.getElementById('oscStatus')){
+      document.getElementById('oscStatus').textContent =
+        'Mikrofon konnte nicht gestartet werden. Bitte Berechtigung prüfen.';
+    }
+  }
+}
+
+function updateMicDisplays(){
+  if (!analyser) return;
+
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+
+  let sum = 0;
+  for (let i = 0; i < data.length; i++){
+    const centered = data[i] - 128;
+    sum += centered * centered;
+  }
+
+  const rms = Math.sqrt(sum / data.length);
+  const level = Math.min(100, rms * 4);
+
+  document.getElementById('micLevelBar').style.width = level + '%';
+  document.getElementById('micLevelText').textContent =
+    'Mikrofon-Pegel: ' + level.toFixed(0) + ' %';
+
+  drawOscilloscope();
+
+  micAnimation = requestAnimationFrame(updateMicDisplays);
+}
+
+function stopMic(){
+  if (micAnimation){
+    cancelAnimationFrame(micAnimation);
+    micAnimation = null;
+  }
+
+  if (micSource){
+    micSource.disconnect();
+    micSource = null;
+  }
+
+  if (micStream){
+    micStream.getTracks().forEach(track => track.stop());
+    micStream = null;
+  }
+
+  analyser = null;
+
+  const bar = document.getElementById('micLevelBar');
+  const text = document.getElementById('micLevelText');
+  const oscStatus = document.getElementById('oscStatus');
+
+  if (bar) bar.style.width = '0%';
+  if (text) text.textContent = 'Mikrofon gestoppt.';
+  if (oscStatus) oscStatus.textContent = 'Mikrofon gestoppt. Starte es erneut, um die Kurve wieder sichtbar zu machen.';
+
+  drawOscPlaceholder();
+}
+
+resizeOscCanvas();
+drawOscPlaceholder();
 
 /* ---------- Quiz ---------- */
 const quizData = [
@@ -941,6 +1417,21 @@ const quizData = [
     q: "Kann der Mensch Ultraschall normalerweise hören?",
     options: ["Ja, problemlos", "Nein, Ultraschall liegt über der menschlichen Hörgrenze", "Nur nachts", "Nur wenn er sehr laut ist"],
     correct: 1
+  },
+  {
+    q: "Was zeigt der Mikrofon-Pegel im Audio-Labor ungefähr an?",
+    options: ["Wie stark der Schall am Mikrofon ankommt", "Wie schnell Licht ist", "Wie schwer das Gerät ist", "Wie warm die Luft ist"],
+    correct: 0
+  },
+  {
+    q: "Welche Kurve passt am ehesten zu einem gleichmäßigen Ton?",
+    options: ["Eine regelmäßige, runde Wellenlinie", "Ein einzelner kurzer Strich", "Eine völlig zufällige Zickzacklinie", "Eine gerade Linie ohne Ausschlag"],
+    correct: 0
+  },
+  {
+    q: "Warum sieht Klatschen im Oszilloskop nicht wie eine regelmäßige Sinuswelle aus?",
+    options: ["Weil Klatschen ein kurzes Geräusch und kein gleichmäßiger Ton ist", "Weil Schall beim Klatschen nicht existiert", "Weil das Mikrofon dann ausgeschaltet ist", "Weil Licht schneller ist als Schall"],
+    correct: 0
   }
 ];
 
