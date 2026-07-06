@@ -149,20 +149,57 @@ body.dark .merksatz{ background:rgba(56,189,248,.10); }
 .qa-block{ margin-bottom:12px; border-radius:10px; overflow:hidden; }
 .qa-block.open .reveal-question{ border-radius:10px 10px 0 0; }
 
-/* ============ Zuordnung ============ */
-.match-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-@media (max-width:700px){ .match-wrap{ grid-template-columns:1fr; } }
-.match-col h4{ font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:10px; }
-.match-item{
-  background:var(--surface); border:2px solid var(--glass-border); border-radius:10px; padding:12px 16px; margin-bottom:10px;
-  cursor:pointer; font-weight:500; transition:all .2s; user-select:none;
+/* ============ Zuordnung (Auswahl je Begriff, Auswertung am Ende) ============ */
+.match-row{
+  border:2px solid var(--glass-border); border-radius:10px; padding:14px 16px; margin-bottom:12px;
+  transition:border-color .2s, background .2s;
 }
-.match-item:hover{ border-color:var(--primary); }
-.match-item.selected{ border-color:var(--primary); background:var(--primary-light); }
-.match-item.correct{ border-color:var(--correct); background:rgba(22,163,74,.12); }
-.match-item.wrong{ border-color:var(--wrong); background:rgba(220,38,38,.12); animation:shake .3s; }
+.match-row__top{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.match-row__term{ font-weight:700; min-width:190px; }
+.match-select{
+  flex:1; min-width:220px; padding:10px 12px; border-radius:8px; border:2px solid var(--glass-border);
+  background:var(--surface); color:var(--text); font-family:'Inter'; font-size:.92rem;
+}
+.match-row.correct{ border-color:var(--correct); background:rgba(22,163,74,.08); }
+.match-row.wrong{ border-color:var(--wrong); background:rgba(220,38,38,.08); animation:shake .3s; }
 @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
-#match-status{ margin-top:14px; font-weight:600; }
+.match-fact{ margin-top:10px; font-size:.85rem; line-height:1.5; background:var(--primary-light); border-radius:8px; padding:9px 13px; }
+.match-fact.hint{ background:rgba(220,38,38,.10); }
+#match-status{ margin-top:16px; font-weight:600; }
+.btn-secondary{
+  background:transparent; border:2px solid var(--glass-border); color:var(--text); border-radius:10px;
+  padding:11px 20px; font-weight:600; cursor:pointer; font-family:'Inter';
+}
+
+/* ============ Experimentierstation ============ */
+.experiment-card{ margin-bottom:20px; }
+.experiment-card:last-child{ margin-bottom:0; }
+.material-tag{
+  display:inline-flex; align-items:center; gap:6px; font-size:.8rem; color:var(--text-muted);
+  background:var(--glass-bg); border:1px solid var(--glass-border); padding:5px 12px; border-radius:999px; margin-bottom:14px;
+}
+.experiment-card ol{ padding-left:20px; line-height:1.7; margin-bottom:14px; }
+.obs-textarea{
+  width:100%; min-height:70px; padding:12px; border-radius:10px; border:2px solid var(--glass-border);
+  background:var(--surface); color:var(--text); font-family:'Inter'; font-size:.92rem; resize:vertical; margin-bottom:14px;
+}
+.obs-textarea::placeholder{ color:var(--text-muted); }
+
+/* ============ Rangfolge-Aufgabe ============ */
+.order-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+.order-item{
+  position:relative; background:var(--surface); border:2px solid var(--glass-border); border-radius:10px;
+  padding:14px 22px; cursor:pointer; font-weight:600; transition:all .2s; user-select:none;
+}
+.order-item:hover{ border-color:var(--primary); }
+.order-item.picked{ border-color:var(--primary); background:var(--primary-light); }
+.order-item.eval-correct{ border-color:var(--correct); background:rgba(22,163,74,.12); }
+.order-item.eval-wrong{ border-color:var(--wrong); background:rgba(220,38,38,.12); }
+.order-item .badge{
+  position:absolute; top:-11px; right:-11px; width:26px; height:26px; border-radius:50%; background:var(--primary);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700;
+}
+#order-status{ margin-top:12px; font-weight:600; }
 
 /* ============ Rechner ============ */
 .calc-box{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:14px 0; }
@@ -234,6 +271,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
     <nav>
       <a href="#was-ist-schall"><i data-lucide="waves"></i> Was ist Schall?</a>
       <a href="#video"><i data-lucide="video"></i> Versuch: Schall im Vakuum</a>
+      <a href="#experimente"><i data-lucide="flask-conical"></i> Experimente: Schallleitung</a>
       <a href="#geschwindigkeit"><i data-lucide="gauge"></i> Schallgeschwindigkeit</a>
       <a href="#tonhoehe"><i data-lucide="sliders-horizontal"></i> Tonhöhe &amp; Lautstärke</a>
       <a href="#ultraschall"><i data-lucide="ear"></i> Schall in der Natur</a>
@@ -268,22 +306,12 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
 
       <div class="card reveal" style="margin-top:18px;">
-        <h4 style="margin-bottom:14px;">Ordne die Begriffe der richtigen Erklärung zu</h4>
-        <div class="match-wrap">
-          <div class="match-col">
-            <h4>Begriff</h4>
-            <div class="match-item" data-match="quelle">Schallquelle</div>
-            <div class="match-item" data-match="medium">Medium</div>
-            <div class="match-item" data-match="welle">Schallwelle</div>
-            <div class="match-item" data-match="empfaenger">Trommelfell</div>
-          </div>
-          <div class="match-col">
-            <h4>Erklärung</h4>
-            <div class="match-item" data-match="empfaenger">Nimmt die Schwingung im Ohr auf</div>
-            <div class="match-item" data-match="welle">Die sich ausbreitende Schwingung</div>
-            <div class="match-item" data-match="quelle">Der schwingende Körper, z. B. eine Saite</div>
-            <div class="match-item" data-match="medium">Der Stoff, der den Schall überträgt, z. B. Luft</div>
-          </div>
+        <h4 style="margin-bottom:6px;">Ordne jedem Begriff die passende Erklärung zu</h4>
+        <p style="color:var(--text-muted); font-size:.9rem; margin-bottom:16px;">Wähle für jeden Begriff eine Erklärung aus. Erst wenn du bei allen sechs eine Auswahl getroffen hast, klicke auf „Auswertung" – du erfährst dann, wie viele richtig sind, und bekommst zu jeder richtigen Antwort noch eine Zusatzinfo.</p>
+        <div id="match-list"></div>
+        <div style="display:flex; gap:12px; margin-top:6px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="evaluateMatching()">Auswertung</button>
+          <button class="btn-secondary" onclick="resetMatching()">Nochmal versuchen</button>
         </div>
         <div id="match-status"></div>
       </div>
@@ -316,9 +344,71 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <!-- 3. Schallgeschwindigkeit -->
+    <!-- 3. Experimente: Schallleitung -->
+    <section id="experimente">
+      <div class="section-head"><div class="num">3</div><h2>Selbst ausprobieren: Wie gut leiten verschiedene Stoffe Schall?</h2></div>
+      <div class="card reveal">
+        <p>Für die folgenden drei Versuche brauchst du nichts weiter als das, was sowieso in eurem Klassenraum steht: einen Tisch, einen Stift und dich selbst. Führe jeden Versuch durch, notiere kurz deine Beobachtung und klicke dann auf „Erklärung anzeigen".</p>
+      </div>
+
+      <div class="card reveal experiment-card" style="margin-top:18px;">
+        <h4>Versuch 1 – Der klopfende Tisch</h4>
+        <span class="material-tag"><i data-lucide="package"></i> Material: nur dein Tisch</span>
+        <ol>
+          <li>Leg dein Ohr flach auf die Tischplatte.</li>
+          <li>Bitte jemanden, ganz leise mit einem Fingernagel gegen das andere Ende des Tisches zu klopfen.</li>
+          <li>Hebe danach den Kopf und lass dasselbe leise Klopfen noch einmal durch die Luft zu dir kommen.</li>
+        </ol>
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Wo klingt das Klopfen lauter – über den Tisch oder durch die Luft?"></textarea>
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Durch den festen Tisch wird das Klopfen viel besser übertragen als durch die Luft. In Feststoffen liegen die Teilchen viel dichter beieinander als in der Luft, deshalb geben sie die Schwingung schneller und mit weniger Verlust weiter. Das ist auch der Grund, warum man am Bahngleis manchmal einen Zug hört, bevor er zu sehen ist – der Schall läuft durch die Schiene voraus.</div></div>
+        </div>
+      </div>
+
+      <div class="card reveal experiment-card">
+        <h4>Versuch 2 – Der Bleistift zwischen den Zähnen</h4>
+        <span class="material-tag"><i data-lucide="pencil"></i> Material: ein Bleistift oder Kugelschreiber</span>
+        <ol>
+          <li>Klemme das hintere Ende eines Bleistifts leicht zwischen deine Zähne (nicht auf die Spitze beißen).</li>
+          <li>Tippe mit der Spitze des Stifts leicht gegen die Tischkante.</li>
+          <li>Nimm den Stift danach aus dem Mund und tippe genauso leise noch einmal – jetzt hörst du nur durch die Luft.</li>
+        </ol>
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Wann klingt das Klopfen lauter – mit dem Stift im Mund oder ohne?"></textarea>
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Wenn der Stift zwischen den Zähnen klemmt, überträgt sich die Schwingung direkt über deinen Kieferknochen zum Innenohr. Knochen leiten Schall sehr gut, deshalb klingt das Klopfen so viel lauter als über die Luft. Man nennt das Knochenleitung.</div></div>
+        </div>
+      </div>
+
+      <div class="card reveal experiment-card">
+        <h4>Versuch 3 – Summen mit zugehaltenen Ohren</h4>
+        <span class="material-tag"><i data-lucide="user"></i> Material: nur du selbst</span>
+        <ol>
+          <li>Halte dir mit beiden Zeigefingern die Ohren zu.</li>
+          <li>Summe einen tiefen Ton oder sprich leise ein Wort.</li>
+          <li>Achte darauf, wie laut du dich selbst trotzdem hörst.</li>
+        </ol>
+        <textarea class="obs-textarea" placeholder="Deine Beobachtung: Hörst du dich, obwohl deine Ohren zugehalten sind?"></textarea>
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Erklärung anzeigen</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Auch mit zugehaltenen Ohren gelangt der Schall deiner eigenen Stimme über die Schädelknochen direkt zum Innenohr – wieder Knochenleitung, diesmal im eigenen Kopf. Das ist übrigens auch der Grund, warum die eigene Stimme auf einer Aufnahme oft fremd klingt: Normalerweise hörst du dich selbst über eine Mischung aus Luftschall und Knochenschall, auf der Aufnahme fehlt der Knochenschall-Anteil.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Schallgeschwindigkeit -->
     <section id="geschwindigkeit">
-      <div class="section-head"><div class="num">3</div><h2>Wie schnell ist Schall unterwegs?</h2></div>
+      <div class="section-head"><div class="num">4</div><h2>Wie schnell ist Schall unterwegs?</h2></div>
       <div class="card reveal">
         <p>Schall ist deutlich langsamer als Licht. Deshalb siehst du einen Blitz sofort, hörst den Donner aber erst später.</p>
         <div class="fact-grid">
@@ -329,7 +419,19 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
         </div>
         <div class="merksatz" style="margin-top:18px;">Merke: Schall breitet sich in festen Stoffen am schnellsten, in Gasen am langsamsten aus.</div>
 
-        <h4 style="margin:20px 0 10px;">Blitz-Donner-Rechner</h4>
+        <h4 style="margin:20px 0 10px;">Bringe die Stoffe in die richtige Reihenfolge</h4>
+        <p>Klicke die drei Medien in der Reihenfolge an, in der die Schallgeschwindigkeit <strong>zunimmt</strong> – am langsamsten zuerst.</p>
+        <div class="order-wrap" id="order-wrap">
+          <div class="order-item" data-order="stahl">Stahl</div>
+          <div class="order-item" data-order="luft">Luft</div>
+          <div class="order-item" data-order="wasser">Wasser</div>
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn-secondary" onclick="resetOrder()">Zurücksetzen</button>
+        </div>
+        <div id="order-status"></div>
+
+        <h4 style="margin:24px 0 10px;">Blitz-Donner-Rechner</h4>
         <p>Zähle beim nächsten Gewitter die Sekunden zwischen Blitz und Donner – so kannst du die Entfernung berechnen (Schallgeschwindigkeit ≈ 343 m/s).</p>
         <div class="calc-box">
           <input type="number" id="thunderSeconds" placeholder="Sekunden" min="0" step="0.1">
@@ -339,9 +441,9 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <!-- 4. Tonhöhe und Lautstärke -->
+    <!-- 5. Tonhöhe und Lautstärke -->
     <section id="tonhoehe">
-      <div class="section-head"><div class="num">4</div><h2>Tonhöhe und Lautstärke</h2></div>
+      <div class="section-head"><div class="num">5</div><h2>Tonhöhe und Lautstärke</h2></div>
       <div class="card reveal">
         <p>Zwei Eigenschaften einer Schwingung bestimmen, wie ein Ton klingt:</p>
         <ul>
@@ -353,6 +455,14 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
           <iframe src="https://www.youtube-nocookie.com/embed/-QJguYTWFsI" title="Wie entsteht Schall? – physikdigital.de" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
         </div>
         <div class="video-caption">Quelle: YouTube – physikdigital.de, Erklärvideo zu Tonhöhe und Schwingung</div>
+
+        <div class="qa-block" style="margin-top:16px;">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Vorhersage: Was passiert, wenn du die Frequenz erhöhst?</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Überlege zuerst selbst, bevor du unten den Regler bewegst: Eine höhere Frequenz bedeutet mehr Schwingungen pro Sekunde – der Ton wird <strong>höher</strong>, nicht lauter. Die Lautstärke hängt allein von der Amplitude ab.</div></div>
+        </div>
 
         <h4 style="margin:20px 0 10px;">Probier es selbst: Wellen-Simulator</h4>
         <p>Verändere Frequenz und Amplitude und beobachte, wie sich die Schallwelle verändert.</p>
@@ -372,9 +482,9 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <!-- 5. Ultraschall -->
+    <!-- 6. Ultraschall -->
     <section id="ultraschall">
-      <div class="section-head"><div class="num">5</div><h2>Schall in der Natur</h2></div>
+      <div class="section-head"><div class="num">6</div><h2>Schall in der Natur</h2></div>
       <div class="card reveal">
         <p>Manche Tiere nutzen Schall, den wir Menschen gar nicht hören können:</p>
         <ul>
@@ -383,12 +493,20 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
           <li><strong>Elefanten</strong> nutzen dagegen Infraschall (sehr tiefe Töne unter 20 Hz), um sich über mehrere Kilometer zu verständigen.</li>
         </ul>
         <div class="merksatz">Der Mensch hört normalerweise nur Frequenzen zwischen etwa 16 Hz und 20.000 Hz.</div>
+
+        <div class="qa-block" style="margin-top:16px;">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Wahr oder falsch: Menschen können Ultraschall problemlos hören</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner"><strong>Falsch.</strong> Ultraschall liegt oberhalb von etwa 20.000 Hz – das ist außerhalb des menschlichen Hörbereichs. Manche Jugendliche können noch Töne bis knapp 20.000 Hz wahrnehmen, mit zunehmendem Alter sinkt diese Grenze aber weiter ab.</div></div>
+        </div>
       </div>
     </section>
 
-    <!-- 6. Quiz -->
+    <!-- 7. Quiz -->
     <section id="quiz">
-      <div class="section-head"><div class="num">6</div><h2>Abschlussquiz</h2></div>
+      <div class="section-head"><div class="num">7</div><h2>Abschlussquiz</h2></div>
       <div class="card reveal">
         <div id="quiz-container"></div>
         <div id="quiz-score-box" style="display:none;">
@@ -440,45 +558,115 @@ function toggleQA(header){
   answer.style.maxHeight = isOpen ? answer.scrollHeight + 'px' : null;
 }
 
-/* ---------- Zuordnungsspiel ---------- */
-let selectedMatch = null;
-let matchedCount = 0;
-const totalMatches = 4;
-document.querySelectorAll('.match-item').forEach(item => {
-  item.addEventListener('click', () => {
-    if (item.classList.contains('correct')) return;
-    if (!selectedMatch){
-      selectedMatch = item;
-      item.classList.add('selected');
-      return;
-    }
-    if (selectedMatch === item){
-      item.classList.remove('selected');
-      selectedMatch = null;
-      return;
-    }
-    const key1 = selectedMatch.dataset.match;
-    const key2 = item.dataset.match;
-    if (key1 === key2){
-      selectedMatch.classList.remove('selected');
-      selectedMatch.classList.add('correct');
-      item.classList.add('correct');
-      matchedCount++;
-      if (matchedCount === totalMatches){
-        document.getElementById('match-status').textContent = 'Super, alle Begriffe richtig zugeordnet!';
-        document.getElementById('match-status').style.color = 'var(--correct)';
-      }
-    } else {
-      item.classList.add('wrong');
-      selectedMatch.classList.add('wrong');
-      setTimeout(() => {
-        item.classList.remove('wrong');
-        selectedMatch.classList.remove('wrong', 'selected');
-      }, 500);
-    }
-    selectedMatch = null;
+/* ---------- Zuordnungsspiel (Auswahl je Begriff, Auswertung am Ende) ---------- */
+const matchTerms = [
+  { id:'quelle', term:'Schallquelle', expl:'Der schwingende Körper, der den Schall erzeugt – z. B. eine Gitarrensaite.', fact:'Deine Stimmbänder schwingen beim Sprechen bis zu mehreren Hundert Mal pro Sekunde.' },
+  { id:'schwingung', term:'Schwingung', expl:'Die regelmäßige Hin- und Herbewegung eines Körpers.', fact:'Ohne Schwingung gäbe es keinen Schall – das gilt für jedes Musikinstrument und jede Stimme.' },
+  { id:'medium', term:'Medium', expl:'Der Stoff, der die Schwingung überträgt – z. B. Luft, Wasser oder ein fester Körper.', fact:'Im Vakuum des Weltalls gibt es kein Medium – deshalb ist es dort völlig lautlos.' },
+  { id:'welle', term:'Schallwelle', expl:'Die sich ausbreitende Schwingung, die sich kugelförmig von der Quelle entfernt.', fact:'Schallwellen breiten sich in alle Richtungen aus – deshalb hörst du eine Sirene auch, wenn du sie nicht siehst.' },
+  { id:'trommelfell', term:'Trommelfell', expl:'Eine dünne Membran im Ohr, die durch die Schallwelle in Schwingung versetzt wird.', fact:'Das Trommelfell ist nur etwa 0,1 mm dünn – trotzdem hält es enormen Belastungen stand.' },
+  { id:'innenohr', term:'Innenohr (Hörschnecke)', expl:'Wandelt die Schwingungen in elektrische Nervensignale für das Gehirn um.', fact:'Die Hörschnecke ist ungefähr so groß wie eine Erbse und enthält tausende winziger Sinneshärchen.' }
+];
+
+function buildMatching(){
+  const list = document.getElementById('match-list');
+  list.innerHTML = '';
+  document.getElementById('match-status').textContent = '';
+
+  // Erklärungen in fester, gemischter Reihenfolge (nicht identisch zur Begriffs-Reihenfolge)
+  const shuffledOrder = ['welle','trommelfell','schwingung','innenohr','quelle','medium'];
+  const options = shuffledOrder.map(id => matchTerms.find(t => t.id === id));
+
+  matchTerms.forEach(term => {
+    const row = document.createElement('div');
+    row.className = 'match-row';
+    row.dataset.term = term.id;
+
+    const top = document.createElement('div');
+    top.className = 'match-row__top';
+
+    const label = document.createElement('div');
+    label.className = 'match-row__term';
+    label.textContent = term.term;
+
+    const select = document.createElement('select');
+    select.className = 'match-select';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '– bitte auswählen –';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    options.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.id;
+      o.textContent = opt.expl;
+      select.appendChild(o);
+    });
+
+    top.appendChild(label);
+    top.appendChild(select);
+    row.appendChild(top);
+    list.appendChild(row);
   });
-});
+}
+
+function evaluateMatching(){
+  const rows = document.querySelectorAll('.match-row');
+  let unanswered = 0;
+  rows.forEach(row => {
+    const select = row.querySelector('.match-select');
+    if (!select.value) unanswered++;
+  });
+  if (unanswered > 0){
+    document.getElementById('match-status').textContent = `Bitte wähle zuerst bei allen Begriffen eine Erklärung aus (noch ${unanswered} offen).`;
+    document.getElementById('match-status').style.color = 'var(--wrong)';
+    return;
+  }
+
+  let wrongCount = 0;
+  rows.forEach(row => {
+    const termId = row.dataset.term;
+    const select = row.querySelector('.match-select');
+    const term = matchTerms.find(t => t.id === termId);
+    const oldFact = row.querySelector('.match-fact');
+    if (oldFact) oldFact.remove();
+
+    if (select.value === termId){
+      row.classList.remove('wrong');
+      row.classList.add('correct');
+      const fact = document.createElement('div');
+      fact.className = 'match-fact';
+      fact.textContent = 'Wusstest du schon? ' + term.fact;
+      row.appendChild(fact);
+    } else {
+      wrongCount++;
+      row.classList.remove('correct');
+      row.classList.add('wrong');
+      const hint = document.createElement('div');
+      hint.className = 'match-fact hint';
+      hint.textContent = 'Richtig gewesen wäre: ' + term.expl;
+      row.appendChild(hint);
+    }
+    select.disabled = true;
+  });
+
+  const status = document.getElementById('match-status');
+  const correctCount = matchTerms.length - wrongCount;
+  if (wrongCount === 0){
+    status.textContent = `Super, alle ${matchTerms.length} Begriffe richtig zugeordnet!`;
+    status.style.color = 'var(--correct)';
+  } else {
+    status.textContent = `${correctCount} von ${matchTerms.length} richtig – schau dir die rot markierten Begriffe nochmal an und versuch es erneut.`;
+    status.style.color = 'var(--wrong)';
+  }
+}
+
+function resetMatching(){
+  buildMatching();
+}
+
+buildMatching();
 
 /* ---------- Blitz-Donner-Rechner ---------- */
 function calcThunder(){
@@ -491,6 +679,49 @@ function calcThunder(){
   const meters = s * 343;
   const km = meters / 1000;
   result.textContent = `≈ ${meters.toFixed(0)} m (${km.toFixed(2)} km) entfernt`;
+}
+
+/* ---------- Rangfolge-Aufgabe (Schallgeschwindigkeit) ---------- */
+const correctOrder = ['luft', 'wasser', 'stahl'];
+let pickedOrder = [];
+
+document.querySelectorAll('.order-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.classList.contains('picked')) return;
+    if (pickedOrder.length >= correctOrder.length) return;
+    pickedOrder.push(item.dataset.order);
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = pickedOrder.length;
+    item.appendChild(badge);
+    item.classList.add('picked');
+
+    if (pickedOrder.length === correctOrder.length){
+      evaluateOrder();
+    }
+  });
+});
+
+function evaluateOrder(){
+  const status = document.getElementById('order-status');
+  const isCorrect = pickedOrder.every((id, i) => id === correctOrder[i]);
+  document.querySelectorAll('.order-item').forEach(item => {
+    item.classList.add(isCorrect ? 'eval-correct' : 'eval-wrong');
+  });
+  status.textContent = isCorrect
+    ? 'Richtig! Luft ist am langsamsten, dann Wasser, dann Stahl.'
+    : 'Noch nicht ganz richtig – klicke auf „Zurücksetzen" und versuch es erneut.';
+  status.style.color = isCorrect ? 'var(--correct)' : 'var(--wrong)';
+}
+
+function resetOrder(){
+  pickedOrder = [];
+  document.getElementById('order-status').textContent = '';
+  document.querySelectorAll('.order-item').forEach(item => {
+    item.classList.remove('picked', 'eval-correct', 'eval-wrong');
+    const badge = item.querySelector('.badge');
+    if (badge) badge.remove();
+  });
 }
 
 /* ---------- Wellen-Simulator ---------- */
@@ -564,6 +795,26 @@ const quizData = [
     q: "Wie nennt man es, wenn Fledermäuse Ultraschall zur Orientierung nutzen?",
     options: ["Echoortung", "Photosynthese", "Reflexion des Lichts", "Doppler-Effekt"],
     correct: 0
+  },
+  {
+    q: "Warum hörst du das Klopfen auf dem Tisch lauter, wenn du dein Ohr auf die Tischplatte legst?",
+    options: ["Weil feste Stoffe Schall besser leiten als Luft", "Weil der Tisch den Schall verstärkt wie ein Lautsprecher", "Weil du dann näher an der Klopfstelle bist", "Weil Holz den Schall filtert"],
+    correct: 0
+  },
+  {
+    q: "Was passiert, wenn du beim Summen deine Ohren zuhältst?",
+    options: ["Du hörst gar nichts mehr", "Du hörst dich trotzdem, weil der Schall über die Schädelknochen geleitet wird", "Der Ton wird automatisch höher", "Der Schall wird komplett reflektiert"],
+    correct: 1
+  },
+  {
+    q: "In welcher Reihenfolge nimmt die Schallgeschwindigkeit zu (langsamste zuerst)?",
+    options: ["Luft – Wasser – Stahl", "Stahl – Wasser – Luft", "Wasser – Luft – Stahl", "Stahl – Luft – Wasser"],
+    correct: 0
+  },
+  {
+    q: "Kann der Mensch Ultraschall normalerweise hören?",
+    options: ["Ja, problemlos", "Nein, Ultraschall liegt über der menschlichen Hörgrenze", "Nur nachts", "Nur wenn er sehr laut ist"],
+    correct: 1
   }
 ];
 
