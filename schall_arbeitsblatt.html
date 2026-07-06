@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schall – Interaktives Arbeitsblatt</title>
+<meta name="description" content="Interaktives Arbeitsblatt zum Thema Schall für die 6. Klasse Physik">
+
+<style>
+/* ============ @font-face ============ */
+@font-face { font-family:'Poppins'; src:url('fonts/Poppins-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/Poppins-Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/Poppins-ExtraBold.woff2') format('woff2'); font-weight:800; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/Inter-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/Inter-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/Inter-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Caveat'; src:url('fonts/Caveat-Regular.woff2') format('woff2'); font-weight:500; font-display:swap; }
+
+/* ============ Variablen ============ */
+:root{
+  --primary:#1a6fb5;
+  --primary-light:#e8f1fb;
+  --accent:#f59e0b;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --surface:rgba(255,255,255,0.75);
+  --glass-bg:rgba(255,255,255,0.10);
+  --glass-border:rgba(255,255,255,0.20);
+  --blur:blur(20px);
+  --radius:16px;
+  --sidebar-width:300px;
+  --shadow:0 8px 32px rgba(0,0,0,0.12);
+  --correct:#16a34a;
+  --wrong:#dc2626;
+}
+body.dark{
+  --primary:#38bdf8;
+  --primary-light:#0f172a;
+  --text:#e2e8f0;
+  --text-muted:#94a3b8;
+  --surface:rgba(15,23,42,0.80);
+  --glass-bg:rgba(255,255,255,0.05);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter', system-ui, sans-serif;
+  color:var(--text);
+  background:linear-gradient(135deg,#f0f7ff 0%,#e8f1fb 50%,#fdf6e8 100%);
+  min-height:100vh;
+  transition:background .3s, color .3s;
+  overflow-x:hidden;
+}
+body.dark{ background:linear-gradient(135deg,#0f172a 0%,#0b1120 50%,#101a2c 100%); }
+
+h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02em; }
+
+/* ============ Blobs ============ */
+.blob{ position:fixed; border-radius:50%; filter:blur(80px); opacity:.35; animation:drift 18s ease-in-out infinite alternate; z-index:-1; }
+.blob:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-10%; animation-duration:20s; }
+.blob:nth-child(2){ width:400px; height:400px; background:#7c3aed; top:40%; right:-5%; animation-duration:25s; }
+.blob:nth-child(3){ width:350px; height:350px; background:#0ea5e9; bottom:-5%; left:30%; animation-duration:22s; }
+@keyframes drift{
+  0%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(40px,-30px) scale(1.05); }
+  66%{ transform:translate(-20px,50px) scale(.95); }
+  100%{ transform:translate(30px,20px) scale(1.02); }
+}
+
+/* ============ Progress Bar ============ */
+#progress-bar-wrap{ position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(0,0,0,.08); z-index:500; }
+#progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--accent)); transition:width .1s; }
+
+/* ============ Layout ============ */
+.layout{ display:flex; min-height:100vh; }
+.sidebar{
+  width:var(--sidebar-width); flex-shrink:0; position:fixed; top:0; left:0; height:100vh;
+  background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--glass-border); padding:28px 22px; overflow-y:auto; z-index:300;
+  transition:transform .3s;
+}
+.sidebar h2{ font-size:1.05rem; color:var(--primary); margin-bottom:4px; }
+.sidebar .subtitle{ font-size:.8rem; color:var(--text-muted); margin-bottom:24px; }
+.sidebar nav a{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:10px;
+  color:var(--text); text-decoration:none; font-size:.92rem; font-weight:500; transition:background .2s;
+}
+.sidebar nav a:hover{ background:var(--primary-light); color:var(--primary); }
+.sidebar .school{ margin-top:30px; padding-top:18px; border-top:1px solid var(--glass-border); font-size:.75rem; color:var(--text-muted); line-height:1.5; }
+.dark-toggle{
+  display:flex; align-items:center; gap:8px; margin-top:18px; padding:10px 12px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--glass-border); cursor:pointer; font-size:.85rem; color:var(--text);
+}
+.hamburger{ display:none; position:fixed; top:14px; right:14px; z-index:400; background:var(--surface); border:1px solid var(--glass-border);
+  border-radius:10px; width:44px; height:44px; align-items:center; justify-content:center; backdrop-filter:var(--blur); cursor:pointer; }
+
+.main-content{ margin-left:var(--sidebar-width); flex:1; padding:40px 6vw 100px; max-width:980px; }
+
+/* ============ Hero ============ */
+.hero{ margin-bottom:50px; }
+.hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
+  padding:5px 14px; border-radius:999px; margin-bottom:16px; }
+.hero h1{ font-size:2.6rem; font-weight:800; line-height:1.1; margin-bottom:14px; }
+.hero h1 span{ color:var(--primary); }
+.hero p{ font-size:1.1rem; color:var(--text-muted); max-width:640px; }
+.hero .caveat{ font-family:'Caveat', cursive; font-size:1.5rem; color:var(--accent); margin-top:10px; display:block; }
+
+/* ============ Section / Glass Card ============ */
+section{ margin-bottom:56px; scroll-margin-top:30px; }
+.section-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.section-head .num{
+  width:38px; height:38px; border-radius:12px; background:var(--primary); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; flex-shrink:0;
+}
+.section-head h2{ font-size:1.5rem; }
+
+.card{
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:26px 28px;
+}
+.card + .card{ margin-top:18px; }
+.card p{ line-height:1.65; margin-bottom:12px; }
+.card p:last-child{ margin-bottom:0; }
+.card ul{ padding-left:20px; line-height:1.7; }
+
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible{ opacity:1; transform:translateY(0); }
+
+/* ============ Merksatz-Box ============ */
+.merksatz{
+  border-left:4px solid var(--primary); background:var(--primary-light); border-radius:0 12px 12px 0;
+  padding:16px 20px; font-weight:600; margin:16px 0;
+}
+body.dark .merksatz{ background:rgba(56,189,248,.10); }
+
+/* ============ Video ============ */
+.video-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:12px; overflow:hidden; margin-bottom:16px; box-shadow:var(--shadow); }
+.video-wrap iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+.video-caption{ font-size:.85rem; color:var(--text-muted); margin-bottom:10px; }
+
+/* ============ Klick-Reveal ============ */
+.reveal-question{ cursor:pointer; background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 18px;
+  font-family:'Inter'; font-weight:600; font-size:.95rem; width:100%; text-align:left; display:flex; justify-content:space-between; align-items:center; }
+.reveal-answer{ max-height:0; overflow:hidden; transition:max-height .35s ease; background:var(--primary-light); border-radius:0 0 10px 10px; }
+.reveal-answer inner{ display:block; padding:16px 18px; }
+.reveal-answer .inner{ padding:16px 18px; }
+.qa-block{ margin-bottom:12px; border-radius:10px; overflow:hidden; }
+.qa-block.open .reveal-question{ border-radius:10px 10px 0 0; }
+
+/* ============ Zuordnung ============ */
+.match-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media (max-width:700px){ .match-wrap{ grid-template-columns:1fr; } }
+.match-col h4{ font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:10px; }
+.match-item{
+  background:var(--surface); border:2px solid var(--glass-border); border-radius:10px; padding:12px 16px; margin-bottom:10px;
+  cursor:pointer; font-weight:500; transition:all .2s; user-select:none;
+}
+.match-item:hover{ border-color:var(--primary); }
+.match-item.selected{ border-color:var(--primary); background:var(--primary-light); }
+.match-item.correct{ border-color:var(--correct); background:rgba(22,163,74,.12); }
+.match-item.wrong{ border-color:var(--wrong); background:rgba(220,38,38,.12); animation:shake .3s; }
+@keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+#match-status{ margin-top:14px; font-weight:600; }
+
+/* ============ Rechner ============ */
+.calc-box{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:14px 0; }
+.calc-box input{ width:110px; padding:10px 12px; border-radius:10px; border:2px solid var(--glass-border); font-size:1rem; font-family:'Inter'; background:var(--surface); color:var(--text); }
+.calc-box button{ background:var(--accent); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:600; cursor:pointer; font-family:'Inter'; }
+#calc-result{ font-weight:700; color:var(--primary); font-size:1.05rem; }
+
+/* ============ Wellen-Simulator ============ */
+.sim-box{ display:flex; flex-direction:column; gap:14px; }
+canvas#waveCanvas{ width:100%; height:200px; border-radius:12px; background:#fff; box-shadow:var(--shadow); }
+body.dark canvas#waveCanvas{ background:#0b1120; }
+.slider-row{ display:flex; align-items:center; gap:14px; }
+.slider-row label{ width:150px; font-weight:600; font-size:.9rem; }
+.slider-row input[type=range]{ flex:1; accent-color:var(--primary); }
+.slider-row .val{ width:70px; text-align:right; font-weight:700; color:var(--primary); }
+
+/* ============ Fakten-Grid ============ */
+.fact-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:12px; }
+.fact-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:16px; text-align:center; }
+.fact-card .value{ font-family:'Poppins'; font-weight:700; font-size:1.3rem; color:var(--primary); }
+.fact-card .label{ font-size:.8rem; color:var(--text-muted); margin-top:4px; }
+
+/* ============ Quiz ============ */
+.quiz-question{ margin-bottom:22px; }
+.quiz-question p.q-text{ font-weight:600; margin-bottom:10px; }
+.quiz-options{ display:flex; flex-direction:column; gap:8px; }
+.quiz-option{
+  background:var(--surface); border:2px solid var(--glass-border); border-radius:10px; padding:11px 16px;
+  cursor:pointer; text-align:left; font-family:'Inter'; font-size:.95rem; color:var(--text); transition:all .2s;
+}
+.quiz-option:hover{ border-color:var(--primary); }
+.quiz-option.correct{ border-color:var(--correct); background:rgba(22,163,74,.15); }
+.quiz-option.wrong{ border-color:var(--wrong); background:rgba(220,38,38,.15); }
+.quiz-option[disabled]{ cursor:default; }
+#quiz-score-box{ text-align:center; padding:24px; }
+#quiz-score{ font-family:'Poppins'; font-size:2.2rem; font-weight:800; color:var(--primary); }
+#quiz-message{ margin-top:8px; font-weight:600; }
+.btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; font-family:'Inter'; }
+
+footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; }
+
+/* ============ Responsive ============ */
+@media (max-width:900px){
+  .sidebar{ transform:translateX(-100%); }
+  .sidebar.open{ transform:translateX(0); }
+  .main-content{ margin-left:0; padding:70px 6vw 100px; }
+  .hamburger{ display:flex; }
+  .hero h1{ font-size:2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+  <i data-lucide="menu"></i>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>Schall</h2>
+    <div class="subtitle">Physik · Klasse 6</div>
+    <nav>
+      <a href="#was-ist-schall"><i data-lucide="waves"></i> Was ist Schall?</a>
+      <a href="#video"><i data-lucide="video"></i> Versuch: Schall im Vakuum</a>
+      <a href="#geschwindigkeit"><i data-lucide="gauge"></i> Schallgeschwindigkeit</a>
+      <a href="#tonhoehe"><i data-lucide="sliders-horizontal"></i> Tonhöhe &amp; Lautstärke</a>
+      <a href="#ultraschall"><i data-lucide="bat"></i> Schall in der Natur</a>
+      <a href="#quiz"><i data-lucide="check-circle"></i> Abschlussquiz</a>
+    </nav>
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+      <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
+    </div>
+    <div class="school">
+      Gymnasium Thomaeum Kempen<br>
+      Am Gymnasium 4, 47906 Kempen<br>
+      Physik · letzte Stunde des Schuljahres
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="hero reveal">
+      <span class="eyebrow">Arbeitsblatt · interaktiv</span>
+      <h1>Alles, was du über <span>Schall</span> wissen musst</h1>
+      <p>Bevor die Sommerferien beginnen, schauen wir uns gemeinsam an, wie Schall entsteht, sich ausbreitet und warum du überhaupt etwas hören kannst. Schau dir die Videos an, probiere die kleinen Experimente aus und teste am Ende dein Wissen im Quiz.</p>
+      <span class="caveat">Viel Spaß – und danach ab in die Ferien!</span>
+    </div>
+
+    <!-- 1. Was ist Schall -->
+    <section id="was-ist-schall">
+      <div class="section-head"><div class="num">1</div><h2>Was ist Schall?</h2></div>
+      <div class="card reveal">
+        <p>Schall entsteht immer dann, wenn ein Körper <strong>schwingt</strong>, also sehr schnell hin und her zittert. Diese Schwingung überträgt sich auf die Luft (oder ein anderes Medium) und breitet sich als <strong>Schallwelle</strong> aus, bis sie dein Ohr erreicht und dein Trommelfell in Bewegung setzt.</p>
+        <div class="merksatz">Merke: Schallquelle schwingt → Medium (z. B. Luft) überträgt die Schwingung → Trommelfell nimmt sie auf.</div>
+        <p>Beispiele für Schallquellen: eine Gitarrensaite, deine Stimmbänder, eine Stimmgabel, ein Lautsprecher.</p>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px;">
+        <h4 style="margin-bottom:14px;">Ordne die Begriffe der richtigen Erklärung zu</h4>
+        <div class="match-wrap">
+          <div class="match-col">
+            <h4>Begriff</h4>
+            <div class="match-item" data-match="quelle">Schallquelle</div>
+            <div class="match-item" data-match="medium">Medium</div>
+            <div class="match-item" data-match="welle">Schallwelle</div>
+            <div class="match-item" data-match="empfaenger">Trommelfell</div>
+          </div>
+          <div class="match-col">
+            <h4>Erklärung</h4>
+            <div class="match-item" data-match="empfaenger">Nimmt die Schwingung im Ohr auf</div>
+            <div class="match-item" data-match="welle">Die sich ausbreitende Schwingung</div>
+            <div class="match-item" data-match="quelle">Der schwingende Körper, z. B. eine Saite</div>
+            <div class="match-item" data-match="medium">Der Stoff, der den Schall überträgt, z. B. Luft</div>
+          </div>
+        </div>
+        <div id="match-status"></div>
+      </div>
+    </section>
+
+    <!-- 2. Video -->
+    <section id="video">
+      <div class="section-head"><div class="num">2</div><h2>Versuch: Braucht Schall ein Medium?</h2></div>
+      <div class="card reveal">
+        <p>Schau dir das folgende Experiment genau an: Ein Wecker klingelt unter einer Glasglocke. Was passiert, wenn die Luft darunter herausgepumpt wird?</p>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube-nocookie.com/embed/O8v3ZRpjHg0" title="Kann man einen Wecker im Vakuum hören? – Experiment" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="video-caption">Quelle: YouTube – Experiment zur Schallausbreitung im Vakuum</div>
+
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Warum wird der Wecker unter der Glocke immer leiser?</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Wenn die Luft aus der Glasglocke herausgepumpt wird, entsteht ein Vakuum. Ohne Luftteilchen kann sich die Schwingung des Weckers nicht mehr übertragen – der Schall braucht ein Medium, um sich auszubreiten. Im Vakuum (z. B. im Weltall) ist es deshalb völlig still.</div></div>
+        </div>
+        <div class="qa-block">
+          <button class="reveal-question" onclick="toggleQA(this)">
+            <span>Sieht man den Wecker trotzdem klingeln?</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="reveal-answer"><div class="inner">Ja – Licht braucht kein Medium, um sich auszubreiten. Deshalb kannst du den schwingenden Wecker weiterhin sehen, aber nicht mehr hören.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Schallgeschwindigkeit -->
+    <section id="geschwindigkeit">
+      <div class="section-head"><div class="num">3</div><h2>Wie schnell ist Schall unterwegs?</h2></div>
+      <div class="card reveal">
+        <p>Schall ist deutlich langsamer als Licht. Deshalb siehst du einen Blitz sofort, hörst den Donner aber erst später.</p>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="value">343 m/s</div><div class="label">Schall in Luft</div></div>
+          <div class="fact-card"><div class="value">1.480 m/s</div><div class="label">Schall in Wasser</div></div>
+          <div class="fact-card"><div class="value">~5.000 m/s</div><div class="label">Schall in Stahl</div></div>
+          <div class="fact-card"><div class="value">300.000 km/s</div><div class="label">Licht</div></div>
+        </div>
+        <div class="merksatz" style="margin-top:18px;">Merke: Schall breitet sich in festen Stoffen am schnellsten, in Gasen am langsamsten aus.</div>
+
+        <h4 style="margin:20px 0 10px;">Blitz-Donner-Rechner</h4>
+        <p>Zähle beim nächsten Gewitter die Sekunden zwischen Blitz und Donner – so kannst du die Entfernung berechnen (Schallgeschwindigkeit ≈ 343 m/s).</p>
+        <div class="calc-box">
+          <input type="number" id="thunderSeconds" placeholder="Sekunden" min="0" step="0.1">
+          <button onclick="calcThunder()">Entfernung berechnen</button>
+          <span id="calc-result"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Tonhöhe und Lautstärke -->
+    <section id="tonhoehe">
+      <div class="section-head"><div class="num">4</div><h2>Tonhöhe und Lautstärke</h2></div>
+      <div class="card reveal">
+        <p>Zwei Eigenschaften einer Schwingung bestimmen, wie ein Ton klingt:</p>
+        <ul>
+          <li><strong>Frequenz</strong> (gemessen in Hertz, Hz) → bestimmt die <strong>Tonhöhe</strong>: viele Schwingungen pro Sekunde = hoher Ton, wenige Schwingungen = tiefer Ton.</li>
+          <li><strong>Amplitude</strong> (Ausschlag der Schwingung) → bestimmt die <strong>Lautstärke</strong>: große Amplitude = lauter Ton, kleine Amplitude = leiser Ton.</li>
+        </ul>
+
+        <div class="video-wrap" style="margin-top:16px;">
+          <iframe src="https://www.youtube-nocookie.com/embed/-QJguYTWFsI" title="Wie entsteht Schall? – physikdigital.de" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="video-caption">Quelle: YouTube – physikdigital.de, Erklärvideo zu Tonhöhe und Schwingung</div>
+
+        <h4 style="margin:20px 0 10px;">Probier es selbst: Wellen-Simulator</h4>
+        <p>Verändere Frequenz und Amplitude und beobachte, wie sich die Schallwelle verändert.</p>
+        <div class="sim-box">
+          <canvas id="waveCanvas" width="800" height="200"></canvas>
+          <div class="slider-row">
+            <label for="freqSlider">Frequenz (Tonhöhe)</label>
+            <input type="range" id="freqSlider" min="1" max="20" value="6">
+            <span class="val" id="freqVal">6</span>
+          </div>
+          <div class="slider-row">
+            <label for="ampSlider">Amplitude (Lautstärke)</label>
+            <input type="range" id="ampSlider" min="10" max="90" value="50">
+            <span class="val" id="ampVal">50</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Ultraschall -->
+    <section id="ultraschall">
+      <div class="section-head"><div class="num">5</div><h2>Schall in der Natur</h2></div>
+      <div class="card reveal">
+        <p>Manche Tiere nutzen Schall, den wir Menschen gar nicht hören können:</p>
+        <ul>
+          <li><strong>Fledermäuse</strong> senden Ultraschall aus (über 20.000 Hz) und orten damit Hindernisse und Beute durch das Echo – man nennt das Echoortung.</li>
+          <li><strong>Delfine</strong> nutzen Ultraschall unter Wasser, um sich zu orientieren und zu kommunizieren.</li>
+          <li><strong>Elefanten</strong> nutzen dagegen Infraschall (sehr tiefe Töne unter 20 Hz), um sich über mehrere Kilometer zu verständigen.</li>
+        </ul>
+        <div class="merksatz">Der Mensch hört normalerweise nur Frequenzen zwischen etwa 16 Hz und 20.000 Hz.</div>
+      </div>
+    </section>
+
+    <!-- 6. Quiz -->
+    <section id="quiz">
+      <div class="section-head"><div class="num">6</div><h2>Abschlussquiz</h2></div>
+      <div class="card reveal">
+        <div id="quiz-container"></div>
+        <div id="quiz-score-box" style="display:none;">
+          <div id="quiz-score"></div>
+          <div id="quiz-message"></div>
+          <button class="btn-primary" style="margin-top:14px;" onclick="restartQuiz()">Nochmal versuchen</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Gymnasium Thomaeum Kempen · Physik Klasse 6 · Schöne Sommerferien! ☀️
+    </footer>
+
+  </main>
+</div>
+
+<script src="fonts/lucide.min.js"></script>
+<script>
+/* ---------- Icons ---------- */
+if (window.lucide) { lucide.createIcons(); }
+
+/* ---------- Dark Mode ---------- */
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+  const icon = document.getElementById('dark-icon');
+  const isDark = document.body.classList.contains('dark');
+  icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ---------- Scroll Progress ---------- */
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ---------- Reveal Animation ---------- */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ---------- Klick-Reveal Q&A ---------- */
+function toggleQA(header){
+  const block = header.parentElement;
+  const answer = header.nextElementSibling;
+  const isOpen = block.classList.toggle('open');
+  answer.style.maxHeight = isOpen ? answer.scrollHeight + 'px' : null;
+}
+
+/* ---------- Zuordnungsspiel ---------- */
+let selectedMatch = null;
+let matchedCount = 0;
+const totalMatches = 4;
+document.querySelectorAll('.match-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.classList.contains('correct')) return;
+    if (!selectedMatch){
+      selectedMatch = item;
+      item.classList.add('selected');
+      return;
+    }
+    if (selectedMatch === item){
+      item.classList.remove('selected');
+      selectedMatch = null;
+      return;
+    }
+    const key1 = selectedMatch.dataset.match;
+    const key2 = item.dataset.match;
+    if (key1 === key2){
+      selectedMatch.classList.remove('selected');
+      selectedMatch.classList.add('correct');
+      item.classList.add('correct');
+      matchedCount++;
+      if (matchedCount === totalMatches){
+        document.getElementById('match-status').textContent = 'Super, alle Begriffe richtig zugeordnet!';
+        document.getElementById('match-status').style.color = 'var(--correct)';
+      }
+    } else {
+      item.classList.add('wrong');
+      selectedMatch.classList.add('wrong');
+      setTimeout(() => {
+        item.classList.remove('wrong');
+        selectedMatch.classList.remove('wrong', 'selected');
+      }, 500);
+    }
+    selectedMatch = null;
+  });
+});
+
+/* ---------- Blitz-Donner-Rechner ---------- */
+function calcThunder(){
+  const s = parseFloat(document.getElementById('thunderSeconds').value);
+  const result = document.getElementById('calc-result');
+  if (isNaN(s) || s < 0){
+    result.textContent = 'Bitte gib eine gültige Anzahl an Sekunden ein.';
+    return;
+  }
+  const meters = s * 343;
+  const km = meters / 1000;
+  result.textContent = `≈ ${meters.toFixed(0)} m (${km.toFixed(2)} km) entfernt`;
+}
+
+/* ---------- Wellen-Simulator ---------- */
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
+const freqSlider = document.getElementById('freqSlider');
+const ampSlider = document.getElementById('ampSlider');
+const freqVal = document.getElementById('freqVal');
+const ampVal = document.getElementById('ampVal');
+
+function resizeCanvas(){
+  canvas.width = canvas.clientWidth;
+  canvas.height = 200;
+}
+window.addEventListener('resize', () => { resizeCanvas(); drawWave(); });
+
+function drawWave(){
+  const w = canvas.width, h = canvas.height;
+  const freq = parseFloat(freqSlider.value);
+  const amp = parseFloat(ampSlider.value);
+  freqVal.textContent = freq;
+  ampVal.textContent = amp;
+
+  ctx.clearRect(0, 0, w, h);
+  const isDark = document.body.classList.contains('dark');
+  ctx.strokeStyle = isDark ? '#38bdf8' : '#1a6fb5';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  const midY = h / 2;
+  for (let x = 0; x <= w; x++){
+    const y = midY + amp * Math.sin((x / w) * Math.PI * 2 * freq);
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  ctx.strokeStyle = isDark ? 'rgba(255,255,255,.15)' : 'rgba(0,0,0,.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, midY);
+  ctx.lineTo(w, midY);
+  ctx.stroke();
+}
+freqSlider.addEventListener('input', drawWave);
+ampSlider.addEventListener('input', drawWave);
+resizeCanvas();
+drawWave();
+
+/* ---------- Quiz ---------- */
+const quizData = [
+  {
+    q: "Wodurch entsteht Schall?",
+    options: ["Durch schwingende Körper", "Durch stillstehende Körper", "Nur durch elektrischen Strom", "Durch Licht"],
+    correct: 0
+  },
+  {
+    q: "Warum hört man den Wecker im Vakuum nicht mehr?",
+    options: ["Der Wecker hört auf zu klingeln", "Es fehlt ein Medium zur Schallübertragung", "Das Glas ist zu dick", "Licht blockiert den Schall"],
+    correct: 1
+  },
+  {
+    q: "Was bestimmt die Tonhöhe eines Schalls?",
+    options: ["Die Amplitude", "Die Lautstärke", "Die Frequenz", "Die Farbe der Schallquelle"],
+    correct: 2
+  },
+  {
+    q: "In welchem Medium breitet sich Schall am schnellsten aus?",
+    options: ["Luft", "Wasser", "Stahl (fester Stoff)", "Vakuum"],
+    correct: 2
+  },
+  {
+    q: "Wie nennt man es, wenn Fledermäuse Ultraschall zur Orientierung nutzen?",
+    options: ["Echoortung", "Photosynthese", "Reflexion des Lichts", "Doppler-Effekt"],
+    correct: 0
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function buildQuiz(){
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  quizScore = 0;
+  quizAnswered = 0;
+  document.getElementById('quiz-score-box').style.display = 'none';
+
+  quizData.forEach((item, qi) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-question';
+    const qText = document.createElement('p');
+    qText.className = 'q-text';
+    qText.textContent = `${qi + 1}. ${item.q}`;
+    wrap.appendChild(qText);
+
+    const optsWrap = document.createElement('div');
+    optsWrap.className = 'quiz-options';
+    item.options.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(btn, optsWrap, oi, item.correct);
+      optsWrap.appendChild(btn);
+    });
+    wrap.appendChild(optsWrap);
+    container.appendChild(wrap);
+  });
+}
+
+function handleAnswer(btn, optsWrap, chosen, correctIdx){
+  const buttons = optsWrap.querySelectorAll('.quiz-option');
+  buttons.forEach(b => b.disabled = true);
+  buttons[correctIdx].classList.add('correct');
+  if (chosen !== correctIdx){
+    btn.classList.add('wrong');
+  } else {
+    quizScore++;
+  }
+  quizAnswered++;
+  if (quizAnswered === quizData.length){
+    setTimeout(showQuizResult, 400);
+  }
+}
+
+function showQuizResult(){
+  const box = document.getElementById('quiz-score-box');
+  box.style.display = 'block';
+  document.getElementById('quiz-score').textContent = `${quizScore} / ${quizData.length}`;
+  const msg = document.getElementById('quiz-message');
+  if (quizScore === quizData.length){
+    msg.textContent = 'Perfekt! Du hast alles verstanden – ab in die Ferien!';
+  } else if (quizScore >= quizData.length - 1){
+    msg.textContent = 'Sehr gut gemacht!';
+  } else if (quizScore >= quizData.length / 2){
+    msg.textContent = 'Solide – ein Blick zurück nach oben lohnt sich noch.';
+  } else {
+    msg.textContent = 'Schau dir die Abschnitte oben nochmal in Ruhe an.';
+  }
+}
+
+function restartQuiz(){ buildQuiz(); }
+buildQuiz();
+</script>
+</body>
+</html>
