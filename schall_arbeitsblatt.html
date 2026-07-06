@@ -571,8 +571,8 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
             <thead>
               <tr>
                 <th>Abstand</th>
-                <th>Gemessener Pegel (relativ)</th>
-                <th>Idealwert (relativ)</th>
+                <th>Gemessene Lautstärke (%)</th>
+                <th>Idealwert (%)</th>
               </tr>
             </thead>
             <tbody id="distance-table-body"></tbody>
@@ -1026,29 +1026,30 @@ function buildDistanceResults(){
   const tbody = document.getElementById('distance-table-body');
   tbody.innerHTML = '';
 
-  const measuredDb = [];
-  const idealDb = [];
+  const measuredPercent = [];
+  const idealPercent = [];
 
   distanceSteps.forEach((d, i) => {
     const m = Math.max(distanceMeasurements[i], 0.0001);
-    const mDb = 20 * Math.log10(m / ref);
-    const iDb = 20 * Math.log10(distanceSteps[0] / d);
-    measuredDb.push(mDb);
-    idealDb.push(iDb);
+    const mPercent = (m / ref) * 100;
+    const iPercent = (distanceSteps[0] / d) * 100;
+    measuredPercent.push(mPercent);
+    idealPercent.push(iPercent);
 
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${d} cm</td><td>${mDb.toFixed(1)} dB</td><td>${iDb.toFixed(1)} dB</td>`;
+    row.innerHTML = `<td>${d} cm</td><td>${mPercent.toFixed(0)} %</td><td>${iPercent.toFixed(0)} %</td>`;
     tbody.appendChild(row);
   });
 
   tableWrap.style.display = 'block';
-  drawDistanceChart(measuredDb, idealDb);
+  drawDistanceChart(measuredPercent, idealPercent);
 
   document.getElementById('distance-summary').innerHTML =
-    '<p style="margin-top:14px;">Je größer der Abstand, desto leiser wird es – bei einer Verdopplung des Abstands nimmt der Pegel theoretisch um etwa 6 dB ab (Kugelwellen-Ausbreitung). Eure gemessenen Werte weichen davon vermutlich etwas ab: Nebengeräusche, Echos im Klassenraum und unterschiedlich lautes Klatschen beeinflussen die Messung.</p>';
+    '<p style="margin-top:14px;">Je größer der Abstand, desto leiser wird es – und zwar nach einer einfachen Regel: Verdoppelst du den Abstand, halbiert sich die Lautstärke (der Schalldruck) ungefähr. Eure gemessenen Werte weichen davon vermutlich etwas ab: Nebengeräusche, Echos im Klassenraum und unterschiedlich lautes Klatschen beeinflussen die Messung.</p>';
 }
 
-function drawDistanceChart(measuredDb, idealDb){
+
+function drawDistanceChart(measuredPercent, idealPercent){
   const canvas = document.getElementById('distanceChart');
   canvas.style.display = 'block';
   canvas.width = canvas.clientWidth;
@@ -1057,13 +1058,13 @@ function drawDistanceChart(measuredDb, idealDb){
   ctx.clearRect(0, 0, w, h);
 
   const isDark = document.body.classList.contains('dark');
-  const padding = { left: 50, right: 20, top: 26, bottom: 40 };
+  const padding = { left: 55, right: 20, top: 26, bottom: 40 };
   const plotW = w - padding.left - padding.right;
   const plotH = h - padding.top - padding.bottom;
 
-  const allValues = measuredDb.concat(idealDb, [0]);
-  const minVal = Math.min(...allValues) - 2;
-  const maxVal = Math.max(...allValues) + 2;
+  const allValues = measuredPercent.concat(idealPercent);
+  const minVal = 0;
+  const maxVal = Math.max(...allValues, 100) + 10;
 
   const xPos = i => padding.left + (i / (distanceSteps.length - 1)) * plotW;
   const yPos = val => padding.top + (1 - (val - minVal) / (maxVal - minVal)) * plotH;
@@ -1080,6 +1081,19 @@ function drawDistanceChart(measuredDb, idealDb){
   ctx.font = '12px Inter, sans-serif';
   ctx.textAlign = 'center';
   distanceSteps.forEach((d, i) => { ctx.fillText(d + ' cm', xPos(i), h - padding.bottom + 18); });
+
+  // Y-Achsen-Beschriftung (0 %, 50 %, 100 %, ...)
+  ctx.textAlign = 'right';
+  const yStep = 25;
+  for (let val = 0; val <= maxVal; val += yStep){
+    const y = yPos(val);
+    ctx.fillText(val + ' %', padding.left - 8, y + 4);
+    ctx.strokeStyle = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(w - padding.right, y);
+    ctx.stroke();
+  }
 
   function drawLine(values, color){
     ctx.strokeStyle = color;
@@ -1098,8 +1112,8 @@ function drawDistanceChart(measuredDb, idealDb){
     });
   }
 
-  drawLine(idealDb, '#f59e0b');
-  drawLine(measuredDb, isDark ? '#38bdf8' : '#1a6fb5');
+  drawLine(idealPercent, '#f59e0b');
+  drawLine(measuredPercent, isDark ? '#38bdf8' : '#1a6fb5');
 
   ctx.textAlign = 'left';
   ctx.fillStyle = isDark ? '#38bdf8' : '#1a6fb5';
