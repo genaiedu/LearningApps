@@ -185,6 +185,20 @@ body.dark .merksatz{ background:rgba(56,189,248,.10); }
 }
 .obs-textarea::placeholder{ color:var(--text-muted); }
 
+/* ============ Rechenaufgaben ============ */
+.task-item{ border-top:1px solid var(--glass-border); padding-top:18px; margin-top:18px; }
+.task-item:first-child{ border-top:none; padding-top:0; margin-top:0; }
+.task-item .task-text{ margin-bottom:12px; line-height:1.6; }
+.task-input-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.task-input-row input{
+  width:120px; padding:9px 12px; border-radius:8px; border:2px solid var(--glass-border);
+  background:var(--surface); color:var(--text); font-family:'Inter'; font-size:.95rem;
+}
+.task-input-row .unit{ color:var(--text-muted); font-size:.9rem; }
+.task-feedback{ font-weight:600; font-size:.9rem; min-height:1.3em; margin-bottom:8px; }
+.task-feedback.correct{ color:var(--correct); }
+.task-feedback.wrong{ color:var(--wrong); }
+
 /* ============ Rangfolge-Aufgabe ============ */
 .order-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
 .order-item{
@@ -431,6 +445,11 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
         </div>
         <div id="order-status"></div>
 
+        <h4 style="margin:24px 0 10px;">Aufgaben zum Rechnen</h4>
+        <p>Nutze die Formel <strong>s = v · t</strong> (Strecke = Geschwindigkeit · Zeit) und die Werte aus der Tabelle oben.</p>
+
+        <div id="task-list"></div>
+
         <h4 style="margin:24px 0 10px;">Blitz-Donner-Rechner</h4>
         <p>Zähle beim nächsten Gewitter die Sekunden zwischen Blitz und Donner – so kannst du die Entfernung berechnen (Schallgeschwindigkeit ≈ 343 m/s).</p>
         <div class="calc-box">
@@ -667,6 +686,113 @@ function resetMatching(){
 }
 
 buildMatching();
+
+/* ---------- Rechenaufgaben ---------- */
+const speedTasks = [
+  {
+    text: 'Ein Zug fährt auf Schienen, eine Person steht 686 m entfernt und hört ein Geräusch. Wie viele Sekunden braucht der Schall (in Luft, v ≈ 343 m/s) bis zu ihr?',
+    unit: 's', answer: 2, tolerance: 0.1,
+    formula: 't = s ÷ v',
+    solution: 't = 686 m ÷ 343 m/s = 2 s'
+  },
+  {
+    text: 'Bei einem Gewitter zählst du 5 Sekunden zwischen Blitz und Donner. Wie weit ist das Gewitter ungefähr entfernt (in Metern)?',
+    unit: 'm', answer: 1715, tolerance: 20,
+    formula: 's = v · t',
+    solution: 's = 343 m/s · 5 s = 1715 m ≈ 1,7 km'
+  },
+  {
+    text: 'Ein Boot sendet unter Wasser (v ≈ 1480 m/s) ein Echolot-Signal aus. Nach 4 Sekunden kommt das Echo zurück. Wie weit ist das Hindernis entfernt (in Metern)? Denk daran: Der Schall legt den Weg zweimal zurück – hin und wieder zurück!',
+    unit: 'm', answer: 2960, tolerance: 40,
+    formula: 's = (v · t) ÷ 2',
+    solution: 's = (1480 m/s · 4 s) ÷ 2 = 5920 m ÷ 2 = 2960 m'
+  },
+  {
+    text: 'Ein Schallsignal legt in einer Stahlschiene in 0,02 Sekunden genau 100 m zurück. Wie groß ist die Schallgeschwindigkeit in Stahl (in m/s)?',
+    unit: 'm/s', answer: 5000, tolerance: 100,
+    formula: 'v = s ÷ t',
+    solution: 'v = 100 m ÷ 0,02 s = 5000 m/s'
+  }
+];
+
+function buildTasks(){
+  const list = document.getElementById('task-list');
+  list.innerHTML = '';
+
+  speedTasks.forEach((task, i) => {
+    const item = document.createElement('div');
+    item.className = 'task-item';
+
+    const text = document.createElement('p');
+    text.className = 'task-text';
+    text.textContent = `${i + 1}. ${task.text}`;
+    item.appendChild(text);
+
+    const row = document.createElement('div');
+    row.className = 'task-input-row';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = 'any';
+    input.placeholder = 'Deine Antwort';
+    input.id = `task-input-${i}`;
+
+    const unit = document.createElement('span');
+    unit.className = 'unit';
+    unit.textContent = task.unit;
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-secondary';
+    btn.textContent = 'Prüfen';
+    btn.onclick = () => checkTask(i);
+
+    row.appendChild(input);
+    row.appendChild(unit);
+    row.appendChild(btn);
+    item.appendChild(row);
+
+    const feedback = document.createElement('div');
+    feedback.className = 'task-feedback';
+    feedback.id = `task-feedback-${i}`;
+    item.appendChild(feedback);
+
+    const qaBlock = document.createElement('div');
+    qaBlock.className = 'qa-block';
+    qaBlock.innerHTML = `
+      <button class="reveal-question" onclick="toggleQA(this)">
+        <span>Lösungsweg anzeigen</span>
+        <i data-lucide="chevron-down"></i>
+      </button>
+      <div class="reveal-answer"><div class="inner">Formel: <strong>${task.formula}</strong><br>${task.solution}</div></div>
+    `;
+    item.appendChild(qaBlock);
+
+    list.appendChild(item);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+function checkTask(i){
+  const task = speedTasks[i];
+  const input = document.getElementById(`task-input-${i}`);
+  const feedback = document.getElementById(`task-feedback-${i}`);
+  const val = parseFloat(input.value);
+
+  if (isNaN(val)){
+    feedback.textContent = 'Bitte trage zuerst eine Zahl ein.';
+    feedback.className = 'task-feedback wrong';
+    return;
+  }
+  if (Math.abs(val - task.answer) <= task.tolerance){
+    feedback.textContent = 'Richtig!';
+    feedback.className = 'task-feedback correct';
+  } else {
+    feedback.textContent = 'Noch nicht richtig – versuch es nochmal oder schau dir den Lösungsweg an.';
+    feedback.className = 'task-feedback wrong';
+  }
+}
+
+buildTasks();
 
 /* ---------- Blitz-Donner-Rechner ---------- */
 function calcThunder(){
