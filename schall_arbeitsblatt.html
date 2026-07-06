@@ -8,13 +8,13 @@
 
 <style>
 /* ============ @font-face ============ */
-@font-face { font-family:'Poppins'; src:url('fonts/Poppins-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
-@font-face { font-family:'Poppins'; src:url('fonts/Poppins-Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
-@font-face { font-family:'Poppins'; src:url('fonts/Poppins-ExtraBold.woff2') format('woff2'); font-weight:800; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/Inter-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/Inter-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/Inter-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
-@font-face { font-family:'Caveat'; src:url('fonts/Caveat-Regular.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-900.woff2') format('woff2'); font-weight:900; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Dancing Script'; src:url('fonts/dancing-script-v29-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
 
 /* ============ Variablen ============ */
 :root{
@@ -101,10 +101,10 @@ h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02e
 .hero{ margin-bottom:50px; }
 .hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
   padding:5px 14px; border-radius:999px; margin-bottom:16px; }
-.hero h1{ font-size:2.6rem; font-weight:800; line-height:1.1; margin-bottom:14px; }
+.hero h1{ font-size:2.6rem; font-weight:900; line-height:1.1; margin-bottom:14px; }
 .hero h1 span{ color:var(--primary); }
 .hero p{ font-size:1.1rem; color:var(--text-muted); max-width:640px; }
-.hero .caveat{ font-family:'Caveat', cursive; font-size:1.5rem; color:var(--accent); margin-top:10px; display:block; }
+.hero .caveat{ font-family:'Dancing Script', cursive; font-weight:600; font-size:1.6rem; color:var(--accent); margin-top:10px; display:block; }
 
 /* ============ Section / Glass Card ============ */
 section{ margin-bottom:56px; scroll-margin-top:30px; }
@@ -198,7 +198,7 @@ body.dark canvas#waveCanvas{ background:#0b1120; }
 .quiz-option.wrong{ border-color:var(--wrong); background:rgba(220,38,38,.15); }
 .quiz-option[disabled]{ cursor:default; }
 #quiz-score-box{ text-align:center; padding:24px; }
-#quiz-score{ font-family:'Poppins'; font-size:2.2rem; font-weight:800; color:var(--primary); }
+#quiz-score{ font-family:'Poppins'; font-size:2.2rem; font-weight:900; color:var(--primary); }
 #quiz-message{ margin-top:8px; font-weight:600; }
 .btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; font-family:'Inter'; }
 
@@ -236,7 +236,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       <a href="#video"><i data-lucide="video"></i> Versuch: Schall im Vakuum</a>
       <a href="#geschwindigkeit"><i data-lucide="gauge"></i> Schallgeschwindigkeit</a>
       <a href="#tonhoehe"><i data-lucide="sliders-horizontal"></i> Tonhöhe &amp; Lautstärke</a>
-      <a href="#ultraschall"><i data-lucide="bat"></i> Schall in der Natur</a>
+      <a href="#ultraschall"><i data-lucide="ear"></i> Schall in der Natur</a>
       <a href="#quiz"><i data-lucide="check-circle"></i> Abschlussquiz</a>
     </nav>
     <div class="dark-toggle" onclick="toggleDarkMode()">
