@@ -259,7 +259,6 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
     <div class="subtitle">EF · Abschluss-Doppelstunde</div>
     <nav>
       <a href="#spiel"><i data-lucide="shuffle"></i> Zufallskarte</a>
-      <a href="#ablauf"><i data-lucide="timer"></i> Ablauf</a>
       <a href="#verlauf"><i data-lucide="history"></i> Deine Antworten</a>
     </nav>
     <div class="dark-toggle" onclick="toggleDarkMode()">
@@ -275,10 +274,8 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
   <main class="main-content">
 
     <div class="hero reveal">
-      <span class="eyebrow">Interaktiv · ohne Vorbereitung</span>
+      <span class="eyebrow">Physik EF</span>
       <h1><span>Physik-Mythen</span> der EF</h1>
-      <p>Die Seite zieht zufällig eine Aussage. Wähle eine Antwort aus. Danach erscheint eine Erklärung, ohne dass direkt verraten wird, ob deine Antwort richtig war. Am Ende des Durchgangs siehst du deine Statistik.</p>
-      <span class="caveat">Einzeln spielbar – ohne Wiederholung im Durchgang.</span>
     </div>
 
     <section id="spiel">
@@ -315,8 +312,6 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
           <button class="btn-secondary" onclick="restartDeck()"><i data-lucide="rotate-ccw"></i> Zufallslauf neu starten</button>
         </div>
 
-        <div class="keyboard-hint">Erst eine Antwort anklicken. Danach mit Leertaste oder Button zur nächsten Aussage.</div>
-
         <div class="finished-box" id="finished-box">
           <h3>Durchgang beendet.</h3>
           <p>Hier ist deine Auswertung für diesen Zufallslauf.</p>
@@ -335,21 +330,8 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <section id="ablauf">
-      <div class="section-head"><div class="num">2</div><h2>Ablauf</h2></div>
-      <div class="card reveal">
-        <p>Die Seite ist jetzt für Einzelarbeit angelegt: Aussage lesen, Antwort anklicken, Erklärung lesen, nächste Aussage. Die Rückmeldung, ob die eigene Antwort richtig war, erscheint erst am Ende.</p>
-        <div class="flow-grid">
-          <div class="flow-card"><div class="time">0–10 min</div><p>Einführung: „Physik beginnt oft dort, wo eine plausible Alltagsvorstellung scheitert.“ Danach individuell starten.</p></div>
-          <div class="flow-card"><div class="time">10–55 min</div><p>Einzelarbeit: Aussagen beantworten. Nach jeder Antwort wird nur die Erklärung angezeigt, nicht die Bewertung der eigenen Antwort.</p></div>
-          <div class="flow-card"><div class="time">55–75 min</div><p>Wer früher fertig ist, notiert drei Aussagen, bei denen die Erklärung besonders überraschend war.</p></div>
-          <div class="flow-card"><div class="time">75–90 min</div><p>Abschluss: Statistik ansehen, zweiten Zufallslauf starten oder besonders schwierige Aussagen besprechen.</p></div>
-        </div>
-      </div>
-    </section>
-
     <section id="verlauf">
-      <div class="section-head"><div class="num">3</div><h2>Deine Antworten im laufenden Durchgang</h2></div>
+      <div class="section-head"><div class="num">2</div><h2>Deine Antworten</h2></div>
       <div class="card reveal">
         <div class="history-list" id="history-list">
           <p style="color:var(--text-muted);">Noch keine Antwort gegeben.</p>
@@ -357,7 +339,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       </div>
     </section>
 
-    <footer>Physik EF · Mythencheck · Einzelmodus · Zufallsauswahl ohne Wiederholung</footer>
+    <footer>Physik EF · Mythencheck</footer>
   </main>
 </div>
 
