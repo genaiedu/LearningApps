@@ -3,221 +3,507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Physik-Mythencheck EF</title>
-<meta name="description" content="Interaktive Zufallskarten für eine abschließende EF-Doppelstunde in Physik">
+<meta name="description" content="Übersicht interaktiver Lernanwendungen für Physik und Chemie">
+<title>LearningApps · Dr. Claus Unterberg</title>
 
 <style>
-/* ============ @font-face ============ */
-@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
-@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
-@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-900.woff2') format('woff2'); font-weight:900; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
-@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
-@font-face { font-family:'Dancing Script'; src:url('fonts/dancing-script-v29-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
-
-/* ============ Variablen ============ */
-:root{
-  --primary:#1a6fb5;
-  --primary-light:#e8f1fb;
-  --accent:#f59e0b;
-  --text:#1e293b;
-  --text-muted:#64748b;
-  --surface:rgba(255,255,255,0.75);
-  --glass-bg:rgba(255,255,255,0.10);
-  --glass-border:rgba(255,255,255,0.20);
-  --blur:blur(20px);
-  --radius:16px;
-  --sidebar-width:300px;
-  --shadow:0 8px 32px rgba(0,0,0,0.12);
-  --correct:#16a34a;
-  --wrong:#dc2626;
-  --depends:#f59e0b;
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
 }
-body.dark{
-  --primary:#38bdf8;
-  --primary-light:#0f172a;
-  --text:#e2e8f0;
-  --text-muted:#94a3b8;
-  --surface:rgba(15,23,42,0.80);
-  --glass-bg:rgba(255,255,255,0.05);
-  --glass-border:rgba(255,255,255,0.16);
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
 }
-
-*{box-sizing:border-box; margin:0; padding:0;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'Inter', system-ui, sans-serif;
-  color:var(--text);
-  background:linear-gradient(135deg,#f0f7ff 0%,#e8f1fb 50%,#fdf6e8 100%);
-  min-height:100vh;
-  transition:background .3s, color .3s;
-  overflow-x:hidden;
+@font-face {
+  font-family: 'Poppins';
+  src: url('fonts/poppins-v24-latin-900.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
 }
-body.dark{ background:linear-gradient(135deg,#0f172a 0%,#0b1120 50%,#101a2c 100%); }
-
-h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02em; }
-button{ font-family:'Inter', system-ui, sans-serif; }
-
-/* ============ Blobs ============ */
-.blob{ position:fixed; border-radius:50%; filter:blur(80px); opacity:.35; animation:drift 18s ease-in-out infinite alternate; z-index:-1; }
-.blob:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-10%; animation-duration:20s; }
-.blob:nth-child(2){ width:400px; height:400px; background:#7c3aed; top:40%; right:-5%; animation-duration:25s; }
-.blob:nth-child(3){ width:350px; height:350px; background:#0ea5e9; bottom:-5%; left:30%; animation-duration:22s; }
-@keyframes drift{
-  0%{ transform:translate(0,0) scale(1); }
-  33%{ transform:translate(40px,-30px) scale(1.05); }
-  66%{ transform:translate(-20px,50px) scale(.95); }
-  100%{ transform:translate(30px,20px) scale(1.02); }
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-v20-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('fonts/dancing-script-v29-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
 }
 
-/* ============ Progress Bar ============ */
-#progress-bar-wrap{ position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(0,0,0,.08); z-index:500; }
-#progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--accent)); transition:width .2s; }
+:root {
+  --primary:        #1a6fb5;
+  --primary-light:  #e8f1fb;
+  --accent:         #f59e0b;
+  --text:           #1e293b;
+  --text-muted:     #64748b;
+  --surface:        rgba(255, 255, 255, 0.75);
+  --glass-bg:       rgba(255, 255, 255, 0.10);
+  --glass-border:   rgba(255, 255, 255, 0.20);
+  --blur:           blur(20px);
+  --radius:         16px;
+  --sidebar-width:  320px;
+  --shadow:         0 8px 32px rgba(0, 0, 0, 0.12);
+  --bg-base:        #f1f5fb;
 
-/* ============ Layout ============ */
-.layout{ display:flex; min-height:100vh; }
-.sidebar{
-  width:var(--sidebar-width); flex-shrink:0; position:fixed; top:0; left:0; height:100vh;
-  background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
-  border-right:1px solid var(--glass-border); padding:28px 22px; overflow-y:auto; z-index:300;
-  transition:transform .3s;
+  --physik:         #1a6fb5;
+  --chemie:         #16a34a;
+  --sonstiges:      #7c3aed;
 }
-.sidebar h2{ font-size:1.05rem; color:var(--primary); margin-bottom:4px; }
-.sidebar .subtitle{ font-size:.8rem; color:var(--text-muted); margin-bottom:24px; }
-.sidebar nav a{
-  display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:10px;
-  color:var(--text); text-decoration:none; font-size:.92rem; font-weight:500; transition:background .2s;
-}
-.sidebar nav a:hover{ background:var(--primary-light); color:var(--primary); }
-.sidebar .school{ margin-top:30px; padding-top:18px; border-top:1px solid var(--glass-border); font-size:.75rem; color:var(--text-muted); line-height:1.5; }
-.dark-toggle{
-  display:flex; align-items:center; gap:8px; margin-top:18px; padding:10px 12px; border-radius:10px;
-  background:var(--surface); border:1px solid var(--glass-border); cursor:pointer; font-size:.85rem; color:var(--text);
-}
-.hamburger{ display:none; position:fixed; top:14px; right:14px; z-index:400; background:var(--surface); border:1px solid var(--glass-border);
-  border-radius:10px; width:44px; height:44px; align-items:center; justify-content:center; backdrop-filter:var(--blur); cursor:pointer; color:var(--text); }
 
-.main-content{ margin-left:var(--sidebar-width); flex:1; padding:40px 6vw 100px; max-width:1060px; }
+body.dark {
+  --primary:        #38bdf8;
+  --primary-light:  #0f172a;
+  --text:           #e2e8f0;
+  --text-muted:     #94a3b8;
+  --surface:        rgba(15, 23, 42, 0.80);
+  --glass-bg:       rgba(255, 255, 255, 0.05);
+  --glass-border:   rgba(255, 255, 255, 0.10);
+  --bg-base:        #0b1220;
+  --shadow:         0 8px 32px rgba(0, 0, 0, 0.45);
 
-/* ============ Hero ============ */
-.hero{ margin-bottom:36px; }
-.hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
-  padding:5px 14px; border-radius:999px; margin-bottom:16px; }
-.hero h1{ font-size:2.6rem; font-weight:900; line-height:1.1; margin-bottom:14px; }
-.hero h1 span{ color:var(--primary); }
-.hero p{ font-size:1.1rem; color:var(--text-muted); max-width:760px; line-height:1.65; }
-.hero .caveat{ font-family:'Dancing Script', cursive; font-weight:600; font-size:1.6rem; color:var(--accent); margin-top:10px; display:block; }
+  --physik:         #38bdf8;
+  --chemie:         #4ade80;
+  --sonstiges:      #a78bfa;
+}
 
-/* ============ Section / Glass Card ============ */
-section{ margin-bottom:56px; scroll-margin-top:30px; }
-.section-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-.section-head .num{
-  width:38px; height:38px; border-radius:12px; background:var(--primary); color:#fff; display:flex;
-  align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; flex-shrink:0;
-}
-.section-head h2{ font-size:1.5rem; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-.card{
-  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow);
-  padding:26px 28px;
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg-base);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
 }
-.card + .card{ margin-top:18px; }
-.card p{ line-height:1.65; margin-bottom:12px; }
-.card p:last-child{ margin-bottom:0; }
-.card ul{ padding-left:20px; line-height:1.7; }
 
-.reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
-.reveal.visible{ opacity:1; transform:translateY(0); }
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  z-index: -1;
+  animation: drift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.blob:nth-child(1) {
+  width: 500px;
+  height: 500px;
+  background: var(--primary);
+  top: -10%;
+  left: -10%;
+  animation-duration: 20s;
+}
+.blob:nth-child(2) {
+  width: 400px;
+  height: 400px;
+  background: #7c3aed;
+  top: 40%;
+  right: -5%;
+  animation-duration: 25s;
+}
+.blob:nth-child(3) {
+  width: 350px;
+  height: 350px;
+  background: #0ea5e9;
+  bottom: -5%;
+  left: 30%;
+  animation-duration: 22s;
+}
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(40px, -30px) scale(1.05); }
+  66%  { transform: translate(-20px, 50px) scale(0.95); }
+  100% { transform: translate(30px, 20px) scale(1.02); }
+}
 
-/* ============ Merksatz-Box ============ */
-.merksatz{
-  border-left:4px solid var(--primary); background:var(--primary-light); border-radius:0 12px 12px 0;
-  padding:16px 20px; font-weight:600; margin:16px 0;
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  z-index: 1000;
+  transition: width 0.1s linear;
 }
-body.dark .merksatz{ background:rgba(56,189,248,.10); }
 
-/* ============ Game ============ */
-.game-card{ position:relative; overflow:hidden; }
-.game-top{
-  display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; flex-wrap:wrap;
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  padding: 32px 28px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: transform 0.3s ease, background 0.4s ease;
 }
-.stats{ display:flex; gap:10px; flex-wrap:wrap; }
-.stat-pill{
-  display:inline-flex; align-items:center; gap:7px; border:1px solid var(--glass-border); background:var(--glass-bg);
-  border-radius:999px; padding:7px 12px; font-weight:600; font-size:.86rem; color:var(--text-muted);
-}
-.stat-pill strong{ color:var(--primary); }
-.category-pill{
-  display:inline-flex; align-items:center; gap:7px; color:var(--primary); background:var(--primary-light); border-radius:999px;
-  padding:7px 14px; font-size:.86rem; font-weight:700;
-}
-.statement-box{
-  min-height:190px; display:flex; align-items:center; justify-content:center; text-align:center;
-  background:linear-gradient(135deg,rgba(26,111,181,.10),rgba(245,158,11,.10));
-  border:1px solid var(--glass-border); border-radius:18px; padding:34px 28px; margin:18px 0;
-}
-.statement-box .statement-text{
-  font-family:'Poppins', system-ui, sans-serif; font-size:2rem; line-height:1.25; font-weight:800; letter-spacing:-.035em;
-}
-.solution-panel{
-  max-height:0; overflow:hidden; transition:max-height .35s ease, opacity .25s ease; opacity:0;
-  border-radius:14px; border:1px solid transparent;
-}
-.solution-panel.open{ max-height:380px; opacity:1; border-color:var(--glass-border); margin-top:16px; }
-.solution-inner{ padding:18px 20px; background:var(--surface); }
-.answer-line{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
-.answer-badge{
-  display:inline-flex; align-items:center; gap:8px; color:#fff; border-radius:999px; padding:8px 14px; font-weight:800;
-}
-.answer-badge.richtig{ background:var(--correct); }
-.answer-badge.falsch{ background:var(--wrong); }
-.answer-badge.kommt-darauf-an{ background:var(--depends); }
-.answer-explanation{ line-height:1.65; color:var(--text); }
-.button-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
-.btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; }
-.btn-primary:hover{ filter:brightness(.96); }
-.btn-primary:disabled{ opacity:.45; cursor:not-allowed; }
-.btn-secondary{
-  background:transparent; border:2px solid var(--glass-border); color:var(--text); border-radius:10px;
-  padding:10px 20px; font-weight:600; cursor:pointer;
-}
-.btn-accent{ background:var(--accent); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; }
-.keyboard-hint{ color:var(--text-muted); font-size:.85rem; margin-top:14px; }
-.finished-box{ display:none; text-align:center; padding:32px 20px; }
-.finished-box h3{ font-size:1.7rem; color:var(--primary); margin-bottom:10px; }
-.finished-box p{ color:var(--text-muted); }
 
-/* ============ History ============ */
-.history-list{ display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto; padding-right:4px; }
-.history-item{
-  border:1px solid var(--glass-border); border-radius:12px; background:var(--surface); padding:12px 14px;
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.history-item-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:7px; }
-.history-item .small-statement{ font-weight:700; line-height:1.45; }
-.mini-badge{ flex-shrink:0; color:#fff; border-radius:999px; padding:4px 9px; font-size:.74rem; font-weight:800; }
-.mini-badge.richtig{ background:var(--correct); }
-.mini-badge.falsch{ background:var(--wrong); }
-.mini-badge.kommt-darauf-an{ background:var(--depends); }
-.history-item .small-explanation{ color:var(--text-muted); font-size:.88rem; line-height:1.5; }
+.brand__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.brand__subtitle {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  font-size: 1.35rem;
+  color: var(--accent);
+}
+.brand__author {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
 
-/* ============ Teacher notes ============ */
-.flow-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:14px; }
-.flow-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:16px; }
-.flow-card .time{ font-family:'Poppins'; font-size:1.2rem; font-weight:900; color:var(--primary); margin-bottom:4px; }
-.flow-card p{ font-size:.92rem; line-height:1.55; color:var(--text-muted); }
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 12px 0 6px;
+}
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.nav__link:hover {
+  background: var(--glass-bg);
+  color: var(--primary);
+}
+.nav__link i {
+  width: 18px;
+  height: 18px;
+}
 
-footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; }
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dark-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+.dark-toggle:hover { background: var(--primary-light); }
+.dark-toggle i {
+  width: 16px;
+  height: 16px;
+}
 
-/* ============ Responsive ============ */
-@media (max-width:900px){
-  .sidebar{ transform:translateX(-100%); }
-  .sidebar.open{ transform:translateX(0); }
-  .main-content{ margin-left:0; padding:70px 6vw 100px; }
-  .hamburger{ display:flex; }
-  .hero h1{ font-size:2rem; }
-  .statement-box .statement-text{ font-size:1.45rem; }
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 48px 56px 80px;
+  min-height: 100vh;
+}
+
+.hero {
+  margin-bottom: 56px;
+}
+.hero__eyebrow {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  font-size: 1.65rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.hero__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.hero__title span { color: var(--primary); }
+.hero__lead {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: 64px;
+}
+.section__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--glass-border);
+}
+.section__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+.section__icon i {
+  width: 22px;
+  height: 22px;
+}
+.section__icon--physik { background: var(--physik); }
+.section__icon--chemie { background: var(--chemie); }
+.section__icon--sonstiges { background: var(--sonstiges); }
+
+.section__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.section__count {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.app-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--card-accent, var(--primary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.app-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  border-color: var(--card-accent, var(--primary));
+}
+.app-card:hover::before { transform: scaleX(1); }
+
+.app-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--card-accent, var(--primary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.app-card__icon i {
+  width: 24px;
+  height: 24px;
+}
+.app-card__title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 0;
+  color: var(--text);
+}
+.app-card__desc {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.app-card__tag {
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--card-accent, var(--primary));
+}
+
+.app-card--physik { --card-accent: var(--physik); }
+.app-card--chemie { --card-accent: var(--chemie); }
+.app-card--sonstiges { --card-accent: var(--sonstiges); }
+
+.app-card--placeholder {
+  border: 2px dashed var(--glass-border);
+  background: transparent;
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  min-height: 180px;
+}
+.app-card--placeholder:hover {
+  transform: none;
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: none;
+}
+.app-card--placeholder::before { display: none; }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.legal {
+  margin-top: 80px;
+  padding: 32px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.legal h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.legal h3:not(:first-child) { margin-top: 18px; }
+.legal a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.legal a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: min(320px, 85vw);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main-content {
+    margin-left: 0;
+    padding: 80px 24px 60px;
+  }
+  .menu-btn { display: flex; }
 }
 </style>
 </head>
@@ -227,448 +513,327 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
 <div class="blob"></div>
 <div class="blob"></div>
 
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="progress-bar"></div>
 
-<button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Menü öffnen">
+<button class="menu-btn" onclick="toggleSidebar()" aria-label="Menü öffnen">
   <i data-lucide="menu"></i>
 </button>
 
-<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand__title">LearningApps</div>
+    <div class="brand__subtitle">interaktiv lernen</div>
+    <div class="brand__author">Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
+  </div>
 
-  <aside class="sidebar">
-    <h2>Physik-Mythencheck</h2>
-    <div class="subtitle">EF · Abschluss-Doppelstunde</div>
-    <nav>
-      <a href="#spiel"><i data-lucide="shuffle"></i> Zufallskarte</a>
-      <a href="#ablauf"><i data-lucide="timer"></i> Vorschlag für 90 Minuten</a>
-      <a href="#verlauf"><i data-lucide="history"></i> Bereits besprochen</a>
-    </nav>
-    <div class="dark-toggle" onclick="toggleDarkMode()">
-      <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
+  <nav class="nav">
+    <div class="nav__heading">Fächer</div>
+    <a href="#physik" class="nav__link">
+      <i data-lucide="atom"></i> Physik
+    </a>
+    <a href="#chemie" class="nav__link">
+      <i data-lucide="flask-conical"></i> Chemie
+    </a>
+    <a href="#sonstiges" class="nav__link">
+      <i data-lucide="sparkles"></i> Sonstiges
+    </a>
+
+    <div class="nav__heading">Info</div>
+    <a href="#impressum" class="nav__link">
+      <i data-lucide="info"></i> Impressum
+    </a>
+    <a href="#datenschutz" class="nav__link">
+      <i data-lucide="shield-check"></i> Datenschutz
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="dark-toggle" onclick="toggleDarkMode()" aria-label="Farbschema wechseln">
+      <i data-lucide="moon" id="theme-icon"></i>
+      <span id="theme-label">Dunkles Design</span>
+    </button>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <section class="hero reveal">
+    <div class="hero__eyebrow">Interaktiv lernen</div>
+    <h1 class="hero__title">Lernanwendungen für <span>Physik und Chemie</span></h1>
+    <p class="hero__lead">
+      Eine wachsende Sammlung kleiner Web-Anwendungen, die im Unterricht und zu Hause
+      genutzt werden können. Jede Anwendung steht für sich und läuft direkt im Browser.
+    </p>
+  </section>
+
+  <section class="section reveal" id="physik">
+    <div class="section__head">
+      <div class="section__icon section__icon--physik">
+        <i data-lucide="atom"></i>
+      </div>
+      <h2 class="section__title">Physik</h2>
+      <span class="section__count">6 Anwendungen</span>
     </div>
-    <div class="school">
+
+    <div class="app-grid">
+      <a href="Wechselstromsimulator.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="activity"></i></div>
+        <h3 class="app-card__title">Wechselstromsimulator</h3>
+        <p class="app-card__desc">
+          Interaktives Zeigerdiagramm und Oszilloskop für Spannung, Strom, Leistung und Phasenverschiebung.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="Schaltplan.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="circuit-board"></i></div>
+        <h3 class="app-card__title">Schaltplan-Simulator</h3>
+        <p class="app-card__desc">
+          Interaktiver Gleichstrom-Schaltkreis-Baukasten mit Kabeln, Batterie, Lampe, Schaltern,
+          Wechselschaltern, Kreuzschaltern und Kurzschluss-Erkennung.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="schwingkreis_simulator.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="waves"></i></div>
+        <h3 class="app-card__title">Schwingkreis-Simulator</h3>
+        <p class="app-card__desc">
+          Live-Simulation eines gedämpften LC-Schwingkreises mit Gleichspannungsquelle,
+          Dreiwegeschalter, Amperemeter und Oszilloskop für U<sub>C</sub>, U<sub>L</sub> und U<sub>R</sub>.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="wellenoptik_gitter_aufgaben.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="aperture"></i></div>
+        <h3 class="app-card__title">Doppelspalt und optisches Gitter</h3>
+        <p class="app-card__desc">
+          Konzeptpapier und Aufgabensammlung zu Beugung, Interferenz, Gitterformel,
+          Kleinwinkelnäherung und Elektronenbeugung mit sokratischem KI-Tutor-Prompt.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="schall_arbeitsblatt.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="volume-2"></i></div>
+        <h3 class="app-card__title">Schall – Interaktives Arbeitsblatt</h3>
+        <p class="app-card__desc">
+          Arbeitsblatt für die Klasse 6 mit eingebetteten Erklärvideos, Zuordnungsspiel,
+          Blitz-Donner-Rechner, Wellen-Simulator und Abschlussquiz.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="physik_mythencheck_ef.html" class="app-card app-card--physik">
+        <div class="app-card__icon"><i data-lucide="brain-circuit"></i></div>
+        <h3 class="app-card__title">Physik-Mythencheck EF</h3>
+        <p class="app-card__desc">
+          Zufällige Aussagen zu Mechanik, Kreisbewegung, Gravitation und Relativität. Erst diskutieren,
+          dann Auflösung anzeigen; ohne Wiederholungen bis zum Neustart.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <div class="app-card app-card--placeholder">
+        <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
+        weitere Anwendungen folgen
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="chemie">
+    <div class="section__head">
+      <div class="section__icon section__icon--chemie">
+        <i data-lucide="flask-conical"></i>
+      </div>
+      <h2 class="section__title">Chemie</h2>
+      <span class="section__count">2 Anwendungen</span>
+    </div>
+
+    <div class="app-grid">
+      <a href="Stereochemietrainer.html" class="app-card app-card--chemie">
+        <div class="app-card__icon"><i data-lucide="box"></i></div>
+        <h3 class="app-card__title">Stereochemie-Trainer</h3>
+        <p class="app-card__desc">
+          Fischer-Projektionen, 3D-Modelle und R/S-Nomenklatur für Weinsäure, Hexosen und einfache chirale Zentren.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <a href="Nomenklaturquiz.html" class="app-card app-card--chemie">
+        <div class="app-card__icon"><i data-lucide="list-checks"></i></div>
+        <h3 class="app-card__title">Nomenklaturquiz</h3>
+        <p class="app-card__desc">
+          Adaptives Quiz zur organischen Nomenklatur mit Molekülstrukturen aus externen chemischen Datenbanken nach Bestätigung.
+        </p>
+        <span class="app-card__tag">
+          <i data-lucide="arrow-right"></i> öffnen
+        </span>
+      </a>
+
+      <div class="app-card app-card--placeholder">
+        <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
+        weitere Anwendungen folgen
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="sonstiges">
+    <div class="section__head">
+      <div class="section__icon section__icon--sonstiges">
+        <i data-lucide="sparkles"></i>
+      </div>
+      <h2 class="section__title">Sonstiges</h2>
+      <span class="section__count">in Vorbereitung</span>
+    </div>
+
+    <div class="app-grid">
+      <div class="app-card app-card--placeholder">
+        <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
+        Anwendungen folgen
+      </div>
+    </div>
+  </section>
+
+  <section class="legal reveal" id="impressum">
+    <h3>Impressum</h3>
+    <p>
+      <strong>Verantwortlich für den Inhalt</strong><br>
+      Dr. Claus Unterberg<br>
       Gymnasium Thomaeum Kempen<br>
-      Physik · Einführungsphase<br>
-      Mechanik · Kreisbewegung · Gravitation · Modelle
-    </div>
-  </aside>
+      Am Gymnasium 4<br>
+      47906 Kempen
+    </p>
 
-  <main class="main-content">
+    <h3>Kontakt</h3>
+    <p>E-Mail: unterberg [at] thomaeum.de</p>
 
-    <div class="hero reveal">
-      <span class="eyebrow">Interaktiv · ohne Vorbereitung</span>
-      <h1><span>Physik-Mythen</span> der EF</h1>
-      <p>Die Seite zieht zufällig eine Aussage. Erst wird diskutiert, dann wird die Auflösung angezeigt. Danach folgt die nächste Aussage. Jede Aussage kommt erst wieder vor, wenn alle Karten einmal durchgespielt wurden.</p>
-      <span class="caveat">Letzte Stunde: entspannt, aber nicht beliebig.</span>
-    </div>
+    <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+    <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
 
-    <section id="spiel">
-      <div class="section-head"><div class="num">1</div><h2>Zufallskarte</h2></div>
-      <div class="card game-card reveal">
-        <div class="game-top">
-          <div class="stats">
-            <div class="stat-pill"><i data-lucide="layers"></i> Karte <strong id="card-number">1</strong>/<span id="card-total">145</span></div>
-            <div class="stat-pill"><i data-lucide="check-check"></i> Besprochen: <strong id="done-count">0</strong></div>
-            <div class="stat-pill"><i data-lucide="list-end"></i> Übrig: <strong id="left-count">145</strong></div>
-          </div>
-          <div class="category-pill"><i data-lucide="tag"></i> <span id="category-label">Kategorie</span></div>
-        </div>
+    <h3>Urheberrecht</h3>
+    <p>
+      Die auf dieser Seite veröffentlichten Anwendungen sind urheberrechtlich geschützt.
+      Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht; eine darüber hinausgehende
+      Verwendung bedarf der vorherigen Zustimmung.
+    </p>
 
-        <div class="statement-box" id="statement-box">
-          <div class="statement-text" id="statement-text">Aussage wird geladen …</div>
-        </div>
+    <h3>Haftung für Inhalte und Links</h3>
+    <p>
+      Die Inhalte dieser Seite wurden mit Sorgfalt zusammengestellt. Für ihre Richtigkeit,
+      Vollständigkeit und Aktualität kann jedoch keine Gewähr übernommen werden.
+      Für die Inhalte verlinkter externer Seiten ist deren Betreiber verantwortlich.
+    </p>
+  </section>
 
-        <div class="solution-panel" id="solution-panel">
-          <div class="solution-inner">
-            <div class="answer-line">
-              <span class="answer-badge" id="answer-badge"><i data-lucide="circle-help"></i> <span id="answer-label">Antwort</span></span>
-            </div>
-            <div class="answer-explanation" id="answer-explanation"></div>
-          </div>
-        </div>
+  <section class="legal reveal" id="datenschutz">
+    <h3>Datenschutzerklärung</h3>
+    <p>
+      Diese Übersichtsseite ist bewusst datensparsam aufgebaut. Sie verwendet keine Cookies,
+      kein Tracking, keine externen Schriftdienste, keine externen Content-Delivery-Netzwerke
+      und keine eingebetteten Inhalte von Drittanbietern. Alle Schriftarten und Skripte
+      werden direkt vom Hostserver ausgeliefert.
+    </p>
 
-        <div class="button-row">
-          <button class="btn-primary" id="show-btn" onclick="showSolution()"><i data-lucide="eye"></i> Auflösung zeigen</button>
-          <button class="btn-accent" id="next-btn" onclick="nextCard()" disabled><i data-lucide="arrow-right"></i> Nächste Aussage</button>
-          <button class="btn-secondary" onclick="restartDeck()"><i data-lucide="rotate-ccw"></i> Neu mischen</button>
-        </div>
+    <h3>Zugriffsdaten und Hosting</h3>
+    <p>
+      Diese Seite wird über GitHub Pages bereitgestellt. Beim Aufruf der Seite werden durch
+      den Hosting-Anbieter technisch notwendige Zugriffsdaten verarbeitet
+      (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, übertragene Datenmenge,
+      Browsertyp). Diese Verarbeitung erfolgt zur Bereitstellung und Absicherung des
+      Dienstes auf Grundlage des berechtigten Interesses gemäß
+      Art. 6 Abs. 1 lit. f DSGVO. Eine Verknüpfung dieser Daten mit anderen Datenquellen
+      durch den Betreiber dieser Seite findet nicht statt.
+    </p>
 
-        <div class="keyboard-hint">Tastatur: Leertaste zeigt die Auflösung oder springt zur nächsten Aussage.</div>
+    <h3>Lokale Speicherung in den Anwendungen</h3>
+    <p>
+      Einzelne Lernanwendungen können Eingaben und Einstellungen ausschließlich lokal im
+      Browser speichern (z. B. über <em>localStorage</em>), damit der Lernfortschritt
+      beim Neuladen erhalten bleibt. Diese Daten verlassen das Endgerät nicht und
+      werden nicht an den Server übertragen. Sie können jederzeit über die
+      Browsereinstellungen gelöscht werden.
+    </p>
 
-        <div class="finished-box" id="finished-box">
-          <h3>Alle Aussagen wurden besprochen.</h3>
-          <p>Das Deck kann jetzt neu gemischt und erneut gestartet werden.</p>
-          <div class="button-row" style="justify-content:center;"><button class="btn-primary" onclick="restartDeck()"><i data-lucide="shuffle"></i> Deck neu starten</button></div>
-        </div>
-      </div>
-    </section>
+    <h3>Externe Datenbanken in einzelnen Anwendungen</h3>
+    <p>
+      Einzelne Anwendungen können nach ausdrücklichem Hinweis und Bestätigung externe
+      fachliche Datenbanken abrufen. Dies betrifft insbesondere das Nomenklaturquiz,
+      das Molekülstrukturen und Moleküldaten aus externen chemischen Datenbanken laden kann.
+      Die entsprechende Anwendung weist vor dem Start gesondert darauf hin.
+    </p>
 
-    <section id="ablauf">
-      <div class="section-head"><div class="num">2</div><h2>Vorschlag für die Doppelstunde</h2></div>
-      <div class="card reveal">
-        <p>Die Seite ist bewusst auf Unterrichtsgespräch angelegt: erst abstimmen lassen, dann begründen lassen, dann auflösen. Das funktioniert auch ohne Material und ohne Vorbereitung.</p>
-        <div class="flow-grid">
-          <div class="flow-card"><div class="time">0–10 min</div><p>Einführung: „Physik beginnt oft dort, wo eine plausible Alltagsvorstellung scheitert.“</p></div>
-          <div class="flow-card"><div class="time">10–55 min</div><p>Zufallskarten im Plenum: Erst Handzeichen für richtig/falsch/kommt darauf an, dann kurze Begründungen.</p></div>
-          <div class="flow-card"><div class="time">55–75 min</div><p>Gruppen wählen je eine strittige Aussage und formulieren eine perfekte Erklärung mit Skizze/Formel.</p></div>
-          <div class="flow-card"><div class="time">75–90 min</div><p>Kurze Präsentationen und Abschluss: Welche Denkfehler kamen besonders häufig vor?</p></div>
-        </div>
-      </div>
-    </section>
+    <h3>Rechte der betroffenen Personen</h3>
+    <p>
+      Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
+      Verarbeitung, Datenübertragbarkeit und Widerspruch gemäß Art. 15 ff. DSGVO.
+      Wenden Sie sich dazu bitte an die im Impressum angegebene Kontaktadresse.
+      Es besteht zudem ein Beschwerderecht bei der zuständigen Aufsichtsbehörde
+      (Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen).
+    </p>
+  </section>
 
-    <section id="verlauf">
-      <div class="section-head"><div class="num">3</div><h2>Bereits besprochen</h2></div>
-      <div class="card reveal">
-        <div class="history-list" id="history-list">
-          <p style="color:var(--text-muted);">Noch keine Aussage aufgelöst.</p>
-        </div>
-      </div>
-    </section>
+</main>
 
-    <footer>Physik EF · Mythencheck · Zufallsauswahl ohne Wiederholung</footer>
-  </main>
-</div>
-
-<!-- Lokale Lucide-Datei nutzen, wenn im Repository vorhanden. Falls nicht, bleibt die Seite ohne Icons funktionsfähig. -->
 <script src="fonts/lucide.min.js"></script>
 <script>
-const cards = [
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein Körper kann sich bewegen, obwohl keine Kraft in Bewegungsrichtung wirkt.', a:'Richtig', e:'Bei gleichförmiger Bewegung ist keine resultierende Kraft in Bewegungsrichtung nötig. Eine Kraft ist nur nötig, um die Geschwindigkeit zu ändern.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Geschwindigkeit bedeutet nur, wie schnell etwas ist, nicht wohin es sich bewegt.', a:'Falsch', e:'In der Physik ist Geschwindigkeit eine vektorielle Größe: Sie hat einen Betrag und eine Richtung. Der Betrag heißt Tempo oder Schnelligkeit.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Eine negative Geschwindigkeit bedeutet immer, dass ein Körper langsamer wird.', a:'Falsch', e:'Eine negative Geschwindigkeit beschreibt zunächst nur die Bewegungsrichtung relativ zur gewählten Achse. Langsamerwerden hängt von Geschwindigkeit und Beschleunigung gemeinsam ab.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Eine negative Beschleunigung bedeutet immer, dass ein Körper bremst.', a:'Falsch', e:'Negative Beschleunigung heißt Beschleunigung in negative Achsenrichtung. Ob der Körper bremst, hängt davon ab, ob Beschleunigung und Geschwindigkeit entgegengesetzt gerichtet sind.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein Körper kann schneller werden, obwohl seine Beschleunigung negativ ist.', a:'Richtig', e:'Wenn sich der Körper in negative Richtung bewegt und die Beschleunigung ebenfalls negativ ist, nimmt der Betrag der Geschwindigkeit zu.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein Körper kann eine konstante Geschwindigkeit haben und trotzdem beschleunigt sein.', a:'Kommt darauf an', e:'Wenn mit Geschwindigkeit nur der Betrag gemeint ist, geht das bei Kreisbewegungen. Ist der vollständige Geschwindigkeitsvektor konstant, ist die Beschleunigung null.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Wenn die Geschwindigkeit null ist, muss auch die Beschleunigung null sein.', a:'Falsch', e:'Am Umkehrpunkt einer Bewegung kann die Geschwindigkeit kurz null sein, während weiterhin eine Beschleunigung wirkt, etwa beim senkrechten Wurf.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Am höchsten Punkt eines senkrechten Wurfs ist die Geschwindigkeit null, aber die Beschleunigung nicht.', a:'Richtig', e:'Die Geschwindigkeit ist dort kurz null. Die Erdbeschleunigung wirkt aber weiterhin nach unten.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Bei einer gleichförmigen Bewegung ist die Beschleunigung null.', a:'Richtig', e:'Gleichförmig bedeutet: Der Geschwindigkeitsvektor bleibt konstant. Dann gibt es keine Änderung der Geschwindigkeit und damit keine Beschleunigung.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Bei einer gleichmäßig beschleunigten Bewegung wächst die Geschwindigkeit in gleichen Zeiten um gleiche Beträge.', a:'Richtig', e:'Konstante Beschleunigung bedeutet, dass sich die Geschwindigkeit pro Zeitintervall immer um denselben Betrag ändert.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Bei einer gleichmäßig beschleunigten Bewegung wächst der zurückgelegte Weg in gleichen Zeiten um gleiche Beträge.', a:'Falsch', e:'Bei konstanter Beschleunigung wächst die Geschwindigkeit. Deshalb werden in gleichen Zeitintervallen zunehmend größere Strecken zurückgelegt.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein waagerecht geworfener Körper fällt genauso schnell nach unten wie ein fallengelassener Körper.', a:'Richtig', e:'Ohne Luftwiderstand sind waagerechte und senkrechte Bewegung unabhängig. Die senkrechte Bewegung ist bei beiden gleich.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Beim waagerechten Wurf beeinflusst die waagerechte Bewegung die Fallbewegung nach unten.', a:'Falsch', e:'Im idealisierten Modell ohne Luftwiderstand überlagern sich die Bewegungen unabhängig: waagerecht gleichförmig, senkrecht beschleunigt.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Eine Bewegung kann man vollständig beschreiben, wenn man nur die Strecke kennt.', a:'Falsch', e:'Zur vollständigen Beschreibung braucht man mindestens auch Zeit, Richtung und oft den zeitlichen Verlauf von Ort, Geschwindigkeit und Beschleunigung.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Die Durchschnittsgeschwindigkeit ist immer gleich der momentanen Geschwindigkeit.', a:'Falsch', e:'Das gilt nur bei gleichförmiger Bewegung. Bei beschleunigter Bewegung ändern sich Momentangeschwindigkeit und Durchschnittsgeschwindigkeit.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'In einem Weg-Zeit-Diagramm erkennt man die Geschwindigkeit an der Steigung.', a:'Richtig', e:'Die Steigung des s-t-Graphen gibt die Geschwindigkeit an. Je steiler der Graph, desto größer der Betrag der Geschwindigkeit.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'In einem Geschwindigkeit-Zeit-Diagramm erkennt man die Beschleunigung an der Steigung.', a:'Richtig', e:'Die Steigung des v-t-Graphen gibt die Beschleunigung an.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'In einem Geschwindigkeit-Zeit-Diagramm entspricht die Fläche unter dem Graphen dem zurückgelegten Weg.', a:'Kommt darauf an', e:'Bei nur positiver Geschwindigkeit ist das der zurückgelegte Weg. Bei negativen Geschwindigkeiten liefert die vorzeichenbehaftete Fläche zunächst die Ortsänderung.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein steiler Graph in einem Weg-Zeit-Diagramm bedeutet eine große Beschleunigung.', a:'Falsch', e:'Die Steigung im Weg-Zeit-Diagramm ist die Geschwindigkeit. Beschleunigung erkennt man daran, wie sich diese Steigung ändert.'},
-  {cat:'Bewegung und Geschwindigkeit', s:'Ein waagerechter Graph in einem Geschwindigkeit-Zeit-Diagramm bedeutet Stillstand.', a:'Falsch', e:'Ein waagerechter v-t-Graph bedeutet konstante Geschwindigkeit. Stillstand liegt nur vor, wenn diese Geschwindigkeit null ist.'},
-
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Eine Kraft ist notwendig, damit sich ein Körper mit konstanter Geschwindigkeit bewegt.', a:'Falsch', e:'Nach dem Trägheitsprinzip bewegt sich ein Körper bei fehlender resultierender Kraft gleichförmig weiter.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Eine Kraft ist notwendig, damit sich die Geschwindigkeit eines Körpers ändert.', a:'Richtig', e:'Eine Änderung des Geschwindigkeitsvektors erfordert eine resultierende Kraft: F = m · a.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Wenn keine resultierende Kraft wirkt, bleibt ein ruhender Körper in Ruhe.', a:'Richtig', e:'Das ist ein Teil des Trägheitsprinzips.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Wenn keine resultierende Kraft wirkt, bewegt sich ein bewegter Körper gleichförmig weiter.', a:'Richtig', e:'Ohne resultierende Kraft bleibt der Geschwindigkeitsvektor konstant.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Kräfte erkennt man immer daran, dass sich etwas sichtbar bewegt.', a:'Falsch', e:'Kräfte können auch Verformungen verursachen oder sich gegenseitig ausgleichen, ohne sichtbare Bewegung zu erzeugen.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Kräfte können Körper verformen, ohne sie zu beschleunigen.', a:'Richtig', e:'Wenn Kräfte sich ausgleichen, kann ein Körper verformt werden, ohne dass sein Schwerpunkt beschleunigt wird.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Eine große Kraft führt immer zu einer großen Geschwindigkeit.', a:'Falsch', e:'Kraft bewirkt Beschleunigung, nicht unmittelbar Geschwindigkeit. Die erreichte Geschwindigkeit hängt auch von Zeit, Anfangsgeschwindigkeit und Gegenkräften ab.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Eine große Kraft führt bei gleicher Masse zu einer großen Beschleunigung.', a:'Richtig', e:'Nach F = m · a gilt bei gleicher Masse: Je größer die resultierende Kraft, desto größer die Beschleunigung.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Je größer die Masse eines Körpers ist, desto kleiner ist bei gleicher Kraft seine Beschleunigung.', a:'Richtig', e:'Aus a = F/m folgt: Bei gleicher Kraft verringert eine größere Masse die Beschleunigung.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Masse und Gewichtskraft sind dasselbe.', a:'Falsch', e:'Masse ist eine Körpereigenschaft in kg. Gewichtskraft ist die Gravitationskraft auf diese Masse und wird in Newton gemessen.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Die Gewichtskraft eines Körpers ist auf dem Mond kleiner als auf der Erde.', a:'Richtig', e:'Die Mondgravitation ist schwächer. Deshalb ist die Gewichtskraft dort kleiner.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Die Masse eines Körpers ist auf dem Mond kleiner als auf der Erde.', a:'Falsch', e:'Die Masse bleibt gleich. Nur die Gewichtskraft ändert sich.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Wenn ein Buch auf dem Tisch liegt, wirkt keine Kraft auf das Buch.', a:'Falsch', e:'Auf das Buch wirken mindestens Gewichtskraft nach unten und Normalkraft des Tisches nach oben.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Wenn ein Buch auf dem Tisch liegt, heben sich Gewichtskraft und Normalkraft gegenseitig auf.', a:'Richtig', e:'Für das Buch ist die resultierende Kraft null, weil Gewichtskraft und Normalkraft gleich groß und entgegengesetzt sind.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Actio und Reactio greifen am selben Körper an und heben sich deshalb auf.', a:'Falsch', e:'Actio und Reactio wirken auf verschiedene Körper. Deshalb heben sie sich nicht an einem einzelnen Körper auf.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Wenn die Erde einen Apfel anzieht, zieht der Apfel auch die Erde an.', a:'Richtig', e:'Nach dem Wechselwirkungsprinzip wirken beide Kräfte gleich groß und entgegengesetzt.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Die Kraft des Apfels auf die Erde ist kleiner als die Kraft der Erde auf den Apfel.', a:'Falsch', e:'Die Kräfte sind gleich groß. Die Beschleunigungen sind aber wegen der stark unterschiedlichen Massen verschieden.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Der Apfel fällt zur Erde, weil die Erde wegen ihrer viel größeren Masse viel weniger beschleunigt wird.', a:'Richtig', e:'Beide ziehen sich an. Die Beschleunigung der Erde ist wegen ihrer riesigen Masse praktisch nicht wahrnehmbar.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Reibung wirkt immer entgegen der Bewegungsrichtung.', a:'Kommt darauf an', e:'Gleitreibung wirkt gegen die Relativbewegung. Haftreibung kann aber auch in Bewegungsrichtung wirken, etwa beim Anfahren eines Autos.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Reibung kann auch eine Bewegung ermöglichen, zum Beispiel beim Gehen oder Autofahren.', a:'Richtig', e:'Beim Gehen und beim Rollen eines angetriebenen Rades liefert Haftreibung die notwendige Kraft nach vorne.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Ohne Reibung könnte ein Auto nicht beschleunigen.', a:'Richtig', e:'Die Antriebskraft wird über Haftreibung zwischen Reifen und Straße übertragen.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Luftwiderstand ist bei kleinen Geschwindigkeiten meistens vernachlässigbarer als bei großen Geschwindigkeiten.', a:'Richtig', e:'Der Luftwiderstand wächst mit der Geschwindigkeit deutlich an. Bei hohen Geschwindigkeiten wird er oft entscheidend.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Die Gewichtskraft ist in der Nähe der Erdoberfläche ungefähr proportional zur Masse.', a:'Richtig', e:'In Erdnähe gilt näherungsweise F_G = m · g mit nahezu konstantem g.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Die Einheit der Kraft ist Kilogramm.', a:'Falsch', e:'Kilogramm ist die Einheit der Masse. Die Einheit der Kraft ist Newton.'},
-  {cat:'Kräfte und Newtonsche Gesetze', s:'Ein Newton ist die Kraft, die einen Körper der Masse 1 kg mit 1 m/s² beschleunigt.', a:'Richtig', e:'Das ist die Definition: 1 N = 1 kg · m/s².'},
-
-  {cat:'Energie, Arbeit und Leistung', s:'Energie kann verschwinden, wenn Reibung auftritt.', a:'Falsch', e:'Energie verschwindet nicht. Mechanische Energie wird durch Reibung vor allem in Wärme und teilweise in Schall oder Verformungsenergie umgewandelt.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Energie kann von einer Form in eine andere umgewandelt werden.', a:'Richtig', e:'Das ist ein Grundgedanke der Energieerhaltung: Die Gesamtenergie bleibt erhalten, die Energieform kann sich ändern.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Beim Bremsen wird Bewegungsenergie unter anderem in Wärme umgewandelt.', a:'Richtig', e:'Bremsen wandeln Bewegungsenergie meist über Reibung in thermische Energie um.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Ein Auto mit doppelter Geschwindigkeit besitzt die doppelte Bewegungsenergie.', a:'Falsch', e:'Bewegungsenergie ist proportional zu v². Doppelte Geschwindigkeit bedeutet vierfache Bewegungsenergie.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Ein Auto mit doppelter Geschwindigkeit besitzt die vierfache Bewegungsenergie.', a:'Richtig', e:'Es gilt E_kin = 1/2 · m · v². Wird v verdoppelt, vervierfacht sich E_kin.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Die Lageenergie eines Körpers hängt von seiner Höhe ab.', a:'Richtig', e:'Nahe der Erdoberfläche gilt E_pot = m · g · h. Die Höhe über einem gewählten Nullniveau ist entscheidend.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Die Bewegungsenergie eines Körpers hängt linear von seiner Geschwindigkeit ab.', a:'Falsch', e:'Sie hängt quadratisch von der Geschwindigkeit ab: E_kin = 1/2 · m · v².'},
-  {cat:'Energie, Arbeit und Leistung', s:'Arbeit im physikalischen Sinn liegt nur vor, wenn eine Kraft entlang eines Weges wirkt.', a:'Richtig', e:'Mechanische Arbeit ist W = F · s, genauer das Produkt aus Weg und Kraftkomponente in Wegrichtung.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Wer einen schweren Rucksack ruhig auf dem Rücken trägt, verrichtet an ihm im physikalischen Sinn dauernd Hubarbeit.', a:'Falsch', e:'Solange der Rucksack nicht angehoben wird, wird an ihm keine Hubarbeit verrichtet. Biologisch ist es trotzdem anstrengend.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Wer einen Rucksack eine Treppe hochträgt, erhöht dessen Lageenergie.', a:'Richtig', e:'Durch die größere Höhe nimmt die potentielle Energie des Rucksacks zu.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Leistung beschreibt, wie schnell Energie umgesetzt oder Arbeit verrichtet wird.', a:'Richtig', e:'Leistung ist Energie pro Zeit beziehungsweise Arbeit pro Zeit: P = W/t.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Zwei Maschinen können dieselbe Arbeit verrichten, aber unterschiedliche Leistungen haben.', a:'Richtig', e:'Wenn eine Maschine dieselbe Arbeit schneller verrichtet, hat sie eine größere Leistung.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Eine hohe Leistung bedeutet immer, dass insgesamt viel Energie umgesetzt wurde.', a:'Falsch', e:'Leistung ist eine Rate. Eine hohe Leistung über kurze Zeit kann weniger Energie bedeuten als eine kleinere Leistung über lange Zeit.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Energieerhaltung bedeutet, dass in jedem einzelnen Körper die Energie immer gleich bleibt.', a:'Falsch', e:'Energie kann zwischen Körpern übertragen werden. Erhalten bleibt die Gesamtenergie eines abgeschlossenen Systems.'},
-  {cat:'Energie, Arbeit und Leistung', s:'In einem abgeschlossenen System bleibt die Gesamtenergie erhalten.', a:'Richtig', e:'Das ist die Kernaussage des Energieerhaltungssatzes.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Ein Perpetuum mobile wäre mit dem Energieerhaltungssatz vereinbar, wenn es gut genug gebaut wäre.', a:'Falsch', e:'Ein Perpetuum mobile, das dauerhaft Arbeit ohne Energiezufuhr liefert, widerspricht der Energieerhaltung.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Beim freien Fall ohne Luftwiderstand wird Lageenergie in Bewegungsenergie umgewandelt.', a:'Richtig', e:'Die mechanische Gesamtenergie bleibt erhalten, während potentielle Energie abnimmt und kinetische Energie zunimmt.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Beim freien Fall mit Luftwiderstand bleibt die mechanische Energie vollständig erhalten.', a:'Falsch', e:'Mit Luftwiderstand wird ein Teil der mechanischen Energie in Wärme und Schall umgewandelt.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Spannenergie kann in Bewegungsenergie umgewandelt werden.', a:'Richtig', e:'Eine gespannte Feder oder ein Gummiband kann gespeicherte Energie in Bewegung umwandeln.'},
-  {cat:'Energie, Arbeit und Leistung', s:'Eine Feder speichert Energie, wenn sie gedehnt oder zusammengedrückt wird.', a:'Richtig', e:'Das ist elastische Spannenergie.'},
-
-  {cat:'Impuls und Stöße', s:'Impuls ist dasselbe wie Kraft.', a:'Falsch', e:'Impuls ist p = m · v. Kraft beschreibt die zeitliche Änderung des Impulses.'},
-  {cat:'Impuls und Stöße', s:'Der Impuls eines Körpers hängt von Masse und Geschwindigkeit ab.', a:'Richtig', e:'Der Impuls ist das Produkt aus Masse und Geschwindigkeit: p = m · v.'},
-  {cat:'Impuls und Stöße', s:'Ein schwerer langsamer Körper kann denselben Impuls haben wie ein leichter schneller Körper.', a:'Richtig', e:'Da p = m · v gilt, können unterschiedliche Kombinationen aus Masse und Geschwindigkeit denselben Impuls ergeben.'},
-  {cat:'Impuls und Stöße', s:'Bei einem Stoß bleibt der Impuls in einem abgeschlossenen System erhalten.', a:'Richtig', e:'Der Gesamtimpuls bleibt erhalten, solange keine äußere resultierende Kraft auf das System wirkt.'},
-  {cat:'Impuls und Stöße', s:'Bei jedem Stoß bleibt die Bewegungsenergie vollständig erhalten.', a:'Falsch', e:'Das gilt nur beim elastischen Stoß. Bei unelastischen Stößen wird Bewegungsenergie teilweise umgewandelt.'},
-  {cat:'Impuls und Stöße', s:'Bei einem elastischen Stoß bleibt die Bewegungsenergie erhalten.', a:'Richtig', e:'Beim ideal elastischen Stoß bleiben Impuls und kinetische Energie erhalten.'},
-  {cat:'Impuls und Stöße', s:'Bei einem unelastischen Stoß kann Bewegungsenergie in Wärme, Schall oder Verformungsenergie umgewandelt werden.', a:'Richtig', e:'Der Gesamtimpuls bleibt erhalten, aber mechanische Energie kann in andere Energieformen übergehen.'},
-  {cat:'Impuls und Stöße', s:'Wenn zwei Körper zusammenstoßen, wirken auf beide gleich große Kräfte.', a:'Richtig', e:'Nach dem Wechselwirkungsprinzip sind die Kräfte gleich groß und entgegengesetzt gerichtet.'},
-  {cat:'Impuls und Stöße', s:'Bei einem Zusammenstoß erfährt der leichtere Körper meist die größere Beschleunigung.', a:'Richtig', e:'Bei gleicher Kraft gilt a = F/m. Kleinere Masse bedeutet größere Beschleunigung.'},
-  {cat:'Impuls und Stöße', s:'Ein Airbag verringert die Aufprallkraft, weil er die Impulsänderung kleiner macht.', a:'Falsch', e:'Wenn man zum Stillstand kommt, ist die Impulsänderung im Wesentlichen gleich. Der Airbag vergrößert vor allem die Zeit der Impulsänderung.'},
-  {cat:'Impuls und Stöße', s:'Ein Airbag verringert die Aufprallkraft, weil er die Zeit der Impulsänderung vergrößert.', a:'Richtig', e:'Bei gleicher Impulsänderung führt eine längere Abbremszeit zu einer kleineren mittleren Kraft.'},
-  {cat:'Impuls und Stöße', s:'Beim Rückstoß einer Rakete bleibt der Gesamtimpuls von Rakete und ausgestoßenem Gas erhalten.', a:'Richtig', e:'Die Rakete gewinnt Impuls in eine Richtung, das ausgestoßene Gas in die andere.'},
-  {cat:'Impuls und Stöße', s:'Eine Rakete kann im Weltall nicht funktionieren, weil sie sich dort nicht von Luft abstoßen kann.', a:'Falsch', e:'Eine Rakete stößt Masse aus und erhält dadurch Rückstoß. Sie braucht keine Luft zum Abstoßen.'},
-  {cat:'Impuls und Stöße', s:'Beim Absprung vom Boot bewegt sich das Boot in die entgegengesetzte Richtung.', a:'Richtig', e:'Das folgt aus Impulserhaltung und Wechselwirkung zwischen Person und Boot.'},
-  {cat:'Impuls und Stöße', s:'Der Impulserhaltungssatz gilt nur auf der Erde.', a:'Falsch', e:'Impulserhaltung ist ein allgemeines physikalisches Prinzip für abgeschlossene Systeme.'},
-
-  {cat:'Kreisbewegung', s:'Bei einer gleichförmigen Kreisbewegung ist die Geschwindigkeit konstant.', a:'Falsch', e:'Der Betrag der Geschwindigkeit ist konstant, aber die Richtung ändert sich ständig. Der Geschwindigkeitsvektor ist also nicht konstant.'},
-  {cat:'Kreisbewegung', s:'Bei einer gleichförmigen Kreisbewegung ist der Betrag der Geschwindigkeit konstant.', a:'Richtig', e:'Gleichförmig bedeutet hier: konstante Bahngeschwindigkeit als Betrag.'},
-  {cat:'Kreisbewegung', s:'Bei einer gleichförmigen Kreisbewegung ändert sich ständig die Richtung der Geschwindigkeit.', a:'Richtig', e:'Die Geschwindigkeit zeigt immer tangential zur Bahn und ändert dadurch fortlaufend ihre Richtung.'},
-  {cat:'Kreisbewegung', s:'Bei einer gleichförmigen Kreisbewegung gibt es eine Beschleunigung zum Kreismittelpunkt.', a:'Richtig', e:'Das ist die Zentripetalbeschleunigung. Sie ändert die Richtung der Geschwindigkeit.'},
-  {cat:'Kreisbewegung', s:'Die Zentripetalbeschleunigung zeigt nach außen.', a:'Falsch', e:'Die Zentripetalbeschleunigung zeigt zum Mittelpunkt der Kreisbahn.'},
-  {cat:'Kreisbewegung', s:'Die Zentripetalkraft zeigt zum Mittelpunkt der Kreisbahn.', a:'Richtig', e:'Sie ist die resultierende Kraft, die die Kreisbewegung aufrechterhält.'},
-  {cat:'Kreisbewegung', s:'Die sogenannte Fliehkraft ist aus Sicht eines mitbewegten Beobachters spürbar.', a:'Richtig', e:'Im mitrotierenden Bezugssystem erscheint eine Scheinkraft nach außen. In einem Inertialsystem gibt es als reale Ursache die nach innen gerichtete Zentripetalkraft.'},
-  {cat:'Kreisbewegung', s:'Je größer die Geschwindigkeit bei gleicher Kreisbahn, desto größer ist die benötigte Zentripetalkraft.', a:'Richtig', e:'Für die Kreisbewegung gilt F_z = m · v²/r. Die Kraft wächst quadratisch mit der Geschwindigkeit.'},
-  {cat:'Kreisbewegung', s:'Je größer der Radius bei gleicher Geschwindigkeit, desto kleiner ist die benötigte Zentripetalkraft.', a:'Richtig', e:'Aus F_z = m · v²/r folgt: Bei gleichem v wird die nötige Kraft kleiner, wenn r größer wird.'},
-  {cat:'Kreisbewegung', s:'Bei einer Kreisbewegung braucht man eine Kraft nach innen, sonst bewegt sich der Körper geradlinig weiter.', a:'Richtig', e:'Ohne Zentripetalkraft setzt der Körper seine Bewegung tangential geradlinig fort.'},
-  {cat:'Kreisbewegung', s:'Wenn ein Auto zu schnell durch eine Kurve fährt, reicht die Reibungskraft möglicherweise nicht als Zentripetalkraft aus.', a:'Richtig', e:'Dann kann das Auto die Kreisbahn nicht halten und rutscht aus der Kurve.'},
-  {cat:'Kreisbewegung', s:'Ein Satellit auf Kreisbahn fällt ständig zur Erde hin, verfehlt sie aber wegen seiner Seitwärtsbewegung.', a:'Richtig', e:'Eine Umlaufbahn kann als permanenter freier Fall um die Erde verstanden werden.'},
-  {cat:'Kreisbewegung', s:'Bei einer Kreisbewegung verrichtet die Zentripetalkraft immer Arbeit am Körper.', a:'Falsch', e:'Bei ideal gleichförmiger Kreisbewegung steht die Zentripetalkraft senkrecht zur Bewegung. Sie ändert die Richtung, nicht den Betrag der Geschwindigkeit.'},
-  {cat:'Kreisbewegung', s:'Bei idealer gleichförmiger Kreisbewegung ändert die Zentripetalkraft nur die Richtung, nicht den Betrag der Geschwindigkeit.', a:'Richtig', e:'Darum bleibt die kinetische Energie bei ideal gleichförmiger Kreisbewegung konstant.'},
-  {cat:'Kreisbewegung', s:'Eine größere Umlaufzeit bedeutet bei gleichem Radius eine kleinere Bahngeschwindigkeit.', a:'Richtig', e:'Bei gleichem Radius gilt v = 2πr/T. Größere Umlaufzeit bedeutet kleinere Bahngeschwindigkeit.'},
-
-  {cat:'Gravitation und Weltall', s:'Im Weltall gibt es keine Gravitation.', a:'Falsch', e:'Gravitation reicht weit in den Raum hinaus. Sie wird mit größerem Abstand schwächer, verschwindet aber nicht einfach.'},
-  {cat:'Gravitation und Weltall', s:'Die Gravitationskraft nimmt mit dem Abstand ab.', a:'Richtig', e:'Nach dem Gravitationsgesetz nimmt sie mit dem Quadrat des Abstandes ab.'},
-  {cat:'Gravitation und Weltall', s:'Die Gravitationskraft zwischen zwei Körpern hängt von beiden Massen ab.', a:'Richtig', e:'Im Newtonschen Gravitationsgesetz steht das Produkt beider Massen.'},
-  {cat:'Gravitation und Weltall', s:'Verdoppelt man eine Masse, verdoppelt sich die Gravitationskraft.', a:'Richtig', e:'Bei gleichem Abstand und gleicher anderer Masse ist die Gravitationskraft proportional zu jeder der beiden Massen.'},
-  {cat:'Gravitation und Weltall', s:'Verdoppelt man den Abstand zweier Körper, halbiert sich die Gravitationskraft.', a:'Falsch', e:'Wegen des quadratischen Abstandsgesetzes wird die Kraft bei doppeltem Abstand viermal kleiner.'},
-  {cat:'Gravitation und Weltall', s:'Verdoppelt man den Abstand zweier Körper, wird die Gravitationskraft viermal so klein.', a:'Richtig', e:'Das folgt aus F ~ 1/r².'},
-  {cat:'Gravitation und Weltall', s:'Die Erde zieht den Mond an, aber der Mond zieht auch die Erde an.', a:'Richtig', e:'Beide Kräfte sind gleich groß und entgegengesetzt. Beide Körper bewegen sich um den gemeinsamen Schwerpunkt.'},
-  {cat:'Gravitation und Weltall', s:'Ebbe und Flut hängen mit der Gravitation des Mondes zusammen.', a:'Richtig', e:'Die Gezeiten entstehen vor allem durch Unterschiede der Mondgravitation über die Erde hinweg; die Sonne trägt ebenfalls bei.'},
-  {cat:'Gravitation und Weltall', s:'Satelliten bleiben oben, weil sie weit genug von der Erde entfernt sind und deshalb keine Gewichtskraft mehr erfahren.', a:'Falsch', e:'Satelliten erfahren weiterhin Gravitation. Gerade diese Kraft hält sie auf ihrer Umlaufbahn.'},
-  {cat:'Gravitation und Weltall', s:'Astronauten in der ISS sind schwerelos, weil sie sich im freien Fall befinden.', a:'Richtig', e:'ISS und Astronauten fallen gemeinsam um die Erde. Dadurch entsteht Schwerelosigkeit im Inneren.'},
-  {cat:'Gravitation und Weltall', s:'Die ISS ist schwerelos, weil dort die Erdanziehung praktisch null ist.', a:'Falsch', e:'In ISS-Höhe ist die Erdanziehung noch erheblich. Die Schwerelosigkeit entsteht durch den gemeinsamen freien Fall.'},
-  {cat:'Gravitation und Weltall', s:'Eine Umlaufbahn ist eine Art permanentes Fallen um die Erde herum.', a:'Richtig', e:'Die Gravitation zieht den Satelliten zur Erde, während seine tangentiale Geschwindigkeit dafür sorgt, dass er sie ständig verfehlt.'},
-  {cat:'Gravitation und Weltall', s:'Je näher ein Satellit die Erde umkreist, desto kürzer ist seine Umlaufzeit.', a:'Richtig', e:'Für kreisnahe Umlaufbahnen gilt: kleinere Bahnradius bedeutet kürzere Umlaufzeit.'},
-  {cat:'Gravitation und Weltall', s:'Geostationäre Satelliten stehen wirklich unbewegt im Weltall.', a:'Falsch', e:'Sie bewegen sich um die Erde, haben aber dieselbe Winkelgeschwindigkeit wie die Erdrotation und erscheinen daher über einem Punkt der Erde ruhend.'},
-  {cat:'Gravitation und Weltall', s:'Geostationäre Satelliten bewegen sich mit derselben Winkelgeschwindigkeit wie die Erde.', a:'Richtig', e:'Deshalb bleiben sie relativ zur Erdoberfläche über demselben Längengrad.'},
-  {cat:'Gravitation und Weltall', s:'Das heliozentrische Weltbild setzte sich durch, weil es Beobachtungen einfacher und genauer erklären konnte.', a:'Richtig', e:'Es erklärte Planetenbewegungen systematischer und wurde durch weitere Beobachtungen und Theorien gestützt.'},
-  {cat:'Gravitation und Weltall', s:'Das geozentrische Weltbild ist falsch, weil sich von der Erde aus gar nicht beschreiben lässt, wie Planeten sich bewegen.', a:'Falsch', e:'Man konnte Planetenbewegungen geozentrisch beschreiben, etwa mit Epizykeln. Das Modell war aber komplizierter und weniger tragfähig.'},
-  {cat:'Gravitation und Weltall', s:'Physikalische Weltbilder können sich ändern, wenn neue Beobachtungen oder bessere Modelle entstehen.', a:'Richtig', e:'Physikalische Modelle sind vorläufig und werden weiterentwickelt, wenn neue Evidenz oder bessere Erklärungen vorliegen.'},
-  {cat:'Gravitation und Weltall', s:'Ein Modell ist wertlos, wenn es nicht die ganze Wirklichkeit vollständig beschreibt.', a:'Falsch', e:'Modelle vereinfachen bewusst. Entscheidend ist, ob sie für eine Fragestellung brauchbare Erklärungen und Vorhersagen liefern.'},
-  {cat:'Gravitation und Weltall', s:'Ein gutes physikalisches Modell darf vereinfachen, muss aber seinen Gültigkeitsbereich erkennen lassen.', a:'Richtig', e:'Modellgrenzen sind Teil sauberer physikalischer Arbeit.'},
-
-  {cat:'Relativität und Zeitdilatation', s:'Nach der speziellen Relativitätstheorie ist die Lichtgeschwindigkeit im Vakuum für alle gleichförmig bewegten Beobachter gleich.', a:'Richtig', e:'Die Konstanz der Lichtgeschwindigkeit ist ein Ausgangspunkt der speziellen Relativitätstheorie.'},
-  {cat:'Relativität und Zeitdilatation', s:'Zeit vergeht nach Einstein für alle Beobachter immer gleich.', a:'Falsch', e:'Zeitintervalle können für relativ zueinander bewegte Beobachter unterschiedlich gemessen werden.'},
-  {cat:'Relativität und Zeitdilatation', s:'Bewegte Uhren gehen aus Sicht eines ruhenden Beobachters langsamer.', a:'Richtig', e:'Das ist die Zeitdilatation. Sie wird bei hohen relativen Geschwindigkeiten deutlich.'},
-  {cat:'Relativität und Zeitdilatation', s:'Zeitdilatation bedeutet, dass Uhren wegen schlechter Technik ungenau gehen.', a:'Falsch', e:'Zeitdilatation ist kein technischer Fehler, sondern ein physikalischer Effekt der Raumzeit.'},
-  {cat:'Relativität und Zeitdilatation', s:'Die Lichtuhr ist ein Gedankenexperiment, mit dem man Zeitdilatation plausibel machen kann.', a:'Richtig', e:'Mit der Lichtuhr lässt sich zeigen, warum unterschiedliche Beobachter verschiedene Zeitintervalle messen.'},
-  {cat:'Relativität und Zeitdilatation', s:'Die Relativitätstheorie zeigt, dass alle Meinungen gleich richtig sind.', a:'Falsch', e:'Sie ist eine präzise physikalische Theorie und hat nichts mit beliebiger Meinungsrelativität zu tun.'},
-  {cat:'Relativität und Zeitdilatation', s:'„Alles ist relativ“ ist keine präzise Zusammenfassung der Relativitätstheorie.', a:'Richtig', e:'Gerade die Lichtgeschwindigkeit ist invariant. Die Theorie beschreibt genau, welche Größen beobachterabhängig und welche invariant sind.'},
-  {cat:'Relativität und Zeitdilatation', s:'Die spezielle Relativitätstheorie wird erst bei Geschwindigkeiten nahe der Lichtgeschwindigkeit deutlich bemerkbar.', a:'Richtig', e:'Im Alltag sind die Effekte meist sehr klein, weil unsere Geschwindigkeiten viel kleiner als c sind.'},
-  {cat:'Relativität und Zeitdilatation', s:'Im Alltag bemerken wir relativistische Effekte meistens kaum.', a:'Richtig', e:'Bei kleinen Geschwindigkeiten nähern sich die relativistischen Ergebnisse der klassischen Mechanik an.'},
-  {cat:'Relativität und Zeitdilatation', s:'Dass relativistische Effekte klein sind, bedeutet, dass sie nicht real sind.', a:'Falsch', e:'Auch kleine Effekte können real und messbar sein. In Technik und Forschung werden sie berücksichtigt.'},
-  {cat:'Relativität und Zeitdilatation', s:'GPS-Systeme müssen relativistische Effekte berücksichtigen.', a:'Richtig', e:'Bei präziser Satellitennavigation müssen relativistische Zeitkorrekturen einbezogen werden.'},
-  {cat:'Relativität und Zeitdilatation', s:'Die Lichtgeschwindigkeit ist nach der speziellen Relativitätstheorie einfach eine sehr große Geschwindigkeit, die man mit genug Energie überschreiten kann.', a:'Falsch', e:'Für Körper mit Masse ist die Lichtgeschwindigkeit nicht erreichbar oder überschreitbar.'},
-  {cat:'Relativität und Zeitdilatation', s:'Kein Körper mit Masse kann auf Lichtgeschwindigkeit beschleunigt werden.', a:'Richtig', e:'Dafür wäre nach der Relativitätstheorie unendlich viel Energie nötig.'},
-  {cat:'Relativität und Zeitdilatation', s:'Zwei Beobachter können unterschiedliche Zeiten messen und trotzdem beide physikalisch korrekt messen.', a:'Richtig', e:'Zeitmessungen können vom Bewegungszustand abhängen. Das ist kein Widerspruch, sondern Teil der Theorie.'},
-  {cat:'Relativität und Zeitdilatation', s:'Die Relativitätstheorie ersetzt die klassische Mechanik vollständig und macht sie nutzlos.', a:'Falsch', e:'Die klassische Mechanik bleibt für kleine Geschwindigkeiten eine sehr gute Näherung.'},
-
-  {cat:'Messen, Diagramme und Modellbildung', s:'Jede Messung hat eine Messunsicherheit.', a:'Richtig', e:'Messwerte sind nie absolut exakt. Geräte, Verfahren und Ablesung bringen Unsicherheiten mit sich.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Wenn zwei Messwerte unterschiedlich sind, muss einer davon falsch sein.', a:'Falsch', e:'Unterschiedliche Messwerte können durch Messunsicherheiten entstehen. Entscheidend ist, ob die Abweichung plausibel ist.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Mehrere Messungen können helfen, zufällige Abweichungen besser einzuschätzen.', a:'Richtig', e:'Wiederholte Messungen erlauben Mittelwerte und eine bessere Einschätzung der Streuung.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Ein einzelner Messwert reicht immer aus, um ein physikalisches Gesetz zu bestätigen.', a:'Falsch', e:'Ein Gesetz wird durch viele konsistente Beobachtungen gestützt. Ein einzelner Messwert ist dafür nicht ausreichend.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Ein Experiment kann eine Hypothese stützen, aber nicht endgültig für alle Zeiten beweisen.', a:'Richtig', e:'Naturwissenschaftliche Aussagen bleiben grundsätzlich prüfbar und vorläufig, auch wenn sie sehr gut bestätigt sind.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Eine Gerade im Diagramm deutet häufig auf einen proportionalen Zusammenhang hin.', a:'Kommt darauf an', e:'Eine Gerade zeigt einen linearen Zusammenhang. Proportional ist er nur, wenn die Gerade durch den Ursprung geht.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Wenn zwei Größen proportional sind, ist ihr Quotient konstant.', a:'Richtig', e:'Bei y ~ x gilt y/x = konstant.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Wenn eine Größe doppelt so groß wird und die andere auch doppelt so groß wird, liegt immer Proportionalität vor.', a:'Falsch', e:'Das kann ein Hinweis sein, reicht aber nicht. Proportionalität muss für alle Wertepaare gelten und durch den Ursprung laufen.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Ein Diagramm kann Informationen enthalten, die man in einer Wertetabelle schwerer erkennt.', a:'Richtig', e:'Diagramme machen Trends, Steigungen, Ausreißer und Zusammenhänge oft schneller sichtbar.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Die Wahl der Achsenbeschriftung und Einheiten ist für die Auswertung unwichtig.', a:'Falsch', e:'Ohne korrekte Achsen und Einheiten ist ein Diagramm physikalisch kaum auswertbar.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Physikalische Formeln gelten immer ohne Einschränkung.', a:'Falsch', e:'Formeln gelten unter bestimmten Annahmen und Modellbedingungen.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Eine Formel ist ein Modellzusammenhang und gilt nur unter bestimmten Voraussetzungen.', a:'Richtig', e:'Beispielsweise gilt s = 1/2 · a · t² nur für Start aus der Ruhe bei konstanter Beschleunigung.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Luftwiderstand darf man nie vernachlässigen.', a:'Falsch', e:'Man darf ihn vernachlässigen, wenn dadurch ein brauchbares Modell für die konkrete Fragestellung entsteht.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Luftwiderstand darf man manchmal bewusst vernachlässigen, wenn das Modell dadurch brauchbar bleibt.', a:'Richtig', e:'Das ist eine typische Idealisierung in der Physik.'},
-  {cat:'Messen, Diagramme und Modellbildung', s:'Ein Modell ist dann gut, wenn es für die Fragestellung hinreichend genaue Vorhersagen erlaubt.', a:'Richtig', e:'Ein gutes Modell muss nicht alles abbilden, sondern für seinen Zweck geeignet sein.'}
-];
-
-let deck = [];
-let current = null;
-let currentIndex = 0;
-let solvedCurrent = false;
-let history = [];
-
-const els = {
-  progress: document.getElementById('progress-bar'),
-  cardNumber: document.getElementById('card-number'),
-  cardTotal: document.getElementById('card-total'),
-  doneCount: document.getElementById('done-count'),
-  leftCount: document.getElementById('left-count'),
-  category: document.getElementById('category-label'),
-  statement: document.getElementById('statement-text'),
-  solutionPanel: document.getElementById('solution-panel'),
-  answerBadge: document.getElementById('answer-badge'),
-  answerLabel: document.getElementById('answer-label'),
-  explanation: document.getElementById('answer-explanation'),
-  showBtn: document.getElementById('show-btn'),
-  nextBtn: document.getElementById('next-btn'),
-  finishedBox: document.getElementById('finished-box'),
-  statementBox: document.getElementById('statement-box'),
-  historyList: document.getElementById('history-list')
-};
-
-function slugAnswer(answer){
-  return answer.toLowerCase().replaceAll(' ', '-');
-}
-
-function shuffle(array){
-  const arr = [...array];
-  for(let i = arr.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-function restartDeck(){
-  deck = shuffle(cards);
-  currentIndex = 0;
-  history = [];
-  solvedCurrent = false;
-  els.finishedBox.style.display = 'none';
-  els.statementBox.style.display = 'flex';
-  els.solutionPanel.classList.remove('open');
-  updateHistory();
-  loadCard();
-}
-
-function loadCard(){
-  if(currentIndex >= deck.length){
-    finishDeck();
-    return;
-  }
-  current = deck[currentIndex];
-  solvedCurrent = false;
-  els.category.textContent = current.cat;
-  els.statement.textContent = current.s;
-  els.solutionPanel.classList.remove('open');
-  els.answerBadge.className = 'answer-badge';
-  els.answerLabel.textContent = '';
-  els.explanation.textContent = '';
-  els.showBtn.disabled = false;
-  els.nextBtn.disabled = true;
-  updateStats();
-  refreshIcons();
-}
-
-function showSolution(){
-  if(!current || solvedCurrent) return;
-  solvedCurrent = true;
-  const answerClass = slugAnswer(current.a);
-  els.answerBadge.className = 'answer-badge ' + answerClass;
-  els.answerLabel.textContent = current.a;
-  els.explanation.textContent = current.e;
-  els.solutionPanel.classList.add('open');
-  els.showBtn.disabled = true;
-  els.nextBtn.disabled = false;
-  history.unshift(current);
-  updateHistory();
-  updateStats();
-  refreshIcons();
-}
-
-function nextCard(){
-  if(!solvedCurrent) return;
-  currentIndex++;
-  loadCard();
-}
-
-function finishDeck(){
-  current = null;
-  els.statementBox.style.display = 'none';
-  els.solutionPanel.classList.remove('open');
-  els.showBtn.disabled = true;
-  els.nextBtn.disabled = true;
-  els.finishedBox.style.display = 'block';
-  updateStats();
-  refreshIcons();
-}
-
-function updateStats(){
-  els.cardTotal.textContent = cards.length;
-  const cardNo = Math.min(currentIndex + 1, cards.length);
-  els.cardNumber.textContent = cardNo;
-  els.doneCount.textContent = history.length;
-  els.leftCount.textContent = Math.max(cards.length - history.length, 0);
-  const progress = (history.length / cards.length) * 100;
-  els.progress.style.width = progress + '%';
-}
-
-function updateHistory(){
-  if(history.length === 0){
-    els.historyList.innerHTML = '<p style="color:var(--text-muted);">Noch keine Aussage aufgelöst.</p>';
-    return;
-  }
-  els.historyList.innerHTML = history.map(item => {
-    const cl = slugAnswer(item.a);
-    return `<div class="history-item">
-      <div class="history-item-top">
-        <div class="small-statement">${escapeHtml(item.s)}</div>
-        <span class="mini-badge ${cl}">${escapeHtml(item.a)}</span>
-      </div>
-      <div class="small-explanation">${escapeHtml(item.e)}</div>
-    </div>`;
-  }).join('');
-}
-
-function escapeHtml(str){
-  return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-}
-
-function toggleDarkMode(){
-  document.body.classList.toggle('dark');
-  const dark = document.body.classList.contains('dark');
-  localStorage.setItem('mythencheck-dark', dark ? '1' : '0');
-  const icon = document.getElementById('dark-icon');
-  if(icon) icon.setAttribute('data-lucide', dark ? 'sun' : 'moon');
-  refreshIcons();
-}
-
-function refreshIcons(){
-  if(window.lucide && typeof window.lucide.createIcons === 'function'){
-    window.lucide.createIcons();
+function safeLucide() {
+  if (window.lucide && lucide.createIcons) {
+    try { lucide.createIcons(); } catch (e) {}
   }
 }
 
-function setupRevealAnimations(){
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){ entry.target.classList.add('visible'); }
-    });
-  }, { threshold:0.08 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark');
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
+  icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  label.textContent = isDark ? 'Helles Design' : 'Dunkles Design';
+  safeLucide();
 }
 
-function setupKeyboard(){
-  document.addEventListener('keydown', ev => {
-    if(ev.code === 'Space'){
-      const tag = document.activeElement && document.activeElement.tagName;
-      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      ev.preventDefault();
-      if(!solvedCurrent && !els.showBtn.disabled) showSolution();
-      else if(solvedCurrent && !els.nextBtn.disabled) nextCard();
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.nav__link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.getElementById('sidebar').classList.remove('open');
     }
   });
-}
+});
 
-function init(){
-  if(localStorage.getItem('mythencheck-dark') === '1'){
-    document.body.classList.add('dark');
-    const icon = document.getElementById('dark-icon');
-    if(icon) icon.setAttribute('data-lucide','sun');
-  }
-  setupRevealAnimations();
-  setupKeyboard();
-  restartDeck();
-  refreshIcons();
-}
-
-document.addEventListener('DOMContentLoaded', init);
+safeLucide();
 </script>
 </body>
 </html>
