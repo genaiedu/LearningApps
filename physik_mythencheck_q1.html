@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physik-Mythencheck Q1</title>
+<meta name="description" content="Interaktive Zufallskarten für den Q1-Stoff in Physik">
+
+<style>
+/* ============ @font-face ============ */
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-900.woff2') format('woff2'); font-weight:900; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Dancing Script'; src:url('fonts/dancing-script-v29-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+
+/* ============ Variablen ============ */
+:root{
+  --primary:#1a6fb5;
+  --primary-light:#e8f1fb;
+  --accent:#f59e0b;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --surface:rgba(255,255,255,0.75);
+  --glass-bg:rgba(255,255,255,0.10);
+  --glass-border:rgba(255,255,255,0.20);
+  --blur:blur(20px);
+  --radius:16px;
+  --sidebar-width:300px;
+  --shadow:0 8px 32px rgba(0,0,0,0.12);
+  --correct:#16a34a;
+  --wrong:#dc2626;
+  --depends:#f59e0b;
+}
+body.dark{
+  --primary:#38bdf8;
+  --primary-light:#0f172a;
+  --text:#e2e8f0;
+  --text-muted:#94a3b8;
+  --surface:rgba(15,23,42,0.80);
+  --glass-bg:rgba(255,255,255,0.05);
+  --glass-border:rgba(255,255,255,0.16);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter', system-ui, sans-serif;
+  color:var(--text);
+  background:linear-gradient(135deg,#f0f7ff 0%,#e8f1fb 50%,#fdf6e8 100%);
+  min-height:100vh;
+  transition:background .3s, color .3s;
+  overflow-x:hidden;
+}
+body.dark{ background:linear-gradient(135deg,#0f172a 0%,#0b1120 50%,#101a2c 100%); }
+
+h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02em; }
+button{ font-family:'Inter', system-ui, sans-serif; }
+
+/* ============ Blobs ============ */
+.blob{ position:fixed; border-radius:50%; filter:blur(80px); opacity:.35; animation:drift 18s ease-in-out infinite alternate; z-index:-1; }
+.blob:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-10%; animation-duration:20s; }
+.blob:nth-child(2){ width:400px; height:400px; background:#7c3aed; top:40%; right:-5%; animation-duration:25s; }
+.blob:nth-child(3){ width:350px; height:350px; background:#0ea5e9; bottom:-5%; left:30%; animation-duration:22s; }
+@keyframes drift{
+  0%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(40px,-30px) scale(1.05); }
+  66%{ transform:translate(-20px,50px) scale(.95); }
+  100%{ transform:translate(30px,20px) scale(1.02); }
+}
+
+/* ============ Progress Bar ============ */
+#progress-bar-wrap{ position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(0,0,0,.08); z-index:500; }
+#progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--accent)); transition:width .2s; }
+
+/* ============ Layout ============ */
+.layout{ display:flex; min-height:100vh; }
+.sidebar{
+  width:var(--sidebar-width); flex-shrink:0; position:fixed; top:0; left:0; height:100vh;
+  background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--glass-border); padding:28px 22px; overflow-y:auto; z-index:300;
+  transition:transform .3s;
+}
+.sidebar h2{ font-size:1.05rem; color:var(--primary); margin-bottom:4px; }
+.sidebar .subtitle{ font-size:.8rem; color:var(--text-muted); margin-bottom:24px; }
+.sidebar nav a{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:10px;
+  color:var(--text); text-decoration:none; font-size:.92rem; font-weight:500; transition:background .2s;
+}
+.sidebar nav a:hover{ background:var(--primary-light); color:var(--primary); }
+.sidebar .school{ margin-top:30px; padding-top:18px; border-top:1px solid var(--glass-border); font-size:.75rem; color:var(--text-muted); line-height:1.5; }
+.dark-toggle{
+  display:flex; align-items:center; gap:8px; margin-top:18px; padding:10px 12px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--glass-border); cursor:pointer; font-size:.85rem; color:var(--text);
+}
+.hamburger{ display:none; position:fixed; top:14px; right:14px; z-index:400; background:var(--surface); border:1px solid var(--glass-border);
+  border-radius:10px; width:44px; height:44px; align-items:center; justify-content:center; backdrop-filter:var(--blur); cursor:pointer; color:var(--text); }
+
+.main-content{ margin-left:var(--sidebar-width); flex:1; padding:40px 6vw 100px; max-width:1060px; }
+
+/* ============ Hero ============ */
+.hero{ margin-bottom:36px; }
+.hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
+  padding:5px 14px; border-radius:999px; margin-bottom:16px; }
+.hero h1{ font-size:2.6rem; font-weight:900; line-height:1.1; margin-bottom:14px; }
+.hero h1 span{ color:var(--primary); }
+.hero p{ font-size:1.1rem; color:var(--text-muted); max-width:760px; line-height:1.65; }
+.hero .caveat{ font-family:'Dancing Script', cursive; font-weight:600; font-size:1.6rem; color:var(--accent); margin-top:10px; display:block; }
+
+/* ============ Section / Glass Card ============ */
+section{ margin-bottom:56px; scroll-margin-top:30px; }
+.section-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.section-head .num{
+  width:38px; height:38px; border-radius:12px; background:var(--primary); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; flex-shrink:0;
+}
+.section-head h2{ font-size:1.5rem; }
+
+.card{
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:26px 28px;
+}
+.card + .card{ margin-top:18px; }
+.card p{ line-height:1.65; margin-bottom:12px; }
+.card p:last-child{ margin-bottom:0; }
+.card ul{ padding-left:20px; line-height:1.7; }
+
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible{ opacity:1; transform:translateY(0); }
+
+/* ============ Merksatz-Box ============ */
+.merksatz{
+  border-left:4px solid var(--primary); background:var(--primary-light); border-radius:0 12px 12px 0;
+  padding:16px 20px; font-weight:600; margin:16px 0;
+}
+body.dark .merksatz{ background:rgba(56,189,248,.10); }
+
+/* ============ Game ============ */
+.game-card{ position:relative; overflow:hidden; }
+.game-top{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; flex-wrap:wrap;
+}
+.stats{ display:flex; gap:10px; flex-wrap:wrap; }
+.stat-pill{
+  display:inline-flex; align-items:center; gap:7px; border:1px solid var(--glass-border); background:var(--glass-bg);
+  border-radius:999px; padding:7px 12px; font-weight:600; font-size:.86rem; color:var(--text-muted);
+}
+.stat-pill strong{ color:var(--primary); }
+.category-pill{
+  display:inline-flex; align-items:center; gap:7px; color:var(--primary); background:var(--primary-light); border-radius:999px;
+  padding:7px 14px; font-size:.86rem; font-weight:700;
+}
+.statement-box{
+  min-height:190px; display:flex; align-items:center; justify-content:center; text-align:center;
+  background:linear-gradient(135deg,rgba(26,111,181,.10),rgba(245,158,11,.10));
+  border:1px solid var(--glass-border); border-radius:18px; padding:34px 28px; margin:18px 0;
+}
+.statement-box .statement-text{
+  font-family:'Poppins', system-ui, sans-serif; font-size:2rem; line-height:1.25; font-weight:800; letter-spacing:-.035em;
+}
+.solution-panel{
+  max-height:0; overflow:hidden; transition:max-height .35s ease, opacity .25s ease; opacity:0;
+  border-radius:14px; border:1px solid transparent;
+}
+.solution-panel.open{ max-height:380px; opacity:1; border-color:var(--glass-border); margin-top:16px; }
+.solution-inner{ padding:18px 20px; background:var(--surface); }
+.answer-line{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+.answer-badge{
+  display:inline-flex; align-items:center; gap:8px; color:#fff; border-radius:999px; padding:8px 14px; font-weight:800;
+}
+.answer-badge.richtig{ background:var(--correct); }
+.answer-badge.falsch{ background:var(--wrong); }
+.answer-badge.kommt-darauf-an{ background:var(--depends); }
+.answer-explanation{ line-height:1.65; color:var(--text); }
+.choice-row{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:18px; }
+.choice-btn{
+  border:2px solid var(--glass-border); border-radius:14px; padding:16px 14px; background:var(--surface); color:var(--text);
+  font-weight:800; font-size:1rem; cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.choice-btn:hover{ transform:translateY(-2px); border-color:var(--primary); background:var(--primary-light); }
+.choice-btn:disabled{ cursor:default; opacity:.72; transform:none; }
+.choice-btn.selected{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(245,158,11,.18); }
+.explanation-title{ font-family:'Poppins'; font-weight:800; color:var(--primary); margin-bottom:8px; }
+.button-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+.btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; }
+.btn-primary:hover{ filter:brightness(.96); }
+.btn-primary:disabled{ opacity:.45; cursor:not-allowed; }
+.btn-secondary{
+  background:transparent; border:2px solid var(--glass-border); color:var(--text); border-radius:10px;
+  padding:10px 20px; font-weight:600; cursor:pointer;
+}
+.btn-accent{ background:var(--accent); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; }
+.keyboard-hint{ color:var(--text-muted); font-size:.85rem; margin-top:14px; }
+.finished-box{ display:none; text-align:center; padding:32px 20px; }
+.finished-box h3{ font-size:1.7rem; color:var(--primary); margin-bottom:10px; }
+.finished-box p{ color:var(--text-muted); }
+
+/* ============ History ============ */
+.history-list{ display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto; padding-right:4px; }
+.history-item{
+  border:1px solid var(--glass-border); border-radius:12px; background:var(--surface); padding:12px 14px;
+}
+.history-item-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:7px; }
+.history-item .small-statement{ font-weight:700; line-height:1.45; }
+.mini-badge{ flex-shrink:0; color:#fff; border-radius:999px; padding:4px 9px; font-size:.74rem; font-weight:800; }
+.mini-badge.richtig{ background:var(--correct); }
+.mini-badge.falsch{ background:var(--wrong); }
+.mini-badge.kommt-darauf-an{ background:var(--depends); }
+.history-item .small-explanation{ color:var(--text-muted); font-size:.88rem; line-height:1.5; }
+.result-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin:18px 0; }
+.result-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:14px; padding:18px; }
+.result-value{ font-family:'Poppins'; font-size:2rem; font-weight:900; color:var(--primary); }
+.result-label{ color:var(--text-muted); font-size:.88rem; }
+.genius-box{ display:none; margin:20px auto 0; max-width:760px; border:2px solid var(--accent); background:rgba(245,158,11,.12); border-radius:18px; padding:22px; }
+.genius-box h3{ color:var(--accent); font-size:1.8rem; margin-bottom:10px; }
+.genius-quote{ font-family:'Poppins'; font-weight:800; color:var(--text); background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:12px 14px; margin-top:10px; }
+#fireworks-canvas{ position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:999; display:none; }
+
+/* ============ Teacher notes ============ */
+.flow-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:14px; }
+.flow-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:16px; }
+.flow-card .time{ font-family:'Poppins'; font-size:1.2rem; font-weight:900; color:var(--primary); margin-bottom:4px; }
+.flow-card p{ font-size:.92rem; line-height:1.55; color:var(--text-muted); }
+
+footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; }
+
+/* ============ Responsive ============ */
+@media (max-width:900px){
+  .sidebar{ transform:translateX(-100%); }
+  .sidebar.open{ transform:translateX(0); }
+  .main-content{ margin-left:0; padding:70px 6vw 100px; }
+  .hamburger{ display:flex; }
+  .hero h1{ font-size:2rem; }
+  .statement-box .statement-text{ font-size:1.45rem; }
+  .choice-row{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+<canvas id="fireworks-canvas"></canvas>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Menü öffnen">
+  <i data-lucide="menu"></i>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>Physik-Mythencheck</h2>
+    <div class="subtitle">Q1 · Grundkurs</div>
+    <nav>
+      <a href="#spiel"><i data-lucide="shuffle"></i> Zufallskarte</a>
+      <a href="#verlauf"><i data-lucide="history"></i> Deine Antworten</a>
+    </nav>
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+      <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
+    </div>
+    <div class="school">
+      Gymnasium Thomaeum Kempen<br>
+      Physik · Q1<br>
+      Wellen · Felder · Quanten · Elektrodynamik
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="hero reveal">
+      <span class="eyebrow">Physik Q1</span>
+      <h1><span>Physik-Mythen</span> der Q1</h1>
+    </div>
+
+    <section id="spiel">
+      <div class="section-head"><div class="num">1</div><h2>Zufallskarte</h2></div>
+      <div class="card game-card reveal">
+        <div class="game-top">
+          <div class="stats">
+            <div class="stat-pill"><i data-lucide="layers"></i> Karte <strong id="card-number">1</strong>/<span id="card-total">145</span></div>
+            <div class="stat-pill"><i data-lucide="check-check"></i> Beantwortet: <strong id="done-count">0</strong></div>
+            <div class="stat-pill"><i data-lucide="list-end"></i> Übrig: <strong id="left-count">145</strong></div>
+          </div>
+          <div class="category-pill"><i data-lucide="tag"></i> <span id="category-label">Kategorie</span></div>
+        </div>
+
+        <div class="statement-box" id="statement-box">
+          <div class="statement-text" id="statement-text">Aussage wird geladen …</div>
+        </div>
+
+        <div class="choice-row" id="choice-row" aria-label="Antwortmöglichkeiten">
+          <button class="choice-btn" data-answer="Richtig" onclick="submitAnswer('Richtig')">Richtig</button>
+          <button class="choice-btn" data-answer="Falsch" onclick="submitAnswer('Falsch')">Falsch</button>
+          <button class="choice-btn" data-answer="Kommt darauf an" onclick="submitAnswer('Kommt darauf an')">Kommt darauf an</button>
+        </div>
+
+        <div class="solution-panel" id="solution-panel">
+          <div class="solution-inner">
+            <div class="explanation-title"><i data-lucide="lightbulb"></i> Erklärung</div>
+            <div class="answer-explanation" id="answer-explanation"></div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn-accent" id="next-btn" onclick="nextCard()" disabled><i data-lucide="arrow-right"></i> Nächste Aussage</button>
+          <button class="btn-secondary" onclick="restartDeck()"><i data-lucide="rotate-ccw"></i> Zufallslauf neu starten</button>
+        </div>
+
+        <div class="finished-box" id="finished-box">
+          <h3>Durchgang beendet.</h3>
+          <p>Hier ist deine Auswertung für diesen Zufallslauf.</p>
+          <div class="result-grid">
+            <div class="result-card"><div class="result-value" id="result-correct">0</div><div class="result-label">richtig beantwortet</div></div>
+            <div class="result-card"><div class="result-value" id="result-wrong">0</div><div class="result-label">falsch beantwortet</div></div>
+            <div class="result-card"><div class="result-value" id="result-percent">0%</div><div class="result-label">Trefferquote</div></div>
+          </div>
+          <div class="genius-box" id="genius-box">
+            <h3>Du bist ein Physik Genie!</h3>
+            <p>Um herauszufinden, ob du der erste bist der alle fragen korrekt beantworten konnte schicke herrn Unterberg via teams eine chatnachricht mit dem Satz</p>
+            <div class="genius-quote">&quot;Bin ich das schnellst Genie aus dem Kurs?&quot;</div>
+          </div>
+          <div class="button-row" style="justify-content:center;"><button class="btn-primary" onclick="restartDeck()"><i data-lucide="shuffle"></i> Zweiten Zufallslauf starten</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="verlauf">
+      <div class="section-head"><div class="num">2</div><h2>Deine Antworten</h2></div>
+      <div class="card reveal">
+        <div class="history-list" id="history-list">
+          <p style="color:var(--text-muted);">Noch keine Antwort gegeben.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>Physik Q1 · Mythencheck</footer>
+  </main>
+</div>
+
+<!-- Lokale Lucide-Datei nutzen, wenn im Repository vorhanden. Falls nicht, bleibt die Seite ohne Icons funktionsfähig. -->
+<script src="fonts/lucide.min.js"></script>
+<script>
+const cards = [
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Eine mechanische Schwingung ist periodisch, wenn sich der Bewegungszustand in gleichen Zeitabständen wiederholt.",
+    "a": "Richtig",
+    "e": "Periodisch bedeutet, dass sich der Zustand nach jeder Periodendauer T wiederholt. Bei einer harmonischen Schwingung ist der zeitliche Verlauf sinusförmig."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei einer harmonischen Schwingung ist die rücktreibende Kraft proportional zur Auslenkung.",
+    "a": "Richtig",
+    "e": "Für harmonische Schwingungen gilt typischerweise F = -D · y. Das Minuszeichen zeigt: Die Kraft wirkt zur Ruhelage zurück."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Eine größere Amplitude führt beim Federpendel immer zu einer größeren Periodendauer.",
+    "a": "Falsch",
+    "e": "Im idealen linearen Federpendel ist die Periodendauer unabhängig von der Amplitude. Sie hängt von Masse und Federkonstante ab."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Die Frequenz ist der Kehrwert der Periodendauer.",
+    "a": "Richtig",
+    "e": "Es gilt f = 1/T. Je kürzer die Periodendauer, desto größer die Frequenz."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei einer Welle wird Materie dauerhaft mit der Welle mittransportiert.",
+    "a": "Falsch",
+    "e": "Eine Welle transportiert vor allem Energie und Information. Die Teilchen des Mediums schwingen meist nur um ihre Ruhelage."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Eine Welle kann Energie transportieren, ohne dass das Medium als Ganzes mitwandert.",
+    "a": "Richtig",
+    "e": "Bei Wasser-, Schall- oder Seilwellen bewegen sich die Teilchen lokal, während sich die Störung ausbreitet."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Wellenlänge und Frequenz sind bei konstanter Ausbreitungsgeschwindigkeit umgekehrt proportional.",
+    "a": "Richtig",
+    "e": "Aus v = λ · f folgt: Ist v konstant, dann wird λ kleiner, wenn f größer wird."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Die Ausbreitungsgeschwindigkeit einer Welle hängt nur von ihrer Frequenz ab.",
+    "a": "Kommt darauf an",
+    "e": "In vielen Schulmodellen hängt die Wellengeschwindigkeit vom Medium ab, nicht direkt von der Frequenz. In dispersiven Medien kann sie aber frequenzabhängig sein."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Reflexion bedeutet, dass eine Welle an einer Grenzfläche zurückgeworfen wird.",
+    "a": "Richtig",
+    "e": "Bei der Reflexion bleibt die Welle im ursprünglichen Medium. Einfallswinkel und Reflexionswinkel sind gleich."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei der Brechung ändert eine Welle an einer Grenzfläche ihre Ausbreitungsrichtung, wenn sich ihre Geschwindigkeit ändert.",
+    "a": "Richtig",
+    "e": "Brechung entsteht durch unterschiedliche Ausbreitungsgeschwindigkeiten in zwei Medien. Dabei ändert sich die Wellenlänge, die Frequenz bleibt gleich."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei der Brechung von Licht ändert sich die Frequenz des Lichts.",
+    "a": "Falsch",
+    "e": "Beim Übergang in ein anderes Medium bleibt die Frequenz gleich. Geschwindigkeit und Wellenlänge ändern sich."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Beugung tritt nur bei Wasserwellen auf.",
+    "a": "Falsch",
+    "e": "Beugung ist ein allgemeines Wellenphänomen. Sie tritt auch bei Licht, Schall, Wasserwellen und Materiewellen auf."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Beugung wird besonders deutlich, wenn die Öffnung oder das Hindernis ungefähr die Größenordnung der Wellenlänge hat.",
+    "a": "Richtig",
+    "e": "Dann ist die Ausbreitung hinter der Öffnung stark aufgefächert. Bei sehr großen Öffnungen ist Beugung weniger auffällig."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Interferenz bedeutet, dass sich Wellen überlagern.",
+    "a": "Richtig",
+    "e": "Bei Interferenz addieren sich Auslenkungen. Dabei können Verstärkung und Abschwächung entstehen."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Destruktive Interferenz bedeutet, dass Energie vernichtet wird.",
+    "a": "Falsch",
+    "e": "Energie verschwindet nicht. Sie verteilt sich räumlich anders; an manchen Orten ist die Intensität klein, an anderen größer."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei konstruktiver Interferenz treffen Wellenberge immer auf Wellentäler.",
+    "a": "Falsch",
+    "e": "Konstruktiv ist die Überlagerung gleichphasiger Schwingungen, etwa Wellenberg auf Wellenberg oder Tal auf Tal."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Stehende Wellen entstehen durch Überlagerung zweier entgegengesetzt laufender Wellen gleicher Frequenz.",
+    "a": "Richtig",
+    "e": "Dabei entstehen Knoten mit dauerhaft kleiner Auslenkung und Bäuche mit großer Auslenkung."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Bei einer stehenden Welle transportiert das Muster als Ganzes Energie entlang der Ausbreitungsrichtung.",
+    "a": "Falsch",
+    "e": "Das stehende Muster wandert nicht. Es entsteht durch Überlagerung gegenläufiger Wellen."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Polarisation ist ein Hinweis darauf, dass eine Welle transversal ist.",
+    "a": "Richtig",
+    "e": "Nur Transversalwellen besitzen eine Schwingungsrichtung senkrecht zur Ausbreitungsrichtung, die polarisiert werden kann."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Schallwellen in Luft lassen sich wie Licht linear polarisieren.",
+    "a": "Falsch",
+    "e": "Schall in Luft ist eine Longitudinalwelle. Die Luftteilchen schwingen in Ausbreitungsrichtung, daher ist lineare Polarisation wie bei Licht nicht möglich."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Beim Doppelspalt mit Licht entstehen helle und dunkle Streifen durch Interferenz.",
+    "a": "Richtig",
+    "e": "Die beiden Spalte wirken wie kohärente Wellenquellen. Gangunterschiede führen zu Maxima und Minima."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Beim optischen Gitter werden die Interferenzmaxima meist schärfer als beim Doppelspalt.",
+    "a": "Richtig",
+    "e": "Viele Spalte führen zu stärker gebündelten Hauptmaxima. Dadurch kann ein Gitter Wellenlängen präzise trennen."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Für Interferenz am Gitter ist nur die Spaltbreite wichtig, nicht der Spaltabstand.",
+    "a": "Falsch",
+    "e": "Die Lage der Hauptmaxima hängt wesentlich von der Gitterkonstante ab, also vom Abstand benachbarter Spalte."
+  },
+  {
+    "cat": "Schwingungen und Wellen",
+    "s": "Weißes Licht kann am Gitter in Farben aufgespalten werden.",
+    "a": "Richtig",
+    "e": "Unterschiedliche Wellenlängen werden unter unterschiedlichen Winkeln verstärkt. Deshalb entsteht ein Spektrum."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein elektrisches Feld beschreibt, welche Kraft auf eine Probeladung wirken würde.",
+    "a": "Richtig",
+    "e": "Die elektrische Feldstärke ist definiert als E = F/q. Sie gibt Kraft pro Ladung an."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Feldlinien sind sichtbare reale Fäden im Raum.",
+    "a": "Falsch",
+    "e": "Feldlinien sind Modellbilder. Sie helfen, Richtung und Stärke eines Feldes darzustellen."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Im homogenen elektrischen Feld sind die Feldlinien parallel und gleich dicht.",
+    "a": "Richtig",
+    "e": "Ein homogenes Feld hat überall gleiche Richtung und gleichen Betrag der Feldstärke."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Die elektrische Feldstärke im Plattenkondensator kann mit E = U/d beschrieben werden.",
+    "a": "Richtig",
+    "e": "Im ideal homogenen Feld zwischen Kondensatorplatten gilt E = U/d. Randfelder werden dabei vernachlässigt."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Eine höhere Beschleunigungsspannung gibt Elektronen eine größere kinetische Energie.",
+    "a": "Richtig",
+    "e": "Beim Durchlaufen der Spannung U gilt für die Energiezunahme ΔE = q · U. Für Elektronen verwendet man meist e · U."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein Elektron wird im elektrischen Feld immer in Feldrichtung beschleunigt.",
+    "a": "Falsch",
+    "e": "Die Feldrichtung ist als Richtung der Kraft auf positive Ladungen definiert. Elektronen sind negativ und werden entgegengesetzt zur Feldrichtung beschleunigt."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein Magnetfeld übt auf eine ruhende Ladung eine Lorentzkraft aus.",
+    "a": "Falsch",
+    "e": "Der magnetische Anteil der Lorentzkraft wirkt nur auf bewegte Ladungen. Für v = 0 ist dieser Anteil null."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Die magnetische Lorentzkraft steht senkrecht zur Bewegungsrichtung einer geladenen Teilchenbahn.",
+    "a": "Kommt darauf an",
+    "e": "Für den magnetischen Anteil gilt F = q · v × B, also senkrecht zu v und B. Wenn v parallel zu B ist, ist die Kraft null."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein Magnetfeld kann die Richtung der Geschwindigkeit geladener Teilchen ändern, ohne deren Betrag zu ändern.",
+    "a": "Richtig",
+    "e": "Wenn die magnetische Kraft senkrecht zur Bewegung steht, verrichtet sie keine Arbeit. Sie ändert die Richtung, nicht die kinetische Energie."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Im Fadenstrahlrohr bewegen sich Elektronen auf Kreisbahnen, weil die Lorentzkraft als Zentripetalkraft wirkt.",
+    "a": "Richtig",
+    "e": "Bei passender Geometrie steht die Lorentzkraft senkrecht zur Geschwindigkeit und liefert die Zentripetalkraft."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Im Fadenstrahlrohr ist die Kreisbahn ein Beweis dafür, dass keine Kraft wirkt.",
+    "a": "Falsch",
+    "e": "Eine Kreisbahn erfordert gerade eine zum Mittelpunkt gerichtete Kraft. Ohne Kraft würden die Elektronen geradlinig weiterfliegen."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Die Elementarladung ist die kleinste frei vorkommende elektrische Ladungsmenge.",
+    "a": "Richtig",
+    "e": "Ladungen treten im Alltag als ganzzahlige Vielfache der Elementarladung e auf."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Der Millikan-Versuch zeigt, dass elektrische Ladung beliebig fein teilbar ist.",
+    "a": "Falsch",
+    "e": "Er zeigt gerade die Quantelung der Ladung: gemessene Ladungen sind Vielfache der Elementarladung."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "In einem Plattenkondensator wird Energie im elektrischen Feld gespeichert.",
+    "a": "Richtig",
+    "e": "Beim Laden wird Energie aufgewendet, die anschließend im elektrischen Feld zwischen den Platten gespeichert ist."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein Kondensator kann bei gleicher Spannung mehr Ladung speichern, wenn seine Kapazität größer ist.",
+    "a": "Richtig",
+    "e": "Es gilt Q = C · U. Bei gleicher Spannung führt größere Kapazität zu größerer Ladung."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Die Kapazität eines Kondensators hängt nur von der angelegten Spannung ab.",
+    "a": "Falsch",
+    "e": "Die Kapazität ist eine Bauteilgröße. Beim Plattenkondensator hängt sie von Fläche, Plattenabstand und Dielektrikum ab."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Beim Zyklotron werden geladene Teilchen mithilfe elektrischer Felder beschleunigt und mithilfe magnetischer Felder auf Kreisbahnen gehalten.",
+    "a": "Richtig",
+    "e": "Das elektrische Feld liefert Energie, das Magnetfeld lenkt die Teilchen. So durchlaufen sie mehrfach Beschleunigungsstrecken."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Ein Magnetfeld kann ein geladenes Teilchen schneller machen, weil es dauernd zieht.",
+    "a": "Falsch",
+    "e": "Ein reines Magnetfeld verrichtet an einer bewegten Ladung keine Arbeit, wenn die Lorentzkraft senkrecht zur Geschwindigkeit steht."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Die Einheit der elektrischen Feldstärke kann als N/C oder V/m angegeben werden.",
+    "a": "Richtig",
+    "e": "Beide Einheiten sind gleichwertig: Kraft pro Ladung oder Spannung pro Abstand."
+  },
+  {
+    "cat": "Elektrische und magnetische Felder",
+    "s": "Feldlinien eines elektrischen Feldes zeigen die Kraftrichtung auf eine positive Probeladung.",
+    "a": "Richtig",
+    "e": "Das ist die Konvention für elektrische Feldlinien. Negative Ladungen erfahren die Kraft in entgegengesetzter Richtung."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Der Photoeffekt zeigt, dass Licht Energie in Portionen abgeben kann.",
+    "a": "Richtig",
+    "e": "Beim Photoeffekt lösen Photonen Elektronen aus einer Oberfläche. Die Energie eines Photons ist E = h · f."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Beim Photoeffekt reicht sehr helles rotes Licht immer aus, um Elektronen aus jedem Metall zu lösen.",
+    "a": "Falsch",
+    "e": "Entscheidend ist die Frequenz eines einzelnen Photons. Unterhalb der Grenzfrequenz werden keine Elektronen ausgelöst, egal wie groß die Intensität ist."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die Energie eines Photons ist proportional zur Frequenz.",
+    "a": "Richtig",
+    "e": "Es gilt E = h · f. Höhere Frequenz bedeutet höhere Photonenergie."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die Energie eines Photons ist proportional zur Wellenlänge.",
+    "a": "Falsch",
+    "e": "Mit E = h · c/λ ist die Energie umgekehrt proportional zur Wellenlänge."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Eine höhere Lichtintensität bedeutet beim Photoeffekt immer eine höhere Energie pro Photon.",
+    "a": "Falsch",
+    "e": "Die Energie pro Photon hängt von der Frequenz ab. Höhere Intensität bedeutet bei gleicher Frequenz mehr Photonen pro Zeit."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die Austrittsarbeit ist die Mindestenergie, die ein Elektron zum Verlassen des Metalls benötigt.",
+    "a": "Richtig",
+    "e": "Nur wenn die Photonenergie größer als die Austrittsarbeit ist, kann ein Elektron austreten."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Eine Gegenspannung kann genutzt werden, um die maximale kinetische Energie der Fotoelektronen zu bestimmen.",
+    "a": "Richtig",
+    "e": "Aus der Grenzspannung lässt sich die maximale kinetische Energie über E_kin,max = e · U_G bestimmen."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Elektronen besitzen nur Teilcheneigenschaften und niemals Welleneigenschaften.",
+    "a": "Falsch",
+    "e": "Elektronen zeigen Beugung und Interferenz. Die De-Broglie-Hypothese ordnet ihnen eine Wellenlänge zu."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die De-Broglie-Wellenlänge eines Teilchens hängt von seinem Impuls ab.",
+    "a": "Richtig",
+    "e": "Es gilt λ = h/p. Größerer Impuls bedeutet kleinere De-Broglie-Wellenlänge."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Elektronenbeugung kann als Hinweis auf Welleneigenschaften von Elektronen gedeutet werden.",
+    "a": "Richtig",
+    "e": "Beugungsmuster entstehen typischerweise durch Welleneigenschaften. Dass Elektronen solche Muster erzeugen, spricht für ihren Wellenaspekt."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Beim Doppelspalt mit einzelnen Elektronen entsteht niemals ein Interferenzmuster.",
+    "a": "Falsch",
+    "e": "Auch einzelne Elektronen können nach vielen Durchgängen eine Interferenzverteilung aufbauen. Einzelne Treffer sind zufällig, die Verteilung ist gesetzmäßig."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Bei Quantenobjekten kann man das Auftreffen eines einzelnen Teilchens exakt vorhersagen.",
+    "a": "Falsch",
+    "e": "In der üblichen Deutung sind nur Wahrscheinlichkeiten für mögliche Nachweisorte vorhersagbar."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die Wahrscheinlichkeitsverteilung vieler Quantenobjekte kann sehr genau vorhergesagt werden.",
+    "a": "Richtig",
+    "e": "Ein einzelner Treffer ist zufällig, aber die statistische Verteilung vieler Treffer ist determinierbar."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Wenn man am Doppelspalt eindeutig feststellen kann, welchen Weg ein Quantenobjekt genommen hat, verschwindet das Interferenzmuster.",
+    "a": "Richtig",
+    "e": "Welcher-Weg-Information zerstört die Interferenz. Das ist ein zentrales Merkmal der Komplementarität."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Quantenobjekte sind kleine Kugeln, die sich nur besonders schnell bewegen.",
+    "a": "Falsch",
+    "e": "Quantenobjekte lassen sich nicht vollständig mit klassischen Kugelbildern beschreiben. Je nach Experiment zeigen sie Teilchen- oder Wellenaspekte."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Das Wellenmodell und das Teilchenmodell sind bei Licht immer gleichzeitig vollständig anwendbar.",
+    "a": "Falsch",
+    "e": "Die Modelle erfassen unterschiedliche Aspekte. Welches Modell sinnvoll ist, hängt von Experiment und Fragestellung ab."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Der Begriff Bahn ist bei Quantenobjekten problematisch.",
+    "a": "Richtig",
+    "e": "Eine klassische Bahn setzt zu jedem Zeitpunkt einen bestimmten Ort und Impuls voraus. Das passt nicht allgemein zu Quantenobjekten."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Die Kopenhagener Deutung beschreibt Quantenobjekte über Wahrscheinlichkeitsaussagen.",
+    "a": "Richtig",
+    "e": "Sie vermeidet klassische Bahnbilder und deutet Messungen probabilistisch."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Quantenphysik bedeutet, dass in der Natur überhaupt keine Gesetzmäßigkeiten mehr gelten.",
+    "a": "Falsch",
+    "e": "Quantenphysik liefert sehr präzise Gesetzmäßigkeiten, aber häufig in Form von Wahrscheinlichkeitsaussagen."
+  },
+  {
+    "cat": "Quantenobjekte",
+    "s": "Je größer der Impuls eines Elektrons ist, desto kleiner ist seine De-Broglie-Wellenlänge.",
+    "a": "Richtig",
+    "e": "Aus λ = h/p folgt direkt: größerer Impuls, kleinere Wellenlänge."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Eine Induktionsspannung entsteht, wenn sich der magnetische Fluss durch eine Leiterschleife ändert.",
+    "a": "Richtig",
+    "e": "Das ist der Kern des Induktionsgesetzes. Entscheidend ist die zeitliche Änderung des magnetischen Flusses."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Für Induktion muss sich immer der Magnet bewegen.",
+    "a": "Falsch",
+    "e": "Nicht die Bewegung an sich ist entscheidend, sondern die Änderung des magnetischen Flusses. Diese kann auch durch Flächenänderung oder Feldänderung entstehen."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Eine ruhende Leiterschleife in einem zeitlich konstanten homogenen Magnetfeld zeigt keine Induktionsspannung.",
+    "a": "Richtig",
+    "e": "Wenn Fläche, Orientierung und magnetische Flussdichte konstant bleiben, ändert sich der magnetische Fluss nicht."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Die Lenzsche Regel beschreibt, dass die Induktionswirkung ihrer Ursache entgegenwirkt.",
+    "a": "Richtig",
+    "e": "Die Richtung des induzierten Stroms ist so, dass seine magnetische Wirkung der Flussänderung entgegenwirkt."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Die Lenzsche Regel ist eine Folge der Energieerhaltung.",
+    "a": "Richtig",
+    "e": "Würde der induzierte Strom die Ursache verstärken, könnte Energie ohne Aufwand entstehen. Das widerspräche der Energieerhaltung."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Ein Generator wandelt elektrische Energie direkt in mechanische Energie um.",
+    "a": "Falsch",
+    "e": "Ein Generator wandelt mechanische Energie in elektrische Energie um. Ein Motor macht im Grundprinzip das Umgekehrte."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "In einem Generator entsteht Wechselspannung durch periodische Änderung des magnetischen Flusses.",
+    "a": "Richtig",
+    "e": "Bei einer rotierenden Spule ändert sich die von Feldlinien durchsetzte Fläche periodisch. Dadurch wird eine sinusähnliche Spannung induziert."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Ein Transformator funktioniert auch mit reiner Gleichspannung dauerhaft im stationären Betrieb.",
+    "a": "Falsch",
+    "e": "Ein Transformator benötigt eine zeitlich veränderliche Stromstärke und damit ein veränderliches Magnetfeld. Reine Gleichspannung liefert nach dem Einschaltmoment keine dauerhafte Induktion."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Ein idealer Transformator kann die Spannung erhöhen, ohne die Leistung zu erhöhen.",
+    "a": "Richtig",
+    "e": "Beim idealen Transformator bleibt die Leistung ungefähr erhalten: höhere Spannung bedeutet kleinere Stromstärke."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Transformatoren sind wichtig, weil hohe Spannungen bei gleicher Leistung kleinere Stromstärken ermöglichen.",
+    "a": "Richtig",
+    "e": "Kleinere Stromstärken verringern Leitungsverluste, da diese mit I² · R zusammenhängen."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Bei Energieübertragung über große Strecken sind hohe Stromstärken immer vorteilhaft.",
+    "a": "Falsch",
+    "e": "Hohe Stromstärken führen zu großen Wärmeverlusten in Leitungen. Deshalb nutzt man hohe Spannungen und kleinere Stromstärken."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Eine Wechselspannung ändert periodisch ihren Wert und meist auch ihr Vorzeichen.",
+    "a": "Richtig",
+    "e": "Sinusförmige Wechselspannung wechselt regelmäßig zwischen positiven und negativen Werten."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Der Effektivwert einer Wechselspannung beschreibt die Gleichspannung mit gleicher Heizwirkung am Widerstand.",
+    "a": "Richtig",
+    "e": "Der Effektivwert ist über die gleiche mittlere Leistung an einem ohmschen Widerstand definiert."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Bei sinusförmiger Wechselspannung ist der Effektivwert gleich dem Scheitelwert.",
+    "a": "Falsch",
+    "e": "Für sinusförmige Wechselspannung gilt U_eff = U_max/√2."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Beim Laden eines Kondensators steigt die Spannung am Kondensator sprunghaft auf den Endwert.",
+    "a": "Falsch",
+    "e": "In einem RC-Kreis nähert sich die Kondensatorspannung exponentiell dem Endwert an."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Beim Entladen eines Kondensators fällt die Stromstärke exponentiell ab.",
+    "a": "Richtig",
+    "e": "Im RC-Kreis nehmen Spannung und Stromstärke beim Entladen exponentiell ab."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Die Zeitkonstante eines RC-Kreises hängt von Widerstand und Kapazität ab.",
+    "a": "Richtig",
+    "e": "Es gilt τ = R · C. Nach einer Zeitkonstante ist der Vorgang charakteristisch weit fortgeschritten."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Ein Kondensator speichert Ladung und Energie unbegrenzt lange ohne Verluste.",
+    "a": "Kommt darauf an",
+    "e": "Im idealen Modell ja. Reale Kondensatoren haben Leckströme und Verluste, deshalb entladen sie sich langsam."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "In einem idealen elektromagnetischen Schwingkreis wandelt sich Energie zwischen elektrischem Feld des Kondensators und magnetischem Feld der Spule um.",
+    "a": "Richtig",
+    "e": "Die Energie pendelt zwischen Kondensator und Spule. Ohne Widerstand wäre die Schwingung ungedämpft."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Ein realer Schwingkreis schwingt wegen ohmscher Verluste meist gedämpft.",
+    "a": "Richtig",
+    "e": "Widerstände wandeln elektrische Energie in Wärme um. Dadurch nimmt die Amplitude mit der Zeit ab."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Eine Spule kann Energie im magnetischen Feld speichern.",
+    "a": "Richtig",
+    "e": "Bei Stromfluss baut sich in der Spule ein Magnetfeld auf, in dem Energie gespeichert ist."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Selbstinduktion wirkt Änderungen der Stromstärke entgegen.",
+    "a": "Richtig",
+    "e": "Eine Spule erzeugt bei Stromänderungen eine Induktionsspannung, die der Änderung entgegenwirkt."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Beim Ausschalten einer Spule können hohe Spannungsspitzen entstehen.",
+    "a": "Richtig",
+    "e": "Die Spule versucht, die Stromänderung zu verhindern. Dadurch können große Induktionsspannungen auftreten."
+  },
+  {
+    "cat": "Elektrodynamik und Energieübertragung",
+    "s": "Regenerative Bremsen nutzen Induktionsphänomene, um Bewegungsenergie teilweise zurückzugewinnen.",
+    "a": "Richtig",
+    "e": "Beim Bremsen kann ein Elektromotor generatorisch arbeiten und elektrische Energie zurückspeisen oder speichern."
+  }
+];
+
+let deck = [];
+let current = null;
+let currentIndex = 0;
+let answeredCurrent = false;
+let history = [];
+let correctCount = 0;
+let wrongCount = 0;
+
+const els = {
+  progress: document.getElementById('progress-bar'),
+  cardNumber: document.getElementById('card-number'),
+  cardTotal: document.getElementById('card-total'),
+  doneCount: document.getElementById('done-count'),
+  leftCount: document.getElementById('left-count'),
+  category: document.getElementById('category-label'),
+  statement: document.getElementById('statement-text'),
+  solutionPanel: document.getElementById('solution-panel'),
+  explanation: document.getElementById('answer-explanation'),
+  choiceRow: document.getElementById('choice-row'),
+  choiceButtons: Array.from(document.querySelectorAll('.choice-btn')),
+  nextBtn: document.getElementById('next-btn'),
+  finishedBox: document.getElementById('finished-box'),
+  statementBox: document.getElementById('statement-box'),
+  historyList: document.getElementById('history-list'),
+  resultCorrect: document.getElementById('result-correct'),
+  resultWrong: document.getElementById('result-wrong'),
+  resultPercent: document.getElementById('result-percent'),
+  geniusBox: document.getElementById('genius-box'),
+  fireworksCanvas: document.getElementById('fireworks-canvas')
+};
+
+function slugAnswer(answer){
+  return answer.toLowerCase().replaceAll(' ', '-');
+}
+
+function shuffle(array){
+  const arr = [...array];
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function restartDeck(){
+  stopFireworks();
+  deck = shuffle(cards);
+  currentIndex = 0;
+  history = [];
+  correctCount = 0;
+  wrongCount = 0;
+  answeredCurrent = false;
+  els.finishedBox.style.display = 'none';
+  if(els.geniusBox) els.geniusBox.style.display = 'none';
+  els.statementBox.style.display = 'flex';
+  els.choiceRow.style.display = 'grid';
+  els.solutionPanel.classList.remove('open');
+  updateHistory();
+  loadCard();
+}
+
+function loadCard(){
+  if(currentIndex >= deck.length){
+    finishDeck();
+    return;
+  }
+  current = deck[currentIndex];
+  answeredCurrent = false;
+  els.category.textContent = current.cat;
+  els.statement.textContent = current.s;
+  els.solutionPanel.classList.remove('open');
+  els.explanation.textContent = '';
+  els.nextBtn.disabled = true;
+  els.choiceButtons.forEach(btn => {
+    btn.disabled = false;
+    btn.classList.remove('selected');
+  });
+  updateStats();
+  refreshIcons();
+}
+
+function submitAnswer(selectedAnswer){
+  if(!current || answeredCurrent) return;
+  answeredCurrent = true;
+  const isCorrect = selectedAnswer === current.a;
+  if(isCorrect) correctCount++; else wrongCount++;
+  els.choiceButtons.forEach(btn => {
+    btn.disabled = true;
+    if(btn.dataset.answer === selectedAnswer) btn.classList.add('selected');
+  });
+  els.explanation.textContent = current.e;
+  els.solutionPanel.classList.add('open');
+  els.nextBtn.disabled = false;
+  history.unshift({ ...current, selected:selectedAnswer, correct:isCorrect });
+  updateHistory();
+  updateStats();
+  refreshIcons();
+}
+
+function nextCard(){
+  if(!answeredCurrent) return;
+  currentIndex++;
+  loadCard();
+}
+
+function finishDeck(){
+  current = null;
+  els.statementBox.style.display = 'none';
+  els.choiceRow.style.display = 'none';
+  els.solutionPanel.classList.remove('open');
+  els.nextBtn.disabled = true;
+  els.finishedBox.style.display = 'block';
+  const totalAnswered = correctCount + wrongCount;
+  const pct = totalAnswered ? Math.round((correctCount / totalAnswered) * 100) : 0;
+  els.resultCorrect.textContent = correctCount;
+  els.resultWrong.textContent = wrongCount;
+  els.resultPercent.textContent = pct + '%';
+  if(wrongCount === 0 && totalAnswered === cards.length){
+    els.geniusBox.style.display = 'block';
+    startFireworks();
+  } else {
+    els.geniusBox.style.display = 'none';
+    stopFireworks();
+  }
+  updateStats();
+  refreshIcons();
+}
+
+function updateStats(){
+  els.cardTotal.textContent = cards.length;
+  const cardNo = Math.min(currentIndex + 1, cards.length);
+  els.cardNumber.textContent = cardNo;
+  els.doneCount.textContent = history.length;
+  els.leftCount.textContent = Math.max(cards.length - history.length, 0);
+  const progress = (history.length / cards.length) * 100;
+  els.progress.style.width = progress + '%';
+}
+
+function updateHistory(){
+  if(history.length === 0){
+    els.historyList.innerHTML = '<p style="color:var(--text-muted);">Noch keine Antwort gegeben.</p>';
+    return;
+  }
+  els.historyList.innerHTML = history.map(item => {
+    return `<div class="history-item">
+      <div class="history-item-top">
+        <div class="small-statement">${escapeHtml(item.s)}</div>
+        <span class="mini-badge" style="background:var(--primary)">${escapeHtml(item.selected)}</span>
+      </div>
+      <div class="small-explanation">${escapeHtml(item.e)}</div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+
+let fireworksAnimation = null;
+let particles = [];
+function startFireworks(){
+  const canvas = els.fireworksCanvas;
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.style.display = 'block';
+  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize, { once:false });
+  particles = [];
+  const colors = ['#f59e0b','#38bdf8','#16a34a','#dc2626','#7c3aed','#ffffff'];
+  function burst(){
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height * 0.55 + canvas.height * 0.08;
+    for(let i=0;i<70;i++){
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.5 + Math.random() * 5;
+      particles.push({ x, y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed, life:70+Math.random()*35, color:colors[Math.floor(Math.random()*colors.length)] });
+    }
+  }
+  burst(); burst();
+  let frame = 0;
+  function animate(){
+    frame++;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.globalCompositeOperation = 'lighter';
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.035;
+      p.life -= 1;
+      ctx.globalAlpha = Math.max(p.life / 90, 0);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+      ctx.fill();
+    });
+    particles = particles.filter(p => p.life > 0);
+    if(frame % 28 === 0) burst();
+    fireworksAnimation = requestAnimationFrame(animate);
+  }
+  stopFireworks();
+  canvas.style.display = 'block';
+  fireworksAnimation = requestAnimationFrame(animate);
+}
+
+function stopFireworks(){
+  if(fireworksAnimation){ cancelAnimationFrame(fireworksAnimation); fireworksAnimation = null; }
+  if(els && els.fireworksCanvas){
+    const ctx = els.fireworksCanvas.getContext('2d');
+    if(ctx) ctx.clearRect(0,0,els.fireworksCanvas.width,els.fireworksCanvas.height);
+    els.fireworksCanvas.style.display = 'none';
+  }
+}
+
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+  const dark = document.body.classList.contains('dark');
+  localStorage.setItem('mythencheck-dark', dark ? '1' : '0');
+  const icon = document.getElementById('dark-icon');
+  if(icon) icon.setAttribute('data-lucide', dark ? 'sun' : 'moon');
+  refreshIcons();
+}
+
+function refreshIcons(){
+  if(window.lucide && typeof window.lucide.createIcons === 'function'){
+    window.lucide.createIcons();
+  }
+}
+
+function setupRevealAnimations(){
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){ entry.target.classList.add('visible'); }
+    });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+function setupKeyboard(){
+  document.addEventListener('keydown', ev => {
+    if(ev.code === 'Space'){
+      const tag = document.activeElement && document.activeElement.tagName;
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      ev.preventDefault();
+      if(answeredCurrent && !els.nextBtn.disabled) nextCard();
+    }
+  });
+}
+
+function init(){
+  if(localStorage.getItem('mythencheck-dark') === '1'){
+    document.body.classList.add('dark');
+    const icon = document.getElementById('dark-icon');
+    if(icon) icon.setAttribute('data-lucide','sun');
+  }
+  setupRevealAnimations();
+  setupKeyboard();
+  restartDeck();
+  refreshIcons();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
