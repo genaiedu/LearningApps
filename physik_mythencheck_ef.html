@@ -175,6 +175,15 @@ body.dark .merksatz{ background:rgba(56,189,248,.10); }
 .answer-badge.falsch{ background:var(--wrong); }
 .answer-badge.kommt-darauf-an{ background:var(--depends); }
 .answer-explanation{ line-height:1.65; color:var(--text); }
+.choice-row{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:18px; }
+.choice-btn{
+  border:2px solid var(--glass-border); border-radius:14px; padding:16px 14px; background:var(--surface); color:var(--text);
+  font-weight:800; font-size:1rem; cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.choice-btn:hover{ transform:translateY(-2px); border-color:var(--primary); background:var(--primary-light); }
+.choice-btn:disabled{ cursor:default; opacity:.72; transform:none; }
+.choice-btn.selected{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(245,158,11,.18); }
+.explanation-title{ font-family:'Poppins'; font-weight:800; color:var(--primary); margin-bottom:8px; }
 .button-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
 .btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px 22px; font-weight:600; cursor:pointer; }
 .btn-primary:hover{ filter:brightness(.96); }
@@ -201,6 +210,14 @@ body.dark .merksatz{ background:rgba(56,189,248,.10); }
 .mini-badge.falsch{ background:var(--wrong); }
 .mini-badge.kommt-darauf-an{ background:var(--depends); }
 .history-item .small-explanation{ color:var(--text-muted); font-size:.88rem; line-height:1.5; }
+.result-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin:18px 0; }
+.result-card{ background:var(--surface); border:1px solid var(--glass-border); border-radius:14px; padding:18px; }
+.result-value{ font-family:'Poppins'; font-size:2rem; font-weight:900; color:var(--primary); }
+.result-label{ color:var(--text-muted); font-size:.88rem; }
+.genius-box{ display:none; margin:20px auto 0; max-width:760px; border:2px solid var(--accent); background:rgba(245,158,11,.12); border-radius:18px; padding:22px; }
+.genius-box h3{ color:var(--accent); font-size:1.8rem; margin-bottom:10px; }
+.genius-quote{ font-family:'Poppins'; font-weight:800; color:var(--text); background:var(--surface); border:1px solid var(--glass-border); border-radius:12px; padding:12px 14px; margin-top:10px; }
+#fireworks-canvas{ position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:999; display:none; }
 
 /* ============ Teacher notes ============ */
 .flow-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:14px; }
@@ -218,6 +235,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
   .hamburger{ display:flex; }
   .hero h1{ font-size:2rem; }
   .statement-box .statement-text{ font-size:1.45rem; }
+  .choice-row{ grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -226,6 +244,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
 <div class="blob"></div>
 <div class="blob"></div>
 <div class="blob"></div>
+<canvas id="fireworks-canvas"></canvas>
 
 <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
 
@@ -240,8 +259,8 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
     <div class="subtitle">EF · Abschluss-Doppelstunde</div>
     <nav>
       <a href="#spiel"><i data-lucide="shuffle"></i> Zufallskarte</a>
-      <a href="#ablauf"><i data-lucide="timer"></i> Vorschlag für 90 Minuten</a>
-      <a href="#verlauf"><i data-lucide="history"></i> Bereits besprochen</a>
+      <a href="#ablauf"><i data-lucide="timer"></i> Ablauf</a>
+      <a href="#verlauf"><i data-lucide="history"></i> Deine Antworten</a>
     </nav>
     <div class="dark-toggle" onclick="toggleDarkMode()">
       <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
@@ -258,8 +277,8 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
     <div class="hero reveal">
       <span class="eyebrow">Interaktiv · ohne Vorbereitung</span>
       <h1><span>Physik-Mythen</span> der EF</h1>
-      <p>Die Seite zieht zufällig eine Aussage. Erst wird diskutiert, dann wird die Auflösung angezeigt. Danach folgt die nächste Aussage. Jede Aussage kommt erst wieder vor, wenn alle Karten einmal durchgespielt wurden.</p>
-      <span class="caveat">Letzte Stunde: entspannt, aber nicht beliebig.</span>
+      <p>Die Seite zieht zufällig eine Aussage. Wähle eine Antwort aus. Danach erscheint eine Erklärung, ohne dass direkt verraten wird, ob deine Antwort richtig war. Am Ende des Durchgangs siehst du deine Statistik.</p>
+      <span class="caveat">Einzeln spielbar – ohne Wiederholung im Durchgang.</span>
     </div>
 
     <section id="spiel">
@@ -268,7 +287,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
         <div class="game-top">
           <div class="stats">
             <div class="stat-pill"><i data-lucide="layers"></i> Karte <strong id="card-number">1</strong>/<span id="card-total">145</span></div>
-            <div class="stat-pill"><i data-lucide="check-check"></i> Besprochen: <strong id="done-count">0</strong></div>
+            <div class="stat-pill"><i data-lucide="check-check"></i> Beantwortet: <strong id="done-count">0</strong></div>
             <div class="stat-pill"><i data-lucide="list-end"></i> Übrig: <strong id="left-count">145</strong></div>
           </div>
           <div class="category-pill"><i data-lucide="tag"></i> <span id="category-label">Kategorie</span></div>
@@ -278,54 +297,67 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
           <div class="statement-text" id="statement-text">Aussage wird geladen …</div>
         </div>
 
+        <div class="choice-row" id="choice-row" aria-label="Antwortmöglichkeiten">
+          <button class="choice-btn" data-answer="Richtig" onclick="submitAnswer('Richtig')">Richtig</button>
+          <button class="choice-btn" data-answer="Falsch" onclick="submitAnswer('Falsch')">Falsch</button>
+          <button class="choice-btn" data-answer="Kommt darauf an" onclick="submitAnswer('Kommt darauf an')">Kommt darauf an</button>
+        </div>
+
         <div class="solution-panel" id="solution-panel">
           <div class="solution-inner">
-            <div class="answer-line">
-              <span class="answer-badge" id="answer-badge"><i data-lucide="circle-help"></i> <span id="answer-label">Antwort</span></span>
-            </div>
+            <div class="explanation-title"><i data-lucide="lightbulb"></i> Erklärung</div>
             <div class="answer-explanation" id="answer-explanation"></div>
           </div>
         </div>
 
         <div class="button-row">
-          <button class="btn-primary" id="show-btn" onclick="showSolution()"><i data-lucide="eye"></i> Auflösung zeigen</button>
           <button class="btn-accent" id="next-btn" onclick="nextCard()" disabled><i data-lucide="arrow-right"></i> Nächste Aussage</button>
-          <button class="btn-secondary" onclick="restartDeck()"><i data-lucide="rotate-ccw"></i> Neu mischen</button>
+          <button class="btn-secondary" onclick="restartDeck()"><i data-lucide="rotate-ccw"></i> Zufallslauf neu starten</button>
         </div>
 
-        <div class="keyboard-hint">Tastatur: Leertaste zeigt die Auflösung oder springt zur nächsten Aussage.</div>
+        <div class="keyboard-hint">Erst eine Antwort anklicken. Danach mit Leertaste oder Button zur nächsten Aussage.</div>
 
         <div class="finished-box" id="finished-box">
-          <h3>Alle Aussagen wurden besprochen.</h3>
-          <p>Das Deck kann jetzt neu gemischt und erneut gestartet werden.</p>
-          <div class="button-row" style="justify-content:center;"><button class="btn-primary" onclick="restartDeck()"><i data-lucide="shuffle"></i> Deck neu starten</button></div>
+          <h3>Durchgang beendet.</h3>
+          <p>Hier ist deine Auswertung für diesen Zufallslauf.</p>
+          <div class="result-grid">
+            <div class="result-card"><div class="result-value" id="result-correct">0</div><div class="result-label">richtig beantwortet</div></div>
+            <div class="result-card"><div class="result-value" id="result-wrong">0</div><div class="result-label">falsch beantwortet</div></div>
+            <div class="result-card"><div class="result-value" id="result-percent">0%</div><div class="result-label">Trefferquote</div></div>
+          </div>
+          <div class="genius-box" id="genius-box">
+            <h3>Du bist ein Physik Genie!</h3>
+            <p>Um herauszufinden, ob du der erste bist der alle fragen korrekt beantworten konnte schicke herrn Unterberg via teams eine chatnachricht mit dem Satz</p>
+            <div class="genius-quote">&quot;Bin ich das schnellst Genie aus dem Kurs?&quot;</div>
+          </div>
+          <div class="button-row" style="justify-content:center;"><button class="btn-primary" onclick="restartDeck()"><i data-lucide="shuffle"></i> Zweiten Zufallslauf starten</button></div>
         </div>
       </div>
     </section>
 
     <section id="ablauf">
-      <div class="section-head"><div class="num">2</div><h2>Vorschlag für die Doppelstunde</h2></div>
+      <div class="section-head"><div class="num">2</div><h2>Ablauf</h2></div>
       <div class="card reveal">
-        <p>Die Seite ist bewusst auf Unterrichtsgespräch angelegt: erst abstimmen lassen, dann begründen lassen, dann auflösen. Das funktioniert auch ohne Material und ohne Vorbereitung.</p>
+        <p>Die Seite ist jetzt für Einzelarbeit angelegt: Aussage lesen, Antwort anklicken, Erklärung lesen, nächste Aussage. Die Rückmeldung, ob die eigene Antwort richtig war, erscheint erst am Ende.</p>
         <div class="flow-grid">
-          <div class="flow-card"><div class="time">0–10 min</div><p>Einführung: „Physik beginnt oft dort, wo eine plausible Alltagsvorstellung scheitert.“</p></div>
-          <div class="flow-card"><div class="time">10–55 min</div><p>Zufallskarten im Plenum: Erst Handzeichen für richtig/falsch/kommt darauf an, dann kurze Begründungen.</p></div>
-          <div class="flow-card"><div class="time">55–75 min</div><p>Gruppen wählen je eine strittige Aussage und formulieren eine perfekte Erklärung mit Skizze/Formel.</p></div>
-          <div class="flow-card"><div class="time">75–90 min</div><p>Kurze Präsentationen und Abschluss: Welche Denkfehler kamen besonders häufig vor?</p></div>
+          <div class="flow-card"><div class="time">0–10 min</div><p>Einführung: „Physik beginnt oft dort, wo eine plausible Alltagsvorstellung scheitert.“ Danach individuell starten.</p></div>
+          <div class="flow-card"><div class="time">10–55 min</div><p>Einzelarbeit: Aussagen beantworten. Nach jeder Antwort wird nur die Erklärung angezeigt, nicht die Bewertung der eigenen Antwort.</p></div>
+          <div class="flow-card"><div class="time">55–75 min</div><p>Wer früher fertig ist, notiert drei Aussagen, bei denen die Erklärung besonders überraschend war.</p></div>
+          <div class="flow-card"><div class="time">75–90 min</div><p>Abschluss: Statistik ansehen, zweiten Zufallslauf starten oder besonders schwierige Aussagen besprechen.</p></div>
         </div>
       </div>
     </section>
 
     <section id="verlauf">
-      <div class="section-head"><div class="num">3</div><h2>Bereits besprochen</h2></div>
+      <div class="section-head"><div class="num">3</div><h2>Deine Antworten im laufenden Durchgang</h2></div>
       <div class="card reveal">
         <div class="history-list" id="history-list">
-          <p style="color:var(--text-muted);">Noch keine Aussage aufgelöst.</p>
+          <p style="color:var(--text-muted);">Noch keine Antwort gegeben.</p>
         </div>
       </div>
     </section>
 
-    <footer>Physik EF · Mythencheck · Zufallsauswahl ohne Wiederholung</footer>
+    <footer>Physik EF · Mythencheck · Einzelmodus · Zufallsauswahl ohne Wiederholung</footer>
   </main>
 </div>
 
@@ -490,8 +522,10 @@ const cards = [
 let deck = [];
 let current = null;
 let currentIndex = 0;
-let solvedCurrent = false;
+let answeredCurrent = false;
 let history = [];
+let correctCount = 0;
+let wrongCount = 0;
 
 const els = {
   progress: document.getElementById('progress-bar'),
@@ -502,14 +536,18 @@ const els = {
   category: document.getElementById('category-label'),
   statement: document.getElementById('statement-text'),
   solutionPanel: document.getElementById('solution-panel'),
-  answerBadge: document.getElementById('answer-badge'),
-  answerLabel: document.getElementById('answer-label'),
   explanation: document.getElementById('answer-explanation'),
-  showBtn: document.getElementById('show-btn'),
+  choiceRow: document.getElementById('choice-row'),
+  choiceButtons: Array.from(document.querySelectorAll('.choice-btn')),
   nextBtn: document.getElementById('next-btn'),
   finishedBox: document.getElementById('finished-box'),
   statementBox: document.getElementById('statement-box'),
-  historyList: document.getElementById('history-list')
+  historyList: document.getElementById('history-list'),
+  resultCorrect: document.getElementById('result-correct'),
+  resultWrong: document.getElementById('result-wrong'),
+  resultPercent: document.getElementById('result-percent'),
+  geniusBox: document.getElementById('genius-box'),
+  fireworksCanvas: document.getElementById('fireworks-canvas')
 };
 
 function slugAnswer(answer){
@@ -526,12 +564,17 @@ function shuffle(array){
 }
 
 function restartDeck(){
+  stopFireworks();
   deck = shuffle(cards);
   currentIndex = 0;
   history = [];
-  solvedCurrent = false;
+  correctCount = 0;
+  wrongCount = 0;
+  answeredCurrent = false;
   els.finishedBox.style.display = 'none';
+  if(els.geniusBox) els.geniusBox.style.display = 'none';
   els.statementBox.style.display = 'flex';
+  els.choiceRow.style.display = 'grid';
   els.solutionPanel.classList.remove('open');
   updateHistory();
   loadCard();
@@ -543,37 +586,40 @@ function loadCard(){
     return;
   }
   current = deck[currentIndex];
-  solvedCurrent = false;
+  answeredCurrent = false;
   els.category.textContent = current.cat;
   els.statement.textContent = current.s;
   els.solutionPanel.classList.remove('open');
-  els.answerBadge.className = 'answer-badge';
-  els.answerLabel.textContent = '';
   els.explanation.textContent = '';
-  els.showBtn.disabled = false;
   els.nextBtn.disabled = true;
+  els.choiceButtons.forEach(btn => {
+    btn.disabled = false;
+    btn.classList.remove('selected');
+  });
   updateStats();
   refreshIcons();
 }
 
-function showSolution(){
-  if(!current || solvedCurrent) return;
-  solvedCurrent = true;
-  const answerClass = slugAnswer(current.a);
-  els.answerBadge.className = 'answer-badge ' + answerClass;
-  els.answerLabel.textContent = current.a;
+function submitAnswer(selectedAnswer){
+  if(!current || answeredCurrent) return;
+  answeredCurrent = true;
+  const isCorrect = selectedAnswer === current.a;
+  if(isCorrect) correctCount++; else wrongCount++;
+  els.choiceButtons.forEach(btn => {
+    btn.disabled = true;
+    if(btn.dataset.answer === selectedAnswer) btn.classList.add('selected');
+  });
   els.explanation.textContent = current.e;
   els.solutionPanel.classList.add('open');
-  els.showBtn.disabled = true;
   els.nextBtn.disabled = false;
-  history.unshift(current);
+  history.unshift({ ...current, selected:selectedAnswer, correct:isCorrect });
   updateHistory();
   updateStats();
   refreshIcons();
 }
 
 function nextCard(){
-  if(!solvedCurrent) return;
+  if(!answeredCurrent) return;
   currentIndex++;
   loadCard();
 }
@@ -581,10 +627,22 @@ function nextCard(){
 function finishDeck(){
   current = null;
   els.statementBox.style.display = 'none';
+  els.choiceRow.style.display = 'none';
   els.solutionPanel.classList.remove('open');
-  els.showBtn.disabled = true;
   els.nextBtn.disabled = true;
   els.finishedBox.style.display = 'block';
+  const totalAnswered = correctCount + wrongCount;
+  const pct = totalAnswered ? Math.round((correctCount / totalAnswered) * 100) : 0;
+  els.resultCorrect.textContent = correctCount;
+  els.resultWrong.textContent = wrongCount;
+  els.resultPercent.textContent = pct + '%';
+  if(wrongCount === 0 && totalAnswered === cards.length){
+    els.geniusBox.style.display = 'block';
+    startFireworks();
+  } else {
+    els.geniusBox.style.display = 'none';
+    stopFireworks();
+  }
   updateStats();
   refreshIcons();
 }
@@ -601,15 +659,14 @@ function updateStats(){
 
 function updateHistory(){
   if(history.length === 0){
-    els.historyList.innerHTML = '<p style="color:var(--text-muted);">Noch keine Aussage aufgelöst.</p>';
+    els.historyList.innerHTML = '<p style="color:var(--text-muted);">Noch keine Antwort gegeben.</p>';
     return;
   }
   els.historyList.innerHTML = history.map(item => {
-    const cl = slugAnswer(item.a);
     return `<div class="history-item">
       <div class="history-item-top">
         <div class="small-statement">${escapeHtml(item.s)}</div>
-        <span class="mini-badge ${cl}">${escapeHtml(item.a)}</span>
+        <span class="mini-badge" style="background:var(--primary)">${escapeHtml(item.selected)}</span>
       </div>
       <div class="small-explanation">${escapeHtml(item.e)}</div>
     </div>`;
@@ -618,6 +675,63 @@ function updateHistory(){
 
 function escapeHtml(str){
   return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+
+let fireworksAnimation = null;
+let particles = [];
+function startFireworks(){
+  const canvas = els.fireworksCanvas;
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.style.display = 'block';
+  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize, { once:false });
+  particles = [];
+  const colors = ['#f59e0b','#38bdf8','#16a34a','#dc2626','#7c3aed','#ffffff'];
+  function burst(){
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height * 0.55 + canvas.height * 0.08;
+    for(let i=0;i<70;i++){
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.5 + Math.random() * 5;
+      particles.push({ x, y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed, life:70+Math.random()*35, color:colors[Math.floor(Math.random()*colors.length)] });
+    }
+  }
+  burst(); burst();
+  let frame = 0;
+  function animate(){
+    frame++;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.globalCompositeOperation = 'lighter';
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.035;
+      p.life -= 1;
+      ctx.globalAlpha = Math.max(p.life / 90, 0);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+      ctx.fill();
+    });
+    particles = particles.filter(p => p.life > 0);
+    if(frame % 28 === 0) burst();
+    fireworksAnimation = requestAnimationFrame(animate);
+  }
+  stopFireworks();
+  canvas.style.display = 'block';
+  fireworksAnimation = requestAnimationFrame(animate);
+}
+
+function stopFireworks(){
+  if(fireworksAnimation){ cancelAnimationFrame(fireworksAnimation); fireworksAnimation = null; }
+  if(els && els.fireworksCanvas){
+    const ctx = els.fireworksCanvas.getContext('2d');
+    if(ctx) ctx.clearRect(0,0,els.fireworksCanvas.width,els.fireworksCanvas.height);
+    els.fireworksCanvas.style.display = 'none';
+  }
 }
 
 function toggleDarkMode(){
@@ -650,8 +764,7 @@ function setupKeyboard(){
       const tag = document.activeElement && document.activeElement.tagName;
       if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       ev.preventDefault();
-      if(!solvedCurrent && !els.showBtn.disabled) showSolution();
-      else if(solvedCurrent && !els.nextBtn.disabled) nextCard();
+      if(answeredCurrent && !els.nextBtn.disabled) nextCard();
     }
   });
 }
