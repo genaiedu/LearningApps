@@ -353,33 +353,33 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
       </div>
 
       <div class="card reveal">
-        <p>In allen Diagrammen dieser App gilt die übliche Konvention der Minkowski-Diagramme: Aufgetragen wird <b>ct</b> (senkrecht) gegen <b>x</b> (waagerecht), sodass Lichtstrahlen unabhängig vom Bezugssystem stets unter 45° verlaufen. Als Ausgangssystem dient ein festes „Laborsystem" S₀ mit orthogonalen Achsen. Alle Weltlinien werden mit ihren Parametern (β, Ortsversatz x₀, Zeitversatz ct₀) relativ zu S₀ definiert und als Geraden in dieses feste Raster gezeichnet.</p>
-        <div class="merksatz">Wichtig: Die Weltlinien selbst ändern im Diagramm ihre Lage nicht, wenn du das Bezugssystem wechselst. Was sich ändert, ist nur die Orientierung und Skalierung der Achsen, mit denen du abliest.</div>
+        <p>In allen Diagrammen dieser App gilt die übliche Konvention der Minkowski-Diagramme: Aufgetragen wird <b>ct</b> (senkrecht) gegen <b>x</b> (waagerecht), sodass Lichtstrahlen unabhängig vom Bezugssystem stets unter 45° verlaufen. Alle Weltlinien werden mit ihren Parametern (β, Ortsversatz x₀, Zeitversatz ct₀) relativ zu einem festen „Laborsystem" S₀ definiert – das ist einfach eine Buchführungs-Konvention, damit jedes Objekt eindeutig beschrieben ist. Für die <i>Darstellung</i> gilt aber: Das App zeichnet immer das Bezugssystem orthogonal, das du gerade als Bezugssystem gewählt hast. Alle anderen Weltlinien werden dafür per Lorentz-Transformation umgerechnet.</p>
+        <div class="merksatz">Wichtig: Wechselst du das Bezugssystem, verändert sich also nicht nur die Achsenbeschriftung – jede Weltlinie, jeder Lichtstrahl und jedes Ereignis wird neu berechnet und neu gezeichnet. Nur das gewählte Bezugssystem selbst ist dabei immer orthogonal, so wie es sich für seinen eigenen Beobachter auch tatsächlich anfühlt.</div>
       </div>
 
       <div class="card reveal">
-        <h3 style="margin-bottom:10px; font-size:1.05rem;">Achsenneigung beim Bezugssystemwechsel</h3>
-        <p>Wählst du ein Objekt mit Geschwindigkeit β (bezogen auf S₀) als neues Bezugssystem, kippen beide Achsen um denselben Winkel θ – aber aufeinander zu:</p>
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Warum wird dann überhaupt etwas schräg gezeichnet?</h3>
+        <p>Damit du zwei Bezugssysteme gleichzeitig vergleichen kannst, blendet die App zusätzlich die Achsen des Laborsystems S₀ ein, sobald du ein anderes Objekt als Bezugssystem gewählt hast. Da S₀ aus Sicht des neuen, orthogonal gezeichneten Bezugssystems selbst mit −β dagegen "bewegt" ist, erscheinen genau diese S₀-Vergleichsachsen geneigt:</p>
         <div class="formula-box">
-          <span class="label">Kippwinkel der neuen Achsen</span>
-          tan θ = β &nbsp;&nbsp;→&nbsp;&nbsp; ct′-Achse: ct = x / β &nbsp;&nbsp;·&nbsp;&nbsp; x′-Achse: ct = β · x
+          <span class="label">Kippwinkel der S₀-Vergleichsachsen im gewählten Bezugssystem</span>
+          tan θ = β &nbsp;&nbsp;(β = Geschwindigkeit des gewählten Bezugssystems relativ zu S₀)
         </div>
-        <p>Beide Achsen nähern sich für β → 1 der 45°-Lichtlinie an. Der Winkel zwischen ct′- und x′-Achse wird dabei kleiner als 90° – die Achsen sind im Diagramm nicht mehr orthogonal, obwohl sie es im Ruhesystem des bewegten Beobachters selbstverständlich sind.</p>
+        <p>Für β → 1 nähern sich auch diese Vergleichsachsen der 45°-Lichtlinie an. Das ist genau die Umkehrung dessen, was du siehst, wenn du wieder zu S₀ als Bezugssystem zurückwechselst: Dann sind die S₀-Achsen orthogonal, und die zuvor gewählten Achsen wären ihrerseits geneigt – ein schönes Beispiel für die Symmetrie der Relativität: Keines der beiden Bezugssysteme ist "wirklich" das ruhende.</p>
       </div>
 
       <div class="card reveal">
         <h3 style="margin-bottom:10px; font-size:1.05rem;">Die Maßstabsänderung – warum man nicht einfach ablesen darf</h3>
-        <p>Der zweite, oft übersehene Effekt: Der Maßstab <i>entlang</i> der geneigten Achsen ist gegenüber dem Maßstab von S₀ gestreckt. Ein Punkt, der im neuen System bei x′ = n bzw. ct′ = n liegt, hat im Laborsystem die Koordinaten:</p>
+        <p>Der zweite, oft übersehene Effekt betrifft genau diese geneigten S₀-Vergleichsachsen: Der Maßstab <i>entlang</i> ihnen ist gegenüber dem orthogonalen Maßstab des gewählten Bezugssystems gestreckt. Ein Punkt, der auf der S₀-x-Achse bei x = n bzw. auf der S₀-ct-Achse bei ct = n liegt, hat im aktuell gewählten (orthogonalen) Bezugssystem die Koordinaten:</p>
         <div class="formula-box">
-          <span class="label">Lage der Einheits-Ticks im festen Raster</span>
-          x′-Achse, Tick n: (x, ct) = (γn, γβn) &nbsp;&nbsp;·&nbsp;&nbsp; ct′-Achse, Tick n: (x, ct) = (γβn, γn)
+          <span class="label">Lage der S₀-Einheits-Ticks im gewählten Bezugssystem</span>
+          S₀-x-Achse, Tick n: (x′, ct′) = (γn, −γβn) &nbsp;&nbsp;·&nbsp;&nbsp; S₀-ct-Achse, Tick n: (x′, ct′) = (−γβn, γn)
         </div>
-        <p>Der Abstand dieser Ticks vom Ursprung, gemessen im festen S₀-Raster, wächst dabei um den Faktor γ·√(1+β²) = √((1+β²)/(1−β²)) – stärker als der reine Lorentzfaktor γ. Genau deshalb sind die Ticks auf den geneigten Achsen im Diagramm <i>nicht</i> im gleichen Pixelabstand wie auf den S₀-Achsen. Geometrisch lässt sich diese Stauchung/Streckung mit sogenannten <b>Eichhyperbeln</b> x² − (ct)² = const. konstruieren: Der Schnittpunkt einer Hyperbel mit einer geneigten Achse markiert dort den korrekten Wert 1, 2, 3, ... Die App berechnet diese Ticks direkt über die inverse Lorentz-Transformation und zeichnet sie automatisch korrekt.</p>
+        <p>Der Abstand dieser Ticks vom Ursprung, gemessen im orthogonalen Anzeigeraster, wächst dabei um den Faktor γ·√(1+β²) = √((1+β²)/(1−β²)) – stärker als der reine Lorentzfaktor γ. Genau deshalb liegen die Ticks auf den geneigten S₀-Vergleichsachsen <i>nicht</i> im gleichen Pixelabstand wie auf den orthogonalen Achsen des gewählten Systems. Geometrisch lässt sich diese Stauchung/Streckung mit sogenannten <b>Eichhyperbeln</b> x² − (ct)² = const. konstruieren: Der Schnittpunkt einer Hyperbel mit einer geneigten Achse markiert dort den korrekten Wert 1, 2, 3, ... Die App berechnet diese Ticks direkt über die Lorentz-Transformation der Tick-Punkte und zeichnet sie automatisch korrekt.</p>
       </div>
 
       <div class="card reveal">
         <h3 style="margin-bottom:10px; font-size:1.05rem;">Gleichzeitigkeitslinien</h3>
-        <p>Zwei Ereignisse sind in einem Bezugssystem genau dann gleichzeitig, wenn sie auf derselben Parallelen zur x′-Achse dieses Systems liegen. Die App zeichnet für jedes aktivierte Ereignis eine gestrichelte Linie mit der Steigung der aktuellen x′-Achse (ct = β·x + const.) und liest an deren Schnittpunkt mit der ct′-Achse den Zeitwert ab. Wechselst du das Bezugssystem, dreht sich diese Linie mit den Achsen – zwei zuvor gleichzeitige Ereignisse liegen danach in der Regel nicht mehr auf derselben Höhe.</p>
+        <p>Zwei Ereignisse sind in einem Bezugssystem genau dann gleichzeitig, wenn sie im Diagramm dieses Bezugssystems auf derselben Höhe liegen – also auf einer Waagerechten (Parallelen zur x-Achse). Weil die App das jeweils gewählte Bezugssystem immer orthogonal zeichnet, ist die Gleichzeitigkeitslinie eines aktivierten Ereignisses dort schlicht eine Waagerechte durch diesen Punkt. Wechselst du das Bezugssystem, wird diese Linie zusammen mit dem Ereignis neu berechnet und bleibt weiterhin waagerecht – aber zwei Ereignisse, die vorher auf derselben Höhe lagen, liegen nach dem Wechsel in aller Regel nicht mehr auf derselben Höhe. Das ist die Relativität der Gleichzeitigkeit, direkt sichtbar gemacht.</p>
         <div class="format-card">
           <div class="format-card__header" onclick="toggleAccordion(this)">
             <span>Zur Erinnerung: Die Lorentz-Transformation selbst</span>
@@ -387,7 +387,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
           </div>
           <div class="format-card__body"><div class="inner">
             x′ = γ·(x − β·ct) &nbsp;&nbsp;·&nbsp;&nbsp; ct′ = γ·(ct − β·x) &nbsp;&nbsp;mit&nbsp;&nbsp; γ = 1/√(1−β²)<br><br>
-            Diese App wendet die Transformation für jedes Ereignis direkt auf die im Laborsystem gespeicherten Koordinaten an, um die angezeigten (x′, ct′)-Werte im jeweils gewählten Bezugssystem zu berechnen. Für den Wechsel des Bezugssystems selbst wird nur β des gewählten Objekts relativ zu S₀ benötigt – eine explizite Geschwindigkeitsaddition ist nicht nötig, da alle Weltlinien ohnehin in S₀-Koordinaten vorliegen.
+            Diese App wendet die Transformation auf die im Laborsystem gespeicherten Koordinaten jeder Weltlinie, jedes Lichtstrahls und jedes Ereignisses an, um sie im jeweils gewählten Bezugssystem darzustellen. Da die Transformation linear ist (gemeinsamer Ursprung), gilt dieselbe Formel für Punkte wie für Richtungsvektoren – deshalb bleiben Weltlinien auch nach der Umrechnung Geraden, und eine explizite Geschwindigkeitsaddition ist nicht nötig: Sie ergibt sich automatisch aus der Transformation der Richtungsvektoren.
           </div></div>
         </div>
       </div>
@@ -447,7 +447,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
 
             <div class="panel-card">
               <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung anzeigen</label>
-              <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> S₀-Gitter anzeigen</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> Gitter des aktuellen Bezugssystems anzeigen</label>
             </div>
             </div>
           </div>
@@ -463,7 +463,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
                 <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die rote Achse ist die x′-Achse, die blaue die ct′-Achse des gewählten Bezugssystems (nur sichtbar, wenn nicht S₀ gewählt ist). Beim Wechsel des Bezugssystems drehen sich Achsen, Ticks und Gleichzeitigkeitslinien innerhalb von 2 Sekunden in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -957,8 +957,16 @@ function render(){
   const gridColor = cssVar('--grid-line');
   const labColor = cssVar('--lab-axis');
   const textMuted = cssVar('--text-muted');
+  const betaRef = currentBetaRef();
 
-  // Hintergrund-Gitter S0
+  // Alles wird in den Koordinaten des GEWÄHLTEN Bezugssystems gezeichnet – dieses ist also
+  // immer orthogonal. transformPt/transformDir rechnen Laborkoordinaten (bzw. -richtungen) dorthin um.
+  // Die Transformation ist linear/homogen (gemeinsamer Ursprung), daher gilt dieselbe Funktion
+  // sowohl für Punkte als auch für Richtungsvektoren.
+  const transformPt  = (x, ct) => lorentz(x, ct, betaRef);
+  const transformDir = (dx, dct) => lorentz(dx, dct, betaRef);
+
+  // Hintergrund-Gitter des aktuellen Bezugssystems (immer orthogonal, da es das Anzeigesystem ist)
   if (document.getElementById('toggleGrid').checked){
     const step = 5;
     for (let x = Math.ceil(view.xMin/step)*step; x <= view.xMax; x += step){
@@ -969,7 +977,7 @@ function render(){
     }
   }
 
-  // Lichtkegel am Ursprung
+  // Lichtkegel am Ursprung (bei jeder Lorentz-Transformation invariant unter 45°)
   if (document.getElementById('toggleLightcone').checked){
     [1,-1].forEach(dir=>{
       const seg = clipToView({x:0,ct:0}, {x:dir,ct:1}, -1e6, 1e6);
@@ -977,84 +985,85 @@ function render(){
     });
   }
 
-  // S0-Achsen
+  // Achsen des gewählten Bezugssystems: immer orthogonal, da dies das Anzeigesystem ist
   {
+    const isLab = (referenceId === 'S0');
+    const xColor = isLab ? labColor : cssVar('--frame-axis');
+    const ctColor = isLab ? labColor : cssVar('--primary');
     const segX = clipToView({x:0,ct:0},{x:1,ct:0});
-    if (segX) svgLine(segX.a, segX.b, {stroke:labColor,'stroke-width':1.6});
+    if (segX) svgLine(segX.a, segX.b, {stroke:xColor,'stroke-width':1.8});
     const segCt = clipToView({x:0,ct:0},{x:0,ct:1});
-    if (segCt) svgLine(segCt.a, segCt.b, {stroke:labColor,'stroke-width':1.6});
-    svgText(view.xMax-1.5, 1.2, 'x', {fill:labColor,'font-weight':'700','text-anchor':'end'});
-    svgText(0.6, view.ctMax-1.5, 'ct', {fill:labColor,'font-weight':'700'});
+    if (segCt) svgLine(segCt.a, segCt.b, {stroke:ctColor,'stroke-width':1.8});
+    svgText(view.xMax-1.5, 1.2, isLab?'x':'x′', {fill:xColor,'font-weight':'700','text-anchor':'end'});
+    svgText(0.6, view.ctMax-1.5, isLab?'ct':'ct′', {fill:ctColor,'font-weight':'700'});
   }
 
-  const betaRef = currentBetaRef();
-  const gammaRef = 1/Math.sqrt(1-betaRef*betaRef);
-
-  // Geneigte Achsen des gewählten Bezugssystems
+  // Vergleichs-Achsen des Laborsystems S0 – erscheinen geneigt, sobald ein anderes Objekt als
+  // Bezugssystem gewählt ist (Umkehrung: jetzt "bewegt" sich S0 aus Sicht des Anzeigesystems)
   if (referenceId !== 'S0'){
-    const frameAxisColor = cssVar('--frame-axis');
-    const ctAxisColor = cssVar('--primary');
+    const dX0  = transformDir(1,0);
+    const dCt0 = transformDir(0,1);
+    const segX0 = clipToView({x:0,ct:0}, dX0);
+    if (segX0){
+      svgLine(segX0.a, segX0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
+      svgText(segX0.b.x, segX0.b.ct, 'x₀', {fill:labColor,'font-weight':'700', dx:'6', dy:'-4', opacity:0.85});
+    }
+    const segCt0 = clipToView({x:0,ct:0}, dCt0);
+    if (segCt0){
+      svgLine(segCt0.a, segCt0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
+      svgText(segCt0.b.x, segCt0.b.ct, 'ct₀', {fill:labColor,'font-weight':'700', dx:'-18', dy:'12', opacity:0.85});
+    }
 
-    // x'-Achse: ct = beta * x  -> Richtung (1, beta)
-    const segXp = clipToView({x:0,ct:0}, {x:1, ct:betaRef});
-    if (segXp) svgLine(segXp.a, segXp.b, {stroke:frameAxisColor,'stroke-width':2});
-    // ct'-Achse: Richtung (beta, 1)
-    const segCtp = clipToView({x:0,ct:0}, {x:betaRef, ct:1});
-    if (segCtp) svgLine(segCtp.a, segCtp.b, {stroke:ctAxisColor,'stroke-width':2});
-
-    svgText(0,0,"x′", {fill:frameAxisColor,'font-weight':'700', dx:'6', dy:'-6'});
-    svgText(0,0,"ct′", {fill:ctAxisColor,'font-weight':'700', dx:'-16', dy:'12'});
-
-    // Ticks auf den geneigten Achsen (kalibriert über inverse Lorentz-Transformation), Abstand wie Gitter
+    // Kalibrierte Ticks auf den geneigten S0-Vergleichsachsen (über direkte Lorentz-Transformation der Tick-Punkte)
     const tickStep = 5;
     const nRange = Math.ceil(Math.max(view.xMax-view.xMin, view.ctMax-view.ctMin) / tickStep) + 1;
     for (let k = -nRange; k <= nRange; k++){
       const n = k*tickStep;
       if (n===0) continue;
-      // x'-Achse Tick n: (x,ct) = (gamma*n, gamma*beta*n)
-      const px1 = { x: gammaRef*n, ct: gammaRef*betaRef*n };
-      if (px1.x>=view.xMin && px1.x<=view.xMax && px1.ct>=view.ctMin && px1.ct<=view.ctMax){
-        drawTick(px1, {x:1,ct:betaRef}, frameAxisColor, n);
+      const tx = transformPt(n, 0);
+      if (tx.x>=view.xMin && tx.x<=view.xMax && tx.ct>=view.ctMin && tx.ct<=view.ctMax){
+        drawTick(tx, dX0, labColor, n);
       }
-      // ct'-Achse Tick n: (x,ct) = (gamma*beta*n, gamma*n)
-      const pc1 = { x: gammaRef*betaRef*n, ct: gammaRef*n };
-      if (pc1.x>=view.xMin && pc1.x<=view.xMax && pc1.ct>=view.ctMin && pc1.ct<=view.ctMax){
-        drawTick(pc1, {x:betaRef,ct:1}, ctAxisColor, n);
+      const tc = transformPt(0, n);
+      if (tc.x>=view.xMin && tc.x<=view.xMax && tc.ct>=view.ctMin && tc.ct<=view.ctMax){
+        drawTick(tc, dCt0, labColor, n);
       }
     }
   }
 
-  // Weltlinien
+  // Weltlinien (Objektparameter sind lab-fest definiert, Darstellung ins gewählte System umgerechnet)
   objects.forEach(obj=>{
-    const seg = clipToView({x:obj.x0, ct:obj.ct0}, {x:obj.beta, ct:1});
+    const p0 = transformPt(obj.x0, obj.ct0);
+    const d  = transformDir(obj.beta, 1);
+    const seg = clipToView(p0, d);
     if (seg){
       svgLine(seg.a, seg.b, {stroke:obj.color,'stroke-width':2.4});
       svgText(seg.b.x, seg.b.ct, obj.name, {fill:obj.color,'font-weight':'600'});
     }
   });
 
-  // Lichtstrahlen (nur vorwärts)
+  // Lichtstrahlen: Startpunkt wird umgerechnet, die Richtung (dir,1) bleibt unter der
+  // Lorentz-Transformation als Lichtlinie erhalten (nur vorwärts in der Zeit)
   rays.forEach(r=>{
-    const seg = clipToView({x:r.x0, ct:r.ct0}, {x:r.dir, ct:1}, 0, 1e6);
+    const p0 = transformPt(r.x0, r.ct0);
+    const seg = clipToView(p0, {x:r.dir, ct:1}, 0, 1e6);
     if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.6,'stroke-dasharray':'5,4'});
   });
 
-  // Ereignisse: Punkte und Gleichzeitigkeitslinien
+  // Ereignisse: Punkte und Gleichzeitigkeitslinien. Da das Anzeigesystem orthogonal ist, ist die
+  // Gleichzeitigkeitslinie im aktuellen Bezugssystem jetzt einfach eine Waagerechte.
   events.forEach(e=>{
+    const p = transformPt(e.xLab, e.ctLab);
     if (e.showSim){
-      // Parallel zur aktuellen x'-Achse durch das Ereignis, bis zur ct'-Achse verlängert
-      const seg = clipToView({x:e.xLab, ct:e.ctLab}, {x:1, ct:betaRef});
+      const seg = clipToView(p, {x:1, ct:0});
       if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
-      // Schnittpunkt mit ct'-Achse markieren (ct'-Achse: Punkt (0,0), Richtung (betaRef,1))
-      const hit = intersectLines({x:e.xLab, ct:e.ctLab}, {x:1, ct:betaRef}, {x:0, ct:0}, {x:betaRef, ct:1});
-      if (hit && hit.x>=view.xMin && hit.x<=view.xMax && hit.ct>=view.ctMin && hit.ct<=view.ctMax){
-        svgCircle(hit.x, hit.ct, 3, {fill:'#94a3b8'});
+      if (p.ct>=view.ctMin && p.ct<=view.ctMax && view.xMin<=0 && 0<=view.xMax){
+        svgCircle(0, p.ct, 3, {fill:'#94a3b8'});
       }
     }
     if (e.showPoint){
-      svgCircle(e.xLab, e.ctLab, 4.5, {fill:'#fff', stroke: e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary'), 'stroke-width':2.2});
-      const f = lorentz(e.xLab, e.ctLab, betaRef);
-      svgText(e.xLab, e.ctLab, `(${f.x.toFixed(1)}, ${f.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
+      svgCircle(p.x, p.ct, 4.5, {fill:'#fff', stroke: e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary'), 'stroke-width':2.2});
+      svgText(p.x, p.ct, `(${p.x.toFixed(1)}, ${p.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
     }
   });
 }
@@ -1110,19 +1119,24 @@ function handleClick(ev){
   const rect = svg.getBoundingClientRect();
   const px = (ev.clientX-rect.left)*(W/rect.width);
   const py = (ev.clientY-rect.top)*(H/rect.height);
-  const clickPhys = toPhys(px, py);
+  const clickPhys = toPhys(px, py); // Koordinaten im aktuell angezeigten Bezugssystem
+  const betaRef = currentBetaRef();
 
-  // Nächste Weltlinie in Pixel-Distanz finden (Gerade durch (x0,ct0) mit Richtung (beta,1))
+  // Nächste Weltlinie in Pixel-Distanz finden – anhand ihrer TATSÄCHLICH gezeichneten
+  // (ins aktuelle Bezugssystem transformierten) Lage, nicht der Lab-Parameter direkt.
   let best = null, bestDist = 14; // Toleranz in px
   objects.forEach(obj=>{
-    const p1 = toPx(obj.x0, obj.ct0);
-    const p2 = toPx(obj.x0 + obj.beta*10, obj.ct0 + 10);
+    const p0 = lorentz(obj.x0, obj.ct0, betaRef);
+    const d  = lorentz(obj.beta, 1, betaRef);
+    const p1 = toPx(p0.x, p0.ct);
+    const p2 = toPx(p0.x + d.x*10, p0.ct + d.ct*10);
     const distPx = pointToSegmentDist(px, py, p1.px, p1.py, p2.px, p2.py);
     if (distPx < bestDist){ bestDist = distPx; best = obj; }
   });
   if (best){
-    // Emission am ct-Wert des Klickpunkts (Punkt wird über die Weltlinie exakt berechnet)
-    emitLight(best, clickPhys.ct);
+    // Klickpunkt zurück ins Laborsystem transformieren (Objekte sind lab-fest parametrisiert)
+    const clickLab = lorentz(clickPhys.x, clickPhys.ct, -betaRef);
+    emitLight(best, clickLab.ct);
   }
 }
 
@@ -1156,7 +1170,9 @@ Das Steuerungspanel besteht aus vier Blöcken:
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie zwei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein) und "Gleichzeitigkeitslinie" (blendet die gestrichelte Parallele zur aktuellen x′-Achse durch dieses Ereignis ein, bis zum Schnittpunkt mit der ct′-Achse). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
 
-Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus. Die Weltlinien selbst sind in der jeweils gewählten Objektfarbe gezeichnet, Lichtstrahlen gestrichelt in Orange/Gelb. Die Achsen des Laborsystems S0 (x und ct) sind immer sichtbar und neutral eingefärbt. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt wird, erscheinen zwei zusätzliche, geneigte Achsen: die x′-Achse (rot) und die ct′-Achse (blau/Primärfarbe), inklusive kalibrierter Tick-Markierungen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich diese Achsen, ihre Ticks sowie alle aktivierten Gleichzeitigkeitslinien kontinuierlich in die neue Lage drehen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live.
+Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus.
+
+Wichtig für dein Verständnis der Darstellung: Die Objekte werden zwar mit ihren Parametern (β, x0, ct0) relativ zu einem festen Laborsystem S0 definiert, aber gezeichnet wird immer das gerade gewählte Bezugssystem orthogonal (rechtwinklige x′- und ct′-Achse, rot bzw. blau/Primärfarbe eingefärbt, sofern nicht S0 selbst gewählt ist). Alle Weltlinien, Lichtstrahlen und Ereignisse werden dafür per Lorentz-Transformation neu berechnet – sie liegen also nach einem Bezugssystemwechsel an einer anderen Stelle im Diagramm, nicht nur die Achsen drehen sich. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt ist, blendet die App zusätzlich zwei gestrichelte, geneigte Vergleichsachsen ein: die x0- und ct0-Achse des Laborsystems S0, inklusive kalibrierter Tick-Markierungen. Das macht sichtbar, dass die Wahl des Bezugssystems symmetrisch ist – aus Sicht des neuen Bezugssystems ist es S0, das sich bewegt und dessen Achsen geneigt erscheinen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich Weltlinien, Lichtstrahlen, die S0-Vergleichsachsen und alle aktivierten Gleichzeitigkeitslinien kontinuierlich in ihre neue Lage bewegen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live. Gleichzeitigkeitslinien sind dabei im gewählten (orthogonalen) Bezugssystem stets waagerecht.
 
 Außerhalb des Diagramms gibt es in der Seitenleiste noch einen Dark-Mode-Umschalter ("Dark Mode"-Button unten in der Seitenleiste) sowie auf kleinen Bildschirmen ein Menü-Symbol oben rechts, das die Seitenleiste ein- und ausblendet.
 
