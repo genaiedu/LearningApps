@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minkowski-Diagramm – Relativität der Gleichzeitigkeit</title>
+<meta name="description" content="Interaktives Minkowski-Diagramm zur Speziellen Relativitätstheorie: Weltlinien, Bezugssystemwechsel, Lichtsignale und Gleichzeitigkeit, Sekundarstufe II">
+
+<style>
+/* ============ @font-face ============ */
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-900.woff2') format('woff2'); font-weight:900; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Dancing Script'; src:url('fonts/dancing-script-v29-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+
+/* ============ Variablen ============ */
+:root{
+  --primary:#1a6fb5;
+  --primary-light:#e8f1fb;
+  --accent:#f59e0b;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --surface:rgba(255,255,255,0.75);
+  --glass-bg:rgba(255,255,255,0.10);
+  --glass-border:rgba(255,255,255,0.20);
+  --blur:blur(20px);
+  --radius:16px;
+  --sidebar-width:320px;
+  --shadow:0 8px 32px rgba(0,0,0,0.12);
+  --correct:#16a34a;
+  --wrong:#dc2626;
+  --lab-axis:#334155;
+  --frame-axis:#dc2626;
+  --light-ray:#f59e0b;
+  --grid-line:rgba(100,116,139,0.18);
+}
+body.dark{
+  --primary:#38bdf8;
+  --primary-light:#0f172a;
+  --text:#e2e8f0;
+  --text-muted:#94a3b8;
+  --surface:rgba(15,23,42,0.80);
+  --glass-bg:rgba(255,255,255,0.05);
+  --lab-axis:#cbd5e1;
+  --frame-axis:#f87171;
+  --grid-line:rgba(148,163,184,0.16);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter', system-ui, sans-serif;
+  color:var(--text);
+  background:linear-gradient(135deg,#f0f7ff 0%,#e8f1fb 50%,#fdf6e8 100%);
+  min-height:100vh;
+  transition:background .3s, color .3s;
+  overflow-x:hidden;
+}
+body.dark{ background:linear-gradient(135deg,#0f172a 0%,#0b1120 50%,#101a2c 100%); }
+
+h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02em; }
+
+/* ============ Blobs ============ */
+.blob{ position:fixed; border-radius:50%; filter:blur(80px); opacity:.35; animation:drift 18s ease-in-out infinite alternate; z-index:-1; }
+.blob:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-10%; animation-duration:20s; }
+.blob:nth-child(2){ width:400px; height:400px; background:#7c3aed; top:40%; right:-5%; animation-duration:25s; }
+.blob:nth-child(3){ width:350px; height:350px; background:#0ea5e9; bottom:-5%; left:30%; animation-duration:22s; }
+@keyframes drift{
+  0%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(40px,-30px) scale(1.05); }
+  66%{ transform:translate(-20px,50px) scale(.95); }
+  100%{ transform:translate(30px,20px) scale(1.02); }
+}
+
+/* ============ Progress Bar ============ */
+#progress-bar-wrap{ position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(0,0,0,.08); z-index:500; }
+#progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--accent)); transition:width .1s; }
+
+/* ============ Layout ============ */
+.layout{ display:flex; min-height:100vh; }
+.sidebar{
+  width:var(--sidebar-width); flex-shrink:0; position:fixed; top:0; left:0; height:100vh;
+  background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--glass-border); padding:28px 22px; overflow-y:auto; z-index:300;
+  transition:transform .3s;
+}
+.sidebar h2{ font-size:1.05rem; color:var(--primary); margin-bottom:4px; }
+.sidebar .subtitle{ font-size:.8rem; color:var(--text-muted); margin-bottom:24px; }
+.sidebar nav a{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:10px;
+  color:var(--text); text-decoration:none; font-size:.92rem; font-weight:500; transition:background .2s;
+}
+.sidebar nav a:hover{ background:var(--primary-light); color:var(--primary); }
+.sidebar .school{ margin-top:30px; padding-top:18px; border-top:1px solid var(--glass-border); font-size:.75rem; color:var(--text-muted); line-height:1.5; }
+.dark-toggle{
+  display:flex; align-items:center; gap:8px; margin-top:18px; padding:10px 12px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--glass-border); cursor:pointer; font-size:.85rem; color:var(--text);
+}
+.hamburger{ display:none; position:fixed; top:14px; right:14px; z-index:400; background:var(--surface); border:1px solid var(--glass-border);
+  border-radius:10px; width:44px; height:44px; align-items:center; justify-content:center; backdrop-filter:var(--blur); cursor:pointer; }
+
+.main-content{ margin-left:var(--sidebar-width); flex:1; padding:40px 6vw 100px; max-width:1180px; }
+
+/* ============ Hero ============ */
+.hero{ margin-bottom:50px; }
+.hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
+  padding:5px 14px; border-radius:999px; margin-bottom:16px; }
+.hero h1{ font-size:2.5rem; font-weight:900; line-height:1.1; margin-bottom:14px; }
+.hero h1 span{ color:var(--primary); }
+.hero p{ font-size:1.08rem; color:var(--text-muted); max-width:720px; }
+.hero .caveat{ font-family:'Dancing Script', cursive; font-weight:600; font-size:1.5rem; color:var(--accent); margin-top:10px; display:block; }
+
+/* ============ Section / Glass Card ============ */
+section{ margin-bottom:56px; scroll-margin-top:30px; }
+.section-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.section-head .num{
+  width:38px; height:38px; border-radius:12px; background:var(--primary); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; flex-shrink:0;
+}
+.section-head h2{ font-size:1.45rem; }
+.section-head .sub-line{ font-size:.82rem; color:var(--text-muted); margin-top:2px; }
+
+.card{
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:26px 28px;
+}
+.card + .card{ margin-top:18px; }
+.card p{ line-height:1.65; margin-bottom:12px; }
+.card p:last-child{ margin-bottom:0; }
+.card ul{ padding-left:20px; line-height:1.7; }
+.card ol{ padding-left:20px; line-height:1.7; }
+
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible{ opacity:1; transform:translateY(0); }
+
+/* ============ Merksatz / Formel-Box ============ */
+.merksatz{
+  border-left:4px solid var(--primary); background:var(--primary-light); border-radius:0 12px 12px 0;
+  padding:16px 20px; font-weight:600; margin:16px 0;
+}
+body.dark .merksatz{ background:rgba(56,189,248,.10); }
+
+.formula-box{
+  border:1px dashed var(--glass-border); background:var(--primary-light); border-radius:12px;
+  padding:16px 20px; margin:14px 0; text-align:center; font-size:1.08rem; font-family:'Inter';
+}
+body.dark .formula-box{ background:rgba(56,189,248,.06); }
+.formula-box .label{ display:block; font-size:.72rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
+
+/* ============ Akkordeon (format-card) ============ */
+.format-card{ border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid var(--glass-border); }
+.format-card__header{
+  cursor:pointer; background:var(--primary); color:#fff; padding:13px 18px;
+  font-family:'Inter'; font-weight:600; font-size:.95rem; display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.format-card__header i{ transition:transform .25s; flex-shrink:0; }
+.format-card__header.open i{ transform:rotate(180deg); }
+.format-card__body{ max-height:0; overflow:hidden; transition:max-height .35s ease; background:var(--primary-light); }
+.format-card__body .inner{ padding:16px 18px; line-height:1.65; }
+body.dark .format-card__body{ background:rgba(56,189,248,.06); }
+
+/* ============ Diagramm-Layout ============ */
+.diagram-layout{ display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+@media(max-width:1100px){ .diagram-layout{ grid-template-columns:1fr; } }
+
+.panel-title{ font-family:'Poppins'; font-weight:700; font-size:.95rem; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:var(--primary); }
+.panel-title i{ width:18px; height:18px; }
+
+.obj-row{
+  border:1px solid var(--glass-border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:var(--glass-bg);
+}
+.obj-row-head{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.obj-row-head input[type="text"]{
+  flex:1; background:transparent; border:none; border-bottom:1px solid var(--glass-border); color:var(--text);
+  font-family:'Inter'; font-weight:600; font-size:.9rem; padding:3px 2px;
+}
+.obj-swatch{ width:18px; height:18px; border-radius:6px; border:none; padding:0; cursor:pointer; flex-shrink:0; }
+.obj-del{ background:none; border:none; cursor:pointer; color:var(--text-muted); padding:2px; flex-shrink:0; }
+.obj-del:hover{ color:var(--wrong); }
+.obj-fields{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; }
+.obj-fields label{ font-size:.68rem; color:var(--text-muted); display:block; margin-bottom:2px; }
+.obj-fields input[type="number"]{
+  width:100%; padding:5px 6px; border-radius:7px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); font-family:'Inter'; font-size:.82rem;
+}
+.beta-slider{ width:100%; accent-color:var(--primary); }
+.obj-ref-row{ display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--text-muted); }
+.obj-ref-row input{ accent-color:var(--accent); }
+
+.btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:11px 18px; font-weight:600; cursor:pointer; font-family:'Inter'; font-size:.88rem; display:inline-flex; align-items:center; gap:7px; }
+.btn-primary:hover{ filter:brightness(1.08); }
+.btn-secondary{
+  background:transparent; border:1px solid var(--glass-border); color:var(--text); border-radius:10px;
+  padding:9px 16px; font-weight:600; cursor:pointer; font-family:'Inter'; font-size:.83rem; display:inline-flex; align-items:center; gap:6px;
+}
+.btn-secondary:hover{ border-color:var(--primary); color:var(--primary); }
+.btn-block{ width:100%; justify-content:center; margin-top:4px; }
+.btn-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+
+.panel-card{ margin-bottom:16px; }
+
+.select-styled{
+  width:100%; padding:8px 10px; border-radius:9px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); font-family:'Inter'; font-size:.85rem; margin-bottom:8px;
+}
+.field-inline{ display:flex; gap:8px; align-items:end; margin-bottom:8px; }
+.field-inline > div{ flex:1; }
+.field-inline label{ font-size:.7rem; color:var(--text-muted); display:block; margin-bottom:3px; }
+.field-inline input{ width:100%; padding:6px 8px; border-radius:7px; border:1px solid var(--glass-border); background:var(--surface); color:var(--text); font-size:.83rem; }
+
+.frame-indicator{
+  display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; background:var(--primary-light);
+  border:1px solid var(--glass-border); margin-bottom:16px; font-size:.88rem;
+}
+body.dark .frame-indicator{ background:rgba(56,189,248,.08); }
+.frame-indicator b{ color:var(--primary); }
+
+.svg-wrap{ border:1px solid var(--glass-border); border-radius:14px; overflow:hidden; background:var(--surface); position:relative; }
+#mkSvg{ width:100%; height:auto; display:block; cursor:crosshair; touch-action:none; }
+.zoom-controls{ position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px; z-index:10; }
+.zoom-btn{
+  width:34px; height:34px; border-radius:9px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:var(--blur);
+}
+.zoom-btn:hover{ color:var(--primary); border-color:var(--primary); }
+.diagram-hint{ font-size:.8rem; color:var(--text-muted); margin-top:10px; line-height:1.55; }
+.diagram-hint b{ color:var(--text); }
+
+.event-row{
+  border:1px solid var(--glass-border); border-radius:12px; padding:10px 12px; margin-bottom:8px; background:var(--glass-bg); font-size:.82rem;
+}
+.event-row-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.event-row-head b{ font-size:.83rem; }
+.event-coords{ font-family:'Inter'; color:var(--text-muted); margin-bottom:6px; }
+.event-toggles{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.event-toggles label{ display:flex; align-items:center; gap:5px; cursor:pointer; font-size:.78rem; }
+.event-toggles input{ accent-color:var(--primary); }
+.event-del{ background:none; border:none; cursor:pointer; color:var(--text-muted); }
+.event-del:hover{ color:var(--wrong); }
+.empty-hint{ color:var(--text-muted); font-size:.82rem; padding:10px 4px; }
+
+.checkbox-line{ display:flex; align-items:center; gap:8px; font-size:.83rem; margin:8px 0; }
+.checkbox-line input{ accent-color:var(--primary); }
+
+/* ============ Aufgaben-Nummerierung ============ */
+.task-item{ display:flex; gap:12px; margin-bottom:16px; }
+.task-item .letter{
+  width:28px; height:28px; border-radius:8px; background:var(--primary-light); color:var(--primary); font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Poppins'; font-size:.85rem;
+}
+.task-item .body{ flex:1; line-height:1.65; padding-top:3px; }
+
+.data-table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:12px 0; }
+.data-table th{ text-align:left; font-weight:600; color:var(--text-muted); padding:6px 10px; border-bottom:1px solid var(--glass-border); font-size:.74rem; }
+.data-table td{ padding:6px 10px; border-bottom:1px solid var(--glass-border); }
+
+footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; line-height:1.6; }
+
+/* ============ Responsive ============ */
+@media (max-width:900px){
+  .sidebar{ transform:translateX(-100%); }
+  .sidebar.open{ transform:translateX(0); }
+  .main-content{ margin-left:0; padding:70px 6vw 100px; }
+  .hamburger{ display:flex; }
+  .hero h1{ font-size:1.9rem; }
+  .obj-fields{ grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+  <i data-lucide="menu"></i>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>Minkowski-Diagramm</h2>
+    <div class="subtitle">Spezielle Relativitätstheorie</div>
+    <nav>
+      <a href="#theorie"><i data-lucide="book-open"></i> Mathematischer Hintergrund</a>
+      <a href="#diagramm"><i data-lucide="chart-network"></i> Interaktives Diagramm</a>
+      <a href="#aufgabe"><i data-lucide="flag"></i> Aufgabe: Garagenparadoxon</a>
+    </nav>
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+      <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
+    </div>
+    <div class="school">
+      Gymnasium Thomaeum Kempen<br>
+      Am Gymnasium 4, 47906 Kempen<br>
+      Physik · Sekundarstufe II
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="hero reveal">
+      <span class="eyebrow">Interaktive Simulation</span>
+      <h1>Weltlinien, Bezugssysteme <span>und Gleichzeitigkeit</span></h1>
+      <p>Zeichne Weltlinien mit frei wählbarer Geschwindigkeit, Orts- und Zeitversatz, sende Lichtsignale aus und wechsle das Bezugssystem. Beobachte dabei, wie sich Achsen, Maßstäbe und die Gleichzeitigkeit von Ereignissen verändern.</p>
+      <span class="caveat">Gleichzeitigkeit ist kein Fakt, sondern eine Frage der Perspektive.</span>
+    </div>
+
+    <!-- 1. Theorie -->
+    <section id="theorie">
+      <div class="section-head">
+        <div class="num">1</div>
+        <div>
+          <h2>Mathematischer Hintergrund</h2>
+          <div class="sub-line">Die Lorentz-Transformation wird vorausgesetzt – hier geht es um ihre geometrische Deutung im Diagramm</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>In allen Diagrammen dieser App gilt die übliche Konvention der Minkowski-Diagramme: Aufgetragen wird <b>ct</b> (senkrecht) gegen <b>x</b> (waagerecht), sodass Lichtstrahlen unabhängig vom Bezugssystem stets unter 45° verlaufen. Als Ausgangssystem dient ein festes „Laborsystem" S₀ mit orthogonalen Achsen. Alle Weltlinien werden mit ihren Parametern (β, Ortsversatz x₀, Zeitversatz ct₀) relativ zu S₀ definiert und als Geraden in dieses feste Raster gezeichnet.</p>
+        <div class="merksatz">Wichtig: Die Weltlinien selbst ändern im Diagramm ihre Lage nicht, wenn du das Bezugssystem wechselst. Was sich ändert, ist nur die Orientierung und Skalierung der Achsen, mit denen du abliest.</div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Achsenneigung beim Bezugssystemwechsel</h3>
+        <p>Wählst du ein Objekt mit Geschwindigkeit β (bezogen auf S₀) als neues Bezugssystem, kippen beide Achsen um denselben Winkel θ – aber aufeinander zu:</p>
+        <div class="formula-box">
+          <span class="label">Kippwinkel der neuen Achsen</span>
+          tan θ = β &nbsp;&nbsp;→&nbsp;&nbsp; ct′-Achse: ct = x / β &nbsp;&nbsp;·&nbsp;&nbsp; x′-Achse: ct = β · x
+        </div>
+        <p>Beide Achsen nähern sich für β → 1 der 45°-Lichtlinie an. Der Winkel zwischen ct′- und x′-Achse wird dabei kleiner als 90° – die Achsen sind im Diagramm nicht mehr orthogonal, obwohl sie es im Ruhesystem des bewegten Beobachters selbstverständlich sind.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Die Maßstabsänderung – warum man nicht einfach ablesen darf</h3>
+        <p>Der zweite, oft übersehene Effekt: Der Maßstab <i>entlang</i> der geneigten Achsen ist gegenüber dem Maßstab von S₀ gestreckt. Ein Punkt, der im neuen System bei x′ = n bzw. ct′ = n liegt, hat im Laborsystem die Koordinaten:</p>
+        <div class="formula-box">
+          <span class="label">Lage der Einheits-Ticks im festen Raster</span>
+          x′-Achse, Tick n: (x, ct) = (γn, γβn) &nbsp;&nbsp;·&nbsp;&nbsp; ct′-Achse, Tick n: (x, ct) = (γβn, γn)
+        </div>
+        <p>Der Abstand dieser Ticks vom Ursprung, gemessen im festen S₀-Raster, wächst dabei um den Faktor γ·√(1+β²) = √((1+β²)/(1−β²)) – stärker als der reine Lorentzfaktor γ. Genau deshalb sind die Ticks auf den geneigten Achsen im Diagramm <i>nicht</i> im gleichen Pixelabstand wie auf den S₀-Achsen. Geometrisch lässt sich diese Stauchung/Streckung mit sogenannten <b>Eichhyperbeln</b> x² − (ct)² = const. konstruieren: Der Schnittpunkt einer Hyperbel mit einer geneigten Achse markiert dort den korrekten Wert 1, 2, 3, ... Die App berechnet diese Ticks direkt über die inverse Lorentz-Transformation und zeichnet sie automatisch korrekt.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Gleichzeitigkeitslinien</h3>
+        <p>Zwei Ereignisse sind in einem Bezugssystem genau dann gleichzeitig, wenn sie auf derselben Parallelen zur x′-Achse dieses Systems liegen. Die App zeichnet für jedes aktivierte Ereignis eine gestrichelte Linie mit der Steigung der aktuellen x′-Achse (ct = β·x + const.) und liest an deren Schnittpunkt mit der ct′-Achse den Zeitwert ab. Wechselst du das Bezugssystem, dreht sich diese Linie mit den Achsen – zwei zuvor gleichzeitige Ereignisse liegen danach in der Regel nicht mehr auf derselben Höhe.</p>
+        <div class="format-card">
+          <div class="format-card__header" onclick="toggleAccordion(this)">
+            <span>Zur Erinnerung: Die Lorentz-Transformation selbst</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="format-card__body"><div class="inner">
+            x′ = γ·(x − β·ct) &nbsp;&nbsp;·&nbsp;&nbsp; ct′ = γ·(ct − β·x) &nbsp;&nbsp;mit&nbsp;&nbsp; γ = 1/√(1−β²)<br><br>
+            Diese App wendet die Transformation für jedes Ereignis direkt auf die im Laborsystem gespeicherten Koordinaten an, um die angezeigten (x′, ct′)-Werte im jeweils gewählten Bezugssystem zu berechnen. Für den Wechsel des Bezugssystems selbst wird nur β des gewählten Objekts relativ zu S₀ benötigt – eine explizite Geschwindigkeitsaddition ist nicht nötig, da alle Weltlinien ohnehin in S₀-Koordinaten vorliegen.
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Diagramm -->
+    <section id="diagramm">
+      <div class="section-head">
+        <div class="num">2</div>
+        <div>
+          <h2>Interaktives Diagramm</h2>
+          <div class="sub-line">Weltlinien anlegen, Bezugssystem wählen, Licht aussenden</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="frame-indicator">
+          <i data-lucide="axis-3d"></i>
+          <span>Aktuelles Bezugssystem: <b id="frameLabel">Laborsystem S₀</b> &nbsp;·&nbsp; β = <b id="frameBeta">0</b> &nbsp;·&nbsp; γ = <b id="frameGamma">1</b></span>
+        </div>
+
+        <div class="diagram-layout">
+          <!-- Steuerungs-Panel -->
+          <div class="control-panel">
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="git-commit-horizontal"></i> Weltlinien</div>
+              <div id="objList"></div>
+              <button class="btn-secondary btn-block" onclick="addObject()"><i data-lucide="plus"></i> Objekt hinzufügen</button>
+              <button class="btn-secondary btn-block" onclick="loadGarageExample()"><i data-lucide="car"></i> Beispiel: Garagenparadoxon laden</button>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="zap"></i> Licht aussenden</div>
+              <select class="select-styled" id="emitObjSelect"></select>
+              <div class="field-inline">
+                <div>
+                  <label>ct-Wert auf der Weltlinie</label>
+                  <input type="number" id="emitCtValue" value="0" step="any">
+                </div>
+              </div>
+              <button class="btn-secondary btn-block" onclick="emitFromInput()"><i data-lucide="sparkles"></i> Licht in beide Richtungen aussenden</button>
+              <p class="diagram-hint">Alternativ direkt <b>auf eine Weltlinie im Diagramm klicken</b>, um dort Licht auszusenden.</p>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="list-checks"></i> Ereignisse</div>
+              <div id="eventList"></div>
+              <div id="eventEmpty" class="empty-hint">Noch keine Ereignisse. Sende Licht aus, um Emissions- und Empfangsereignisse zu erzeugen.</div>
+            </div>
+
+            <div class="panel-card">
+              <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung anzeigen</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> S₀-Gitter anzeigen</label>
+            </div>
+          </div>
+
+          <!-- Diagramm -->
+          <div>
+            <div class="svg-wrap">
+              <svg id="mkSvg" viewBox="0 0 760 600" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomBy(0.8)" title="Vergrößern"><i data-lucide="zoom-in"></i></button>
+                <button class="zoom-btn" onclick="zoomBy(1.25)" title="Verkleinern"><i data-lucide="zoom-out"></i></button>
+                <button class="zoom-btn" onclick="resetView()" title="Ansicht zurücksetzen"><i data-lucide="maximize"></i></button>
+              </div>
+            </div>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die rote Achse ist die x′-Achse, die blaue die ct′-Achse des gewählten Bezugssystems (nur sichtbar, wenn nicht S₀ gewählt ist). Beim Wechsel des Bezugssystems drehen sich Achsen, Ticks und Gleichzeitigkeitslinien innerhalb von 2 Sekunden in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Aufgabe -->
+    <section id="aufgabe">
+      <div class="section-head">
+        <div class="num">3</div>
+        <div>
+          <h2>Aufgabe: Das Garagenparadoxon</h2>
+          <div class="sub-line">Löse das Paradoxon mithilfe des Diagramms auf</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>Eine Garage hat in ihrem Ruhesystem eine Länge von L<sub>G</sub> = 12 m und besitzt an beiden Enden ein Tor (Eingangstor und Ausgangstor). Ein Sportwagen mit Eigenlänge L<sub>A</sub> = 20 m fährt mit β = 0,8 (γ = 5/3) auf die Garage zu.</p>
+        <p>Die Garage ist so konstruiert, dass sich in dem Moment, in dem das Auto vollständig im Inneren ist, beide Tore gleichzeitig schließen – und sich im nächsten Augenblick sofort wieder öffnen, sodass das Auto ungehindert weiterfahren kann.</p>
+
+        <table class="data-table">
+          <thead><tr><th>Größe</th><th>Wert</th></tr></thead>
+          <tbody>
+            <tr><td>Garagenlänge (Ruhesystem Garage)</td><td>L<sub>G</sub> = 12 m</td></tr>
+            <tr><td>Eigenlänge des Autos</td><td>L<sub>A</sub> = 20 m</td></tr>
+            <tr><td>Geschwindigkeit des Autos</td><td>β = 0,8 &nbsp;(γ = 5/3)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="task-item">
+          <div class="letter">a</div>
+          <div class="body">Prüfe rechnerisch: Passt das längenkontrahierte Auto aus Sicht des ruhenden Garagen-Beobachters tatsächlich genau in die Garage?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">b</div>
+          <div class="body">Prüfe rechnerisch, wie lang die Garage aus Sicht des Fahrers erscheint. Passt das Auto mit seiner Eigenlänge L<sub>A</sub> aus dieser Sicht in die kontrahierte Garage?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">c</div>
+          <div class="body">
+            Lege in der App vier Weltlinien an: das Eingangstor (ruhend bei x = 0), das Ausgangstor (ruhend bei x = 12 m), die Fahrzeugfront und das Fahrzeugheck (Ortsversatz −12 m zur Front, gleiches β). Nutze dazu gern den Button <b>„Beispiel: Garagenparadoxon laden"</b> und kontrolliere die geladenen Werte.<br><br>
+            Erzeuge dann durch Klick auf die Weltlinien zwei Ereignisse:
+            <ul>
+              <li>E₁: Fahrzeugfront erreicht das Ausgangstor</li>
+              <li>E₂: Fahrzeugheck passiert das Eingangstor</li>
+            </ul>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="letter">d</div>
+          <div class="body">Wähle als Bezugssystem zunächst die Garage (Laborsystem S₀). Aktiviere für E₁ und E₂ jeweils Punkt und Gleichzeitigkeitslinie. Was stellst du fest?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">e</div>
+          <div class="body">Wechsle das Bezugssystem zur Fahrzeugfront (oder zum Fahrzeugheck). Beobachte, wie sich die Gleichzeitigkeitslinien mitverändern. Welches Ereignis findet jetzt zuerst statt – das Schließen welchen Tors?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">f</div>
+          <div class="body">Löse das Paradoxon in eigenen Worten auf: Warum widersprechen sich die Aussagen aus a) und b) nicht? Was genau ist relativ, und was ist invariant – etwa die Frage, ob es zu einer Kollision kommt?</div>
+        </div>
+
+        <div class="merksatz">Tipp: Die Auflösung liegt nicht in einem Rechenfehler, sondern darin, dass „die Tore schließen sich gleichzeitig" eine Aussage ist, die an ein Bezugssystem gebunden ist. Aus Sicht des Autos schließen sich Ausgangstor und Eingangstor nicht gleichzeitig.</div>
+
+        <a href="#diagramm" class="btn-primary" style="margin-top:10px; text-decoration:none;"><i data-lucide="arrow-up"></i> Zurück zum Diagramm</a>
+      </div>
+    </section>
+
+    <footer>
+      Gymnasium Thomaeum Kempen · Physik Sekundarstufe II · Minkowski-Diagramm
+    </footer>
+
+  </main>
+</div>
+
+<script src="fonts/lucide.min.js"></script>
+<script>
+/* ---------- Icons ---------- */
+if (window.lucide) { lucide.createIcons(); }
+
+/* ---------- Dark Mode ---------- */
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+  const icon = document.getElementById('dark-icon');
+  const isDark = document.body.classList.contains('dark');
+  icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  if (window.lucide) lucide.createIcons();
+  render();
+}
+
+/* ---------- Scroll Progress ---------- */
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ---------- Reveal Animation ---------- */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ---------- Akkordeon ---------- */
+function toggleAccordion(header){
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.toggle('open');
+  body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : null;
+}
+
+/* ================================================================
+   PHYSIK & ZUSTAND: Minkowski-Diagramm
+   ================================================================ */
+
+const OBJ_COLORS = ['#1a6fb5','#dc2626','#16a34a','#f59e0b','#7c3aed','#0891b2','#db2777'];
+
+let objects = [];      // {id, name, color, beta, x0, ct0}
+let events = [];       // {id, kind:'emission'|'reception', objectId, xLab, ctLab, showPoint, showSim, label}
+let rays = [];         // {id, emissionId, dir, x0, ct0}
+let referenceId = 'S0';
+let nextId = 1;
+
+let displayBeta = 0;   // aktuell dargestelltes β_ref (animiert während eines Bezugssystemwechsels)
+let animToken = 0;     // invalidiert veraltete Animationsschleifen bei schnellem Umschalten
+const FRAME_ANIM_MS = 2000;
+
+function uid(){ return 'o' + (nextId++); }
+
+/* ---------- Geometrie-Hilfsfunktionen ---------- */
+function xOnWorldline(obj, ct){ return obj.x0 + obj.beta * (ct - obj.ct0); }
+
+function lorentz(x, ct, beta){
+  if (beta === 0) return { x, ct };
+  const gamma = 1/Math.sqrt(1-beta*beta);
+  return { x: gamma*(x-beta*ct), ct: gamma*(ct-beta*x) };
+}
+
+function targetBetaRef(){
+  if (referenceId === 'S0') return 0;
+  const o = objects.find(o=>o.id===referenceId);
+  return o ? o.beta : 0;
+}
+/* Während einer Animation liefert dies den aktuell angezeigten (interpolierten) Wert,
+   sonst identisch zu targetBetaRef(). Alle Zeichen- und Ableseroutinen nutzen diese Funktion. */
+function currentBetaRef(){
+  return displayBeta;
+}
+
+/* Schnittpunkt zweier Geraden, jeweils durch Punkt p + Richtungsvektor d gegeben:
+   p1 + t1*d1 = p2 + t2*d2   (einheitliche Konvention, auch für senkrechte/waagerechte Fälle) */
+function intersectLines(p1, d1, p2, d2){
+  const denom = d1.x*d2.ct - d1.ct*d2.x;
+  if (Math.abs(denom) < 1e-12) return null; // parallel, kein Schnittpunkt
+  const t1 = ((p2.x-p1.x)*d2.ct - (p2.ct-p1.ct)*d2.x) / denom;
+  return { x: p1.x + t1*d1.x, ct: p1.ct + t1*d1.ct };
+}
+
+/* ---------- Objekte verwalten ---------- */
+function addObject(preset){
+  const id = uid();
+  const color = OBJ_COLORS[objects.length % OBJ_COLORS.length];
+  const obj = Object.assign({
+    id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0
+  }, preset || {});
+  objects.push(obj);
+  if (objects.length === 1) referenceId = 'S0';
+  renderObjList();
+  renderEmitSelect();
+  render();
+}
+
+function removeObject(id){
+  objects = objects.filter(o=>o.id!==id);
+  events = events.filter(e=>e.objectId!==id);
+  rays = rays.filter(r=>{
+    const em = events.find(e=>e.id===r.emissionId);
+    return em !== undefined;
+  });
+  if (referenceId === id){ referenceId = 'S0'; displayBeta = 0; animToken++; }
+  renderObjList(); renderEmitSelect(); renderEventList(); render();
+}
+
+function updateObject(id, field, value){
+  const o = objects.find(o=>o.id===id);
+  if (!o) return;
+  if (field==='name') o.name = value;
+  else if (field==='color') o.color = value;
+  else o[field] = parseFloat(value);
+  if (o.beta >= 1) o.beta = 0.999;
+  if (o.beta <= -1) o.beta = -0.999;
+  if (id === referenceId){ animToken++; displayBeta = o.beta; } // direktes Nachführen, keine Animation beim Reglerziehen
+  renderObjList(); renderEmitSelect(); renderEventList(); render();
+}
+
+function setReference(id){
+  if (id === referenceId) return;
+  const startBeta = displayBeta;
+  referenceId = id;
+  const endBeta = targetBetaRef();
+  renderObjList(); renderEventList(); // Name/Radio sofort aktualisieren, Zahlen animieren mit
+  animateFrameChange(startBeta, endBeta);
+}
+
+/* Sanfter, 2 Sekunden langer Übergang des Bezugssystem-β, damit sich Achsenneigung,
+   Ticks und Gleichzeitigkeitslinien nachvollziehbar mitdrehen statt abrupt zu springen. */
+function animateFrameChange(startBeta, endBeta){
+  animToken++;
+  const myToken = animToken;
+  const t0 = performance.now();
+  function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function step(now){
+    if (myToken !== animToken) return; // durch neueren Wechsel überholt
+    const t = Math.min(1, (now-t0)/FRAME_ANIM_MS);
+    displayBeta = startBeta + (endBeta-startBeta)*easeInOutCubic(t);
+    render();
+    updateFrameIndicator();
+    updateEventCoordsOnly();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- UI: Objektliste ---------- */
+function renderObjList(){
+  const wrap = document.getElementById('objList');
+  wrap.innerHTML = '';
+  objects.forEach(o=>{
+    const row = document.createElement('div');
+    row.className = 'obj-row';
+    row.innerHTML = `
+      <div class="obj-row-head">
+        <input type="color" class="obj-swatch" value="${o.color}" onchange="updateObject('${o.id}','color',this.value)">
+        <input type="text" value="${o.name}" onchange="updateObject('${o.id}','name',this.value)">
+        <button class="obj-del" onclick="removeObject('${o.id}')" title="Entfernen"><i data-lucide="trash-2"></i></button>
+      </div>
+      <div class="obj-fields">
+        <div><label>x₀ [LE]</label><input type="number" step="any" value="${o.x0}" onchange="updateObject('${o.id}','x0',this.value)"></div>
+        <div><label>ct₀ [LE]</label><input type="number" step="any" value="${o.ct0}" onchange="updateObject('${o.id}','ct0',this.value)"></div>
+        <div><label>β = ${o.beta.toFixed(3)}</label><input type="number" step="0.01" min="-0.999" max="0.999" value="${o.beta}" onchange="updateObject('${o.id}','beta',this.value)"></div>
+      </div>
+      <input type="range" class="beta-slider" min="-0.99" max="0.99" step="0.01" value="${o.beta}" oninput="updateObject('${o.id}','beta',this.value)">
+      <div class="obj-ref-row">
+        <input type="radio" name="refChoice" id="ref_${o.id}" ${referenceId===o.id?'checked':''} onchange="setReference('${o.id}')">
+        <label for="ref_${o.id}">als Bezugssystem verwenden</label>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  // Laborsystem-Radio am Ende
+  const labRow = document.createElement('div');
+  labRow.className = 'obj-ref-row';
+  labRow.style.margin = '4px 2px 10px';
+  labRow.innerHTML = `<input type="radio" name="refChoice" id="ref_S0" ${referenceId==='S0'?'checked':''} onchange="setReference('S0')">
+    <label for="ref_S0">Laborsystem S₀ als Bezugssystem verwenden</label>`;
+  wrap.appendChild(labRow);
+  if (window.lucide) lucide.createIcons();
+  updateFrameIndicator();
+}
+
+function updateFrameIndicator(){
+  const beta = currentBetaRef();
+  const gamma = 1/Math.sqrt(1-beta*beta);
+  const name = referenceId==='S0' ? 'Laborsystem S₀' : (objects.find(o=>o.id===referenceId)||{}).name || 'S₀';
+  document.getElementById('frameLabel').textContent = name;
+  document.getElementById('frameBeta').textContent = beta.toFixed(3);
+  document.getElementById('frameGamma').textContent = gamma.toFixed(3);
+}
+
+/* ---------- UI: Emissions-Auswahl ---------- */
+function renderEmitSelect(){
+  const sel = document.getElementById('emitObjSelect');
+  sel.innerHTML = '';
+  if (objects.length===0){
+    sel.innerHTML = '<option>Zuerst ein Objekt anlegen</option>';
+    return;
+  }
+  objects.forEach(o=>{
+    const opt = document.createElement('option');
+    opt.value = o.id; opt.textContent = o.name;
+    sel.appendChild(opt);
+  });
+}
+
+function emitFromInput(){
+  const sel = document.getElementById('emitObjSelect');
+  const objId = sel.value;
+  const obj = objects.find(o=>o.id===objId);
+  if (!obj) return;
+  const ct = parseFloat(document.getElementById('emitCtValue').value) || 0;
+  emitLight(obj, ct);
+}
+
+/* ---------- Lichtemission & Ereignisse ---------- */
+function emitLight(obj, ctEmit){
+  const xEmit = xOnWorldline(obj, ctEmit);
+  const emissionEvent = {
+    id: uid(), kind:'emission', objectId: obj.id,
+    xLab: xEmit, ctLab: ctEmit, showPoint: true, showSim: false,
+    label: `Emission auf ${obj.name}`
+  };
+  events.push(emissionEvent);
+
+  [1,-1].forEach(dir=>{
+    const rayId = uid();
+    rays.push({ id: rayId, emissionId: emissionEvent.id, dir, x0: xEmit, ct0: ctEmit });
+    // Schnittpunkte mit allen anderen Weltlinien (nur vorwärts in der Zeit)
+    objects.forEach(other=>{
+      if (other.id === obj.id) return;
+      const pt = intersectLines({x:xEmit, ct:ctEmit}, {x:dir, ct:1}, {x:other.x0, ct:other.ct0}, {x:other.beta, ct:1});
+      if (!pt) return;
+      if (pt.ct < ctEmit - 1e-9) return; // nur Zukunft
+      events.push({
+        id: uid(), kind:'reception', objectId: other.id,
+        xLab: pt.x, ctLab: pt.ct, showPoint: true, showSim: false,
+        label: `Empfang auf ${other.name}`
+      });
+    });
+  });
+
+  renderEventList();
+  render();
+}
+
+function removeEvent(id){
+  events = events.filter(e=>e.id!==id);
+  rays = rays.filter(r=>r.emissionId!==id);
+  renderEventList(); render();
+}
+
+function toggleEventField(id, field, value){
+  const e = events.find(e=>e.id===id);
+  if (!e) return;
+  e[field] = value;
+  render();
+}
+
+/* Aktualisiert nur die Zahlenwerte in der Ereignisliste, ohne die Zeilen neu aufzubauen –
+   wird während der 2s-Animation eines Bezugssystemwechsels bei jedem Frame aufgerufen. */
+function updateEventCoordsOnly(){
+  const beta = currentBetaRef();
+  events.forEach(e=>{
+    const el = document.getElementById('coord_' + e.id);
+    if (!el) return;
+    const f = lorentz(e.xLab, e.ctLab, beta);
+    el.innerHTML = `x′ = ${f.x.toFixed(2)} LE &nbsp;·&nbsp; ct′ = ${f.ct.toFixed(2)} LE`;
+  });
+}
+
+/* ---------- UI: Ereignisliste ---------- */
+function renderEventList(){
+  const wrap = document.getElementById('eventList');
+  const empty = document.getElementById('eventEmpty');
+  wrap.innerHTML = '';
+  const beta = currentBetaRef();
+  if (events.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  events.forEach((e,i)=>{
+    const f = lorentz(e.xLab, e.ctLab, beta);
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    row.innerHTML = `
+      <div class="event-row-head">
+        <b>E${i+1} · ${e.label}</b>
+        <button class="event-del" onclick="removeEvent('${e.id}')" title="Entfernen"><i data-lucide="x"></i></button>
+      </div>
+      <div class="event-coords" id="coord_${e.id}">x′ = ${f.x.toFixed(2)} LE &nbsp;·&nbsp; ct′ = ${f.ct.toFixed(2)} LE</div>
+      <div class="event-toggles">
+        <label><input type="checkbox" ${e.showPoint?'checked':''} onchange="toggleEventField('${e.id}','showPoint',this.checked)"> Punkt</label>
+        <label><input type="checkbox" ${e.showSim?'checked':''} onchange="toggleEventField('${e.id}','showSim',this.checked)"> Gleichzeitigkeitslinie</label>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ---------- Beispiel: Garagenparadoxon ---------- */
+function loadGarageExample(){
+  objects = []; events = []; rays = []; nextId = 1; referenceId = 'S0';
+  displayBeta = 0; animToken++;
+  addObject({ name:'Eingangstor', color:'#334155', beta:0, x0:0, ct0:0 });
+  addObject({ name:'Ausgangstor', color:'#64748b', beta:0, x0:12, ct0:0 });
+  addObject({ name:'Fahrzeugfront', color:'#dc2626', beta:0.8, x0:0, ct0:0 });
+  addObject({ name:'Fahrzeugheck', color:'#f59e0b', beta:0.8, x0:-12, ct0:0 });
+  document.getElementById('diagramm').scrollIntoView({behavior:'smooth'});
+}
+
+/* ================================================================
+   RENDERING (SVG)
+   ================================================================ */
+const svg = document.getElementById('mkSvg');
+const svgNS = 'http://www.w3.org/2000/svg';
+const W = 760, H = 600;
+const margin = { left:54, right:24, top:24, bottom:48 };
+
+let view = { xMin:-16, xMax:36, ctMin:-6, ctMax:46 };
+const DEFAULT_VIEW = { xMin:-16, xMax:36, ctMin:-6, ctMax:46 };
+
+function toPx(x, ct){
+  const px = margin.left + (x - view.xMin)/(view.xMax-view.xMin) * (W-margin.left-margin.right);
+  const py = H - margin.bottom - (ct - view.ctMin)/(view.ctMax-view.ctMin) * (H-margin.top-margin.bottom);
+  return { px, py };
+}
+function toPhys(px, py){
+  const x = view.xMin + (px-margin.left)/(W-margin.left-margin.right) * (view.xMax-view.xMin);
+  const ct = view.ctMin + (H-margin.bottom-py)/(H-margin.top-margin.bottom) * (view.ctMax-view.ctMin);
+  return { x, ct };
+}
+
+function zoomBy(factor){
+  const cx = (view.xMin+view.xMax)/2, cc = (view.ctMin+view.ctMax)/2;
+  const wx = (view.xMax-view.xMin)*factor/2, wc = (view.ctMax-view.ctMin)*factor/2;
+  view = { xMin:cx-wx, xMax:cx+wx, ctMin:cc-wc, ctMax:cc+wc };
+  render();
+}
+function resetView(){ view = Object.assign({}, DEFAULT_VIEW); render(); }
+
+/* Segment einer Geraden p0 + t*d (t in [tMin,tMax]) mit dem Sichtfenster schneiden (Liang-Barsky) */
+function clipToView(p0, d, tMin, tMax){
+  let t0 = (tMin===undefined ? -1e6 : tMin);
+  let t1 = (tMax===undefined ?  1e6 : tMax);
+  const checks = [
+    [-d.x, p0.x - view.xMin], [d.x, view.xMax - p0.x],
+    [-d.ct, p0.ct - view.ctMin], [d.ct, view.ctMax - p0.ct]
+  ];
+  for (const [p,q] of checks){
+    if (Math.abs(p) < 1e-12){ if (q < 0) return null; continue; }
+    const r = q/p;
+    if (p < 0){ if (r > t1) return null; if (r > t0) t0 = r; }
+    else { if (r < t0) return null; if (r < t1) t1 = r; }
+  }
+  if (t0 > t1) return null;
+  return {
+    a: { x: p0.x + t0*d.x, ct: p0.ct + t0*d.ct },
+    b: { x: p0.x + t1*d.x, ct: p0.ct + t1*d.ct }
+  };
+}
+
+function svgLine(a, b, opts){
+  const pa = toPx(a.x, a.ct), pb = toPx(b.x, b.ct);
+  const line = document.createElementNS(svgNS,'line');
+  line.setAttribute('x1', pa.px); line.setAttribute('y1', pa.py);
+  line.setAttribute('x2', pb.px); line.setAttribute('y2', pb.py);
+  Object.entries(opts||{}).forEach(([k,v])=>line.setAttribute(k,v));
+  svg.appendChild(line);
+  return line;
+}
+function svgText(x, ct, txt, opts){
+  const p = toPx(x, ct);
+  const t = document.createElementNS(svgNS,'text');
+  t.setAttribute('x', p.px); t.setAttribute('y', p.py);
+  t.setAttribute('font-family','Inter'); t.setAttribute('font-size','11');
+  Object.entries(opts||{}).forEach(([k,v])=>t.setAttribute(k,v));
+  t.textContent = txt;
+  svg.appendChild(t);
+  return t;
+}
+function svgCircle(x, ct, r, opts){
+  const p = toPx(x, ct);
+  const c = document.createElementNS(svgNS,'circle');
+  c.setAttribute('cx', p.px); c.setAttribute('cy', p.py); c.setAttribute('r', r);
+  Object.entries(opts||{}).forEach(([k,v])=>c.setAttribute(k,v));
+  svg.appendChild(c);
+  return c;
+}
+
+function cssVar(name){
+  return getComputedStyle(document.body).getPropertyValue(name).trim();
+}
+
+function render(){
+  svg.innerHTML = '';
+  const gridColor = cssVar('--grid-line');
+  const labColor = cssVar('--lab-axis');
+  const textMuted = cssVar('--text-muted');
+
+  // Hintergrund-Gitter S0
+  if (document.getElementById('toggleGrid').checked){
+    const step = 5;
+    for (let x = Math.ceil(view.xMin/step)*step; x <= view.xMax; x += step){
+      svgLine({x, ct:view.ctMin},{x, ct:view.ctMax}, {stroke:gridColor,'stroke-width':1});
+    }
+    for (let ct = Math.ceil(view.ctMin/step)*step; ct <= view.ctMax; ct += step){
+      svgLine({x:view.xMin, ct},{x:view.xMax, ct}, {stroke:gridColor,'stroke-width':1});
+    }
+  }
+
+  // Lichtkegel am Ursprung
+  if (document.getElementById('toggleLightcone').checked){
+    [1,-1].forEach(dir=>{
+      const seg = clipToView({x:0,ct:0}, {x:dir,ct:1}, -1e6, 1e6);
+      if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.3,'stroke-dasharray':'2,3',opacity:0.6});
+    });
+  }
+
+  // S0-Achsen
+  {
+    const segX = clipToView({x:0,ct:0},{x:1,ct:0});
+    if (segX) svgLine(segX.a, segX.b, {stroke:labColor,'stroke-width':1.6});
+    const segCt = clipToView({x:0,ct:0},{x:0,ct:1});
+    if (segCt) svgLine(segCt.a, segCt.b, {stroke:labColor,'stroke-width':1.6});
+    svgText(view.xMax-1.5, 1.2, 'x', {fill:labColor,'font-weight':'700','text-anchor':'end'});
+    svgText(0.6, view.ctMax-1.5, 'ct', {fill:labColor,'font-weight':'700'});
+  }
+
+  const betaRef = currentBetaRef();
+  const gammaRef = 1/Math.sqrt(1-betaRef*betaRef);
+
+  // Geneigte Achsen des gewählten Bezugssystems
+  if (referenceId !== 'S0'){
+    const frameAxisColor = cssVar('--frame-axis');
+    const ctAxisColor = cssVar('--primary');
+
+    // x'-Achse: ct = beta * x  -> Richtung (1, beta)
+    const segXp = clipToView({x:0,ct:0}, {x:1, ct:betaRef});
+    if (segXp) svgLine(segXp.a, segXp.b, {stroke:frameAxisColor,'stroke-width':2});
+    // ct'-Achse: Richtung (beta, 1)
+    const segCtp = clipToView({x:0,ct:0}, {x:betaRef, ct:1});
+    if (segCtp) svgLine(segCtp.a, segCtp.b, {stroke:ctAxisColor,'stroke-width':2});
+
+    svgText(0,0,"x′", {fill:frameAxisColor,'font-weight':'700', dx:'6', dy:'-6'});
+    svgText(0,0,"ct′", {fill:ctAxisColor,'font-weight':'700', dx:'-16', dy:'12'});
+
+    // Ticks auf den geneigten Achsen (kalibriert über inverse Lorentz-Transformation), Abstand wie Gitter
+    const tickStep = 5;
+    const nRange = Math.ceil(Math.max(view.xMax-view.xMin, view.ctMax-view.ctMin) / tickStep) + 1;
+    for (let k = -nRange; k <= nRange; k++){
+      const n = k*tickStep;
+      if (n===0) continue;
+      // x'-Achse Tick n: (x,ct) = (gamma*n, gamma*beta*n)
+      const px1 = { x: gammaRef*n, ct: gammaRef*betaRef*n };
+      if (px1.x>=view.xMin && px1.x<=view.xMax && px1.ct>=view.ctMin && px1.ct<=view.ctMax){
+        drawTick(px1, {x:1,ct:betaRef}, frameAxisColor, n);
+      }
+      // ct'-Achse Tick n: (x,ct) = (gamma*beta*n, gamma*n)
+      const pc1 = { x: gammaRef*betaRef*n, ct: gammaRef*n };
+      if (pc1.x>=view.xMin && pc1.x<=view.xMax && pc1.ct>=view.ctMin && pc1.ct<=view.ctMax){
+        drawTick(pc1, {x:betaRef,ct:1}, ctAxisColor, n);
+      }
+    }
+  }
+
+  // Weltlinien
+  objects.forEach(obj=>{
+    const seg = clipToView({x:obj.x0, ct:obj.ct0}, {x:obj.beta, ct:1});
+    if (seg){
+      svgLine(seg.a, seg.b, {stroke:obj.color,'stroke-width':2.4});
+      svgText(seg.b.x, seg.b.ct, obj.name, {fill:obj.color,'font-weight':'600'});
+    }
+  });
+
+  // Lichtstrahlen (nur vorwärts)
+  rays.forEach(r=>{
+    const seg = clipToView({x:r.x0, ct:r.ct0}, {x:r.dir, ct:1}, 0, 1e6);
+    if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.6,'stroke-dasharray':'5,4'});
+  });
+
+  // Ereignisse: Punkte und Gleichzeitigkeitslinien
+  events.forEach(e=>{
+    if (e.showSim){
+      // Parallel zur aktuellen x'-Achse durch das Ereignis, bis zur ct'-Achse verlängert
+      const seg = clipToView({x:e.xLab, ct:e.ctLab}, {x:1, ct:betaRef});
+      if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
+      // Schnittpunkt mit ct'-Achse markieren (ct'-Achse: Punkt (0,0), Richtung (betaRef,1))
+      const hit = intersectLines({x:e.xLab, ct:e.ctLab}, {x:1, ct:betaRef}, {x:0, ct:0}, {x:betaRef, ct:1});
+      if (hit && hit.x>=view.xMin && hit.x<=view.xMax && hit.ct>=view.ctMin && hit.ct<=view.ctMax){
+        svgCircle(hit.x, hit.ct, 3, {fill:'#94a3b8'});
+      }
+    }
+    if (e.showPoint){
+      svgCircle(e.xLab, e.ctLab, 4.5, {fill:'#fff', stroke: e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary'), 'stroke-width':2.2});
+      const f = lorentz(e.xLab, e.ctLab, betaRef);
+      svgText(e.xLab, e.ctLab, `(${f.x.toFixed(1)}, ${f.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
+    }
+  });
+}
+
+function drawTick(point, dir, color, label){
+  // kleiner Strich senkrecht zur Achsenrichtung
+  const len = 0.5;
+  const norm = { x: -dir.ct, ct: dir.x };
+  const normLen = Math.sqrt(norm.x*norm.x + norm.ct*norm.ct) || 1;
+  const nx = norm.x/normLen*len, nc = norm.ct/normLen*len;
+  const a = { x: point.x-nx, ct: point.ct-nc };
+  const b = { x: point.x+nx, ct: point.ct+nc };
+  svgLine(a,b,{stroke:color,'stroke-width':1.5});
+  svgText(point.x, point.ct, String(label), {fill:color,'font-size':'9', dx:(nx>=0?8:-14), dy:(nc>=0?-4:12)});
+}
+
+/* ---------- Maus-Interaktion: Klick auf Weltlinie = Licht aussenden, Ziehen = Verschieben ---------- */
+let dragging = false, dragStart = null, viewStart = null, dragMoved = false;
+
+svg.addEventListener('pointerdown', (ev)=>{
+  dragging = true; dragMoved = false;
+  const rect = svg.getBoundingClientRect();
+  dragStart = {
+    px: (ev.clientX-rect.left)*(W/rect.width),
+    py: (ev.clientY-rect.top)*(H/rect.height)
+  };
+  viewStart = Object.assign({}, view);
+});
+svg.addEventListener('pointermove', (ev)=>{
+  if (!dragging) return;
+  const rect = svg.getBoundingClientRect();
+  const px = (ev.clientX-rect.left)*(W/rect.width);
+  const py = (ev.clientY-rect.top)*(H/rect.height);
+  const dpx = px - dragStart.px, dpy = py - dragStart.py;
+  if (Math.abs(dpx)>2 || Math.abs(dpy)>2) dragMoved = true;
+  if (!dragMoved) return;
+  const scaleX = (viewStart.xMax-viewStart.xMin)/(W-margin.left-margin.right);
+  const scaleCt = (viewStart.ctMax-viewStart.ctMin)/(H-margin.top-margin.bottom);
+  view = {
+    xMin: viewStart.xMin - dpx*scaleX, xMax: viewStart.xMax - dpx*scaleX,
+    ctMin: viewStart.ctMin + dpy*scaleCt, ctMax: viewStart.ctMax + dpy*scaleCt
+  };
+  render();
+});
+window.addEventListener('pointerup', (ev)=>{
+  if (dragging && !dragMoved){
+    handleClick(ev);
+  }
+  dragging = false;
+});
+
+function handleClick(ev){
+  const rect = svg.getBoundingClientRect();
+  const px = (ev.clientX-rect.left)*(W/rect.width);
+  const py = (ev.clientY-rect.top)*(H/rect.height);
+  const clickPhys = toPhys(px, py);
+
+  // Nächste Weltlinie in Pixel-Distanz finden (Gerade durch (x0,ct0) mit Richtung (beta,1))
+  let best = null, bestDist = 14; // Toleranz in px
+  objects.forEach(obj=>{
+    const p1 = toPx(obj.x0, obj.ct0);
+    const p2 = toPx(obj.x0 + obj.beta*10, obj.ct0 + 10);
+    const distPx = pointToSegmentDist(px, py, p1.px, p1.py, p2.px, p2.py);
+    if (distPx < bestDist){ bestDist = distPx; best = obj; }
+  });
+  if (best){
+    // Emission am ct-Wert des Klickpunkts (Punkt wird über die Weltlinie exakt berechnet)
+    emitLight(best, clickPhys.ct);
+  }
+}
+
+// Punkt-Gerade-Distanz mit unendlicher (nicht begrenzter) Linie durch p1,p2
+function pointToSegmentDist(px,py,x1,y1,x2,y2){
+  const dx = x2-x1, dy = y2-y1;
+  const len2 = dx*dx+dy*dy || 1e-9;
+  const t = ((px-x1)*dx + (py-y1)*dy)/len2;
+  const cx = x1 + t*dx, cy = y1 + t*dy;
+  return Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy));
+}
+
+/* ---------- Initialisierung ---------- */
+renderObjList();
+renderEmitSelect();
+renderEventList();
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>
