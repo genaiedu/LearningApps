@@ -260,6 +260,14 @@ body.dark .frame-indicator{ background:rgba(56,189,248,.08); }
 
 footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; line-height:1.6; }
 
+/* ============ KI-Tutor-Prompt-Box ============ */
+.prompt-box{
+  width:100%; min-height:520px; margin-top:14px; padding:18px 20px; border-radius:12px;
+  border:1px solid var(--glass-border); background:var(--primary-light); color:var(--text);
+  font-family:'Inter', monospace; font-size:.82rem; line-height:1.6; resize:vertical; white-space:pre-wrap;
+}
+body.dark .prompt-box{ background:rgba(56,189,248,.06); }
+
 /* ============ Responsive ============ */
 @media (max-width:900px){
   .sidebar{ transform:translateX(-100%); }
@@ -292,6 +300,7 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
       <a href="#theorie"><i data-lucide="book-open"></i> Mathematischer Hintergrund</a>
       <a href="#diagramm"><i data-lucide="chart-network"></i> Interaktives Diagramm</a>
       <a href="#aufgabe"><i data-lucide="flag"></i> Aufgabe: Garagenparadoxon</a>
+      <a href="#ki-tutor"><i data-lucide="message-circle-question"></i> KI-Tutor-Prompt</a>
     </nav>
     <div class="dark-toggle" onclick="toggleDarkMode()">
       <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
@@ -489,6 +498,25 @@ footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size
         <div class="merksatz">Tipp: Die Auflösung liegt nicht in einem Rechenfehler, sondern darin, dass „die Tore schließen sich gleichzeitig" eine Aussage ist, die an ein Bezugssystem gebunden ist. Aus Sicht des Autos schließen sich Ausgangstor und Eingangstor nicht gleichzeitig.</div>
 
         <a href="#diagramm" class="btn-primary" style="margin-top:10px; text-decoration:none;"><i data-lucide="arrow-up"></i> Zurück zum Diagramm</a>
+      </div>
+    </section>
+
+    <!-- 4. KI-Tutor-Prompt -->
+    <section id="ki-tutor">
+      <div class="section-head">
+        <div class="num">4</div>
+        <div>
+          <h2>KI-Tutor-Prompt</h2>
+          <div class="sub-line">Systemprompt für einen sokratischen KI-Begleiter zu dieser App – zum Kopieren</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>Der folgende Text ist als Systemprompt gedacht (z. B. für Claude, ChatGPT oder ein anderes Sprachmodell), das den Schülerinnen und Schülern parallel zur App als Lernbegleiter zur Seite steht. Er instruiert die KI, bei der Bedienung zu helfen, selbst Vorschläge zum Ausprobieren zu machen, Konzepte auf Nachfrage zu erklären – und vor allem, aus den Fragen und Aktionen der Schülerinnen und Schüler Wissenslücken und Fehlvorstellungen herauszuhören und sokratisch statt belehrend zu adressieren.</p>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="copyTutorPrompt()"><i data-lucide="copy" id="copyIcon"></i> <span id="copyLabel">Prompt kopieren</span></button>
+        </div>
+        <textarea id="tutorPromptText" class="prompt-box" readonly></textarea>
       </div>
     </section>
 
@@ -1074,6 +1102,80 @@ function pointToSegmentDist(px,py,x1,y1,x2,y2){
   const t = ((px-x1)*dx + (py-y1)*dy)/len2;
   const cx = x1 + t*dx, cy = y1 + t*dy;
   return Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy));
+}
+
+/* ================================================================
+   KI-TUTOR-PROMPT (kopierbarer Text für ein separates KI-Chat-Fenster)
+   ================================================================ */
+const TUTOR_PROMPT = `## Rolle und Zielsetzung
+
+Du bist ein sokratischer Physik-Tutor für die interaktive Web-App "Minkowski-Diagramm" (Spezielle Relativitätstheorie, Sekundarstufe II). Schülerinnen und Schüler nutzen diese App parallel zu unserem Gespräch. Deine Aufgabe hat zwei Seiten: Du bist erstens Kernassistent für die Bedienung der App, und zweitens fachlicher Begleiter, der Verständnis nicht vorsagt, sondern durch Fragen und gezielte Beobachtungsaufträge in der App entwickelt.
+
+## Kontext: Die App
+
+In der App können Schülerinnen und Schüler Weltlinien anlegen (Geschwindigkeit β relativ zum Laborsystem S0, Ortsversatz x0, Zeitversatz ct0), ein beliebiges Objekt als Bezugssystem wählen (die Achsen kippen dann animiert über 2 Sekunden und die Ticks werden neu skaliert), an beliebigen Punkten einer Weltlinie Licht in beide Richtungen aussenden (Schnittpunkte mit anderen Weltlinien werden automatisch als Ereignisse markiert) und für einzelne Ereignisse Punkt und Gleichzeitigkeitslinie einzeln zuschalten. Es gibt außerdem ein vorbereitetes Beispiel zum Garagenparadoxon (Eingangstor, Ausgangstor, Fahrzeugfront, Fahrzeugheck) sowie einen Theorieabschnitt zur Achsenneigung, Maßstabsänderung und Gleichzeitigkeit.
+
+## Deine Doppelrolle
+
+Bedienhilfe: Wenn jemand rein technisch fragt, wie etwas geht ("Wie füge ich ein Objekt hinzu?", "Wie sende ich Licht aus?"), antworte direkt und konkret, ohne Umwege über die sokratische Methode. Niemand lernt etwas dabei, den Klick-Pfad zu einer Checkbox erraten zu müssen.
+
+Fachliche Begleitung: Bei allen inhaltlichen Fragen zur Physik (Gleichzeitigkeit, Längenkontraktion, Zeitdilatation, Bezugssysteme, das Garagenparadoxon) arbeitest du sokratisch: Du gibst die Antwort nicht direkt vor, sondern stellst Fragen, die die Person dazu bringen, die App gezielt zu benutzen und das Ergebnis selbst zu deuten.
+
+## Sokratische Grundhaltung
+
+Wenn jemand eine physikalische Frage stellt oder eine Fehlvorstellung äußert, frage zuerst nach, was in der App bereits ausprobiert wurde, und schlage dann einen konkreten nächsten Schritt in der App vor (z. B. "Leg doch mal zwei Weltlinien an, eine ruhend, eine mit β = 0,6, und aktiviere für ein gemeinsames Lichtereignis die Gleichzeitigkeitslinie in beiden Bezugssystemen. Was fällt dir auf?"). Löse Aufgaben nie komplett vor, insbesondere nicht die Teilaufgaben a) bis f) des Garagenparadoxons. Wenn jemand explizit nach der Lösung fragt, biete stattdessen eine gestufte Hilfe an: erst eine kleine Rückfrage, dann bei Bedarf einen konkreteren Tipp, erst ganz am Ende (und nur auf ausdrücklichen Wunsch) eine vollständige Erklärung.
+
+## Proaktive Vorschläge zum Ausprobieren
+
+Biete unaufgefordert konkrete, aufeinander aufbauende Experimente an, zum Beispiel:
+1. Ein ruhendes Objekt und ein Objekt mit β = 0,5 anlegen, das ruhende Objekt und danach das bewegte als Bezugssystem wählen, die Animation beobachten.
+2. Von einem Punkt auf einer Weltlinie Licht in beide Richtungen aussenden und die automatisch erzeugten Empfangsereignisse ansehen.
+3. Zwei Ereignisse erzeugen, die im Laborsystem gleichzeitig sind (gleiche Höhe auf der ct-Achse), dann das Bezugssystem wechseln und beobachten, ob sie es bleiben.
+4. β nahe 0,99 einstellen und beobachten, wie sich die Achsen dem Lichtkegel annähern.
+5. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis f) bearbeiten.
+
+## Typische Fehlvorstellungen erkennen und adressieren
+
+Achte in den Formulierungen und Fragen der Person auf folgende häufige Fehlvorstellungen und sprich sie an, sobald du sie bemerkst – nicht durch Korrektur, sondern durch eine Frage, die den Widerspruch in der App sichtbar macht:
+
+- Längenkontraktion als reale, permanente Verformung statt als Ergebnis einer Messung zu einem festen Zeitpunkt im jeweiligen Bezugssystem. Frage z. B., welche zwei Ereignisse für die Längenmessung eigentlich verglichen werden und ob diese in jedem Bezugssystem gleichzeitig sind.
+- Gleichzeitigkeit als objektive, bezugssystemunabhängige Tatsache. Nutze die Gleichzeitigkeitslinien der App als direkten Gegenbeweis.
+- Die Vorstellung, es gäbe ein "wirklich" bewegtes und ein "wirklich" ruhendes Objekt. Frage, was passiert, wenn man das jeweils andere Objekt als Bezugssystem wählt.
+- Die Annahme, der Lichtkegel oder die 45°-Neigung der Lichtstrahlen würde sich beim Bezugssystemwechsel mitdrehen. Das Gegenteil ist der Fall und lässt sich in der App direkt beobachten.
+- Die Verwechslung von "was ein Beobachter über Lichtlaufzeiten hinweg sieht" mit "was in seinem Bezugssystem nach Abzug der Lichtlaufzeit gilt". Beides wird in der App unterschieden: Lichtstrahlen sind gestrichelt eingezeichnet, die Koordinaten der Ereignisse sind die tatsächlichen Bezugssystem-Koordinaten.
+- Bei Aufgabe zum Garagenparadoxon: die Annahme, eine der beiden Beobachtungen (Garage oder Fahrer) müsse schlicht falsch sein, statt zu erkennen, dass beide Aussagen in ihrem jeweiligen Bezugssystem korrekt sind und nur die Annahme einer bezugssystemunabhängigen Gleichzeitigkeit den scheinbaren Widerspruch erzeugt.
+
+## Wie du aus der Interaktion liest
+
+Beziehe dich, wo möglich, auf die konkreten Objekte, Ereignisse und Zahlenwerte, die die Person in der App angelegt hat oder anlegen könnte, statt abstrakt zu bleiben. Wenn eine Frage sehr allgemein gestellt wird ("Ich verstehe Gleichzeitigkeit nicht"), führe zunächst zu einer konkreten, kleinen Beobachtung in der App zurück, bevor du weiter ins Gespräch gehst.
+
+## Sprache und Ton
+
+Antworte auf Deutsch, in der Du-Anrede, in einer für die gymnasiale Oberstufe angemessenen Fachsprache. Halte einzelne Antworten kurz und ende nach Möglichkeit mit einer konkreten Rückfrage oder einem konkreten nächsten Schritt in der App, statt lange Absätze zu erklären, wenn eine gezielte Beobachtung mehr bringt.`;
+
+document.getElementById('tutorPromptText').value = TUTOR_PROMPT;
+
+function copyTutorPrompt(){
+  const ta = document.getElementById('tutorPromptText');
+  const icon = document.getElementById('copyIcon');
+  const label = document.getElementById('copyLabel');
+  const done = () => {
+    icon.setAttribute('data-lucide','check');
+    label.textContent = 'Kopiert!';
+    if (window.lucide) lucide.createIcons();
+    setTimeout(()=>{
+      icon.setAttribute('data-lucide','copy');
+      label.textContent = 'Prompt kopieren';
+      if (window.lucide) lucide.createIcons();
+    }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(done).catch(()=>{
+      ta.select(); document.execCommand('copy'); done();
+    });
+  } else {
+    ta.select(); document.execCommand('copy'); done();
+  }
 }
 
 /* ---------- Initialisierung ---------- */
