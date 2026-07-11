@@ -321,6 +321,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
       <a href="#theorie"><i data-lucide="book-open"></i> Mathematischer Hintergrund</a>
       <a href="#diagramm"><i data-lucide="chart-network"></i> Interaktives Diagramm</a>
       <a href="#aufgabe"><i data-lucide="flag"></i> Aufgabe: Garagenparadoxon</a>
+      <a href="#szenarien"><i data-lucide="layers"></i> Weitere Szenarien</a>
       <a href="#ki-tutor"><i data-lucide="message-circle-question"></i> KI-Tutor-Prompt</a>
     </nav>
     <div class="dark-toggle" onclick="toggleDarkMode()">
@@ -434,7 +435,15 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <div class="panel-title"><i data-lucide="git-commit-horizontal"></i> Weltlinien</div>
               <div id="objList"></div>
               <button class="btn-secondary btn-block" onclick="addObject()"><i data-lucide="plus"></i> Objekt hinzufügen</button>
-              <button class="btn-secondary btn-block" onclick="loadGarageExample()"><i data-lucide="car"></i> Beispiel: Garagenparadoxon laden</button>
+              <select class="select-styled" id="presetSelect" style="margin-top:8px;">
+                <option value="garage">Beispiel: Garagenparadoxon</option>
+                <option value="einsteinzug">Beispiel: Einstein-Zug (Blitzschlag)</option>
+                <option value="bell">Beispiel: Bell'sches Raumschiffparadoxon</option>
+                <option value="myon">Beispiel: Myonenzerfall</option>
+                <option value="symmetrisch">Beispiel: Symmetrische Zeitdilatation</option>
+                <option value="zwilling">Beispiel: Zwillingsparadoxon</option>
+              </select>
+              <button class="btn-secondary btn-block" onclick="loadPreset(document.getElementById('presetSelect').value)"><i data-lucide="folder-open"></i> Gewähltes Beispiel laden</button>
             </div>
 
             <div class="panel-card">
@@ -516,7 +525,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
         <div class="task-item">
           <div class="letter">c</div>
           <div class="body">
-            Lege in der App vier Weltlinien an: das Eingangstor (ruhend bei x = 0), das Ausgangstor (ruhend bei x = 12 m), die Fahrzeugfront und das Fahrzeugheck (Ortsversatz −12 m zur Front, gleiches β). Nutze dazu gern den Button <b>„Beispiel: Garagenparadoxon laden"</b> und kontrolliere die geladenen Werte.<br><br>
+            Lege in der App vier Weltlinien an: das Eingangstor (ruhend bei x = 0), das Ausgangstor (ruhend bei x = 12 m), die Fahrzeugfront und das Fahrzeugheck (Ortsversatz −12 m zur Front, gleiches β). Wähle dazu gern im Dropdown „Garagenparadoxon" und klicke <b>„Gewähltes Beispiel laden"</b>, und kontrolliere die geladenen Werte.<br><br>
             Erzeuge dann durch Klick auf die Weltlinien zwei Ereignisse:
             <ul>
               <li>E₁: Fahrzeugfront erreicht das Ausgangstor</li>
@@ -547,10 +556,51 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
       </div>
     </section>
 
-    <!-- 4. KI-Tutor-Prompt -->
-    <section id="ki-tutor">
+    <!-- 4. Weitere Szenarien -->
+    <section id="szenarien">
       <div class="section-head">
         <div class="num">4</div>
+        <div>
+          <h2>Weitere Beispielszenarien</h2>
+          <div class="sub-line">Über das Dropdown im Diagramm-Abschnitt ladbar</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Einstein-Zug (Blitzschlag-Paradoxon)</h3>
+        <p>Das historische Ursprungs-Gedankenexperiment zur Relativität der Gleichzeitigkeit. Zwei Blitze schlagen an Spitze und Ende eines mit β = 0,6 fahrenden Zuges ein – im Bahndamm-System bei x = ±5 gleichzeitig bei ct = 0. Geladen werden vier Weltlinien: die beiden Einschlagorte (ruhend, an denen du selbst Licht aussenden kannst) sowie je ein Beobachter in der Zugmitte und in der Bahndamm-Mitte.</p>
+        <p><b>Aufgabe:</b> Sende über das Feld „ct-Wert auf der Weltlinie" an beiden Blitz-Objekten bei ct = 0 Licht in beide Richtungen aus. Vergleiche, wann Bahndamm-Mitte die beiden Signale empfängt (Gleichzeitigkeitslinien und Koordinaten in der Ereignisliste helfen) – und wann Zugmitte sie empfängt. Wechsle danach das Bezugssystem zu Zugmitte. Warum empfängt der Beobachter im Zug die beiden Blitze nicht gleichzeitig, obwohl beide Blitze in seinem eigenen Bezugssystem ebenfalls an Zuganfang und Zugende einschlagen?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Bell'sches Raumschiffparadoxon</h3>
+        <p>Zwei Raumschiffe starten im Bahndamm- bzw. Laborsystem gleichzeitig und beschleunigen identisch auf β = 0,8; ihr Ortsabstand im Laborsystem bleibt daher für alle Zeiten exakt 10 LE. Geladen werden die beiden Weltlinien „Raumschiff A" und „Raumschiff B".</p>
+        <p><b>Aufgabe:</b> Wechsle das Bezugssystem zu Raumschiff A und lies den Abstand zu Raumschiff B im neuen (orthogonalen) System ab – nutze dazu z. B. zwei Ereignisse mit gleicher Gleichzeitigkeitslinie, eines auf jeder Weltlinie. Vergleiche den abgelesenen Abstand mit 10 LE. Ein straff gespannter, nicht dehnbarer Faden zwischen den Schiffen hätte in seinem eigenen Ruhesystem genau diese Ruhelänge nötig – reißt der Faden?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Myonenzerfall in der Atmosphäre</h3>
+        <p>Ein Myon entsteht mit β = 0,98 (γ ≈ 5,03) und bewegt sich auf eine ruhende „Erdoberfläche" bei x = 15 LE zu. Geladen werden die Weltlinien „Myon" und „Erdoberfläche".</p>
+        <p><b>Aufgabe:</b> Bestimme rechnerisch, bei welcher Laborzeit ct das Myon die Erdoberfläche erreicht, und erzeuge dort per Klick ein Ereignis. Wechsle dann das Bezugssystem zum Myon und lies die Eigenzeit ab, die bis zu diesem Ereignis vergeht. Vergleiche beide Zeiten – wie hängt der Unterschied mit γ zusammen, und warum „schafft" das Myon trotz kurzer Eigenlebensdauer die Strecke bis zum Boden?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Symmetrische Zeitdilatation</h3>
+        <p>Zwei Raketen starten am selben Ereignis (Ursprung) und entfernen sich anschließend symmetrisch mit β = ±0,6 voneinander. Geladen werden „Rakete A" und „Rakete B".</p>
+        <p><b>Aufgabe:</b> Erzeuge auf Rakete A ein Ereignis bei einem runden Eigenzeitwert und aktiviere seine Gleichzeitigkeitslinie im Bezugssystem von Rakete A – lies ab, welcher ct′-Wert auf Rakete B dazu gleichzeitig ist. Wechsle dann das Bezugssystem zu Rakete B und wiederhole die Ablesung in die andere Richtung. Warum sieht jede Rakete die Uhr der anderen langsamer gehen, ohne dass das ein Widerspruch ist? (Hinweis: Ohne ein gemeinsames zweites Treffen lässt sich „langsamer" nicht direkt vergleichen.)</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Zwillingsparadoxon mit Umkehr</h3>
+        <p>Ein Zwilling bleibt zu Hause (ruhend bei x = 0), der andere fliegt mit β = 0,6 fort und kehrt bei ct = 10 (Ereignis bei x = 6) mit β = −0,6 sofort um. Geladen werden „Zwilling daheim", „Zwilling Hinreise" und „Zwilling Rückreise" – letztere beginnt exakt am Umkehrereignis.</p>
+        <p><b>Aufgabe:</b> Markiere das Umkehrereignis sowie das Wiedertreffen-Ereignis (Rückreise trifft wieder auf Zwilling daheim) und vergleiche die jeweils vergangene Eigenzeit auf beiden Weltlinien zwischen Start und Wiedertreffen. Sende zusätzlich von Zwilling daheim aus mehrere Lichtsignale in festen Zeitabständen zum reisenden Zwilling und beobachte, wie sich die Empfangsabstände auf Hin- und Rückreise unterscheiden (relativistischer Dopplereffekt). Warum ist die Situation trotz der scheinbaren Symmetrie zwischen den beiden Zwillingen nicht symmetrisch?</p>
+      </div>
+    </section>
+
+    <!-- 5. KI-Tutor-Prompt -->
+    <section id="ki-tutor">
+      <div class="section-head">
+        <div class="num">5</div>
         <div>
           <h2>KI-Tutor-Prompt</h2>
           <div class="sub-line">Systemprompt für einen sokratischen KI-Begleiter zu dieser App – zum Kopieren</div>
@@ -874,16 +924,50 @@ function renderEventList(){
   if (window.lucide) lucide.createIcons();
 }
 
-/* ---------- Beispiel: Garagenparadoxon ---------- */
-function loadGarageExample(){
+/* ---------- Beispielszenarien ---------- */
+const PRESETS = {
+  garage: [
+    { name:'Eingangstor',     color:'#334155', beta:0,    x0:0,  ct0:0 },
+    { name:'Ausgangstor',     color:'#64748b', beta:0,    x0:12, ct0:0 },
+    { name:'Fahrzeugfront',   color:'#dc2626', beta:0.8,  x0:0,  ct0:0 },
+    { name:'Fahrzeugheck',    color:'#f59e0b', beta:0.8,  x0:-12,ct0:0 }
+  ],
+  einsteinzug: [
+    { name:'Blitz Zugspitze',          color:'#dc2626', beta:0,   x0:5,  ct0:0 },
+    { name:'Blitz Zugende',            color:'#f59e0b', beta:0,   x0:-5, ct0:0 },
+    { name:'Zugmitte (Beobachter M′)', color:'#1a6fb5', beta:0.6, x0:0,  ct0:0 },
+    { name:'Bahndamm-Mitte (Beobachter M)', color:'#334155', beta:0, x0:0, ct0:0 }
+  ],
+  bell: [
+    { name:'Raumschiff A', color:'#dc2626', beta:0.8, x0:0,  ct0:0 },
+    { name:'Raumschiff B', color:'#1a6fb5', beta:0.8, x0:10, ct0:0 }
+  ],
+  myon: [
+    { name:'Myon',          color:'#7c3aed', beta:0.98, x0:0,  ct0:0 },
+    { name:'Erdoberfläche', color:'#334155', beta:0,     x0:15, ct0:0 }
+  ],
+  symmetrisch: [
+    { name:'Rakete A', color:'#dc2626', beta:0.6,  x0:0, ct0:0 },
+    { name:'Rakete B', color:'#1a6fb5', beta:-0.6, x0:0, ct0:0 }
+  ],
+  zwilling: [
+    { name:'Zwilling daheim',    color:'#334155', beta:0,    x0:0, ct0:0 },
+    { name:'Zwilling Hinreise',  color:'#dc2626', beta:0.6,  x0:0, ct0:0 },
+    { name:'Zwilling Rückreise', color:'#1a6fb5', beta:-0.6, x0:6, ct0:10 }
+  ]
+};
+
+function loadPreset(key){
+  const preset = PRESETS[key];
+  if (!preset) return;
   objects = []; events = []; rays = []; nextId = 1; referenceId = 'S0';
   displayBeta = 0; animToken++;
-  addObject({ name:'Eingangstor', color:'#334155', beta:0, x0:0, ct0:0 });
-  addObject({ name:'Ausgangstor', color:'#64748b', beta:0, x0:12, ct0:0 });
-  addObject({ name:'Fahrzeugfront', color:'#dc2626', beta:0.8, x0:0, ct0:0 });
-  addObject({ name:'Fahrzeugheck', color:'#f59e0b', beta:0.8, x0:-12, ct0:0 });
+  preset.forEach(o => addObject(o));
   document.getElementById('diagramm').scrollIntoView({behavior:'smooth'});
 }
+
+// Rückwärtskompatibler Alias, falls an anderer Stelle noch referenziert
+function loadGarageExample(){ loadPreset('garage'); }
 
 /* ================================================================
    RENDERING (SVG)
@@ -1186,12 +1270,12 @@ Du bist ein sokratischer Physik-Tutor für die interaktive Web-App "Minkowski-Di
 
 Du hast selbst keinen Zugriff auf die App – die folgende Beschreibung ist deine einzige Grundlage, um bei der Bedienung zu helfen. Halte dich bei Bedienhinweisen exakt an diese Begriffe und Bezeichnungen, statt Bedienelemente zu vermuten.
 
-Die App gliedert sich über eine Seitenleiste in vier Abschnitte: "Mathematischer Hintergrund" (Theorie zu Achsenneigung, Maßstabsänderung, Gleichzeitigkeitslinien und Lorentz-Transformation), "Interaktives Diagramm" (das eigentliche Werkzeug), "Aufgabe: Garagenparadoxon" (Aufgabentext mit Teilaufgaben a bis f) und "KI-Tutor-Prompt" (dieser Text). Einheiten sind willkürliche Längeneinheiten (LE) mit c = 1, d. h. x und ct werden in derselben Einheit gemessen und Lichtstrahlen verlaufen immer unter 45°.
+Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematischer Hintergrund" (Theorie zu Achsenneigung, Maßstabsänderung, Gleichzeitigkeitslinien, Lichtkegel/invariantem Intervall und Lorentz-Transformation), "Interaktives Diagramm" (das eigentliche Werkzeug), "Aufgabe: Garagenparadoxon" (Aufgabentext mit Teilaufgaben a bis g), "Weitere Szenarien" (Kurzbeschreibungen und Arbeitsaufträge zu fünf weiteren vorbereiteten Beispielen: Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und "KI-Tutor-Prompt" (dieser Text). Einheiten sind willkürliche Längeneinheiten (LE) mit c = 1, d. h. x und ct werden in derselben Einheit gemessen und Lichtstrahlen verlaufen immer unter 45°.
 
 Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit dem Namen des aktuell gewählten Bezugssystems sowie den Werten β und γ. Links liegt das Steuerungspanel, rechts das Diagramm.
 
 Das Steuerungspanel besteht aus vier Blöcken:
-- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befinden sich die Buttons "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an) und "Beispiel: Garagenparadoxon laden" (ersetzt alle vorhandenen Objekte und Ereignisse durch die vier vorbereiteten Weltlinien Eingangstor, Ausgangstor, Fahrzeugfront und Fahrzeugheck).
+- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Die genauen Objektparameter und passende Arbeitsaufträge zu den fünf Szenarien jenseits des Garagenparadoxons stehen im Abschnitt "Weitere Szenarien".
 - "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld für den ct-Wert auf dessen Weltlinie, und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
@@ -1221,6 +1305,7 @@ Biete unaufgefordert konkrete, aufeinander aufbauende Experimente an, zum Beispi
 4. β nahe 0,99 einstellen und beobachten, wie sich die S0-Vergleichsachsen dem Lichtkegel annähern.
 5. Für ein Ereignis den Lichtkegel aktivieren und prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) davon liegt.
 6. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis g) bearbeiten.
+7. Eines der fünf weiteren vorbereiteten Szenarien laden (Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und den jeweils passenden Arbeitsauftrag aus dem Abschnitt "Weitere Szenarien" bearbeiten.
 
 ## Typische Fehlvorstellungen erkennen und adressieren
 
