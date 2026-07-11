@@ -391,6 +391,17 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
           </div></div>
         </div>
       </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Warum eine unterschiedliche Reihenfolge kein Widerspruch ist: der Lichtkegel</h3>
+        <p>Dass zwei Ereignisse in verschiedenen Bezugssystemen eine unterschiedliche zeitliche Reihenfolge haben können, klingt zunächst nach einem Verstoß gegen Ursache und Wirkung. Ob das tatsächlich problematisch ist, entscheidet eine Größe, die – anders als x, ct, x′ oder ct′ einzeln – in <i>jedem</i> Bezugssystem denselben Wert hat: das invariante Raumzeit-Intervall zwischen zwei Ereignissen.</p>
+        <div class="formula-box">
+          <span class="label">Invariantes Intervall zwischen zwei Ereignissen</span>
+          s² = (Δx)² − (Δct)²
+        </div>
+        <p>Ist s² &gt; 0, liegen die Ereignisse <b>raumartig</b> getrennt: Kein Lichtsignal kann von einem zum anderen gelangen, es gibt keinen möglichen Kausalzusammenhang – und genau deshalb ist es unproblematisch, dass verschiedene Beobachter eine unterschiedliche Reihenfolge messen. Ist s² &lt; 0, liegen sie <b>zeitartig</b> getrennt (innerhalb des Lichtkegels): Dann ist ein Kausalzusammenhang möglich, und die Reihenfolge ist für alle Beobachter gleich – alles andere wäre eine echte Kausalitätsverletzung.</p>
+        <p>Aktiviere in der Ereignisliste die Checkbox <b>„Lichtkegel hier"</b> für ein Ereignis, um genau das zu überprüfen: Liegt das zweite Ereignis außerhalb des eingezeichneten Lichtkegels (der X-förmigen 45°-Linien durch den Punkt), ist die Trennung raumartig – die beobachtete Reihenfolge darf dann frame-abhängig sein, ohne dass daraus ein Widerspruch entsteht.</p>
+      </div>
     </section>
 
     <!-- 2. Diagramm -->
@@ -463,7 +474,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
                 <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -524,6 +535,10 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
         <div class="task-item">
           <div class="letter">f</div>
           <div class="body">Löse das Paradoxon in eigenen Worten auf: Warum widersprechen sich die Aussagen aus a) und b) nicht? Was genau ist relativ, und was ist invariant – etwa die Frage, ob es zu einer Kollision kommt?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">g</div>
+          <div class="body">Berechne das invariante Intervall s² = (Δx)² − (Δct)² zwischen E₁ und E₂ im Laborsystem. Aktiviere anschließend in der App für E₁ die Checkbox „Lichtkegel hier" und prüfe: Liegt E₂ innerhalb oder außerhalb dieses Lichtkegels? Erkläre, warum genau das dafür sorgt, dass die unterschiedliche Reihenfolge in Teil e) kein Verstoß gegen Ursache und Wirkung ist.</div>
         </div>
 
         <div class="merksatz">Tipp: Die Auflösung liegt nicht in einem Rechenfehler, sondern darin, dass „die Tore schließen sich gleichzeitig" eine Aussage ist, die an ein Bezugssystem gebunden ist. Aus Sicht des Autos schließen sich Ausgangstor und Eingangstor nicht gleichzeitig.</div>
@@ -779,7 +794,7 @@ function emitLight(obj, ctEmit){
   const xEmit = xOnWorldline(obj, ctEmit);
   const emissionEvent = {
     id: uid(), kind:'emission', objectId: obj.id,
-    xLab: xEmit, ctLab: ctEmit, showPoint: true, showSim: false,
+    xLab: xEmit, ctLab: ctEmit, showPoint: true, showSim: false, showCone: false,
     label: `Emission auf ${obj.name}`
   };
   events.push(emissionEvent);
@@ -795,7 +810,7 @@ function emitLight(obj, ctEmit){
       if (pt.ct < ctEmit - 1e-9) return; // nur Zukunft
       events.push({
         id: uid(), kind:'reception', objectId: other.id,
-        xLab: pt.x, ctLab: pt.ct, showPoint: true, showSim: false,
+        xLab: pt.x, ctLab: pt.ct, showPoint: true, showSim: false, showCone: false,
         label: `Empfang auf ${other.name}`
       });
     });
@@ -851,6 +866,7 @@ function renderEventList(){
       <div class="event-toggles">
         <label><input type="checkbox" ${e.showPoint?'checked':''} onchange="toggleEventField('${e.id}','showPoint',this.checked)"> Punkt</label>
         <label><input type="checkbox" ${e.showSim?'checked':''} onchange="toggleEventField('${e.id}','showSim',this.checked)"> Gleichzeitigkeitslinie</label>
+        <label><input type="checkbox" ${e.showCone?'checked':''} onchange="toggleEventField('${e.id}','showCone',this.checked)"> Lichtkegel hier</label>
       </div>
     `;
     wrap.appendChild(row);
@@ -1050,10 +1066,20 @@ function render(){
     if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.6,'stroke-dasharray':'5,4'});
   });
 
-  // Ereignisse: Punkte und Gleichzeitigkeitslinien. Da das Anzeigesystem orthogonal ist, ist die
-  // Gleichzeitigkeitslinie im aktuellen Bezugssystem jetzt einfach eine Waagerechte.
+  // Ereignisse: Punkte, Gleichzeitigkeitslinien und optional der Lichtkegel am Ereignis.
+  // Da das Anzeigesystem orthogonal ist, ist die Gleichzeitigkeitslinie hier einfach eine Waagerechte.
   events.forEach(e=>{
     const p = transformPt(e.xLab, e.ctLab);
+    const coneColor = e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary');
+    if (e.showCone){
+      // Lichtkegel am Ereignis: beide 45°-Lichtlinien durch den Punkt, in Vergangenheit und Zukunft.
+      // Damit lässt sich ablesen, ob ein anderes Ereignis innerhalb (zeitartig) oder außerhalb
+      // (raumartig) dieses Kegels liegt.
+      [1,-1].forEach(dir=>{
+        const seg = clipToView(p, {x:dir, ct:1}, -1e6, 1e6);
+        if (seg) svgLine(seg.a, seg.b, {stroke:coneColor,'stroke-width':1.2,'stroke-dasharray':'2,3',opacity:0.55});
+      });
+    }
     if (e.showSim){
       const seg = clipToView(p, {x:1, ct:0});
       if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
@@ -1062,7 +1088,7 @@ function render(){
       }
     }
     if (e.showPoint){
-      svgCircle(p.x, p.ct, 4.5, {fill:'#fff', stroke: e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary'), 'stroke-width':2.2});
+      svgCircle(p.x, p.ct, 4.5, {fill:'#fff', stroke: coneColor, 'stroke-width':2.2});
       svgText(p.x, p.ct, `(${p.x.toFixed(1)}, ${p.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
     }
   });
@@ -1167,7 +1193,7 @@ Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit de
 Das Steuerungspanel besteht aus vier Blöcken:
 - "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befinden sich die Buttons "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an) und "Beispiel: Garagenparadoxon laden" (ersetzt alle vorhandenen Objekte und Ereignisse durch die vier vorbereiteten Weltlinien Eingangstor, Ausgangstor, Fahrzeugfront und Fahrzeugheck).
 - "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld für den ct-Wert auf dessen Weltlinie, und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
-- "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie zwei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein) und "Gleichzeitigkeitslinie" (blendet die gestrichelte Parallele zur aktuellen x′-Achse durch dieses Ereignis ein, bis zum Schnittpunkt mit der ct′-Achse). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
+- "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
 
 Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus.
@@ -1192,8 +1218,9 @@ Biete unaufgefordert konkrete, aufeinander aufbauende Experimente an, zum Beispi
 1. Ein ruhendes Objekt und ein Objekt mit β = 0,5 anlegen, das ruhende Objekt und danach das bewegte als Bezugssystem wählen, die Animation beobachten.
 2. Von einem Punkt auf einer Weltlinie Licht in beide Richtungen aussenden und die automatisch erzeugten Empfangsereignisse ansehen.
 3. Zwei Ereignisse erzeugen, die im Laborsystem gleichzeitig sind (gleiche Höhe auf der ct-Achse), dann das Bezugssystem wechseln und beobachten, ob sie es bleiben.
-4. β nahe 0,99 einstellen und beobachten, wie sich die Achsen dem Lichtkegel annähern.
-5. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis f) bearbeiten.
+4. β nahe 0,99 einstellen und beobachten, wie sich die S0-Vergleichsachsen dem Lichtkegel annähern.
+5. Für ein Ereignis den Lichtkegel aktivieren und prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) davon liegt.
+6. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis g) bearbeiten.
 
 ## Typische Fehlvorstellungen erkennen und adressieren
 
@@ -1204,6 +1231,7 @@ Achte in den Formulierungen und Fragen der Person auf folgende häufige Fehlvors
 - Die Vorstellung, es gäbe ein "wirklich" bewegtes und ein "wirklich" ruhendes Objekt. Frage, was passiert, wenn man das jeweils andere Objekt als Bezugssystem wählt.
 - Die Annahme, der Lichtkegel oder die 45°-Neigung der Lichtstrahlen würde sich beim Bezugssystemwechsel mitdrehen. Das Gegenteil ist der Fall und lässt sich in der App direkt beobachten.
 - Die Verwechslung von "was ein Beobachter über Lichtlaufzeiten hinweg sieht" mit "was in seinem Bezugssystem nach Abzug der Lichtlaufzeit gilt". Beides wird in der App unterschieden: Lichtstrahlen sind gestrichelt eingezeichnet, die Koordinaten der Ereignisse sind die tatsächlichen Bezugssystem-Koordinaten.
+- Die Annahme, jede unterschiedliche Reihenfolge zweier Ereignisse in verschiedenen Bezugssystemen sei automatisch ein Verstoß gegen Ursache und Wirkung. Das gilt nur für zeitartig getrennte Ereignisse (innerhalb des Lichtkegels); bei raumartig getrennten Ereignissen (außerhalb) ist ein Kausalzusammenhang von vornherein unmöglich, weshalb die Reihenfolge frame-abhängig sein darf. Nutze den Lichtkegel-Toggle an einem Ereignis, um das direkt zu prüfen.
 - Bei Aufgabe zum Garagenparadoxon: die Annahme, eine der beiden Beobachtungen (Garage oder Fahrer) müsse schlicht falsch sein, statt zu erkennen, dass beide Aussagen in ihrem jeweiligen Bezugssystem korrekt sind und nur die Annahme einer bezugssystemunabhängigen Gleichzeitigkeit den scheinbaren Widerspruch erzeugt.
 
 ## Wie du aus der Interaktion liest
