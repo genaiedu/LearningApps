@@ -230,6 +230,27 @@ body.dark .frame-indicator{ background:rgba(56,189,248,.08); }
 .diagram-hint{ font-size:.8rem; color:var(--text-muted); margin-top:10px; line-height:1.55; }
 .diagram-hint b{ color:var(--text); }
 
+/* ============ Vollbildmodus des Diagramms ============ */
+.fs-panel-header{ display:none; align-items:center; justify-content:space-between; gap:8px; font-family:'Poppins'; font-weight:700; font-size:.83rem; color:var(--primary); margin-bottom:10px; }
+.fs-root.is-fullscreen{
+  display:flex; flex-direction:column; width:100vw; height:100vh; padding:16px; box-sizing:border-box;
+  background:var(--primary-light);
+}
+.fs-root.is-fullscreen .frame-indicator{ flex:0 0 auto; margin-bottom:10px; }
+.fs-root.is-fullscreen .diagram-layout{ display:block; flex:1 1 auto; min-height:0; position:relative; }
+.fs-root.is-fullscreen #diagramCol{ height:100%; display:flex; flex-direction:column; }
+.fs-root.is-fullscreen .svg-wrap{ flex:1 1 auto; min-height:0; }
+.fs-root.is-fullscreen #mkSvg{ width:100%; height:100%; }
+.fs-root.is-fullscreen .diagram-hint{ display:none; }
+.fs-root.is-fullscreen .fs-panel-header{ display:flex; }
+.fs-root.is-fullscreen .control-panel{
+  position:absolute; top:0; left:0; width:300px; max-width:80vw; max-height:100%; overflow-y:auto;
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:14px; padding:12px 14px; box-shadow:var(--shadow); z-index:30;
+}
+.fs-root.is-fullscreen .control-panel.panel-collapsed{ width:auto; padding:8px 10px; }
+.fs-root.is-fullscreen .control-panel.panel-collapsed .control-panel-body{ display:none; }
+
 .event-row{
   border:1px solid var(--glass-border); border-radius:12px; padding:10px 12px; margin-bottom:8px; background:var(--glass-bg); font-size:.82rem;
 }
@@ -383,6 +404,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
       </div>
 
       <div class="card reveal">
+      <div class="fs-root" id="fsRoot">
         <div class="frame-indicator">
           <i data-lucide="axis-3d"></i>
           <span>Aktuelles Bezugssystem: <b id="frameLabel">Laborsystem S₀</b> &nbsp;·&nbsp; β = <b id="frameBeta">0</b> &nbsp;·&nbsp; γ = <b id="frameGamma">1</b></span>
@@ -390,7 +412,12 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
 
         <div class="diagram-layout">
           <!-- Steuerungs-Panel -->
-          <div class="control-panel">
+          <div class="control-panel" id="controlPanel">
+            <div class="fs-panel-header">
+              <span>Steuerung</span>
+              <button class="zoom-btn" onclick="toggleControlPanelCollapse()" title="Steuerung ein-/ausblenden"><i data-lucide="chevron-left" id="panelCollapseIcon"></i></button>
+            </div>
+            <div class="control-panel-body" id="controlPanelBody">
 
             <div class="panel-card">
               <div class="panel-title"><i data-lucide="git-commit-horizontal"></i> Weltlinien</div>
@@ -422,22 +449,26 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung anzeigen</label>
               <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> S₀-Gitter anzeigen</label>
             </div>
+            </div>
           </div>
 
           <!-- Diagramm -->
-          <div>
+          <div id="diagramCol">
             <div class="svg-wrap">
               <svg id="mkSvg" viewBox="0 0 760 600" xmlns="http://www.w3.org/2000/svg"></svg>
               <div class="zoom-controls">
                 <button class="zoom-btn" onclick="zoomBy(0.8)" title="Vergrößern"><i data-lucide="zoom-in"></i></button>
                 <button class="zoom-btn" onclick="zoomBy(1.25)" title="Verkleinern"><i data-lucide="zoom-out"></i></button>
                 <button class="zoom-btn" onclick="resetView()" title="Ansicht zurücksetzen"><i data-lucide="maximize"></i></button>
+                <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die rote Achse ist die x′-Achse, die blaue die ct′-Achse des gewählten Bezugssystems (nur sichtbar, wenn nicht S₀ gewählt ist). Beim Wechsel des Bezugssystems drehen sich Achsen, Ticks und Gleichzeitigkeitslinien innerhalb von 2 Sekunden in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die rote Achse ist die x′-Achse, die blaue die ct′-Achse des gewählten Bezugssystems (nur sichtbar, wenn nicht S₀ gewählt ist). Beim Wechsel des Bezugssystems drehen sich Achsen, Ticks und Gleichzeitigkeitslinien innerhalb von 2 Sekunden in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
+      </div>
+
     </section>
 
     <!-- 3. Aufgabe -->
@@ -1125,7 +1156,7 @@ Das Steuerungspanel besteht aus vier Blöcken:
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie zwei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein) und "Gleichzeitigkeitslinie" (blendet die gestrichelte Parallele zur aktuellen x′-Achse durch dieses Ereignis ein, bis zum Schnittpunkt mit der ct′-Achse). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
 
-Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Drei kleine Buttons oben rechts im Diagramm dienen dem Zoom: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus) und ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück). Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus. Die Weltlinien selbst sind in der jeweils gewählten Objektfarbe gezeichnet, Lichtstrahlen gestrichelt in Orange/Gelb. Die Achsen des Laborsystems S0 (x und ct) sind immer sichtbar und neutral eingefärbt. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt wird, erscheinen zwei zusätzliche, geneigte Achsen: die x′-Achse (rot) und die ct′-Achse (blau/Primärfarbe), inklusive kalibrierter Tick-Markierungen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich diese Achsen, ihre Ticks sowie alle aktivierten Gleichzeitigkeitslinien kontinuierlich in die neue Lage drehen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live.
+Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus. Die Weltlinien selbst sind in der jeweils gewählten Objektfarbe gezeichnet, Lichtstrahlen gestrichelt in Orange/Gelb. Die Achsen des Laborsystems S0 (x und ct) sind immer sichtbar und neutral eingefärbt. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt wird, erscheinen zwei zusätzliche, geneigte Achsen: die x′-Achse (rot) und die ct′-Achse (blau/Primärfarbe), inklusive kalibrierter Tick-Markierungen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich diese Achsen, ihre Ticks sowie alle aktivierten Gleichzeitigkeitslinien kontinuierlich in die neue Lage drehen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live.
 
 Außerhalb des Diagramms gibt es in der Seitenleiste noch einen Dark-Mode-Umschalter ("Dark Mode"-Button unten in der Seitenleiste) sowie auf kleinen Bildschirmen ein Menü-Symbol oben rechts, das die Seitenleiste ein- und ausblendet.
 
@@ -1190,6 +1221,56 @@ function copyTutorPrompt(){
   } else {
     ta.select(); document.execCommand('copy'); done();
   }
+}
+
+/* ---------- Vollbildmodus ---------- */
+const fsRoot = document.getElementById('fsRoot');
+
+function getFullscreenElement(){
+  return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null;
+}
+function requestFs(el){
+  if (el.requestFullscreen) return el.requestFullscreen();
+  if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+  if (el.msRequestFullscreen) return el.msRequestFullscreen();
+}
+function exitFs(){
+  if (document.exitFullscreen) return document.exitFullscreen();
+  if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+  if (document.msExitFullscreen) return document.msExitFullscreen();
+}
+
+function toggleFullscreen(){
+  if (getFullscreenElement() === fsRoot){
+    exitFs();
+  } else {
+    requestFs(fsRoot);
+  }
+}
+
+function onFullscreenChange(){
+  const active = getFullscreenElement() === fsRoot;
+  fsRoot.classList.toggle('is-fullscreen', active);
+  const icon = document.getElementById('fsToggleIcon');
+  const btn = document.getElementById('fsToggleBtn');
+  icon.setAttribute('data-lucide', active ? 'minimize-2' : 'maximize-2');
+  btn.setAttribute('title', active ? 'Vollbild verlassen' : 'Vollbild');
+  if (!active){
+    document.getElementById('controlPanel').classList.remove('panel-collapsed');
+    document.getElementById('panelCollapseIcon').setAttribute('data-lucide','chevron-left');
+  }
+  if (window.lucide) lucide.createIcons();
+  render();
+}
+['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(evt=>{
+  document.addEventListener(evt, onFullscreenChange);
+});
+
+function toggleControlPanelCollapse(){
+  const panel = document.getElementById('controlPanel');
+  const collapsed = panel.classList.toggle('panel-collapsed');
+  document.getElementById('panelCollapseIcon').setAttribute('data-lucide', collapsed ? 'chevron-right' : 'chevron-left');
+  if (window.lucide) lucide.createIcons();
 }
 
 /* ---------- Initialisierung ---------- */
