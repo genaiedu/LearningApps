@@ -483,7 +483,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
                 <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -729,6 +729,21 @@ function removeObject(id){
   renderObjList(); renderEmitSelect(); renderEventList(); render();
 }
 
+function cloneObject(id){
+  const src = objects.find(o=>o.id===id);
+  if (!src) return;
+  const clone = {
+    id: uid(),
+    name: src.name + ' (Kopie)',
+    color: OBJ_COLORS[objects.length % OBJ_COLORS.length],
+    beta: src.beta, x0: src.x0, ct0: src.ct0
+  };
+  objects.push(clone);
+  renderObjList();
+  renderEmitSelect();
+  render();
+}
+
 function updateObject(id, field, value){
   const o = objects.find(o=>o.id===id);
   if (!o) return;
@@ -780,6 +795,7 @@ function renderObjList(){
       <div class="obj-row-head">
         <input type="color" class="obj-swatch" value="${o.color}" onchange="updateObject('${o.id}','color',this.value)">
         <input type="text" value="${o.name}" onchange="updateObject('${o.id}','name',this.value)">
+        <button class="obj-del" onclick="cloneObject('${o.id}')" title="Klonen"><i data-lucide="copy"></i></button>
         <button class="obj-del" onclick="removeObject('${o.id}')" title="Entfernen"><i data-lucide="trash-2"></i></button>
       </div>
       <div class="obj-fields">
@@ -1096,6 +1112,24 @@ function render(){
     if (segCt) svgLine(segCt.a, segCt.b, {stroke:ctColor,'stroke-width':1.8});
     svgText(view.xMax-1.5, 1.2, isLab?'x':'x′', {fill:xColor,'font-weight':'700','text-anchor':'end'});
     svgText(0.6, view.ctMax-1.5, isLab?'ct':'ct′', {fill:ctColor,'font-weight':'700'});
+
+    // Zahlenbeschriftete Ticks auf den orthogonalen Achsen, im selben Abstand wie das Hintergrundgitter
+    const axStep = 5;
+    if (0>=view.ctMin && 0<=view.ctMax){
+      for (let x = Math.ceil(view.xMin/axStep)*axStep; x <= view.xMax; x += axStep){
+        if (x===0) continue;
+        drawTick({x, ct:0}, {x:1, ct:0}, xColor, x);
+      }
+    }
+    if (0>=view.xMin && 0<=view.xMax){
+      for (let c = Math.ceil(view.ctMin/axStep)*axStep; c <= view.ctMax; c += axStep){
+        if (c===0) continue;
+        drawTick({x:0, ct:c}, {x:0, ct:1}, ctColor, c);
+      }
+    }
+    if (0>=view.xMin && 0<=view.xMax && 0>=view.ctMin && 0<=view.ctMax){
+      svgText(0, 0, '0', {fill:textMuted,'font-size':'9.5', dx:'-11', dy:'12'});
+    }
   }
 
   // Vergleichs-Achsen des Laborsystems S0 – erscheinen geneigt, sobald ein anderes Objekt als
@@ -1275,14 +1309,14 @@ Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematisch
 Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit dem Namen des aktuell gewählten Bezugssystems sowie den Werten β und γ. Links liegt das Steuerungspanel, rechts das Diagramm.
 
 Das Steuerungspanel besteht aus vier Blöcken:
-- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Die genauen Objektparameter und passende Arbeitsaufträge zu den fünf Szenarien jenseits des Garagenparadoxons stehen im Abschnitt "Weitere Szenarien".
+- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Die genauen Objektparameter und passende Arbeitsaufträge zu den fünf Szenarien jenseits des Garagenparadoxons stehen im Abschnitt "Weitere Szenarien".
 - "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld für den ct-Wert auf dessen Weltlinie, und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
 
 Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus.
 
-Wichtig für dein Verständnis der Darstellung: Die Objekte werden zwar mit ihren Parametern (β, x0, ct0) relativ zu einem festen Laborsystem S0 definiert, aber gezeichnet wird immer das gerade gewählte Bezugssystem orthogonal (rechtwinklige x′- und ct′-Achse, rot bzw. blau/Primärfarbe eingefärbt, sofern nicht S0 selbst gewählt ist). Alle Weltlinien, Lichtstrahlen und Ereignisse werden dafür per Lorentz-Transformation neu berechnet – sie liegen also nach einem Bezugssystemwechsel an einer anderen Stelle im Diagramm, nicht nur die Achsen drehen sich. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt ist, blendet die App zusätzlich zwei gestrichelte, geneigte Vergleichsachsen ein: die x0- und ct0-Achse des Laborsystems S0, inklusive kalibrierter Tick-Markierungen. Das macht sichtbar, dass die Wahl des Bezugssystems symmetrisch ist – aus Sicht des neuen Bezugssystems ist es S0, das sich bewegt und dessen Achsen geneigt erscheinen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich Weltlinien, Lichtstrahlen, die S0-Vergleichsachsen und alle aktivierten Gleichzeitigkeitslinien kontinuierlich in ihre neue Lage bewegen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live. Gleichzeitigkeitslinien sind dabei im gewählten (orthogonalen) Bezugssystem stets waagerecht.
+Wichtig für dein Verständnis der Darstellung: Die Objekte werden zwar mit ihren Parametern (β, x0, ct0) relativ zu einem festen Laborsystem S0 definiert, aber gezeichnet wird immer das gerade gewählte Bezugssystem orthogonal (rechtwinklige x′- und ct′-Achse, rot bzw. blau/Primärfarbe eingefärbt, sofern nicht S0 selbst gewählt ist). Diese orthogonalen Achsen tragen durchgängig Zahlen-Ticks im selben Abstand wie das Hintergrundgitter, sodass sich Koordinaten auch ohne Klick auf ein Ereignis direkt am Diagramm ablesen lassen. Alle Weltlinien, Lichtstrahlen und Ereignisse werden dafür per Lorentz-Transformation neu berechnet – sie liegen also nach einem Bezugssystemwechsel an einer anderen Stelle im Diagramm, nicht nur die Achsen drehen sich. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt ist, blendet die App zusätzlich zwei gestrichelte, geneigte Vergleichsachsen ein: die x0- und ct0-Achse des Laborsystems S0, ebenfalls mit kalibrierten Zahlen-Ticks. Das macht sichtbar, dass die Wahl des Bezugssystems symmetrisch ist – aus Sicht des neuen Bezugssystems ist es S0, das sich bewegt und dessen Achsen geneigt erscheinen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich Weltlinien, Lichtstrahlen, die S0-Vergleichsachsen und alle aktivierten Gleichzeitigkeitslinien kontinuierlich in ihre neue Lage bewegen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live. Gleichzeitigkeitslinien sind dabei im gewählten (orthogonalen) Bezugssystem stets waagerecht.
 
 Außerhalb des Diagramms gibt es in der Seitenleiste noch einen Dark-Mode-Umschalter ("Dark Mode"-Button unten in der Seitenleiste) sowie auf kleinen Bildschirmen ein Menü-Symbol oben rechts, das die Seitenleiste ein- und ausblendet.
 
