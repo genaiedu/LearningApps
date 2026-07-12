@@ -535,7 +535,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <div class="step-wizard" id="stepWizard" style="display:none;"></div>
               <button class="step-wizard-reopen" id="stepWizardReopen" style="display:none;" onclick="reopenStepWizard()"><i data-lucide="info"></i> Erklärung wieder öffnen</button>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die rechte Randweltlinie den Ursprung und die ct′-Achse festlegt; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die linke Randweltlinie den Ursprung und die ct′-Achse festlegt; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -778,18 +778,22 @@ function currentBetaRef(){
 }
 
 /* Ursprung eines gewählten Bezugssystems. Bei räumlich ausgedehnten Objekten
-   wird der rechte Rand verwendet. Für reine Längenobjekte ist (x₀,ct₀) bereits
-   die rechte Randweltlinie; bei Flächenobjekten wird der rechte untere Eckpunkt
-   des Eigenrechtecks ins Laborsystem transformiert. */
+   wird konsequent der linke Rand verwendet. Bei Flächenobjekten ist (x₀,ct₀)
+   bereits der linke untere Eckpunkt. Bei reinen Längenobjekten liegt die
+   Hauptweltlinie am rechten Rand; der linke Rand ist im Laborsystem um die
+   kontrahierte Eigenlänge L₀/γ nach links versetzt. */
 function referenceOrigin(id){
   if (id === 'S0') return {x:0, ct:0};
   const o = objects.find(o=>o.id===id);
   if (!o) return {x:0, ct:0};
-  if (o.extentType === 'area' && o.extentValue > 0){
-    const off = lorentz(o.extentValue, 0, -o.beta); // Ruhesystem → Labor
-    return {x:o.x0 + off.x, ct:o.ct0 + off.ct};
+  if (o.extentType === 'length' && o.extentValue > 0){
+    return {
+      x: o.x0 - o.extentValue / objGamma(o.beta),
+      ct: o.ct0
+    };
   }
-  // Beim Typ length ist die Hauptweltlinie definitionsgemäß der rechte Rand.
+  // Bei area ist (x₀,ct₀) der linke untere Eckpunkt; bei Punkt- und Dauerobjekten
+  // bleibt die Hauptweltlinie selbst die Referenzlinie.
   return {x:o.x0, ct:o.ct0};
 }
 function currentFrameOrigin(){ return displayOrigin; }
@@ -1176,7 +1180,7 @@ function renderObjList(){
       <div class="event-coords" id="extentReadout_${o.id}" style="${o.extentType==='none'?'display:none;':''}margin-top:4px;"></div>
       <div class="obj-ref-row">
         <input type="radio" name="refChoice" id="ref_${o.id}" ${referenceId===o.id?'checked':''} onchange="setReference('${o.id}')">
-        <label for="ref_${o.id}">als Bezugssystem verwenden${(o.extentType==='length'||o.extentType==='area')?' (rechter Rand)':''}</label>
+        <label for="ref_${o.id}">als Bezugssystem verwenden${(o.extentType==='length'||o.extentType==='area')?' (linker Rand)':''}</label>
       </div>
     `;
     wrap.appendChild(row);
