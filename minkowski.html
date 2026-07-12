@@ -242,6 +242,13 @@ body.dark .frame-indicator{ background:rgba(56,189,248,.08); }
 .step-wizard-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
 .step-wizard-close{ background:none; border:none; cursor:pointer; color:var(--text-muted); }
 .step-wizard-close:hover{ color:var(--wrong); }
+.step-wizard-reopen{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); z-index:26;
+  border:1px solid var(--glass-border); border-radius:999px; padding:9px 14px;
+  background:var(--surface); color:var(--primary); box-shadow:var(--shadow); cursor:pointer;
+  font-family:'Inter'; font-weight:600; font-size:.82rem; backdrop-filter:var(--blur);
+}
+.step-wizard-reopen:hover{ filter:brightness(1.05); }
 
 /* ============ Vollbildmodus des Diagramms ============ */
 .fs-panel-header{ display:none; align-items:center; justify-content:space-between; gap:8px; font-family:'Poppins'; font-weight:700; font-size:.83rem; color:var(--primary); margin-bottom:10px; }
@@ -526,6 +533,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
                 <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
               <div class="step-wizard" id="stepWizard" style="display:none;"></div>
+              <button class="step-wizard-reopen" id="stepWizardReopen" style="display:none;" onclick="reopenStepWizard()"><i data-lucide="info"></i> Erklärung wieder öffnen</button>
             </div>
             <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
@@ -856,6 +864,7 @@ function updateObject(id, field, value){
 
 let stepModeEnabled = false; // Checkbox „Bezugssystemwechsel Schritt für Schritt erklären"
 let stepWizard = null;       // pausierbarer Konstruktionsdialog
+let stepWizardHidden = false; // Erklärung kann geschlossen werden, ohne den Konstruktionszustand zu beenden
 let constructionAxis = null; // {fromId,toId,fromName,toName,startBeta,endBeta,betaRel,progress,persistent}
 const AXIS_DRAW_MS = 1000;
 
@@ -894,6 +903,7 @@ function beginAnimatedReferenceChange(toId){
     if (t < 1) requestAnimationFrame(drawAxis);
     else {
       referenceId = toId;
+      constructionAxis.animating = true;
       renderObjList(); renderEventList();
       animateFrameChange(startBeta, endBeta, ()=>{ constructionAxis = null; render(); });
     }
@@ -934,6 +944,7 @@ function openStepWizard(toId){
   const startBeta = displayBeta;
   const endBeta = toId==='S0' ? 0 : ((objects.find(o=>o.id===toId)||{}).beta || 0);
   const betaRel = relativeBeta(endBeta, startBeta);
+  stepWizardHidden = false;
   stepWizard = {
     fromId, toId, fromName:frameName(fromId), toName:frameName(toId),
     startBeta, endBeta, betaRel, gammaRel:1/Math.sqrt(1-betaRel*betaRel), phase:1
@@ -948,8 +959,10 @@ function cancelStepWizard(){
   if (!stepWizard) return;
   animToken++;
   stepWizard = null;
+  stepWizardHidden = false;
   constructionAxis = null;
   document.getElementById('stepWizard').style.display = 'none';
+  document.getElementById('stepWizardReopen').style.display = 'none';
   renderObjList(); render(); updateFrameIndicator();
 }
 
@@ -965,7 +978,9 @@ function stepWizardKeepAxis(){
   if (!stepWizard) return;
   constructionAxis = {...constructionAxis, progress:1, persistent:true};
   stepWizard = null;
+  stepWizardHidden = false;
   document.getElementById('stepWizard').style.display = 'none';
+  document.getElementById('stepWizardReopen').style.display = 'none';
   renderObjList(); render(); updateFrameIndicator();
 }
 
@@ -973,19 +988,43 @@ function stepWizardPlay(){
   if (!stepWizard) return;
   const sw = stepWizard;
   referenceId = sw.toId;
+  constructionAxis.animating = true;
   renderObjList(); renderEventList();
   renderStepWizard(true);
   animateFrameChange(sw.startBeta, sw.endBeta, ()=>{
     stepWizard = null;
+    stepWizardHidden = false;
     constructionAxis = null;
     document.getElementById('stepWizard').style.display = 'none';
+    document.getElementById('stepWizardReopen').style.display = 'none';
     render();
   });
 }
 
+function closeStepWizardBox(){
+  if (!stepWizard) return;
+  stepWizardHidden = true;
+  document.getElementById('stepWizard').style.display = 'none';
+  const reopen = document.getElementById('stepWizardReopen');
+  reopen.style.display = 'inline-flex';
+  reopen.style.alignItems = 'center';
+  reopen.style.gap = '7px';
+  if (window.lucide) lucide.createIcons();
+}
+
+function reopenStepWizard(){
+  if (!stepWizard) return;
+  stepWizardHidden = false;
+  document.getElementById('stepWizardReopen').style.display = 'none';
+  renderStepWizard(false);
+}
+
 function renderStepWizard(playing){
   const el = document.getElementById('stepWizard');
-  if (!stepWizard){ el.style.display='none'; return; }
+  const reopen = document.getElementById('stepWizardReopen');
+  if (!stepWizard){ el.style.display='none'; reopen.style.display='none'; return; }
+  if (stepWizardHidden){ el.style.display='none'; reopen.style.display='inline-flex'; return; }
+  reopen.style.display='none';
   const sw = stepWizard;
   el.style.display = 'block';
   const angleDeg = Math.atan(Math.abs(sw.betaRel)) * 180/Math.PI;
@@ -993,7 +1032,7 @@ function renderStepWizard(playing){
     el.innerHTML = `
       <div class="step-wizard-title">
         <span>Schritt 1/2 · Neue x′-Achse</span>
-        <button class="step-wizard-close" onclick="cancelStepWizard()" title="Abbrechen"><i data-lucide="x"></i></button>
+        <button class="step-wizard-close" onclick="closeStepWizardBox()" title="Erklärung schließen"><i data-lucide="x"></i></button>
       </div>
       <p>Das Diagramm bleibt zunächst vollständig im bisherigen Bezugssystem <b>${sw.fromName}</b>. Nur die x′-Achse des neuen Systems <b>${sw.toName}</b> wird darin eingezeichnet. Bereits aktivierte Gleichzeitigkeitslinien verlaufen nun gestrichelt parallel zu dieser neuen Achse.</p>
       <div class="formula-box">
@@ -1009,7 +1048,7 @@ function renderStepWizard(playing){
     el.innerHTML = `
       <div class="step-wizard-title">
         <span>Schritt 2/2 · Orthogonale Darstellung</span>
-        <button class="step-wizard-close" onclick="cancelStepWizard()" title="Abbrechen"><i data-lucide="x"></i></button>
+        <button class="step-wizard-close" onclick="closeStepWizardBox()" title="Erklärung schließen"><i data-lucide="x"></i></button>
       </div>
       <p>Nun kann das gesamte Diagramm so umgerechnet werden, dass <b>${sw.toName}</b> selbst orthogonal erscheint. Erst in diesem Schritt ändern sich die Winkel aller dargestellten Linien.</p>
       <div class="formula-box">
@@ -1567,7 +1606,17 @@ function render(){
   // Konstruktionsschritt: neue x′-Achse im NOCH ALTEN Bezugssystem.
   // ct_alt = β_rel · x_alt; während des Einzeichnens wächst sie vom Ursprung aus.
   if (constructionAxis){
-    const dNewX = {x:1, ct:constructionAxis.betaRel};
+    /* Die Ziel-x′-Achse ist in Laborkoordinaten die Gerade ct = β_ziel·x.
+       Während der Winkelanimation wird genau diese bereits eingezeichnete Achse
+       fortlaufend in das momentan dargestellte Zwischen-Bezugssystem transformiert.
+       Dadurch klappt sie sichtbar in die waagerechte x′-Achse ein, während die
+       Weltlinie des Zielsystems gleichzeitig zur senkrechten ct′-Achse wird. */
+    const betaNow = currentBetaRef();
+    const gammaNow = 1/Math.sqrt(1-betaNow*betaNow);
+    const dNewX = {
+      x: gammaNow*(1 - betaNow*constructionAxis.endBeta),
+      ct: gammaNow*(constructionAxis.endBeta - betaNow)
+    };
     const seg = clipToView({x:0,ct:0}, dNewX);
     if (seg){
       const p = Math.max(0, Math.min(1, constructionAxis.progress ?? 1));
@@ -1837,12 +1886,18 @@ function render(){
          parallel zu dessen eingezeichneter x′-Achse. Erst nach der optionalen
          Winkeländerung wird sie im orthogonalen neuen System wieder waagerecht. */
       const constructionSimActive = !!constructionAxis && (
-        constructionAxis.persistent ||
+        constructionAxis.persistent || constructionAxis.animating ||
         (referenceId === constructionAxis.fromId)
       );
-      const simDir = constructionSimActive
-        ? {x:1, ct:constructionAxis.betaRel}
-        : {x:1, ct:0};
+      let simDir = {x:1, ct:0};
+      if (constructionSimActive){
+        const betaNow = currentBetaRef();
+        const gammaNow = 1/Math.sqrt(1-betaNow*betaNow);
+        simDir = {
+          x: gammaNow*(1 - betaNow*constructionAxis.endBeta),
+          ct: gammaNow*(constructionAxis.endBeta - betaNow)
+        };
+      }
       const seg = clipToView(p, simDir);
       if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
 
