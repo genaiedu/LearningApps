@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minkowski-Diagramm – Relativität der Gleichzeitigkeit</title>
+<meta name="description" content="Interaktives Minkowski-Diagramm zur Speziellen Relativitätstheorie: Weltlinien, Bezugssystemwechsel, Lichtsignale und Gleichzeitigkeit, Sekundarstufe II">
+
+<style>
+/* ============ @font-face ============ */
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Poppins'; src:url('fonts/poppins-v24-latin-900.woff2') format('woff2'); font-weight:900; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('fonts/inter-v20-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'Dancing Script'; src:url('fonts/dancing-script-v29-latin-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+
+/* ============ Variablen ============ */
+:root{
+  --primary:#1a6fb5;
+  --primary-light:#e8f1fb;
+  --accent:#f59e0b;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --surface:rgba(255,255,255,0.75);
+  --glass-bg:rgba(255,255,255,0.10);
+  --glass-border:rgba(255,255,255,0.20);
+  --blur:blur(20px);
+  --radius:16px;
+  --sidebar-width:320px;
+  --shadow:0 8px 32px rgba(0,0,0,0.12);
+  --correct:#16a34a;
+  --wrong:#dc2626;
+  --lab-axis:#334155;
+  --frame-axis:#dc2626;
+  --light-ray:#f59e0b;
+  --grid-line:rgba(100,116,139,0.18);
+}
+body.dark{
+  --primary:#38bdf8;
+  --primary-light:#0f172a;
+  --text:#e2e8f0;
+  --text-muted:#94a3b8;
+  --surface:rgba(15,23,42,0.80);
+  --glass-bg:rgba(255,255,255,0.05);
+  --lab-axis:#cbd5e1;
+  --frame-axis:#f87171;
+  --grid-line:rgba(148,163,184,0.16);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter', system-ui, sans-serif;
+  color:var(--text);
+  background:linear-gradient(135deg,#f0f7ff 0%,#e8f1fb 50%,#fdf6e8 100%);
+  min-height:100vh;
+  transition:background .3s, color .3s;
+  overflow-x:hidden;
+}
+body.dark{ background:linear-gradient(135deg,#0f172a 0%,#0b1120 50%,#101a2c 100%); }
+
+h1,h2,h3,h4{ font-family:'Poppins', system-ui, sans-serif; letter-spacing:-0.02em; }
+
+/* ============ Blobs ============ */
+.blob{ position:fixed; border-radius:50%; filter:blur(80px); opacity:.35; animation:drift 18s ease-in-out infinite alternate; z-index:-1; }
+.blob:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-10%; animation-duration:20s; }
+.blob:nth-child(2){ width:400px; height:400px; background:#7c3aed; top:40%; right:-5%; animation-duration:25s; }
+.blob:nth-child(3){ width:350px; height:350px; background:#0ea5e9; bottom:-5%; left:30%; animation-duration:22s; }
+@keyframes drift{
+  0%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(40px,-30px) scale(1.05); }
+  66%{ transform:translate(-20px,50px) scale(.95); }
+  100%{ transform:translate(30px,20px) scale(1.02); }
+}
+
+/* ============ Progress Bar ============ */
+#progress-bar-wrap{ position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(0,0,0,.08); z-index:500; }
+#progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--accent)); transition:width .1s; }
+
+/* ============ Layout ============ */
+.layout{ display:flex; min-height:100vh; }
+.sidebar{
+  width:var(--sidebar-width); flex-shrink:0; position:fixed; top:0; left:0; height:100vh;
+  background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--glass-border); padding:28px 22px; overflow-y:auto; z-index:300;
+  transition:transform .3s;
+}
+.sidebar h2{ font-size:1.05rem; color:var(--primary); margin-bottom:4px; }
+.sidebar .subtitle{ font-size:.8rem; color:var(--text-muted); margin-bottom:24px; }
+.sidebar nav a{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:10px;
+  color:var(--text); text-decoration:none; font-size:.92rem; font-weight:500; transition:background .2s;
+}
+.sidebar nav a:hover{ background:var(--primary-light); color:var(--primary); }
+.sidebar .school{ margin-top:30px; padding-top:18px; border-top:1px solid var(--glass-border); font-size:.75rem; color:var(--text-muted); line-height:1.5; }
+.dark-toggle{
+  display:flex; align-items:center; gap:8px; margin-top:18px; padding:10px 12px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--glass-border); cursor:pointer; font-size:.85rem; color:var(--text);
+}
+.hamburger{ display:none; position:fixed; top:14px; right:14px; z-index:400; background:var(--surface); border:1px solid var(--glass-border);
+  border-radius:10px; width:44px; height:44px; align-items:center; justify-content:center; backdrop-filter:var(--blur); cursor:pointer; }
+
+.main-content{ margin-left:var(--sidebar-width); flex:1; padding:40px 6vw 100px; max-width:1180px; }
+
+/* ============ Hero ============ */
+.hero{ margin-bottom:50px; }
+.hero .eyebrow{ display:inline-block; font-size:.8rem; font-weight:600; color:var(--primary); background:var(--primary-light);
+  padding:5px 14px; border-radius:999px; margin-bottom:16px; }
+.hero h1{ font-size:2.5rem; font-weight:900; line-height:1.1; margin-bottom:14px; }
+.hero h1 span{ color:var(--primary); }
+.hero p{ font-size:1.08rem; color:var(--text-muted); max-width:720px; }
+.hero .caveat{ font-family:'Dancing Script', cursive; font-weight:600; font-size:1.5rem; color:var(--accent); margin-top:10px; display:block; }
+
+/* ============ Section / Glass Card ============ */
+section{ margin-bottom:56px; scroll-margin-top:30px; }
+.section-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.section-head .num{
+  width:38px; height:38px; border-radius:12px; background:var(--primary); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; flex-shrink:0;
+}
+.section-head h2{ font-size:1.45rem; }
+.section-head .sub-line{ font-size:.82rem; color:var(--text-muted); margin-top:2px; }
+
+.card{
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:26px 28px;
+}
+.card + .card{ margin-top:18px; }
+.card p{ line-height:1.65; margin-bottom:12px; }
+.card p:last-child{ margin-bottom:0; }
+.card ul{ padding-left:20px; line-height:1.7; }
+.card ol{ padding-left:20px; line-height:1.7; }
+
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible{ opacity:1; transform:translateY(0); }
+
+/* ============ Merksatz / Formel-Box ============ */
+.merksatz{
+  border-left:4px solid var(--primary); background:var(--primary-light); border-radius:0 12px 12px 0;
+  padding:16px 20px; font-weight:600; margin:16px 0;
+}
+body.dark .merksatz{ background:rgba(56,189,248,.10); }
+
+.formula-box{
+  border:1px dashed var(--glass-border); background:var(--primary-light); border-radius:12px;
+  padding:16px 20px; margin:14px 0; text-align:center; font-size:1.08rem; font-family:'Inter';
+}
+body.dark .formula-box{ background:rgba(56,189,248,.06); }
+.formula-box .label{ display:block; font-size:.72rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
+
+/* ============ Akkordeon (format-card) ============ */
+.format-card{ border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid var(--glass-border); }
+.format-card__header{
+  cursor:pointer; background:var(--primary); color:#fff; padding:13px 18px;
+  font-family:'Inter'; font-weight:600; font-size:.95rem; display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.format-card__header i{ transition:transform .25s; flex-shrink:0; }
+.format-card__header.open i{ transform:rotate(180deg); }
+.format-card__body{ max-height:0; overflow:hidden; transition:max-height .35s ease; background:var(--primary-light); }
+.format-card__body .inner{ padding:16px 18px; line-height:1.65; }
+body.dark .format-card__body{ background:rgba(56,189,248,.06); }
+
+/* ============ Diagramm-Layout ============ */
+.diagram-layout{ display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+@media(max-width:1100px){ .diagram-layout{ grid-template-columns:1fr; } }
+
+.panel-title{ font-family:'Poppins'; font-weight:700; font-size:.95rem; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:var(--primary); }
+.panel-title i{ width:18px; height:18px; }
+
+.obj-row{
+  border:1px solid var(--glass-border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:var(--glass-bg);
+}
+.obj-row-head{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.obj-row-head input[type="text"]{
+  flex:1; background:transparent; border:none; border-bottom:1px solid var(--glass-border); color:var(--text);
+  font-family:'Inter'; font-weight:600; font-size:.9rem; padding:3px 2px;
+}
+.obj-swatch{ width:18px; height:18px; border-radius:6px; border:none; padding:0; cursor:pointer; flex-shrink:0; }
+.obj-del{ background:none; border:none; cursor:pointer; color:var(--text-muted); padding:2px; flex-shrink:0; }
+.obj-del:hover{ color:var(--wrong); }
+.obj-fields{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; }
+.obj-fields label{ font-size:.68rem; color:var(--text-muted); display:block; margin-bottom:2px; }
+.obj-fields input[type="number"]{
+  width:100%; padding:5px 6px; border-radius:7px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); font-family:'Inter'; font-size:.82rem;
+}
+.beta-slider{ width:100%; accent-color:var(--primary); }
+.obj-ref-row{ display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--text-muted); }
+.obj-ref-row input{ accent-color:var(--accent); }
+
+.btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:11px 18px; font-weight:600; cursor:pointer; font-family:'Inter'; font-size:.88rem; display:inline-flex; align-items:center; gap:7px; }
+.btn-primary:hover{ filter:brightness(1.08); }
+.btn-secondary{
+  background:transparent; border:1px solid var(--glass-border); color:var(--text); border-radius:10px;
+  padding:9px 16px; font-weight:600; cursor:pointer; font-family:'Inter'; font-size:.83rem; display:inline-flex; align-items:center; gap:6px;
+}
+.btn-secondary:hover{ border-color:var(--primary); color:var(--primary); }
+.btn-block{ width:100%; justify-content:center; margin-top:4px; }
+.btn-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+
+.panel-card{ margin-bottom:16px; }
+
+.select-styled{
+  width:100%; padding:8px 10px; border-radius:9px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); font-family:'Inter'; font-size:.85rem; margin-bottom:8px;
+}
+.field-inline{ display:flex; gap:8px; align-items:end; margin-bottom:8px; }
+.field-inline > div{ flex:1; }
+.field-inline label{ font-size:.7rem; color:var(--text-muted); display:block; margin-bottom:3px; }
+.field-inline input{ width:100%; padding:6px 8px; border-radius:7px; border:1px solid var(--glass-border); background:var(--surface); color:var(--text); font-size:.83rem; }
+
+.frame-indicator{
+  display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; background:var(--primary-light);
+  border:1px solid var(--glass-border); margin-bottom:16px; font-size:.88rem;
+}
+body.dark .frame-indicator{ background:rgba(56,189,248,.08); }
+.frame-indicator b{ color:var(--primary); }
+
+.svg-wrap{ border:1px solid var(--glass-border); border-radius:14px; overflow:hidden; background:var(--surface); position:relative; }
+#mkSvg{ width:100%; height:auto; display:block; cursor:crosshair; touch-action:none; }
+.zoom-controls{ position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px; z-index:10; }
+.zoom-btn{
+  width:34px; height:34px; border-radius:9px; border:1px solid var(--glass-border); background:var(--surface);
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:var(--blur);
+}
+.zoom-btn:hover{ color:var(--primary); border-color:var(--primary); }
+.diagram-hint{ font-size:.8rem; color:var(--text-muted); margin-top:10px; line-height:1.55; }
+.diagram-hint b{ color:var(--text); }
+
+/* ============ Schritt-für-Schritt-Wizard (Bezugssystemwechsel) ============ */
+.step-wizard{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%); width:min(92%, 460px);
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); z-index:25;
+}
+.step-wizard-title{ font-family:'Poppins'; font-weight:700; font-size:.85rem; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.step-wizard p{ font-size:.85rem; line-height:1.55; margin:0 0 10px; }
+.step-wizard .formula-box{ margin:0 0 10px; padding:12px 14px; font-size:.95rem; }
+.step-wizard-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.step-wizard-close{ background:none; border:none; cursor:pointer; color:var(--text-muted); }
+.step-wizard-close:hover{ color:var(--wrong); }
+
+/* ============ Vollbildmodus des Diagramms ============ */
+.fs-panel-header{ display:none; align-items:center; justify-content:space-between; gap:8px; font-family:'Poppins'; font-weight:700; font-size:.83rem; color:var(--primary); margin-bottom:10px; }
+.fs-root.is-fullscreen{
+  display:flex; flex-direction:column; width:100vw; height:100vh; padding:16px; box-sizing:border-box;
+  background:var(--primary-light);
+}
+.fs-root.is-fullscreen .frame-indicator{ flex:0 0 auto; margin-bottom:10px; }
+.fs-root.is-fullscreen .diagram-layout{ display:block; flex:1 1 auto; min-height:0; position:relative; }
+.fs-root.is-fullscreen #diagramCol{ height:100%; display:flex; flex-direction:column; }
+.fs-root.is-fullscreen .svg-wrap{ flex:1 1 auto; min-height:0; }
+.fs-root.is-fullscreen #mkSvg{ width:100%; height:100%; }
+.fs-root.is-fullscreen .diagram-hint{ display:none; }
+.fs-root.is-fullscreen .fs-panel-header{ display:flex; }
+.fs-root.is-fullscreen .control-panel{
+  position:absolute; top:0; left:0; width:300px; max-width:80vw; max-height:100%; overflow-y:auto;
+  background:var(--surface); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border); border-radius:14px; padding:12px 14px; box-shadow:var(--shadow); z-index:30;
+}
+.fs-root.is-fullscreen .control-panel.panel-collapsed{ width:auto; padding:8px 10px; }
+.fs-root.is-fullscreen .control-panel.panel-collapsed .control-panel-body{ display:none; }
+
+.event-row{
+  border:1px solid var(--glass-border); border-radius:12px; padding:10px 12px; margin-bottom:8px; background:var(--glass-bg); font-size:.82rem;
+}
+.event-row-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.event-row-head b{ font-size:.83rem; }
+.event-coords{ font-family:'Inter'; color:var(--text-muted); margin-bottom:6px; }
+.event-toggles{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.event-toggles label{ display:flex; align-items:center; gap:5px; cursor:pointer; font-size:.78rem; }
+.event-toggles input{ accent-color:var(--primary); }
+.event-del{ background:none; border:none; cursor:pointer; color:var(--text-muted); }
+.event-del:hover{ color:var(--wrong); }
+.empty-hint{ color:var(--text-muted); font-size:.82rem; padding:10px 4px; }
+
+.checkbox-line{ display:flex; align-items:center; gap:8px; font-size:.83rem; margin:8px 0; }
+.checkbox-line input{ accent-color:var(--primary); }
+
+/* ============ Aufgaben-Nummerierung ============ */
+.task-item{ display:flex; gap:12px; margin-bottom:16px; }
+.task-item .letter{
+  width:28px; height:28px; border-radius:8px; background:var(--primary-light); color:var(--primary); font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Poppins'; font-size:.85rem;
+}
+.task-item .body{ flex:1; line-height:1.65; padding-top:3px; }
+
+.data-table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:12px 0; }
+.data-table th{ text-align:left; font-weight:600; color:var(--text-muted); padding:6px 10px; border-bottom:1px solid var(--glass-border); font-size:.74rem; }
+.data-table td{ padding:6px 10px; border-bottom:1px solid var(--glass-border); }
+
+footer{ text-align:center; padding:40px 20px; color:var(--text-muted); font-size:.85rem; line-height:1.6; }
+
+/* ============ KI-Tutor-Prompt-Box ============ */
+.prompt-box{
+  width:100%; min-height:520px; margin-top:14px; padding:18px 20px; border-radius:12px;
+  border:1px solid var(--glass-border); background:var(--primary-light); color:var(--text);
+  font-family:'Inter', monospace; font-size:.82rem; line-height:1.6; resize:vertical; white-space:pre-wrap;
+}
+body.dark .prompt-box{ background:rgba(56,189,248,.06); }
+
+/* ============ Responsive ============ */
+@media (max-width:900px){
+  .sidebar{ transform:translateX(-100%); }
+  .sidebar.open{ transform:translateX(0); }
+  .main-content{ margin-left:0; padding:70px 6vw 100px; }
+  .hamburger{ display:flex; }
+  .hero h1{ font-size:1.9rem; }
+  .obj-fields{ grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+  <i data-lucide="menu"></i>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>Minkowski-Diagramm</h2>
+    <div class="subtitle">Spezielle Relativitätstheorie</div>
+    <nav>
+      <a href="#theorie"><i data-lucide="book-open"></i> Mathematischer Hintergrund</a>
+      <a href="#diagramm"><i data-lucide="chart-network"></i> Interaktives Diagramm</a>
+      <a href="#aufgabe"><i data-lucide="flag"></i> Aufgabe: Garagenparadoxon</a>
+      <a href="#szenarien"><i data-lucide="layers"></i> Weitere Szenarien</a>
+      <a href="#ki-tutor"><i data-lucide="message-circle-question"></i> KI-Tutor-Prompt</a>
+    </nav>
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+      <i data-lucide="moon" id="dark-icon"></i> <span>Dark Mode</span>
+    </div>
+    <div class="school">
+      Gymnasium Thomaeum Kempen<br>
+      Am Gymnasium 4, 47906 Kempen<br>
+      Physik · Sekundarstufe II
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="hero reveal">
+      <span class="eyebrow">Interaktive Simulation</span>
+      <h1>Weltlinien, Bezugssysteme <span>und Gleichzeitigkeit</span></h1>
+      <p>Zeichne Weltlinien mit frei wählbarer Geschwindigkeit, Orts- und Zeitversatz, sende Lichtsignale aus und wechsle das Bezugssystem. Beobachte dabei, wie sich Achsen, Maßstäbe und die Gleichzeitigkeit von Ereignissen verändern.</p>
+      <span class="caveat">Gleichzeitigkeit ist kein Fakt, sondern eine Frage der Perspektive.</span>
+    </div>
+
+    <!-- 1. Theorie -->
+    <section id="theorie">
+      <div class="section-head">
+        <div class="num">1</div>
+        <div>
+          <h2>Mathematischer Hintergrund</h2>
+          <div class="sub-line">Die Lorentz-Transformation wird vorausgesetzt – hier geht es um ihre geometrische Deutung im Diagramm</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>In allen Diagrammen dieser App gilt die übliche Konvention der Minkowski-Diagramme: Aufgetragen wird <b>ct</b> (senkrecht) gegen <b>x</b> (waagerecht), sodass Lichtstrahlen unabhängig vom Bezugssystem stets unter 45° verlaufen. Alle Weltlinien werden mit ihren Parametern (β, Ortsversatz x₀, Zeitversatz ct₀) relativ zu einem festen „Laborsystem" S₀ definiert – das ist einfach eine Buchführungs-Konvention, damit jedes Objekt eindeutig beschrieben ist. Für die <i>Darstellung</i> gilt aber: Das App zeichnet immer das Bezugssystem orthogonal, das du gerade als Bezugssystem gewählt hast. Alle anderen Weltlinien werden dafür per Lorentz-Transformation umgerechnet.</p>
+        <div class="merksatz">Wichtig: Wechselst du das Bezugssystem, verändert sich also nicht nur die Achsenbeschriftung – jede Weltlinie, jeder Lichtstrahl und jedes Ereignis wird neu berechnet und neu gezeichnet. Nur das gewählte Bezugssystem selbst ist dabei immer orthogonal, so wie es sich für seinen eigenen Beobachter auch tatsächlich anfühlt.</div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Warum wird dann überhaupt etwas schräg gezeichnet?</h3>
+        <p>Damit du zwei Bezugssysteme gleichzeitig vergleichen kannst, blendet die App zusätzlich die Achsen des Laborsystems S₀ ein, sobald du ein anderes Objekt als Bezugssystem gewählt hast. Da S₀ aus Sicht des neuen, orthogonal gezeichneten Bezugssystems selbst mit −β dagegen "bewegt" ist, erscheinen genau diese S₀-Vergleichsachsen geneigt:</p>
+        <div class="formula-box">
+          <span class="label">Kippwinkel der S₀-Vergleichsachsen im gewählten Bezugssystem</span>
+          tan θ = β &nbsp;&nbsp;(β = Geschwindigkeit des gewählten Bezugssystems relativ zu S₀)
+        </div>
+        <p>Für β → 1 nähern sich auch diese Vergleichsachsen der 45°-Lichtlinie an. Das ist genau die Umkehrung dessen, was du siehst, wenn du wieder zu S₀ als Bezugssystem zurückwechselst: Dann sind die S₀-Achsen orthogonal, und die zuvor gewählten Achsen wären ihrerseits geneigt – ein schönes Beispiel für die Symmetrie der Relativität: Keines der beiden Bezugssysteme ist "wirklich" das ruhende.</p>
+        <p style="font-size:.85rem;color:var(--text-muted);">Über die Checkbox <b>„Bezugssystemwechsel Schritt für Schritt erklären"</b> im Diagramm-Abschnitt lässt sich dieser Wechsel in zwei anhaltbare Phasen zerlegen (zunächst nur die neue x′-Achse im bisherigen System, danach optional die orthogonale Darstellung des neuen Systems) – so wie man ihn von Hand konstruieren würde, statt ihn nur als fertige Animation zu sehen.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Die Maßstabsänderung – warum man nicht einfach ablesen darf</h3>
+        <p>Der zweite, oft übersehene Effekt betrifft genau diese geneigten S₀-Vergleichsachsen: Der Maßstab <i>entlang</i> ihnen ist gegenüber dem orthogonalen Maßstab des gewählten Bezugssystems gestreckt. Ein Punkt, der auf der S₀-x-Achse bei x = n bzw. auf der S₀-ct-Achse bei ct = n liegt, hat im aktuell gewählten (orthogonalen) Bezugssystem die Koordinaten:</p>
+        <div class="formula-box">
+          <span class="label">Lage der S₀-Einheits-Ticks im gewählten Bezugssystem</span>
+          S₀-x-Achse, Tick n: (x′, ct′) = (γn, −γβn) &nbsp;&nbsp;·&nbsp;&nbsp; S₀-ct-Achse, Tick n: (x′, ct′) = (−γβn, γn)
+        </div>
+        <p>Der Abstand dieser Ticks vom Ursprung, gemessen im orthogonalen Anzeigeraster, wächst dabei um den Faktor γ·√(1+β²) = √((1+β²)/(1−β²)) – stärker als der reine Lorentzfaktor γ. Genau deshalb liegen die Ticks auf den geneigten S₀-Vergleichsachsen <i>nicht</i> im gleichen Pixelabstand wie auf den orthogonalen Achsen des gewählten Systems. Geometrisch lässt sich diese Stauchung/Streckung mit sogenannten <b>Eichhyperbeln</b> x² − (ct)² = const. konstruieren: Der Schnittpunkt einer Hyperbel mit einer geneigten Achse markiert dort den korrekten Wert 1, 2, 3, ... Die App berechnet diese Ticks direkt über die Lorentz-Transformation der Tick-Punkte und zeichnet sie automatisch korrekt.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Gleichzeitigkeitslinien</h3>
+        <p>Zwei Ereignisse sind in einem Bezugssystem genau dann gleichzeitig, wenn sie im Diagramm dieses Bezugssystems auf derselben Höhe liegen – also auf einer Waagerechten (Parallelen zur x-Achse). Weil die App das jeweils gewählte Bezugssystem immer orthogonal zeichnet, ist die Gleichzeitigkeitslinie eines aktivierten Ereignisses dort schlicht eine Waagerechte durch diesen Punkt. Wechselst du das Bezugssystem, wird diese Linie zusammen mit dem Ereignis neu berechnet und bleibt weiterhin waagerecht – aber zwei Ereignisse, die vorher auf derselben Höhe lagen, liegen nach dem Wechsel in aller Regel nicht mehr auf derselben Höhe. Das ist die Relativität der Gleichzeitigkeit, direkt sichtbar gemacht.</p>
+        <div class="format-card">
+          <div class="format-card__header" onclick="toggleAccordion(this)">
+            <span>Zur Erinnerung: Die Lorentz-Transformation selbst</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="format-card__body"><div class="inner">
+            x′ = γ·(x − β·ct) &nbsp;&nbsp;·&nbsp;&nbsp; ct′ = γ·(ct − β·x) &nbsp;&nbsp;mit&nbsp;&nbsp; γ = 1/√(1−β²)<br><br>
+            Diese App wendet die Transformation auf die im Laborsystem gespeicherten Koordinaten jeder Weltlinie, jedes Lichtstrahls und jedes Ereignisses an, um sie im jeweils gewählten Bezugssystem darzustellen. Da die Transformation linear ist (gemeinsamer Ursprung), gilt dieselbe Formel für Punkte wie für Richtungsvektoren – deshalb bleiben Weltlinien auch nach der Umrechnung Geraden, und eine explizite Geschwindigkeitsaddition ist nicht nötig: Sie ergibt sich automatisch aus der Transformation der Richtungsvektoren.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Warum eine unterschiedliche Reihenfolge kein Widerspruch ist: der Lichtkegel</h3>
+        <p>Dass zwei Ereignisse in verschiedenen Bezugssystemen eine unterschiedliche zeitliche Reihenfolge haben können, klingt zunächst nach einem Verstoß gegen Ursache und Wirkung. Ob das tatsächlich problematisch ist, entscheidet eine Größe, die – anders als x, ct, x′ oder ct′ einzeln – in <i>jedem</i> Bezugssystem denselben Wert hat: das invariante Raumzeit-Intervall zwischen zwei Ereignissen.</p>
+        <div class="formula-box">
+          <span class="label">Invariantes Intervall zwischen zwei Ereignissen</span>
+          s² = (Δx)² − (Δct)²
+        </div>
+        <p>Ist s² &gt; 0, liegen die Ereignisse <b>raumartig</b> getrennt: Kein Lichtsignal kann von einem zum anderen gelangen, es gibt keinen möglichen Kausalzusammenhang – und genau deshalb ist es unproblematisch, dass verschiedene Beobachter eine unterschiedliche Reihenfolge messen. Ist s² &lt; 0, liegen sie <b>zeitartig</b> getrennt (innerhalb des Lichtkegels): Dann ist ein Kausalzusammenhang möglich, und die Reihenfolge ist für alle Beobachter gleich – alles andere wäre eine echte Kausalitätsverletzung.</p>
+        <p>Aktiviere in der Ereignisliste die Checkbox <b>„Lichtkegel hier"</b> für ein Ereignis, um genau das zu überprüfen: Liegt das zweite Ereignis außerhalb des eingezeichneten Lichtkegels (der X-förmigen 45°-Linien durch den Punkt), ist die Trennung raumartig – die beobachtete Reihenfolge darf dann frame-abhängig sein, ohne dass daraus ein Widerspruch entsteht.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Ausgedehnte Objekte: Länge und Dauer messen</h3>
+        <p>Bisher waren Weltlinien unendlich dünne Punkte. Jedes Objekt kann zusätzlich eine <b>Eigenlänge L₀</b> (räumliche Ausdehnung), eine <b>Eigendauer τ₀</b> (zeitliche Ausdehnung) oder <b>beides zusammen</b> erhalten. Alle Werte sind als Eigenschaften im <i>Ruhesystem</i> des Objekts definiert und ändern sich nie – gemessen wird aber immer im gerade gewählten Bezugssystem:</p>
+        <div class="formula-box">
+          <span class="label">Gemessene Länge bzw. Dauer im gewählten Bezugssystem</span>
+          L = L₀·√(1−β<sub>rel</sub>²) &nbsp;&nbsp;·&nbsp;&nbsp; τ = τ₀ / √(1−β<sub>rel</sub>²)
+        </div>
+        <p>Dabei ist β<sub>rel</sub> die Relativgeschwindigkeit zwischen dem Objekt und dem gewählten Bezugssystem. Wählt man <b>„Länge + Dauer (Fläche)"</b>, erscheint im Diagramm ein <b>Parallelogramm</b>: Die vier Ecken des Eigenzeit-Rechtecks (L₀ × τ₀ im Ruhesystem) werden per Lorentz-Transformation ins Anzeigesystem gebracht. Dabei gilt eine bemerkenswerte Invarianz: Der Flächeninhalt des Parallelogramms ist in jedem Bezugssystem gleich – da det(L) = 1, bleibt das Raumzeit-Volumen erhalten. Die Fläche wird deutlich heller als die Randlinien gezeichnet. In allen Fällen steht der aktuelle Messwert live unter dem Objekt im Steuerungspanel – wechselst du das Bezugssystem, läuft er während der 2-Sekunden-Animation sichtbar mit.</p>
+      </div>
+    </section>
+
+    <!-- 2. Diagramm -->
+    <section id="diagramm">
+      <div class="section-head">
+        <div class="num">2</div>
+        <div>
+          <h2>Interaktives Diagramm</h2>
+          <div class="sub-line">Weltlinien anlegen, Bezugssystem wählen, Licht aussenden</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+      <div class="fs-root" id="fsRoot">
+        <div class="frame-indicator">
+          <i data-lucide="axis-3d"></i>
+          <span>Aktuelles Bezugssystem: <b id="frameLabel">Laborsystem S₀</b> &nbsp;·&nbsp; β = <b id="frameBeta">0</b> &nbsp;·&nbsp; γ = <b id="frameGamma">1</b></span>
+        </div>
+        <label class="checkbox-line" style="margin:-4px 0 14px;">
+          <input type="checkbox" id="stepModeToggle" onchange="stepModeEnabled=this.checked">
+          Bezugssystemwechsel Schritt für Schritt erklären (neue x′-Achse, dann optional Winkeländerung)
+        </label>
+
+        <div class="diagram-layout">
+          <!-- Steuerungs-Panel -->
+          <div class="control-panel" id="controlPanel">
+            <div class="fs-panel-header">
+              <span>Steuerung</span>
+              <button class="zoom-btn" onclick="toggleControlPanelCollapse()" title="Steuerung ein-/ausblenden"><i data-lucide="chevron-left" id="panelCollapseIcon"></i></button>
+            </div>
+            <div class="control-panel-body" id="controlPanelBody">
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="git-commit-horizontal"></i> Weltlinien</div>
+              <div id="objList"></div>
+              <button class="btn-secondary btn-block" onclick="addObject()"><i data-lucide="plus"></i> Objekt hinzufügen</button>
+              <select class="select-styled" id="presetSelect" style="margin-top:8px;">
+                <option value="garage">Beispiel: Garagenparadoxon</option>
+                <option value="einsteinzug">Beispiel: Einstein-Zug (Blitzschlag)</option>
+                <option value="bell">Beispiel: Bell'sches Raumschiffparadoxon</option>
+                <option value="myon">Beispiel: Myonenzerfall</option>
+                <option value="symmetrisch">Beispiel: Symmetrische Zeitdilatation</option>
+                <option value="zwilling">Beispiel: Zwillingsparadoxon</option>
+                <option value="zwilling_acc">Beispiel: Zwillingsparadoxon mit Beschleunigung</option>
+              </select>
+              <button class="btn-secondary btn-block" onclick="loadPreset(document.getElementById('presetSelect').value)"><i data-lucide="folder-open"></i> Gewähltes Beispiel laden</button>
+            </div>
+
+            <!-- Nur im Szenario "Zwillingsparadoxon mit Beschleunigung" sichtbar -->
+            <div class="panel-card" id="twinAccPanel" style="display:none;">
+              <div class="panel-title"><i data-lucide="spline"></i> Beschleunigter Zwilling</div>
+              <div class="field-inline">
+                <div>
+                  <label>Dauer jeder Beschleunigungsphase T<sub>b</sub> [LE]: <b id="twinAccTaLabel">2,0</b></label>
+                  <input type="range" class="beta-slider" id="twinAccTaSlider" min="0" max="5" step="0.25" value="2" oninput="updateTwinAcc(this.value)">
+                </div>
+              </div>
+              <div class="event-coords" id="twinAccReadout" style="margin-top:6px;"></div>
+              <p class="diagram-hint" style="margin-top:8px;">Die gekrümmte Weltlinie des Reisenden ist <b>nicht</b> als Bezugssystem wählbar – ein beschleunigtes Objekt besitzt kein globales Inertialsystem. Klicks auf die Kurve erzeugen keine Lichtemission.</p>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="zap"></i> Licht aussenden</div>
+              <select class="select-styled" id="emitObjSelect"></select>
+              <div class="field-inline">
+                <div>
+                  <label>ct′-Wert (im aktuellen Bezugssystem)</label>
+                  <input type="number" id="emitCtValue" value="0" step="any">
+                </div>
+              </div>
+              <button class="btn-secondary btn-block" onclick="emitFromInput()"><i data-lucide="sparkles"></i> Licht in beide Richtungen aussenden</button>
+              <p class="diagram-hint">Alternativ direkt <b>auf eine Weltlinie im Diagramm klicken</b>, um dort Licht auszusenden.</p>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-title"><i data-lucide="list-checks"></i> Ereignisse</div>
+              <div id="eventList"></div>
+              <div id="eventEmpty" class="empty-hint">Noch keine Ereignisse. Sende Licht aus, um Emissions- und Empfangsereignisse zu erzeugen.</div>
+            </div>
+
+            <div class="panel-card">
+              <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung anzeigen</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleProperTicks" onchange="render()"> Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> Gitter des aktuellen Bezugssystems anzeigen</label>
+            </div>
+            </div>
+          </div>
+
+          <!-- Diagramm -->
+          <div id="diagramCol">
+            <div class="svg-wrap">
+              <svg id="mkSvg" viewBox="0 0 760 600" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomBy(0.8)" title="Vergrößern"><i data-lucide="zoom-in"></i></button>
+                <button class="zoom-btn" onclick="zoomBy(1.25)" title="Verkleinern"><i data-lucide="zoom-out"></i></button>
+                <button class="zoom-btn" onclick="resetView()" title="Ansicht zurücksetzen"><i data-lucide="maximize"></i></button>
+                <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
+              </div>
+              <div class="step-wizard" id="stepWizard" style="display:none;"></div>
+            </div>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </section>
+
+    <!-- 3. Aufgabe -->
+    <section id="aufgabe">
+      <div class="section-head">
+        <div class="num">3</div>
+        <div>
+          <h2>Aufgabe: Das Garagenparadoxon</h2>
+          <div class="sub-line">Löse das Paradoxon mithilfe des Diagramms auf</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>Eine Garage hat in ihrem Ruhesystem eine Länge von L<sub>G</sub> = 12 m und besitzt an beiden Enden ein Tor (Eingangstor und Ausgangstor). Ein Sportwagen mit Eigenlänge L<sub>A</sub> = 20 m fährt mit β = 0,8 (γ = 5/3) auf die Garage zu.</p>
+        <p>Die Garage ist so konstruiert, dass sich in dem Moment, in dem das Auto vollständig im Inneren ist, beide Tore gleichzeitig schließen – und sich im nächsten Augenblick sofort wieder öffnen, sodass das Auto ungehindert weiterfahren kann.</p>
+
+        <table class="data-table">
+          <thead><tr><th>Größe</th><th>Wert</th></tr></thead>
+          <tbody>
+            <tr><td>Garagenlänge (Ruhesystem Garage)</td><td>L<sub>G</sub> = 12 m</td></tr>
+            <tr><td>Eigenlänge des Autos</td><td>L<sub>A</sub> = 20 m</td></tr>
+            <tr><td>Geschwindigkeit des Autos</td><td>β = 0,8 &nbsp;(γ = 5/3)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="task-item">
+          <div class="letter">a</div>
+          <div class="body">Prüfe rechnerisch: Passt das längenkontrahierte Auto aus Sicht des ruhenden Garagen-Beobachters tatsächlich genau in die Garage?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">b</div>
+          <div class="body">Prüfe rechnerisch, wie lang die Garage aus Sicht des Fahrers erscheint. Passt das Auto mit seiner Eigenlänge L<sub>A</sub> aus dieser Sicht in die kontrahierte Garage?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">c</div>
+          <div class="body">
+            Wähle im Dropdown „Garagenparadoxon" und klicke <b>„Gewähltes Beispiel laden"</b>. Es werden vier Weltlinien angelegt: das Eingangstor (ruhend bei x = 0), das Ausgangstor (ruhend bei x = 12 m), die Fahrzeugfront und das Fahrzeugheck (Ortsversatz −12 m zur Front, gleiches β) – kontrolliere die geladenen Werte.<br><br>
+            Zusätzlich sind bereits zwei Ereignisse mit aktivierter Gleichzeitigkeitslinie vorbereitet:
+            <ul>
+              <li>E₁: Fahrzeugfront erreicht das Ausgangstor</li>
+              <li>E₂: Fahrzeugheck passiert das Eingangstor</li>
+            </ul>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="letter">d</div>
+          <div class="body">Das Bezugssystem steht zunächst auf die Garage (Laborsystem S₀). Punkt und Gleichzeitigkeitslinie von E₁ und E₂ sind bereits aktiviert. Was stellst du fest?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">e</div>
+          <div class="body">Wechsle das Bezugssystem zur Fahrzeugfront (oder zum Fahrzeugheck). Beobachte, wie sich die Gleichzeitigkeitslinien mitverändern. Welches Ereignis findet jetzt zuerst statt – das Schließen welchen Tors?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">f</div>
+          <div class="body">Löse das Paradoxon in eigenen Worten auf: Warum widersprechen sich die Aussagen aus a) und b) nicht? Was genau ist relativ, und was ist invariant – etwa die Frage, ob es zu einer Kollision kommt?</div>
+        </div>
+        <div class="task-item">
+          <div class="letter">g</div>
+          <div class="body">Berechne das invariante Intervall s² = (Δx)² − (Δct)² zwischen E₁ und E₂ im Laborsystem. Aktiviere anschließend in der App für E₁ die Checkbox „Lichtkegel hier" und prüfe: Liegt E₂ innerhalb oder außerhalb dieses Lichtkegels? Erkläre, warum genau das dafür sorgt, dass die unterschiedliche Reihenfolge in Teil e) kein Verstoß gegen Ursache und Wirkung ist.</div>
+        </div>
+
+        <div class="merksatz">Tipp: Die Auflösung liegt nicht in einem Rechenfehler, sondern darin, dass „die Tore schließen sich gleichzeitig" eine Aussage ist, die an ein Bezugssystem gebunden ist. Aus Sicht des Autos schließen sich Ausgangstor und Eingangstor nicht gleichzeitig.</div>
+
+        <a href="#diagramm" class="btn-primary" style="margin-top:10px; text-decoration:none;"><i data-lucide="arrow-up"></i> Zurück zum Diagramm</a>
+      </div>
+    </section>
+
+    <!-- 4. Weitere Szenarien -->
+    <section id="szenarien">
+      <div class="section-head">
+        <div class="num">4</div>
+        <div>
+          <h2>Weitere Beispielszenarien</h2>
+          <div class="sub-line">Über das Dropdown im Diagramm-Abschnitt ladbar</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Einstein-Zug (Blitzschlag-Paradoxon)</h3>
+        <p>Das historische Ursprungs-Gedankenexperiment zur Relativität der Gleichzeitigkeit. Zwei Blitze schlagen an Spitze und Ende eines mit β = 0,6 fahrenden Zuges ein – im Bahndamm-System bei x = ±5 gleichzeitig bei ct = 0. Geladen werden vier Weltlinien: die beiden Einschlagorte (ruhend, an denen du selbst Licht aussenden kannst) sowie je ein Beobachter in der Zugmitte und in der Bahndamm-Mitte.</p>
+        <p><b>Aufgabe:</b> Nach dem Laden haben beide Blitz-Objekte bei ct = 0 bereits Licht in beide Richtungen ausgesendet. Vergleiche in der Ereignisliste, wann Bahndamm-Mitte die beiden Signale empfängt – und wann Zugmitte sie empfängt. Wechsle danach das Bezugssystem zu Zugmitte. Warum empfängt der Beobachter im Zug die beiden Blitze nicht gleichzeitig, obwohl beide Blitze in seinem eigenen Bezugssystem ebenfalls an Zuganfang und Zugende einschlagen?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Bell'sches Raumschiffparadoxon</h3>
+        <p>Zwei Raumschiffe starten im Bahndamm- bzw. Laborsystem gleichzeitig und beschleunigen identisch auf β = 0,8; ihr Ortsabstand im Laborsystem bleibt daher für alle Zeiten exakt 10 LE. Geladen werden die beiden Weltlinien „Raumschiff A" und „Raumschiff B".</p>
+        <p><b>Aufgabe:</b> Nach dem Laden sind bereits zwei Ereignisse vorbereitet – je eines auf Raumschiff A und Raumschiff B, beide bei ct = 0 mit aktivierter Gleichzeitigkeitslinie. Wechsle das Bezugssystem zu Raumschiff A und lies den Abstand zwischen den beiden Ereignissen im neuen (orthogonalen) System ab. Vergleiche den abgelesenen Abstand mit 10 LE. Ein straff gespannter, nicht dehnbarer Faden zwischen den Schiffen hätte in seinem eigenen Ruhesystem genau diese Ruhelänge nötig – reißt der Faden?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Myonenzerfall in der Atmosphäre</h3>
+        <p>Ein Myon entsteht mit β = 0,98 (γ ≈ 5,03) und bewegt sich auf eine ruhende „Erdoberfläche" bei x = 15 LE zu. Geladen werden die Weltlinien „Myon" und „Erdoberfläche" – das Myon ist zusätzlich als zeitlich ausgedehntes Objekt mit seiner Eigenlebensdauer τ₀ ≈ 3,05 LE hinterlegt (dick hervorgehobener Abschnitt seiner Weltlinie, mit Live-Messwert im Steuerungspanel).</p>
+        <p><b>Aufgabe:</b> Entstehung und Ankunft an der Erdoberfläche sind bereits als Ereignisse markiert. Prüfe rechnerisch, ob die Laborzeit ct des Ankunftsereignisses zu x = 15 und β = 0,98 passt. Wechsle dann das Bezugssystem zum Myon und beobachte zwei Dinge: Erstens den Live-Messwert „Gemessene Dauer" im Steuerungspanel – er sollte im Myon-System genau auf τ₀ ≈ 3,05 zulaufen. Zweitens den markierten Schnittpunkt der Erdoberflächen-Weltlinie mit der x′-Achse: Dort steht die Erdoberfläche bei ct′ = 0 nur noch bei x′ ≈ 2,99 statt 15 – aus Sicht des Myons ist die Flugstrecke längenkontrahiert. Vergleiche beide Zeiten und beide Strecken – wie hängt der Unterschied jeweils mit γ zusammen, und warum „schafft" das Myon trotz kurzer Eigenlebensdauer die Strecke bis zum Boden? (Beachte die Komplementarität: Im Laborsystem erklärt die Zeitdilatation den Erfolg, im Myon-System die Längenkontraktion – beide Erklärungen sind gleichwertig richtig.)</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Symmetrische Zeitdilatation</h3>
+        <p>Zwei Raketen starten am selben Ereignis (Ursprung) und entfernen sich anschließend symmetrisch mit β = ±0,6 voneinander. Geladen werden „Rakete A" und „Rakete B".</p>
+        <p><b>Aufgabe:</b> Auf Rakete A ist bereits ein Ereignis bei ct = 10 mit aktivierter Gleichzeitigkeitslinie vorbereitet. Wechsle das Bezugssystem zu Rakete A und lies ab, welcher ct′-Wert auf Rakete B dazu gleichzeitig ist. Erzeuge anschließend selbst ein Ereignis auf Rakete B, wechsle das Bezugssystem zu Rakete B und wiederhole die Ablesung in die andere Richtung. Warum sieht jede Rakete die Uhr der anderen langsamer gehen, ohne dass das ein Widerspruch ist? (Hinweis: Ohne ein gemeinsames zweites Treffen lässt sich „langsamer" nicht direkt vergleichen.)</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Zwillingsparadoxon mit Umkehr</h3>
+        <p>Ein Zwilling bleibt zu Hause (ruhend bei x = 0), der andere fliegt mit β = 0,6 fort und kehrt bei ct = 10 (Ereignis bei x = 6) mit β = −0,6 sofort um. Geladen werden „Zwilling daheim", „Zwilling Hinreise" und „Zwilling Rückreise" – letztere beginnt exakt am Umkehrereignis. Beachte: Die App zeichnet Weltlinien als unbegrenzte Geraden, Hin- und Rückreise-Linie laufen also über den Umkehrpunkt hinaus weiter. Physikalisch relevant ist nur der Streckenzug „Hinreise bis zum Umkehrereignis, danach Rückreise" – die überstehenden Geradenteile gehören nicht zur Reise.</p>
+        <p><b>Aufgabe:</b> Umkehrereignis und Wiedertreffen sind bereits als Ereignisse markiert. Vergleiche die jeweils vergangene Eigenzeit auf beiden Weltlinien zwischen Start und Wiedertreffen (Bezugssystem passend wechseln). Sende zusätzlich von Zwilling daheim aus mehrere Lichtsignale in festen Zeitabständen zum reisenden Zwilling und beobachte, wie sich die Empfangsabstände auf Hin- und Rückreise unterscheiden (relativistischer Dopplereffekt). Warum ist die Situation trotz der scheinbaren Symmetrie zwischen den beiden Zwillingen nicht symmetrisch?</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:8px; font-size:1.05rem;">Zwillingsparadoxon mit Beschleunigung (Sonderfall)</h3>
+        <p>Dieses Szenario ersetzt den unphysikalischen Knick des einfachen Zwillingsparadoxons durch <b>echte Beschleunigungsphasen mit konstanter Eigenbeschleunigung</b> (hyperbolische Bewegung). Die Reise besteht aus fünf Phasen: Beschleunigen von 0 auf β = 0,6, Reiseflug, Umkehr (von +β auf −β), Rückflug, Abbremsen auf 0 – Gesamtdauer im Ruhesystem des daheimgebliebenen Zwillings: ct = 20 LE. Über den Schieberegler im Steuerungspanel lässt sich die <b>Dauer T<sub>b</sub> jeder Beschleunigungsphase</b> einstellen: Bei T<sub>b</sub> = 0 entsteht der bekannte Knick, bei T<sub>b</sub> = 5 besteht die Reise nur noch aus Beschleunigungsphasen (vollständig glatte Kurve).</p>
+        <p>Die zugehörige Mathematik: In jedem Beschleunigungsabschnitt gilt konstante Eigenbeschleunigung α = γβ/T<sub>b</sub>, die Weltlinie ist dort eine Hyperbel x(t) = (√(1+α²t²) − 1)/α, und die Eigenzeit eines solchen Abschnitts beträgt τ = arsinh(α·T<sub>b</sub>)/α. Wichtig: <b>Die SRT kann beschleunigte Bewegungen problemlos beschreiben</b> – die Eigenzeit ist einfach das Wegintegral entlang der Weltlinie. Erst beschleunigte <i>Bezugssysteme</i> sprengen den Rahmen; deshalb ist die gekrümmte Weltlinie hier bewusst nicht als Bezugssystem wählbar.</p>
+        <p><b>Aufgabe:</b> Aktiviere die Checkbox <b>„Eigenzeit-Ticks auf Weltlinien"</b> – jetzt trägt jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1. Zähle die Ticks auf beiden Weltlinien zwischen Abreise und Wiedertreffen: daheim 20, auf der Reise nur 16–18 (je nach T<sub>b</sub>). Beobachte außerdem, dass die Ticks auf den schnellen Abschnitten der Reise <i>weiter auseinander</i> liegen – die bewegte Uhr tickt in Koordinatenzeit gedehnt, das ist Zeitdilatation als sichtbarer Prozess. Variiere dann T<sub>b</sub> von 0 bis 5 und beobachte im Steuerungspanel, wie sich die Eigenzeit des Reisenden verändert (bei T<sub>b</sub> = 0: τ = 16 LE, bei T<sub>b</sub> = 5: τ ≈ 18,48 LE, daheim immer 20 LE). Erkläre zwei Dinge: Erstens, warum am Umkehrpunkt nichts Singuläres passiert – der Altersunterschied entsteht nicht durch ein mysteriöses Ereignis „beim Umkehren", sondern akkumuliert sich entlang der gesamten Weltlinie (sichtbar an den Ticks: sie sind überall dort gedehnt, wo die Geschwindigkeit hoch ist, nicht nur am Umkehrpunkt). Zweitens, warum die gerade Weltlinie des daheimgebliebenen Zwillings die <i>längste</i> Eigenzeit hat – das Minkowski-Gegenstück zur kürzesten Verbindungsstrecke in der euklidischen Geometrie. Wechsle auch das Bezugssystem (z. B. zu einem hinzugefügten Objekt mit β = 0,6) und beobachte, dass die Hyperbelabschnitte in jedem Inertialsystem Hyperbeln bleiben.</p>
+        <p class="diagram-hint">Hinweis: Beschleunigte Weltlinien gibt es ausschließlich in diesem Szenario. Die gekrümmte Kurve reagiert nicht auf Klicks (keine Lichtemission) und erzeugt keine automatischen Empfangsereignisse für Lichtstrahlen – Lichtsignale lassen sich aber weiterhin von allen geraden Weltlinien aus senden und qualitativ mit der Kurve vergleichen.</p>
+      </div>
+    </section>
+
+    <!-- 5. KI-Tutor-Prompt -->
+    <section id="ki-tutor">
+      <div class="section-head">
+        <div class="num">5</div>
+        <div>
+          <h2>KI-Tutor-Prompt</h2>
+          <div class="sub-line">Systemprompt für einen sokratischen KI-Begleiter zu dieser App – zum Kopieren</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <p>Der folgende Text ist als Systemprompt gedacht (z. B. für Claude, ChatGPT oder ein anderes Sprachmodell), das den Schülerinnen und Schülern parallel zur App als Lernbegleiter zur Seite steht. Er instruiert die KI, bei der Bedienung zu helfen, selbst Vorschläge zum Ausprobieren zu machen, Konzepte auf Nachfrage zu erklären – und vor allem, aus den Fragen und Aktionen der Schülerinnen und Schüler Wissenslücken und Fehlvorstellungen herauszuhören und sokratisch statt belehrend zu adressieren.</p>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="copyTutorPrompt()"><i data-lucide="copy" id="copyIcon"></i> <span id="copyLabel">Prompt kopieren</span></button>
+        </div>
+        <textarea id="tutorPromptText" class="prompt-box" readonly></textarea>
+      </div>
+    </section>
+
+    <footer>
+      Gymnasium Thomaeum Kempen · Physik Sekundarstufe II · Minkowski-Diagramm
+    </footer>
+
+  </main>
+</div>
+
+<script src="fonts/lucide.min.js"></script>
+<script>
+/* ---------- Icons ---------- */
+if (window.lucide) { lucide.createIcons(); }
+
+/* ---------- Dark Mode ---------- */
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+  const icon = document.getElementById('dark-icon');
+  const isDark = document.body.classList.contains('dark');
+  icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  if (window.lucide) lucide.createIcons();
+  render();
+}
+
+/* ---------- Scroll Progress ---------- */
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ---------- Reveal Animation ---------- */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ---------- Akkordeon ---------- */
+function toggleAccordion(header){
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.toggle('open');
+  body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : null;
+}
+
+/* ================================================================
+   PHYSIK & ZUSTAND: Minkowski-Diagramm
+   ================================================================ */
+
+const OBJ_COLORS = ['#1a6fb5','#dc2626','#16a34a','#f59e0b','#7c3aed','#0891b2','#db2777'];
+
+let objects = [];      // {id, name, color, beta, x0, ct0}
+let events = [];       // {id, kind:'emission'|'reception', objectId, xLab, ctLab, showPoint, showSim, label}
+let rays = [];         // {id, emissionId, dir, x0, ct0}
+let referenceId = 'S0';
+let nextId = 1;
+
+let displayBeta = 0;   // aktuell dargestelltes β_ref (animiert während eines Bezugssystemwechsels)
+let animToken = 0;     // invalidiert veraltete Animationsschleifen bei schnellem Umschalten
+const FRAME_ANIM_MS = 2000;
+
+function uid(){ return 'o' + (nextId++); }
+
+/* ---------- Geometrie-Hilfsfunktionen ---------- */
+function xOnWorldline(obj, ct){ return obj.x0 + obj.beta * (ct - obj.ct0); }
+
+function lorentz(x, ct, beta){
+  if (beta === 0) return { x, ct };
+  const gamma = 1/Math.sqrt(1-beta*beta);
+  return { x: gamma*(x-beta*ct), ct: gamma*(ct-beta*x) };
+}
+
+/* Ausgedehnte Objekte: Eigenlänge/Eigendauer sind Eigenschaften im Ruhesystem des Objekts.
+   Die im aktuell gewählten Bezugssystem GEMESSENE Länge bzw. Dauer folgt aus der
+   Relativgeschwindigkeit zwischen Objekt und Bezugssystem (Geschwindigkeitsaddition ergibt
+   sich automatisch aus der Transformation der Richtungsvektoren, siehe transformDir). */
+function objGamma(beta){ return 1/Math.sqrt(1-beta*beta); }
+function relativeBeta(beta, betaRef){ return (beta-betaRef) / (1-beta*betaRef); }
+function measuredLength(obj, betaRef){
+  if (obj.extentType !== 'length' || !obj.extentValue) return null;
+  const betaRel = relativeBeta(obj.beta, betaRef);
+  return obj.extentValue * Math.sqrt(1 - betaRel*betaRel); // Längenkontraktion
+}
+function measuredDuration(obj, betaRef){
+  if (obj.extentType !== 'duration' || !obj.extentValue) return null;
+  const betaRel = relativeBeta(obj.beta, betaRef);
+  return obj.extentValue / Math.sqrt(1 - betaRel*betaRel); // Zeitdilatation
+}
+
+function targetBetaRef(){
+  if (referenceId === 'S0') return 0;
+  const o = objects.find(o=>o.id===referenceId);
+  return o ? o.beta : 0;
+}
+/* Während einer Animation liefert dies den aktuell angezeigten (interpolierten) Wert,
+   sonst identisch zu targetBetaRef(). Alle Zeichen- und Ableseroutinen nutzen diese Funktion. */
+function currentBetaRef(){
+  return displayBeta;
+}
+
+/* Schnittpunkt zweier Geraden, jeweils durch Punkt p + Richtungsvektor d gegeben:
+   p1 + t1*d1 = p2 + t2*d2   (einheitliche Konvention, auch für senkrechte/waagerechte Fälle) */
+function intersectLines(p1, d1, p2, d2){
+  const denom = d1.x*d2.ct - d1.ct*d2.x;
+  if (Math.abs(denom) < 1e-12) return null; // parallel, kein Schnittpunkt
+  const t1 = ((p2.x-p1.x)*d2.ct - (p2.ct-p1.ct)*d2.x) / denom;
+  return { x: p1.x + t1*d1.x, ct: p1.ct + t1*d1.ct };
+}
+
+/* ---------- Objekte verwalten ---------- */
+function addObject(preset){
+  const id = uid();
+  const color = OBJ_COLORS[objects.length % OBJ_COLORS.length];
+  const obj = Object.assign({
+    id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0,
+    extentType: 'none',   // 'none' | 'length' | 'duration' | 'area'
+    extentValue: 0,       // Eigenlänge L₀ (length/area) oder Eigendauer τ₀ (duration)
+    extentValue2: 0       // Eigendauer τ₀ (nur für area-Typ)
+  }, preset || {});
+  objects.push(obj);
+  if (objects.length === 1) referenceId = 'S0';
+  renderObjList();
+  renderEmitSelect();
+  render();
+}
+
+function updateObjectExtent(id, field, value){
+  const o = objects.find(o=>o.id===id);
+  if (!o) return;
+  if (field === 'type') o.extentType = value;
+  else if (field === 'value2') o.extentValue2 = Math.max(0, parseFloat(value) || 0);
+  else o.extentValue = Math.max(0, parseFloat(value) || 0);
+  renderObjList();
+  render();
+}
+
+function removeObject(id){
+  objects = objects.filter(o=>o.id!==id);
+  events = events.filter(e=>e.objectId!==id);
+  rays = rays.filter(r=>{
+    const em = events.find(e=>e.id===r.emissionId);
+    return em !== undefined;
+  });
+  if (stepWizard && (stepWizard.fromId===id || stepWizard.toId===id)){
+    stepWizard = null;
+    constructionAxis = null;
+    const swEl = document.getElementById('stepWizard');
+    if (swEl) swEl.style.display = 'none';
+  }
+  if (referenceId === id){ referenceId = 'S0'; displayBeta = 0; animToken++; }
+  renderObjList(); renderEmitSelect(); renderEventList(); render();
+}
+
+function cloneObject(id){
+  const src = objects.find(o=>o.id===id);
+  if (!src) return;
+  const clone = {
+    id: uid(),
+    name: src.name + ' (Kopie)',
+    color: OBJ_COLORS[objects.length % OBJ_COLORS.length],
+    beta: src.beta, x0: src.x0, ct0: src.ct0,
+    extentType: src.extentType || 'none',
+    extentValue: src.extentValue || 0,
+    extentValue2: src.extentValue2 || 0
+  };
+  objects.push(clone);
+  renderObjList();
+  renderEmitSelect();
+  render();
+}
+
+function updateObject(id, field, value){
+  const o = objects.find(o=>o.id===id);
+  if (!o) return;
+  if (stepWizard && (stepWizard.fromId===id || stepWizard.toId===id) && field!=='name' && field!=='color'){
+    cancelStepWizard(); // Parameteränderung eines beteiligten Objekts macht die Wizard-Zahlen ungültig
+  }
+  if (field==='name') o.name = value;
+  else if (field==='color') o.color = value;
+  else {
+    const num = parseFloat(value);
+    if (isNaN(num)){ renderObjList(); return; } // ungültige Eingabe: alten Wert behalten
+    o[field] = num;
+  }
+  if (o.beta >= 1) o.beta = 0.999;
+  if (o.beta <= -1) o.beta = -0.999;
+  if (id === referenceId){ animToken++; displayBeta = o.beta; } // direktes Nachführen, keine Animation beim Reglerziehen
+  renderObjList(); renderEmitSelect(); renderEventList(); render();
+}
+
+let stepModeEnabled = false; // Checkbox „Bezugssystemwechsel Schritt für Schritt erklären"
+let stepWizard = null;       // pausierbarer Konstruktionsdialog
+let constructionAxis = null; // {fromId,toId,fromName,toName,startBeta,endBeta,betaRel,progress,persistent}
+const AXIS_DRAW_MS = 1000;
+
+function setReference(id){
+  if (id === referenceId && !constructionAxis) return;
+  if (stepModeEnabled){
+    openStepWizard(id);
+    return;
+  }
+  beginAnimatedReferenceChange(id);
+}
+
+function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
+/* Der automatische Übergang folgt derselben didaktischen Reihenfolge wie der Wizard:
+   1. Die neue x′-Achse wird im ALTEN, weiterhin orthogonalen Bezugssystem eingezeichnet.
+   2. Erst danach wird das Diagramm in das neue, orthogonal dargestellte Bezugssystem überführt. */
+function beginAnimatedReferenceChange(toId){
+  animToken++;
+  const myToken = animToken;
+  const fromId = referenceId;
+  const startBeta = displayBeta;
+  const endBeta = toId==='S0' ? 0 : ((objects.find(o=>o.id===toId)||{}).beta || 0);
+  const betaRel = relativeBeta(endBeta, startBeta);
+  constructionAxis = {
+    fromId, toId, fromName:frameName(fromId), toName:frameName(toId),
+    startBeta, endBeta, betaRel, progress:0, persistent:false
+  };
+  renderObjList();
+  const t0 = performance.now();
+  function drawAxis(now){
+    if (myToken !== animToken) return;
+    const t = Math.min(1, (now-t0)/AXIS_DRAW_MS);
+    constructionAxis.progress = easeInOutCubic(t);
+    render();
+    if (t < 1) requestAnimationFrame(drawAxis);
+    else {
+      referenceId = toId;
+      renderObjList(); renderEventList();
+      animateFrameChange(startBeta, endBeta, ()=>{ constructionAxis = null; render(); });
+    }
+  }
+  requestAnimationFrame(drawAxis);
+}
+
+/* Sanfter Übergang zur orthogonalen Darstellung des neuen Bezugssystems. */
+function animateFrameChange(startBeta, endBeta, onComplete){
+  animToken++;
+  const myToken = animToken;
+  const t0 = performance.now();
+  function step(now){
+    if (myToken !== animToken) return;
+    const t = Math.min(1, (now-t0)/FRAME_ANIM_MS);
+    displayBeta = startBeta + (endBeta-startBeta)*easeInOutCubic(t);
+    render();
+    updateFrameIndicator();
+    updateEventCoordsOnly();
+    updateExtentReadouts();
+    if (t < 1) requestAnimationFrame(step);
+    else {
+      displayBeta = endBeta;
+      if (onComplete) onComplete();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- Schritt-für-Schritt-Wizard ---------- */
+function frameName(id){
+  return id==='S0' ? 'Laborsystem S₀' : ((objects.find(o=>o.id===id)||{}).name || 'S₀');
+}
+
+function openStepWizard(toId){
+  animToken++;
+  const fromId = referenceId;
+  const startBeta = displayBeta;
+  const endBeta = toId==='S0' ? 0 : ((objects.find(o=>o.id===toId)||{}).beta || 0);
+  const betaRel = relativeBeta(endBeta, startBeta);
+  stepWizard = {
+    fromId, toId, fromName:frameName(fromId), toName:frameName(toId),
+    startBeta, endBeta, betaRel, gammaRel:1/Math.sqrt(1-betaRel*betaRel), phase:1
+  };
+  constructionAxis = {...stepWizard, progress:1, persistent:false};
+  renderObjList();
+  render();
+  renderStepWizard();
+}
+
+function cancelStepWizard(){
+  if (!stepWizard) return;
+  animToken++;
+  stepWizard = null;
+  constructionAxis = null;
+  document.getElementById('stepWizard').style.display = 'none';
+  renderObjList(); render(); updateFrameIndicator();
+}
+
+function stepWizardNext(){
+  if (!stepWizard) return;
+  stepWizard.phase = 2;
+  renderStepWizard();
+}
+
+/* Verzicht auf die Winkeländerung: Das alte Bezugssystem bleibt das Anzeigesystem.
+   Die konstruierte x′-Achse bleibt als Vergleichsachse sichtbar. Aktivierte Gleichzeitigkeitslinien bleiben parallel zu ihr geneigt. */
+function stepWizardKeepAxis(){
+  if (!stepWizard) return;
+  constructionAxis = {...constructionAxis, progress:1, persistent:true};
+  stepWizard = null;
+  document.getElementById('stepWizard').style.display = 'none';
+  renderObjList(); render(); updateFrameIndicator();
+}
+
+function stepWizardPlay(){
+  if (!stepWizard) return;
+  const sw = stepWizard;
+  referenceId = sw.toId;
+  renderObjList(); renderEventList();
+  renderStepWizard(true);
+  animateFrameChange(sw.startBeta, sw.endBeta, ()=>{
+    stepWizard = null;
+    constructionAxis = null;
+    document.getElementById('stepWizard').style.display = 'none';
+    render();
+  });
+}
+
+function renderStepWizard(playing){
+  const el = document.getElementById('stepWizard');
+  if (!stepWizard){ el.style.display='none'; return; }
+  const sw = stepWizard;
+  el.style.display = 'block';
+  const angleDeg = Math.atan(Math.abs(sw.betaRel)) * 180/Math.PI;
+  if (sw.phase === 1){
+    el.innerHTML = `
+      <div class="step-wizard-title">
+        <span>Schritt 1/2 · Neue x′-Achse</span>
+        <button class="step-wizard-close" onclick="cancelStepWizard()" title="Abbrechen"><i data-lucide="x"></i></button>
+      </div>
+      <p>Das Diagramm bleibt zunächst vollständig im bisherigen Bezugssystem <b>${sw.fromName}</b>. Nur die x′-Achse des neuen Systems <b>${sw.toName}</b> wird darin eingezeichnet. Bereits aktivierte Gleichzeitigkeitslinien verlaufen nun gestrichelt parallel zu dieser neuen Achse.</p>
+      <div class="formula-box">
+        <span class="label">Lage der neuen x′-Achse im bisherigen System</span>
+        ct = β<sub>rel</sub>·x &nbsp;&nbsp;mit&nbsp;&nbsp; β<sub>rel</sub> = ${sw.betaRel.toFixed(3)}
+      </div>
+      <p style="font-size:.78rem;color:var(--text-muted);">Noch wurden weder die alten Achsen noch Weltlinien, Ereignisse oder Lichtstrahlen gedreht. Die neue x′-Achse ist als geneigte Konstruktionslinie ergänzt; die gestrichelten Gleichzeitigkeitslinien des neuen Systems können daran bereits abgelesen werden.</p>
+      <div class="step-wizard-actions">
+        <button class="btn-secondary" onclick="stepWizardKeepAxis()">Ohne Winkeländerung beenden</button>
+        <button class="btn-primary" onclick="stepWizardNext()">Weiter <i data-lucide="arrow-right"></i></button>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div class="step-wizard-title">
+        <span>Schritt 2/2 · Orthogonale Darstellung</span>
+        <button class="step-wizard-close" onclick="cancelStepWizard()" title="Abbrechen"><i data-lucide="x"></i></button>
+      </div>
+      <p>Nun kann das gesamte Diagramm so umgerechnet werden, dass <b>${sw.toName}</b> selbst orthogonal erscheint. Erst in diesem Schritt ändern sich die Winkel aller dargestellten Linien.</p>
+      <div class="formula-box">
+        <span class="label">Neigung der zuvor konstruierten x′-Achse</span>
+        tan θ = β<sub>rel</sub> = ${sw.betaRel.toFixed(3)} &nbsp;→&nbsp; θ ≈ ${angleDeg.toFixed(1)}°
+      </div>
+      ${playing
+        ? `<p style="font-size:.82rem;color:var(--text-muted);"><i data-lucide="loader-circle"></i> Winkeländerung läuft …</p>`
+        : `<div class="step-wizard-actions"><button class="btn-secondary" onclick="stepWizardKeepAxis()">Darauf verzichten</button><button class="btn-primary" onclick="stepWizardPlay()"><i data-lucide="play"></i> Winkel verändern</button></div>`
+      }`;
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ---------- UI: Objektliste ---------- */
+function renderObjList(){
+  const wrap = document.getElementById('objList');
+  wrap.innerHTML = '';
+  objects.forEach(o=>{
+    const row = document.createElement('div');
+    row.className = 'obj-row';
+    row.innerHTML = `
+      <div class="obj-row-head">
+        <input type="color" class="obj-swatch" value="${o.color}" onchange="updateObject('${o.id}','color',this.value)">
+        <input type="text" value="${o.name}" onchange="updateObject('${o.id}','name',this.value)">
+        <button class="obj-del" onclick="cloneObject('${o.id}')" title="Klonen"><i data-lucide="copy"></i></button>
+        <button class="obj-del" onclick="removeObject('${o.id}')" title="Entfernen"><i data-lucide="trash-2"></i></button>
+      </div>
+      <div class="obj-fields">
+        <div><label>x₀ [LE]</label><input type="number" step="any" value="${o.x0}" onchange="updateObject('${o.id}','x0',this.value)"></div>
+        <div><label>ct₀ [LE]</label><input type="number" step="any" value="${o.ct0}" onchange="updateObject('${o.id}','ct0',this.value)"></div>
+        <div><label>β = ${o.beta.toFixed(3)}</label><input type="number" step="0.01" min="-0.999" max="0.999" value="${o.beta}" onchange="updateObject('${o.id}','beta',this.value)"></div>
+      </div>
+      <input type="range" class="beta-slider" min="-0.99" max="0.99" step="0.01" value="${o.beta}" oninput="updateObject('${o.id}','beta',this.value)">
+      <div class="obj-fields" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <label>Ausdehnung</label>
+          <select class="select-styled" style="margin-bottom:0;padding:5px 6px;font-size:.82rem;" onchange="updateObjectExtent('${o.id}','type',this.value)">
+            <option value="none"     ${o.extentType==='none'    ?'selected':''}>keine</option>
+            <option value="length"   ${o.extentType==='length'  ?'selected':''}>Länge (räumlich)</option>
+            <option value="duration" ${o.extentType==='duration'?'selected':''}>Dauer (zeitlich)</option>
+            <option value="area"     ${o.extentType==='area'    ?'selected':''}>Länge + Dauer (Fläche)</option>
+          </select>
+        </div>
+        <div ${o.extentType==='none'?'style="display:none;"':''}>
+          <label>${o.extentType==='duration' ? 'Eigendauer τ₀ [LE]' : 'Eigenlänge L₀ [LE]'}</label>
+          <input type="number" step="any" min="0" value="${o.extentValue||0}" onchange="updateObjectExtent('${o.id}','value',this.value)">
+        </div>
+      </div>
+      <div ${o.extentType!=='area'?'style="display:none;"':''}>
+        <div style="margin-top:5px;">
+          <label style="font-size:.68rem;color:var(--text-muted);display:block;margin-bottom:2px;">Eigendauer τ₀ [LE] (für Fläche)</label>
+          <input type="number" step="any" min="0" value="${o.extentValue2||0}" style="width:100%;padding:5px 6px;border-radius:7px;border:1px solid var(--glass-border);background:var(--surface);color:var(--text);font-size:.82rem;" onchange="updateObjectExtent('${o.id}','value2',this.value)">
+        </div>
+      </div>
+      <div class="event-coords" id="extentReadout_${o.id}" style="${o.extentType==='none'?'display:none;':''}margin-top:4px;"></div>
+      <div class="obj-ref-row">
+        <input type="radio" name="refChoice" id="ref_${o.id}" ${referenceId===o.id?'checked':''} onchange="setReference('${o.id}')">
+        <label for="ref_${o.id}">als Bezugssystem verwenden</label>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  // Laborsystem-Radio am Ende
+  const labRow = document.createElement('div');
+  labRow.className = 'obj-ref-row';
+  labRow.style.margin = '4px 2px 10px';
+  labRow.innerHTML = `<input type="radio" name="refChoice" id="ref_S0" ${referenceId==='S0'?'checked':''} onchange="setReference('S0')">
+    <label for="ref_S0">Laborsystem S₀ als Bezugssystem verwenden</label>`;
+  wrap.appendChild(labRow);
+  if (window.lucide) lucide.createIcons();
+  updateExtentReadouts();
+  updateFrameIndicator();
+}
+
+function updateFrameIndicator(){
+  const beta = currentBetaRef();
+  const gamma = 1/Math.sqrt(1-beta*beta);
+  // Bei offenem Schritt-Wizard zeigt das Diagramm noch das ALTE Bezugssystem an –
+  // Name und β/γ müssen konsistent dazu bleiben, bis "Abspielen" gedrückt wird.
+  const effectiveId = (stepWizard && referenceId===stepWizard.fromId) ? stepWizard.fromId : referenceId;
+  const name = effectiveId==='S0' ? 'Laborsystem S₀' : (objects.find(o=>o.id===effectiveId)||{}).name || 'S₀';
+  document.getElementById('frameLabel').textContent = name;
+  document.getElementById('frameBeta').textContent = beta.toFixed(3);
+  document.getElementById('frameGamma').textContent = gamma.toFixed(3);
+}
+
+/* ---------- UI: Emissions-Auswahl ---------- */
+function renderEmitSelect(){
+  const sel = document.getElementById('emitObjSelect');
+  const previous = sel.value; // Auswahl über den Neuaufbau hinweg erhalten
+  sel.innerHTML = '';
+  if (objects.length===0){
+    sel.innerHTML = '<option>Zuerst ein Objekt anlegen</option>';
+    return;
+  }
+  objects.forEach(o=>{
+    const opt = document.createElement('option');
+    opt.value = o.id; opt.textContent = o.name;
+    sel.appendChild(opt);
+  });
+  if (objects.some(o=>o.id===previous)) sel.value = previous;
+}
+
+function emitFromInput(){
+  const sel = document.getElementById('emitObjSelect');
+  const objId = sel.value;
+  const obj = objects.find(o=>o.id===objId);
+  if (!obj) return;
+  const ctPrime = parseFloat(document.getElementById('emitCtValue').value) || 0;
+  // Die Eingabe ist der ct'-Wert im AKTUELL ANGEZEIGTEN Bezugssystem (so liest der Nutzer das
+  // Diagramm ab). Zurückrechnen auf die Lab-Koordinatenzeit des Weltlinienpunkts:
+  // ct' = γ·[ct·(1−β_ref·β) − β_ref·(x0 − β·ct0)]  →  nach ct auflösen.
+  const bRef = currentBetaRef();
+  const g = 1/Math.sqrt(1-bRef*bRef);
+  const ctLab = (ctPrime/g + bRef*(obj.x0 - obj.beta*obj.ct0)) / (1 - bRef*obj.beta);
+  emitLight(obj, ctLab);
+}
+
+/* ---------- Lichtemission & Ereignisse ---------- */
+function emitLight(obj, ctEmit){
+  const xEmit = xOnWorldline(obj, ctEmit);
+  const emissionEvent = {
+    id: uid(), kind:'emission', objectId: obj.id,
+    xLab: xEmit, ctLab: ctEmit, showPoint: true, showSim: false, showCone: false,
+    label: `Emission auf ${obj.name}`
+  };
+  events.push(emissionEvent);
+
+  [1,-1].forEach(dir=>{
+    const rayId = uid();
+    rays.push({ id: rayId, emissionId: emissionEvent.id, dir, x0: xEmit, ct0: ctEmit });
+    // Schnittpunkte mit allen anderen Weltlinien (nur vorwärts in der Zeit)
+    objects.forEach(other=>{
+      if (other.id === obj.id) return;
+      const pt = intersectLines({x:xEmit, ct:ctEmit}, {x:dir, ct:1}, {x:other.x0, ct:other.ct0}, {x:other.beta, ct:1});
+      if (!pt) return;
+      if (pt.ct < ctEmit - 1e-9) return; // nur Zukunft
+      events.push({
+        id: uid(), kind:'reception', objectId: other.id,
+        xLab: pt.x, ctLab: pt.ct, showPoint: true, showSim: false, showCone: false,
+        label: `Empfang auf ${other.name}`
+      });
+    });
+  });
+
+  renderEventList();
+  render();
+}
+
+function removeEvent(id){
+  events = events.filter(e=>e.id!==id);
+  rays = rays.filter(r=>r.emissionId!==id);
+  renderEventList(); render();
+}
+
+function toggleEventField(id, field, value){
+  const e = events.find(e=>e.id===id);
+  if (!e) return;
+  e[field] = value;
+  render();
+}
+
+/* Aktualisiert nur die Zahlenwerte in der Ereignisliste, ohne die Zeilen neu aufzubauen –
+   wird während der 2s-Animation eines Bezugssystemwechsels bei jedem Frame aufgerufen. */
+function updateEventCoordsOnly(){
+  const beta = currentBetaRef();
+  events.forEach(e=>{
+    const el = document.getElementById('coord_' + e.id);
+    if (!el) return;
+    const f = lorentz(e.xLab, e.ctLab, beta);
+    el.innerHTML = `x′ = ${f.x.toFixed(2)} LE &nbsp;·&nbsp; ct′ = ${f.ct.toFixed(2)} LE`;
+  });
+}
+
+/* Aktualisiert die "gemessene Länge/Dauer im aktuellen Bezugssystem"-Anzeige jedes ausgedehnten
+   Objekts – wird bei jedem render() aufgerufen, läuft also auch während der 2s-Animation live mit. */
+function updateExtentReadouts(){
+  const betaRef = currentBetaRef();
+  objects.forEach(o=>{
+    const el = document.getElementById('extentReadout_' + o.id);
+    if (!el) return;
+    if (o.extentType === 'length' && o.extentValue > 0){
+      const L = measuredLength(o, betaRef);
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Länge hier: <b>${L.toFixed(2)} LE</b> (Eigenlänge: ${o.extentValue.toFixed(2)} LE)`;
+    } else if (o.extentType === 'duration' && o.extentValue > 0){
+      const T = measuredDuration(o, betaRef);
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Dauer hier: <b>${T.toFixed(2)} LE</b> (Eigendauer: ${o.extentValue.toFixed(2)} LE)`;
+    } else if (o.extentType === 'area' && (o.extentValue > 0 || o.extentValue2 > 0)){
+      const L = o.extentValue > 0 ? measuredLength(o, betaRef) : 0;
+      const T = o.extentValue2 > 0 ? measuredDuration({...o, extentType:'duration', extentValue:o.extentValue2}, betaRef) : 0;
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Länge: <b>${L.toFixed(2)} LE</b> · Gemessene Dauer: <b>${T.toFixed(2)} LE</b>`;
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+/* ---------- UI: Ereignisliste ---------- */
+function renderEventList(){
+  const wrap = document.getElementById('eventList');
+  const empty = document.getElementById('eventEmpty');
+  wrap.innerHTML = '';
+  const beta = currentBetaRef();
+  if (events.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  events.forEach((e,i)=>{
+    const f = lorentz(e.xLab, e.ctLab, beta);
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    row.innerHTML = `
+      <div class="event-row-head">
+        <b>E${i+1} · ${e.label}</b>
+        <button class="event-del" onclick="removeEvent('${e.id}')" title="Entfernen"><i data-lucide="x"></i></button>
+      </div>
+      <div class="event-coords" id="coord_${e.id}">x′ = ${f.x.toFixed(2)} LE &nbsp;·&nbsp; ct′ = ${f.ct.toFixed(2)} LE</div>
+      <div class="event-toggles">
+        <label><input type="checkbox" ${e.showPoint?'checked':''} onchange="toggleEventField('${e.id}','showPoint',this.checked)"> Punkt</label>
+        <label><input type="checkbox" ${e.showSim?'checked':''} onchange="toggleEventField('${e.id}','showSim',this.checked)"> Gleichzeitigkeitslinie</label>
+        <label><input type="checkbox" ${e.showCone?'checked':''} onchange="toggleEventField('${e.id}','showCone',this.checked)"> Lichtkegel hier</label>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ---------- Beispielszenarien ---------- */
+const PRESETS = {
+  garage: [
+    { name:'Eingangstor',     color:'#334155', beta:0,    x0:0,  ct0:0 },
+    { name:'Ausgangstor',     color:'#64748b', beta:0,    x0:12, ct0:0 },
+    { name:'Fahrzeugfront',   color:'#dc2626', beta:0.8,  x0:0,  ct0:0 },
+    { name:'Fahrzeugheck',    color:'#f59e0b', beta:0.8,  x0:-12,ct0:0 }
+  ],
+  einsteinzug: [
+    { name:'Blitz Zugspitze',          color:'#dc2626', beta:0,   x0:5,  ct0:0 },
+    { name:'Blitz Zugende',            color:'#f59e0b', beta:0,   x0:-5, ct0:0 },
+    { name:'Zugmitte (Beobachter M′)', color:'#1a6fb5', beta:0.6, x0:0,  ct0:0 },
+    { name:'Bahndamm-Mitte (Beobachter M)', color:'#334155', beta:0, x0:0, ct0:0 }
+  ],
+  bell: [
+    { name:'Raumschiff A', color:'#dc2626', beta:0.8, x0:0,  ct0:0 },
+    { name:'Raumschiff B', color:'#1a6fb5', beta:0.8, x0:10, ct0:0 }
+  ],
+  myon: [
+    { name:'Myon',          color:'#7c3aed', beta:0.98, x0:0,  ct0:0,
+      extentType:'duration', extentValue: (15/0.98) * Math.sqrt(1 - 0.98*0.98) },
+    { name:'Erdoberfläche', color:'#334155', beta:0,     x0:15, ct0:0 }
+  ],
+  symmetrisch: [
+    { name:'Rakete A', color:'#dc2626', beta:0.6,  x0:0, ct0:0 },
+    { name:'Rakete B', color:'#1a6fb5', beta:-0.6, x0:0, ct0:0 }
+  ],
+  zwilling: [
+    { name:'Zwilling daheim',    color:'#334155', beta:0,    x0:0, ct0:0 },
+    { name:'Zwilling Hinreise',  color:'#dc2626', beta:0.6,  x0:0, ct0:0 },
+    { name:'Zwilling Rückreise', color:'#1a6fb5', beta:-0.6, x0:6, ct0:10 }
+  ],
+  zwilling_acc: [
+    { name:'Zwilling daheim', color:'#334155', beta:0, x0:0, ct0:0 }
+  ]
+};
+
+/* Erzeugt ein Ereignis direkt an vorgegebenen Lab-Koordinaten (ohne Lichtemission),
+   z.B. für vorbereitete Szenario-Ereignisse wie "Front erreicht Ausgangstor". */
+function addManualEvent(objectId, xLab, ctLab, label, opts){
+  opts = opts || {};
+  const ev = {
+    id: uid(), kind: opts.kind || 'reception', objectId, xLab, ctLab,
+    showPoint: opts.showPoint !== undefined ? opts.showPoint : true,
+    showSim: opts.showSim || false,
+    showCone: opts.showCone || false,
+    label
+  };
+  events.push(ev);
+  return ev;
+}
+
+/* Legt für ein geladenes Szenario die passenden, didaktisch zentralen Ereignisse
+   automatisch an, damit jedes Beispiel direkt mit sichtbaren Ereignissen startet. */
+function applyPresetEvents(key, objs){
+  switch(key){
+    case 'garage':
+      addManualEvent(objs['Fahrzeugfront'].id, 12, 15, 'E1: Front erreicht Ausgangstor', {showSim:true});
+      addManualEvent(objs['Fahrzeugheck'].id, 0, 15, 'E2: Heck passiert Eingangstor', {showSim:true});
+      break;
+    case 'einsteinzug':
+      // Beide Blitzeinschläge senden bei ct=0 Licht in beide Richtungen aus (wie im Original-Gedankenexperiment)
+      emitLight(objs['Blitz Zugspitze'], 0);
+      emitLight(objs['Blitz Zugende'], 0);
+      break;
+    case 'bell':
+      addManualEvent(objs['Raumschiff A'].id, 0, 0, 'Position von Raumschiff A bei ct=0', {showSim:true});
+      addManualEvent(objs['Raumschiff B'].id, 10, 0, 'Position von Raumschiff B bei ct=0', {showSim:true});
+      break;
+    case 'myon': {
+      addManualEvent(objs['Myon'].id, 0, 0, 'Entstehung des Myons');
+      const ctArrival = 15/0.98;
+      addManualEvent(objs['Myon'].id, 15, ctArrival, 'Ankunft an der Erdoberfläche', {showSim:true});
+      break;
+    }
+    case 'symmetrisch':
+      addManualEvent(objs['Rakete A'].id, 6, 10, 'Ereignis auf Rakete A bei ct=10', {showSim:true});
+      break;
+    case 'zwilling':
+      addManualEvent(objs['Zwilling Hinreise'].id, 6, 10, 'Umkehrereignis', {showSim:true});
+      addManualEvent(objs['Zwilling daheim'].id, 0, 20, 'Wiedertreffen der Zwillinge', {showSim:true});
+      break;
+    case 'zwilling_acc':
+      addManualEvent(objs['Zwilling daheim'].id, 0, 0, 'Abreise', {showPoint:true});
+      addManualEvent(objs['Zwilling daheim'].id, 0, 20, 'Wiedertreffen der Zwillinge', {showSim:true});
+      break;
+  }
+}
+
+function loadPreset(key){
+  const preset = PRESETS[key];
+  if (!preset) return;
+  stepWizard = null;
+  constructionAxis = null;
+  const swEl = document.getElementById('stepWizard');
+  if (swEl) swEl.style.display = 'none';
+  objects = []; events = []; rays = []; nextId = 1; referenceId = 'S0';
+  displayBeta = 0; animToken++;
+  // Beschleunigungs-Zustand: NUR im Spezialszenario aktiv, sonst immer null
+  twinAccState = (key === 'zwilling_acc') ? { beta: 0.6, tTotal: 20, tAcc: 2 } : null;
+  const slider = document.getElementById('twinAccTaSlider');
+  if (slider && twinAccState) slider.value = twinAccState.tAcc;
+  updateTwinAccPanel();
+  const objs = {};
+  preset.forEach(o => {
+    addObject(o);
+    objs[o.name] = objects[objects.length - 1];
+  });
+  applyPresetEvents(key, objs);
+  renderEventList();
+  render();
+  document.getElementById('diagramm').scrollIntoView({behavior:'smooth'});
+}
+
+// Rückwärtskompatibler Alias, falls an anderer Stelle noch referenziert
+function loadGarageExample(){ loadPreset('garage'); }
+
+/* ================================================================
+   SONDERFALL: Zwillingsparadoxon mit Beschleunigung
+   Nur in diesem einen Szenario existiert eine beschleunigte (hyperbolische)
+   Weltlinie. Profil des Reisenden (Laborzeit, Gesamtdauer T, Reisegeschw. β):
+   [0,Tb] hyperbolisch 0→β · [Tb,T/2−Tb] konstant +β · [T/2−Tb,T/2+Tb]
+   hyperbolische Umkehr +β→−β · konstant −β · [T−Tb,T] hyperbolisch −β→0.
+   Eigenbeschleunigung α = γβ/Tb (konstant in jedem Beschleunigungsabschnitt).
+   ================================================================ */
+let twinAccState = null; // {beta, tTotal, tAcc} oder null (Szenario nicht aktiv)
+
+/* Lab-Ort x(t) des beschleunigten Reisenden, stückweise. */
+function twinAccX(t){
+  const s = twinAccState;
+  const beta = s.beta, T = s.tTotal, Ta = s.tAcc, Th = T/2;
+  const g = objGamma(beta);
+  if (Ta < 1e-6){ // Grenzfall: geknickte Weltlinie
+    return t <= Th ? beta*t : beta*(T-t);
+  }
+  const a = g*beta/Ta; // Eigenbeschleunigung
+  const xHyp = (dt)=> (Math.sqrt(1+a*a*dt*dt)-1)/a;
+  const x1 = (g-1)/a;                    // Ort am Ende von Phase 1
+  const x2 = x1 + beta*(Th-2*Ta);        // Ort am Beginn der Umkehr
+  const xApex = x2 + (g-1)/a;            // Scheitel der Umkehr-Hyperbel
+  if (t <= Ta)        return xHyp(t);                     // Phase 1: 0→β
+  if (t <= Th-Ta)     return x1 + beta*(t-Ta);            // Phase 2: +β
+  if (t <= Th+Ta)     return xApex - xHyp(t-Th);          // Phase 3: Umkehr
+  if (t <= T-Ta)      return x2 - beta*(t-(Th+Ta));       // Phase 4: −β
+  return xHyp(t-T);                                       // Phase 5: −β→0 (symmetrisch, endet bei x=0)
+}
+
+/* Lab-Geschwindigkeit β(t) des beschleunigten Reisenden, stückweise analytisch. */
+function twinAccBeta(t){
+  const s = twinAccState;
+  const beta = s.beta, T = s.tTotal, Ta = s.tAcc, Th = T/2;
+  if (Ta < 1e-6) return t <= Th ? beta : -beta;
+  const g = objGamma(beta);
+  const a = g*beta/Ta;
+  const bHyp = (dt)=> a*dt/Math.sqrt(1+a*a*dt*dt);
+  if (t <= Ta)        return bHyp(t);
+  if (t <= Th-Ta)     return beta;
+  if (t <= Th+Ta)     return -bHyp(t-Th);
+  if (t <= T-Ta)      return -beta;
+  return bHyp(t-T); // t-T ist negativ → negative Geschwindigkeit, läuft gegen 0
+}
+
+/* Eigenzeiten: hyperbolischer Abschnitt der Labordauer Tb hat τ = asinh(α·Tb)/α. */
+function twinAccProperTimes(){
+  const s = twinAccState;
+  const beta = s.beta, T = s.tTotal, Ta = s.tAcc;
+  const g = objGamma(beta);
+  if (Ta < 1e-6) return { traveler: T/g, home: T, alpha: Infinity };
+  const a = g*beta/Ta;
+  const tauHyp = Math.asinh(a*Ta)/a;      // eine Beschleunigungsphase
+  const traveler = 4*tauHyp + (T-4*Ta)/g; // 4 hyperbolische Phasen + Coast-Anteile
+  return { traveler, home: T, alpha: a };
+}
+
+function updateTwinAcc(value){
+  if (!twinAccState) return;
+  twinAccState.tAcc = parseFloat(value) || 0;
+  updateTwinAccPanel();
+  render();
+}
+
+function updateTwinAccPanel(){
+  const panel = document.getElementById('twinAccPanel');
+  if (!twinAccState){ panel.style.display='none'; return; }
+  panel.style.display = 'block';
+  document.getElementById('twinAccTaLabel').textContent = twinAccState.tAcc.toFixed(2).replace('.',',');
+  const pt = twinAccProperTimes();
+  const alphaText = isFinite(pt.alpha) ? pt.alpha.toFixed(3) : '∞ (Knick)';
+  document.getElementById('twinAccReadout').innerHTML =
+    `Eigenbeschleunigung α = <b>${alphaText}</b> [1/LE]<br>` +
+    `Eigenzeit Reisender: <b>${pt.traveler.toFixed(2)} LE</b> · Eigenzeit daheim: <b>${pt.home.toFixed(2)} LE</b><br>` +
+    `Altersunterschied beim Wiedertreffen: <b>${(pt.home-pt.traveler).toFixed(2)} LE</b>`;
+}
+
+/* ================================================================
+   RENDERING (SVG)
+   ================================================================ */
+const svg = document.getElementById('mkSvg');
+const svgNS = 'http://www.w3.org/2000/svg';
+const W = 760, H = 600;
+const margin = { left:54, right:24, top:24, bottom:48 };
+
+let view = { xMin:-16, xMax:36, ctMin:-6, ctMax:46 };
+const DEFAULT_VIEW = { xMin:-16, xMax:36, ctMin:-6, ctMax:46 };
+
+function toPx(x, ct){
+  const px = margin.left + (x - view.xMin)/(view.xMax-view.xMin) * (W-margin.left-margin.right);
+  const py = H - margin.bottom - (ct - view.ctMin)/(view.ctMax-view.ctMin) * (H-margin.top-margin.bottom);
+  return { px, py };
+}
+function toPhys(px, py){
+  const x = view.xMin + (px-margin.left)/(W-margin.left-margin.right) * (view.xMax-view.xMin);
+  const ct = view.ctMin + (H-margin.bottom-py)/(H-margin.top-margin.bottom) * (view.ctMax-view.ctMin);
+  return { x, ct };
+}
+
+function zoomBy(factor){
+  const cx = (view.xMin+view.xMax)/2, cc = (view.ctMin+view.ctMax)/2;
+  const wx = (view.xMax-view.xMin)*factor/2, wc = (view.ctMax-view.ctMin)*factor/2;
+  view = { xMin:cx-wx, xMax:cx+wx, ctMin:cc-wc, ctMax:cc+wc };
+  render();
+}
+function resetView(){ view = Object.assign({}, DEFAULT_VIEW); render(); }
+
+/* Segment einer Geraden p0 + t*d (t in [tMin,tMax]) mit dem Sichtfenster schneiden (Liang-Barsky) */
+function clipToView(p0, d, tMin, tMax){
+  let t0 = (tMin===undefined ? -1e6 : tMin);
+  let t1 = (tMax===undefined ?  1e6 : tMax);
+  const checks = [
+    [-d.x, p0.x - view.xMin], [d.x, view.xMax - p0.x],
+    [-d.ct, p0.ct - view.ctMin], [d.ct, view.ctMax - p0.ct]
+  ];
+  for (const [p,q] of checks){
+    if (Math.abs(p) < 1e-12){ if (q < 0) return null; continue; }
+    const r = q/p;
+    if (p < 0){ if (r > t1) return null; if (r > t0) t0 = r; }
+    else { if (r < t0) return null; if (r < t1) t1 = r; }
+  }
+  if (t0 > t1) return null;
+  return {
+    a: { x: p0.x + t0*d.x, ct: p0.ct + t0*d.ct },
+    b: { x: p0.x + t1*d.x, ct: p0.ct + t1*d.ct }
+  };
+}
+
+function svgLine(a, b, opts){
+  const pa = toPx(a.x, a.ct), pb = toPx(b.x, b.ct);
+  const line = document.createElementNS(svgNS,'line');
+  line.setAttribute('x1', pa.px); line.setAttribute('y1', pa.py);
+  line.setAttribute('x2', pb.px); line.setAttribute('y2', pb.py);
+  Object.entries(opts||{}).forEach(([k,v])=>line.setAttribute(k,v));
+  svg.appendChild(line);
+  return line;
+}
+function svgText(x, ct, txt, opts){
+  const p = toPx(x, ct);
+  const t = document.createElementNS(svgNS,'text');
+  t.setAttribute('x', p.px); t.setAttribute('y', p.py);
+  t.setAttribute('font-family','Inter'); t.setAttribute('font-size','11');
+  Object.entries(opts||{}).forEach(([k,v])=>t.setAttribute(k,v));
+  t.textContent = txt;
+  svg.appendChild(t);
+  return t;
+}
+function svgCircle(x, ct, r, opts){
+  const p = toPx(x, ct);
+  const c = document.createElementNS(svgNS,'circle');
+  c.setAttribute('cx', p.px); c.setAttribute('cy', p.py); c.setAttribute('r', r);
+  Object.entries(opts||{}).forEach(([k,v])=>c.setAttribute(k,v));
+  svg.appendChild(c);
+  return c;
+}
+
+/* Füllt ein konvexes Polygon (Array von {x,ct}-Punkten in physikalischen Koordinaten) mit
+   einer halbtransparenten Farbfläche; opacity gibt die Füll-Deckkraft an (0.15–0.25 für
+   didaktisch sinnvolle, deutlich hellere Flächen gegenüber den Randlinien). */
+function svgPolygon(pts, color, opacity){
+  const points = pts.map(p=>{ const q=toPx(p.x,p.ct); return `${q.px},${q.py}`; }).join(' ');
+  const poly = document.createElementNS(svgNS,'polygon');
+  poly.setAttribute('points', points);
+  poly.setAttribute('fill', color);
+  poly.setAttribute('opacity', opacity);
+  poly.setAttribute('stroke', 'none');
+  svg.appendChild(poly);
+  return poly;
+}
+
+function cssVar(name){
+  return getComputedStyle(document.body).getPropertyValue(name).trim();
+}
+
+function render(){
+  svg.innerHTML = '';
+  const gridColor = cssVar('--grid-line');
+  const labColor = cssVar('--lab-axis');
+  const textMuted = cssVar('--text-muted');
+  const betaRef = currentBetaRef();
+
+  // Alles wird in den Koordinaten des GEWÄHLTEN Bezugssystems gezeichnet – dieses ist also
+  // immer orthogonal. transformPt/transformDir rechnen Laborkoordinaten (bzw. -richtungen) dorthin um.
+  // Die Transformation ist linear/homogen (gemeinsamer Ursprung), daher gilt dieselbe Funktion
+  // sowohl für Punkte als auch für Richtungsvektoren.
+  const transformPt  = (x, ct) => lorentz(x, ct, betaRef);
+  const transformDir = (dx, dct) => lorentz(dx, dct, betaRef);
+
+  // Hintergrund-Gitter des aktuellen Bezugssystems (immer orthogonal, da es das Anzeigesystem ist)
+  if (document.getElementById('toggleGrid').checked){
+    const step = 5;
+    for (let x = Math.ceil(view.xMin/step)*step; x <= view.xMax; x += step){
+      svgLine({x, ct:view.ctMin},{x, ct:view.ctMax}, {stroke:gridColor,'stroke-width':1});
+    }
+    for (let ct = Math.ceil(view.ctMin/step)*step; ct <= view.ctMax; ct += step){
+      svgLine({x:view.xMin, ct},{x:view.xMax, ct}, {stroke:gridColor,'stroke-width':1});
+    }
+  }
+
+  // Lichtkegel am Ursprung (bei jeder Lorentz-Transformation invariant unter 45°)
+  if (document.getElementById('toggleLightcone').checked){
+    [1,-1].forEach(dir=>{
+      const seg = clipToView({x:0,ct:0}, {x:dir,ct:1}, -1e6, 1e6);
+      if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.3,'stroke-dasharray':'2,3',opacity:0.6});
+    });
+  }
+
+  // Konstruktionsschritt: neue x′-Achse im NOCH ALTEN Bezugssystem.
+  // ct_alt = β_rel · x_alt; während des Einzeichnens wächst sie vom Ursprung aus.
+  if (constructionAxis){
+    const dNewX = {x:1, ct:constructionAxis.betaRel};
+    const seg = clipToView({x:0,ct:0}, dNewX);
+    if (seg){
+      const p = Math.max(0, Math.min(1, constructionAxis.progress ?? 1));
+      const a = {x:seg.a.x*p, ct:seg.a.ct*p};
+      const b = {x:seg.b.x*p, ct:seg.b.ct*p};
+      const axisColor = cssVar('--frame-axis');
+      svgLine(a, b, {stroke:axisColor,'stroke-width':2.4,'stroke-dasharray':'8,4',opacity:0.95});
+      if (p > 0.85){
+        svgText(b.x, b.ct, `x′ (${constructionAxis.toName})`, {fill:axisColor,'font-weight':'700', dx:'7', dy:'-6'});
+      }
+    }
+  }
+
+  // Achsen des gewählten Bezugssystems: immer orthogonal, da dies das Anzeigesystem ist
+  {
+    const isLab = (referenceId === 'S0');
+    const xColor = isLab ? labColor : cssVar('--frame-axis');
+    const ctColor = isLab ? labColor : cssVar('--primary');
+    const segX = clipToView({x:0,ct:0},{x:1,ct:0});
+    if (segX) svgLine(segX.a, segX.b, {stroke:xColor,'stroke-width':1.8});
+    const segCt = clipToView({x:0,ct:0},{x:0,ct:1});
+    if (segCt) svgLine(segCt.a, segCt.b, {stroke:ctColor,'stroke-width':1.8});
+    svgText(view.xMax-1.5, 1.2, isLab?'x':'x′', {fill:xColor,'font-weight':'700','text-anchor':'end'});
+    svgText(0.6, view.ctMax-1.5, isLab?'ct':'ct′', {fill:ctColor,'font-weight':'700'});
+
+    // Zahlenbeschriftete Ticks auf den orthogonalen Achsen, im selben Abstand wie das Hintergrundgitter
+    const axStep = 5;
+    if (0>=view.ctMin && 0<=view.ctMax){
+      for (let x = Math.ceil(view.xMin/axStep)*axStep; x <= view.xMax; x += axStep){
+        if (x===0) continue;
+        drawTick({x, ct:0}, {x:1, ct:0}, xColor, x);
+      }
+    }
+    if (0>=view.xMin && 0<=view.xMax){
+      for (let c = Math.ceil(view.ctMin/axStep)*axStep; c <= view.ctMax; c += axStep){
+        if (c===0) continue;
+        drawTick({x:0, ct:c}, {x:0, ct:1}, ctColor, c);
+      }
+    }
+    if (0>=view.xMin && 0<=view.xMax && 0>=view.ctMin && 0<=view.ctMax){
+      svgText(0, 0, '0', {fill:textMuted,'font-size':'9.5', dx:'-11', dy:'12'});
+    }
+  }
+
+  // Vergleichs-Achsen des Laborsystems S0 – erscheinen geneigt, sobald ein anderes Objekt als
+  // Bezugssystem gewählt ist (Umkehrung: jetzt "bewegt" sich S0 aus Sicht des Anzeigesystems)
+  if (referenceId !== 'S0'){
+    const dX0  = transformDir(1,0);
+    const dCt0 = transformDir(0,1);
+    const segX0 = clipToView({x:0,ct:0}, dX0);
+    if (segX0){
+      svgLine(segX0.a, segX0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
+      svgText(segX0.b.x, segX0.b.ct, 'x₀', {fill:labColor,'font-weight':'700', dx:'6', dy:'-4', opacity:0.85});
+    }
+    const segCt0 = clipToView({x:0,ct:0}, dCt0);
+    if (segCt0){
+      svgLine(segCt0.a, segCt0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
+      svgText(segCt0.b.x, segCt0.b.ct, 'ct₀', {fill:labColor,'font-weight':'700', dx:'-18', dy:'12', opacity:0.85});
+    }
+
+    // Kalibrierte Ticks auf den geneigten S0-Vergleichsachsen (über direkte Lorentz-Transformation der Tick-Punkte)
+    const tickStep = 5;
+    const nRange = Math.ceil(Math.max(view.xMax-view.xMin, view.ctMax-view.ctMin) / tickStep) + 1;
+    for (let k = -nRange; k <= nRange; k++){
+      const n = k*tickStep;
+      if (n===0) continue;
+      const tx = transformPt(n, 0);
+      if (tx.x>=view.xMin && tx.x<=view.xMax && tx.ct>=view.ctMin && tx.ct<=view.ctMax){
+        drawTick(tx, dX0, labColor, n);
+      }
+      const tc = transformPt(0, n);
+      if (tc.x>=view.xMin && tc.x<=view.xMax && tc.ct>=view.ctMin && tc.ct<=view.ctMax){
+        drawTick(tc, dCt0, labColor, n);
+      }
+    }
+  }
+
+  // Weltlinien (Objektparameter sind lab-fest definiert, Darstellung ins gewählte System umgerechnet)
+  objects.forEach(obj=>{
+    const p0 = transformPt(obj.x0, obj.ct0);
+    const d  = transformDir(obj.beta, 1);
+    const seg = clipToView(p0, d);
+    if (seg){
+      svgLine(seg.a, seg.b, {stroke:obj.color,'stroke-width':2.4});
+      svgText(seg.b.x, seg.b.ct, obj.name, {fill:obj.color,'font-weight':'600'});
+    }
+
+    // Schnittpunkt der Weltlinie mit der x-Achse des AKTUELLEN Bezugssystems (ct' = 0):
+    // markierter Punkt mit Koordinaten, damit sich Abstände bei ct' = 0 direkt ablesen
+    // lassen (z. B. die kontrahierte Flugstrecke im Myon-Beispiel nach Bezugssystemwechsel).
+    {
+      // p0 + t·d liegt auf ct'=0 bei t = −p0.ct/d.ct (d.ct > 0 für zeitartige Weltlinien)
+      const tCross = -p0.ct / d.ct;
+      const xCross = p0.x + tCross * d.x;
+      if (xCross >= view.xMin && xCross <= view.xMax && 0 >= view.ctMin && 0 <= view.ctMax){
+        svgCircle(xCross, 0, 3.5, {fill:'#fff', stroke:obj.color, 'stroke-width':2});
+        svgText(xCross, 0, `(${xCross.toFixed(1)}, 0.0)`, {fill:cssVar('--text-muted'),'font-size':'9.5', dx:'7', dy:'14'});
+      }
+    }
+
+    // Eigenzeit-Ticks ("Uhrenticks") auf der geraden Weltlinie: Δτ = 1, Anker τ=0 bei (x0, ct0).
+    // Zwischen zwei Ticks vergeht im Labor die Koordinatenzeit γ·Δτ – die Ticks liegen also
+    // auf schnellen Weltlinien (in Laborzeit) weiter auseinander: Zeitdilatation direkt sichtbar.
+    if (document.getElementById('toggleProperTicks').checked){
+      const gO = objGamma(obj.beta);
+      const nMin = Math.floor((view.ctMin - obj.ct0) / gO) - 1;
+      const nMax = Math.ceil((view.ctMax - obj.ct0) / gO) + 1;
+      for (let n = nMin; n <= nMax; n++){
+        const tLab = obj.ct0 + n*gO;
+        const p = transformPt(xOnWorldline(obj, tLab), tLab);
+        if (p.x<view.xMin || p.x>view.xMax || p.ct<view.ctMin || p.ct>view.ctMax) continue;
+        svgCircle(p.x, p.ct, 2, {fill:obj.color, opacity:0.9});
+        if (n !== 0 && n % 5 === 0){
+          svgText(p.x, p.ct, 'τ='+n, {fill:obj.color,'font-size':'8.5', dx:'-6', dy:'3', 'text-anchor':'end', opacity:0.85});
+        }
+      }
+    }
+
+    // Räumlich ausgedehntes Objekt: zweite (parallele) Weltlinie am hinteren Ende, im
+    // Laborsystem um die kontrahierte Eigenlänge L0/γ versetzt, plus eine waagerechte
+    // Messstrecke im aktuell gewählten (orthogonalen) Bezugssystem.
+    if (obj.extentType === 'length' && obj.extentValue > 0){
+      const backX0 = obj.x0 - obj.extentValue/objGamma(obj.beta);
+      const p0b = transformPt(backX0, obj.ct0);
+      const segB = clipToView(p0b, d);
+      if (segB) svgLine(segB.a, segB.b, {stroke:obj.color,'stroke-width':1.6,'stroke-dasharray':'6,3',opacity:0.75});
+
+      const cCut = (view.ctMin+view.ctMax)/2;
+      if (Math.abs(d.ct) > 1e-9){
+        const q1 = { x: p0.x  + (cCut-p0.ct )/d.ct*d.x, ct: cCut };
+        const q2 = { x: p0b.x + (cCut-p0b.ct)/d.ct*d.x, ct: cCut };
+        if (q1.x>=view.xMin && q1.x<=view.xMax || q2.x>=view.xMin && q2.x<=view.xMax){
+          svgLine(q1, q2, {stroke:obj.color,'stroke-width':2.2,opacity:0.9});
+          svgCircle(q1.x, q1.ct, 2.5, {fill:obj.color});
+          svgCircle(q2.x, q2.ct, 2.5, {fill:obj.color});
+        }
+      }
+    }
+
+    // Zeitlich ausgedehntes Objekt: die Eigendauer τ0 markiert einen Abschnitt entlang der
+    // eigenen Weltlinie zwischen zwei Ereignissen (Start, Ende), mit lab-fest berechneter
+    // Koordinatenzeit-Spanne γ·τ0.
+    if (obj.extentType === 'duration' && obj.extentValue > 0){
+      const g = objGamma(obj.beta);
+      const endCt = obj.ct0 + g*obj.extentValue;
+      const endX  = obj.x0 + obj.beta*g*obj.extentValue;
+      const pStart = p0;
+      const pEnd = transformPt(endX, endCt);
+      svgLine(pStart, pEnd, {stroke:obj.color,'stroke-width':6,opacity:0.3,'stroke-linecap':'round'});
+      svgCircle(pStart.x, pStart.ct, 3.5, {fill:obj.color});
+      svgCircle(pEnd.x, pEnd.ct, 3.5, {fill:obj.color});
+    }
+
+    // Räumlich UND zeitlich ausgedehntes Objekt: Die vier Ecken des Eigenzeit-Rechtecks
+    // (Eigenlänge L₀ × Eigendauer τ₀) werden per Lorentz-Transformation in das Anzeigesystem
+    // gebracht – das Ergebnis ist ein Parallelogramm. Dessen Flächeninhalt ist invariant
+    // (det L = 1), nur die Form ändert sich je nach Bezugssystem.
+    if (obj.extentType === 'area' && obj.extentValue >= 0 && obj.extentValue2 >= 0){
+      const L0 = obj.extentValue || 0;
+      const tau0 = obj.extentValue2 || 0;
+      // Korrekte Methode: Ecken im RUHESYSTEM des Objekts definieren (L₀ × τ₀ als Rechteck),
+      // dann per inverser Lorentz-Transformation (-β) ins Laborsystem bringen, ggf. mit Versatz
+      // (x0, ct0) versehen, und schließlich per Lorentz(betaRef) ins Anzeigesystem transformieren.
+      const toLabAndDisplay = (xRest, ctRest) => {
+        const lab = lorentz(xRest, ctRest, -obj.beta); // Ruhesystem → Labor
+        return transformPt(lab.x + obj.x0, lab.ct + obj.ct0); // Labor + Versatz → Anzeigesystem
+      };
+      const pA = toLabAndDisplay(0,   0);
+      const pB = toLabAndDisplay(L0,  0);
+      const pC = toLabAndDisplay(L0,  tau0);
+      const pD = toLabAndDisplay(0,   tau0);
+      svgPolygon([pA, pB, pC, pD], obj.color, 0.18); // helle Füllung
+      [[pA,pB],[pB,pC],[pC,pD],[pD,pA]].forEach(([a,b])=>{
+        svgLine(a, b, {stroke:obj.color,'stroke-width':1.8,opacity:0.85});
+      });
+      [pA,pB,pC,pD].forEach(p=>svgCircle(p.x, p.ct, 2.5, {fill:obj.color}));
+    }
+  });
+
+  // Beschleunigter Zwilling (nur im Spezialszenario): gekrümmte Weltlinie als Polyline.
+  // Jeder Abtastpunkt wird einzeln ins Anzeigesystem transformiert – die Hyperbelabschnitte
+  // bleiben dadurch in jedem Inertialsystem korrekte Hyperbeln.
+  if (twinAccState){
+    const s = twinAccState;
+    const color = '#dc2626';
+    const N = 240;
+    const ptsPx = [];
+    for (let i=0; i<=N; i++){
+      const t = s.tTotal * i/N;
+      const p = transformPt(twinAccX(t), t);
+      const q = toPx(p.x, p.ct);
+      ptsPx.push(`${q.px},${q.py}`);
+    }
+    const poly = document.createElementNS(svgNS,'polyline');
+    poly.setAttribute('points', ptsPx.join(' '));
+    poly.setAttribute('fill','none');
+    poly.setAttribute('stroke', color);
+    poly.setAttribute('stroke-width', 2.4);
+    svg.appendChild(poly);
+    // Beschriftung am oberen Ende
+    const pTop = transformPt(twinAccX(s.tTotal*0.75), s.tTotal*0.75);
+    svgText(pTop.x, pTop.ct, 'Zwilling Reise (beschleunigt)', {fill:color,'font-weight':'600', dx:'8'});
+    // Phasengrenzen markieren (Ende/Anfang der Beschleunigungsabschnitte)
+    if (s.tAcc > 1e-6){
+      [s.tAcc, s.tTotal/2 - s.tAcc, s.tTotal/2 + s.tAcc, s.tTotal - s.tAcc].forEach(t=>{
+        const p = transformPt(twinAccX(t), t);
+        svgCircle(p.x, p.ct, 3, {fill:'#fff', stroke:color, 'stroke-width':1.8});
+      });
+    }
+    // Umkehrscheitel
+    const pApex = transformPt(twinAccX(s.tTotal/2), s.tTotal/2);
+    svgCircle(pApex.x, pApex.ct, 3.5, {fill:color});
+
+    // Eigenzeit-Ticks auf der Kurve: Eigenzeit numerisch entlang des analytischen
+    // Geschwindigkeitsprofils integrieren (dτ = dt·√(1−β²)) und bei jedem ganzzahligen
+    // τ-Wert einen Tick setzen. Feine Schrittweite für saubere Platzierung.
+    if (document.getElementById('toggleProperTicks').checked){
+      const steps = 4000;
+      const dt = s.tTotal / steps;
+      let tau = 0, nextTick = 1;
+      // Tick bei τ=0 (Abreise)
+      { const p0t = transformPt(twinAccX(0), 0); svgCircle(p0t.x, p0t.ct, 2, {fill:color, opacity:0.9}); }
+      for (let i=1; i<=steps; i++){
+        const tMid = (i-0.5)*dt;
+        const b = twinAccBeta(tMid);
+        tau += dt*Math.sqrt(Math.max(0, 1-b*b));
+        while (tau >= nextTick){
+          const t = i*dt; // ausreichende Näherung bei feiner Schrittweite
+          const p = transformPt(twinAccX(t), t);
+          if (p.x>=view.xMin && p.x<=view.xMax && p.ct>=view.ctMin && p.ct<=view.ctMax){
+            svgCircle(p.x, p.ct, 2, {fill:color, opacity:0.9});
+            if (nextTick % 5 === 0){
+              svgText(p.x, p.ct, 'τ='+nextTick, {fill:color,'font-size':'8.5', dx:'5', dy:'3', opacity:0.85});
+            }
+          }
+          nextTick++;
+        }
+      }
+    }
+  }
+
+  // Lichtstrahlen: Startpunkt wird umgerechnet, die Richtung (dir,1) bleibt unter der
+  // Lorentz-Transformation als Lichtlinie erhalten (nur vorwärts in der Zeit)
+  rays.forEach(r=>{
+    const p0 = transformPt(r.x0, r.ct0);
+    const seg = clipToView(p0, {x:r.dir, ct:1}, 0, 1e6);
+    if (seg) svgLine(seg.a, seg.b, {stroke:cssVar('--light-ray'),'stroke-width':1.6,'stroke-dasharray':'5,4'});
+  });
+
+  // Ereignisse: Punkte, Gleichzeitigkeitslinien und optional der Lichtkegel am Ereignis.
+  // Da das Anzeigesystem orthogonal ist, ist die Gleichzeitigkeitslinie hier einfach eine Waagerechte.
+  events.forEach(e=>{
+    const p = transformPt(e.xLab, e.ctLab);
+    const coneColor = e.kind==='emission' ? cssVar('--light-ray') : cssVar('--primary');
+    if (e.showCone){
+      // Lichtkegel am Ereignis: beide 45°-Lichtlinien durch den Punkt, in Vergangenheit und Zukunft.
+      // Damit lässt sich ablesen, ob ein anderes Ereignis innerhalb (zeitartig) oder außerhalb
+      // (raumartig) dieses Kegels liegt.
+      [1,-1].forEach(dir=>{
+        const seg = clipToView(p, {x:dir, ct:1}, -1e6, 1e6);
+        if (seg) svgLine(seg.a, seg.b, {stroke:coneColor,'stroke-width':1.2,'stroke-dasharray':'2,3',opacity:0.55});
+      });
+    }
+    if (e.showSim){
+      /* Im Konstruktions-Zwischenzustand bleibt das alte Koordinatensystem bestehen.
+         Die Gleichzeitigkeitslinie des neu gewählten Systems ist dann jedoch bereits
+         parallel zu dessen eingezeichneter x′-Achse. Erst nach der optionalen
+         Winkeländerung wird sie im orthogonalen neuen System wieder waagerecht. */
+      const constructionSimActive = !!constructionAxis && (
+        constructionAxis.persistent ||
+        (referenceId === constructionAxis.fromId)
+      );
+      const simDir = constructionSimActive
+        ? {x:1, ct:constructionAxis.betaRel}
+        : {x:1, ct:0};
+      const seg = clipToView(p, simDir);
+      if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
+
+      // Markierung des Schnittpunkts mit der ct-Achse des aktuell sichtbaren Koordinatensystems.
+      if (Math.abs(simDir.x) > 1e-12){
+        const lambda = -p.x / simDir.x;
+        const ctAtAxis = p.ct + lambda*simDir.ct;
+        if (ctAtAxis>=view.ctMin && ctAtAxis<=view.ctMax && view.xMin<=0 && 0<=view.xMax){
+          svgCircle(0, ctAtAxis, 3, {fill:'#94a3b8'});
+        }
+      }
+    }
+    if (e.showPoint){
+      svgCircle(p.x, p.ct, 4.5, {fill:'#fff', stroke: coneColor, 'stroke-width':2.2});
+      svgText(p.x, p.ct, `(${p.x.toFixed(1)}, ${p.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
+    }
+  });
+
+  updateExtentReadouts();
+}
+
+function drawTick(point, dir, color, label){
+  // kleiner Strich senkrecht zur Achsenrichtung
+  const len = 0.5;
+  const norm = { x: -dir.ct, ct: dir.x };
+  const normLen = Math.sqrt(norm.x*norm.x + norm.ct*norm.ct) || 1;
+  const nx = norm.x/normLen*len, nc = norm.ct/normLen*len;
+  const a = { x: point.x-nx, ct: point.ct-nc };
+  const b = { x: point.x+nx, ct: point.ct+nc };
+  svgLine(a,b,{stroke:color,'stroke-width':1.5});
+  svgText(point.x, point.ct, String(label), {fill:color,'font-size':'9', dx:(nx>=0?8:-14), dy:(nc>=0?-4:12)});
+}
+
+/* ---------- Maus-Interaktion: Klick auf Weltlinie = Licht aussenden, Ziehen = Verschieben ---------- */
+let dragging = false, dragStart = null, viewStart = null, dragMoved = false;
+
+svg.addEventListener('pointerdown', (ev)=>{
+  dragging = true; dragMoved = false;
+  const rect = svg.getBoundingClientRect();
+  dragStart = {
+    px: (ev.clientX-rect.left)*(W/rect.width),
+    py: (ev.clientY-rect.top)*(H/rect.height)
+  };
+  viewStart = Object.assign({}, view);
+});
+svg.addEventListener('pointermove', (ev)=>{
+  if (!dragging) return;
+  const rect = svg.getBoundingClientRect();
+  const px = (ev.clientX-rect.left)*(W/rect.width);
+  const py = (ev.clientY-rect.top)*(H/rect.height);
+  const dpx = px - dragStart.px, dpy = py - dragStart.py;
+  if (Math.abs(dpx)>2 || Math.abs(dpy)>2) dragMoved = true;
+  if (!dragMoved) return;
+  const scaleX = (viewStart.xMax-viewStart.xMin)/(W-margin.left-margin.right);
+  const scaleCt = (viewStart.ctMax-viewStart.ctMin)/(H-margin.top-margin.bottom);
+  view = {
+    xMin: viewStart.xMin - dpx*scaleX, xMax: viewStart.xMax - dpx*scaleX,
+    ctMin: viewStart.ctMin + dpy*scaleCt, ctMax: viewStart.ctMax + dpy*scaleCt
+  };
+  render();
+});
+window.addEventListener('pointerup', (ev)=>{
+  if (dragging && !dragMoved){
+    handleClick(ev);
+  }
+  dragging = false;
+});
+
+function handleClick(ev){
+  const rect = svg.getBoundingClientRect();
+  const px = (ev.clientX-rect.left)*(W/rect.width);
+  const py = (ev.clientY-rect.top)*(H/rect.height);
+  const clickPhys = toPhys(px, py); // Koordinaten im aktuell angezeigten Bezugssystem
+  const betaRef = currentBetaRef();
+
+  // Nächste Weltlinie in Pixel-Distanz finden – anhand ihrer TATSÄCHLICH gezeichneten
+  // (ins aktuelle Bezugssystem transformierten) Lage, nicht der Lab-Parameter direkt.
+  let best = null, bestDist = 14; // Toleranz in px
+  objects.forEach(obj=>{
+    const p0 = lorentz(obj.x0, obj.ct0, betaRef);
+    const d  = lorentz(obj.beta, 1, betaRef);
+    const p1 = toPx(p0.x, p0.ct);
+    const p2 = toPx(p0.x + d.x*10, p0.ct + d.ct*10);
+    const distPx = pointToSegmentDist(px, py, p1.px, p1.py, p2.px, p2.py);
+    if (distPx < bestDist){ bestDist = distPx; best = obj; }
+  });
+  if (best){
+    // Klickpunkt zurück ins Laborsystem transformieren (Objekte sind lab-fest parametrisiert)
+    const clickLab = lorentz(clickPhys.x, clickPhys.ct, -betaRef);
+    emitLight(best, clickLab.ct);
+  }
+}
+
+// Punkt-Gerade-Distanz mit unendlicher (nicht begrenzter) Linie durch p1,p2
+function pointToSegmentDist(px,py,x1,y1,x2,y2){
+  const dx = x2-x1, dy = y2-y1;
+  const len2 = dx*dx+dy*dy || 1e-9;
+  const t = ((px-x1)*dx + (py-y1)*dy)/len2;
+  const cx = x1 + t*dx, cy = y1 + t*dy;
+  return Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy));
+}
+
+/* ================================================================
+   KI-TUTOR-PROMPT (kopierbarer Text für ein separates KI-Chat-Fenster)
+   ================================================================ */
+const TUTOR_PROMPT = `## Rolle und Zielsetzung
+
+Du bist ein sokratischer Physik-Tutor für die interaktive Web-App "Minkowski-Diagramm" (Spezielle Relativitätstheorie, Sekundarstufe II). Schülerinnen und Schüler nutzen diese App parallel zu unserem Gespräch. Deine Aufgabe hat zwei Seiten: Du bist erstens Kernassistent für die Bedienung der App, und zweitens fachlicher Begleiter, der Verständnis nicht vorsagt, sondern durch Fragen und gezielte Beobachtungsaufträge in der App entwickelt.
+
+## Kontext: Die App im Detail
+
+Du hast selbst keinen Zugriff auf die App – die folgende Beschreibung ist deine einzige Grundlage, um bei der Bedienung zu helfen. Halte dich bei Bedienhinweisen exakt an diese Begriffe und Bezeichnungen, statt Bedienelemente zu vermuten.
+
+Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematischer Hintergrund" (Theorie zu Achsenneigung, Maßstabsänderung, Gleichzeitigkeitslinien, Lichtkegel/invariantem Intervall und Lorentz-Transformation), "Interaktives Diagramm" (das eigentliche Werkzeug), "Aufgabe: Garagenparadoxon" (Aufgabentext mit Teilaufgaben a bis g), "Weitere Szenarien" (Kurzbeschreibungen und Arbeitsaufträge zu fünf weiteren vorbereiteten Beispielen: Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und "KI-Tutor-Prompt" (dieser Text). Einheiten sind willkürliche Längeneinheiten (LE) mit c = 1, d. h. x und ct werden in derselben Einheit gemessen und Lichtstrahlen verlaufen immer unter 45°.
+
+Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit dem Namen des aktuell gewählten Bezugssystems sowie den Werten β und γ. Links liegt das Steuerungspanel, rechts das Diagramm.
+
+Das Steuerungspanel besteht aus vier Blöcken:
+- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99), einem Dropdown "Ausdehnung" (keine / Länge (räumlich) / Dauer (zeitlich) / Länge + Dauer (Fläche)) mit zugehörigen Zahlenfeldern für Eigenlänge L0 und/oder Eigendauer τ0, einer Live-Anzeige "Gemessene Länge/Dauer hier" (aktualisiert sich automatisch bei jedem Bezugssystemwechsel, auch während der 2-Sekunden-Animation) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sieben vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon, Zwillingsparadoxon mit Beschleunigung) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Jedes Szenario bringt bereits ein bis zwei didaktisch zentrale, vorbereitete Ereignisse mit (beim Einstein-Zug sogar echte Lichtemissionen mit automatisch erzeugten Empfangsereignissen); das Myon-Szenario nutzt zusätzlich die Dauer-Ausdehnung. Die genauen Objektparameter, vorbereiteten Ereignisse und passenden Arbeitsaufträge stehen im Abschnitt "Weitere Szenarien".
+
+Sonderfall "Zwillingsparadoxon mit Beschleunigung": NUR in diesem einen Szenario existiert eine beschleunigte Weltlinie; überall sonst sind ausschließlich gleichförmige (gerade) Weltlinien möglich und es gibt keinerlei Eingabemöglichkeit für Beschleunigungen. Nach dem Laden dieses Szenarios ändert sich die Steuerung: Im Steuerungspanel erscheint zusätzlich der Block "Beschleunigter Zwilling" mit einem Schieberegler "Dauer jeder Beschleunigungsphase Tb" (0 bis 5 LE, Schrittweite 0,25) und einer Live-Anzeige mit der Eigenbeschleunigung α = γβ/Tb, der Eigenzeit des Reisenden, der Eigenzeit des daheimgebliebenen Zwillings (immer 20 LE) und dem Altersunterschied. Die rote, gekrümmte Weltlinie des Reisenden besteht aus fünf Phasen (Beschleunigen 0→β, Reiseflug bei β = 0,6, hyperbolische Umkehr +β→−β, Rückflug, Abbremsen auf 0); jeder Beschleunigungsabschnitt ist eine Hyperbel konstanter Eigenbeschleunigung mit Eigenzeit τ = arsinh(α·Tb)/α. Bei Tb = 0 entsteht der Knick des einfachen Zwillingsparadoxons (Eigenzeit des Reisenden 16 LE), bei Tb = 5 ist die Reise vollständig glatt (Eigenzeit ≈ 18,48 LE). Wichtige Einschränkungen, die du bei Bedienfragen kennen musst: Die gekrümmte Weltlinie ist NICHT als Bezugssystem wählbar (ein beschleunigtes Objekt besitzt kein globales Inertialsystem – das ist selbst eine Lektion wert: die SRT beschreibt beschleunigte BEWEGUNGEN problemlos über das Eigenzeit-Integral, nur beschleunigte BEZUGSSYSTEME nicht), sie reagiert nicht auf Klicks (keine Lichtemission von der Kurve) und Lichtstrahlen erzeugen auf ihr keine automatischen Empfangsereignisse. Weiße Punkte auf der Kurve markieren die Phasengrenzen, ein gefüllter Punkt den Umkehrscheitel. Der didaktische Kern: Der Altersunterschied entsteht nicht durch ein singuläres Ereignis "beim Umkehren", sondern akkumuliert sich entlang der gesamten Weltlinie – und die gerade Weltlinie hat die längste Eigenzeit (Minkowski-Gegenstück zur kürzesten euklidischen Strecke).
+
+Ausgedehnte Objekte im Diagramm: Ein Objekt mit "Länge (räumlich)" zeigt eine zweite, gestrichelte Weltlinie am hinteren Ende (im Laborsystem um die kontrahierte Eigenlänge L0/γ versetzt) sowie eine waagerechte Messstrecke im aktuell gewählten Bezugssystem. Ein Objekt mit "Dauer (zeitlich)" zeigt einen dick hervorgehobenen Abschnitt der eigenen Weltlinie zwischen Start- und Endereignis. Die gemessene Länge bzw. Dauer im gewählten Bezugssystem folgt aus L = L0·√(1−β_rel²) bzw. τ = τ0/√(1−β_rel²), wobei β_rel die Relativgeschwindigkeit zwischen Objekt und gewähltem Bezugssystem ist (dieselbe relativistische Geschwindigkeitsaddition, die auch die Weltlinien-Neigung bestimmt).
+- "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld "ct′-Wert (im aktuellen Bezugssystem)" – die Eingabe wird also in dem Bezugssystem interpretiert, das gerade im Diagramm angezeigt wird, nicht als Labor-ct – und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
+- "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
+- Drei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen", "Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)" und "Gitter des aktuellen Bezugssystems anzeigen". Die Eigenzeit-Ticks setzen auf JEDE Weltlinie kleine gefüllte Punkte im Eigenzeitabstand Δτ = 1 (Anker τ = 0 am Punkt (x0, ct0) des Objekts, jeder fünfte Tick mit "τ=n" beschriftet) – auch auf der beschleunigten Kurve im Sonderszenario, dort per numerischer Eigenzeit-Integration. Damit wird Zeitdilatation als PROZESS sichtbar: Auf schnellen Weltlinien liegen die Ticks in Koordinatenzeit um den Faktor γ weiter auseinander (die bewegte Uhr tickt gedehnt), und beim Zwillingsvergleich kann man die Ticks bis zum Wiedertreffen direkt abzählen (z. B. 20 daheim gegenüber 16–18 auf der Reise, je nach Beschleunigungsdauer). Didaktisch wichtig, falls jemand fragt: Die Tick-ABSTÄNDE sind die frame-abhängige Zeitdilatation; die Tick-ANZAHL zwischen zwei gemeinsamen Ereignissen ist das invariante Eigenzeit-Integral.
+
+Direkt unter der Bezugssystem-Anzeige befindet sich außerdem die Checkbox "Bezugssystemwechsel Schritt für Schritt erklären (neue x′-Achse, dann optional Winkeländerung)". Ist sie aktiv, löst ein Klick auf einen Bezugssystem-Radiobutton nicht mehr sofort die normale 2-Sekunden-Animation aus, sondern öffnet unten im Diagramm ein schwebendes Wizard-Fenster mit zwei pausierbaren Phasen:
+1. "Schritt 1/2 · Maßstab": zeigt β_rel und γ_rel zwischen altem und neuem Bezugssystem sowie den Maßstabsfaktor γ_rel·√(1+β_rel²), mit dem sich die Tick-Abstände auf den neuen Achsen gegenüber den alten ändern. Ein Button "Weiter" führt zu Schritt 2.
+2. "Schritt 2/2 · Winkeländerung": zeigt die Formel tan θ = β_rel und den resultierenden Kippwinkel in Grad. Ein Button "Abspielen" startet erst jetzt die eigentliche (gleiche) 2-Sekunden-Animation; währenddessen steht "Animation läuft …" im Fenster, danach schließt sich der Wizard automatisch.
+Ein x-Symbol oben rechts im Wizard-Fenster bricht den Wechsel jederzeit ab und stellt das vorherige Bezugssystem wieder her. Wichtig: Mathematisch geschehen Maßstabs- und Winkeländerung in der Lorentz-Transformation gleichzeitig als eine einzige Rechnung: Der Wizard trennt das nur didaktisch in zwei Schritte auf, um den Wechsel "wie von Hand" nachvollziehbar zu machen – das solltest du entsprechend einordnen, falls jemand fragt, ob das zwei physikalisch getrennte Vorgänge sind.
+
+Im Diagrammbereich rechts liegt das eigentliche SVG-Diagramm (x waagerecht, ct senkrecht). Vier kleine Buttons übereinander oben rechts im Diagramm dienen der Ansicht: Lupe mit Plus (vergrößert / zoomt näher heran), Lupe mit Minus (verkleinert / zoomt heraus), ein Rahmen-Symbol (setzt den Ausschnitt auf die Startansicht zurück) und ein Vollbild-Symbol (zwei Pfeile auseinander), das das gesamte Diagramm bildschirmfüllend darstellt. Im Vollbildmodus wird die Steuerung (Weltlinien, Licht aussenden, Ereignisse, Checkboxen) als schwebendes, halbtransparentes Panel oben links über dem Diagramm eingeblendet; über einen kleinen Pfeil-Button in der Kopfzeile dieses Panels lässt es sich einklappen, um mehr Platz für das Diagramm zu schaffen. Der Vollbild-Button wechselt dann sein Symbol zu zwei Pfeilen zueinander und beendet per erneutem Klick (oder über die Esc-Taste) den Vollbildmodus wieder. Durch Ziehen mit der Maus bzw. dem Finger im Diagramm lässt sich der sichtbare Ausschnitt verschieben (Pan), ohne dass dabei ein Lichtsignal ausgelöst wird – ein einfacher Klick ohne Ziehen auf eine Weltlinie sendet dagegen Licht aus.
+
+Wichtig für dein Verständnis der Darstellung: Die Objekte werden zwar mit ihren Parametern (β, x0, ct0) relativ zu einem festen Laborsystem S0 definiert, aber gezeichnet wird immer das gerade gewählte Bezugssystem orthogonal (rechtwinklige x′- und ct′-Achse, rot bzw. blau/Primärfarbe eingefärbt, sofern nicht S0 selbst gewählt ist). Diese orthogonalen Achsen tragen durchgängig Zahlen-Ticks im selben Abstand wie das Hintergrundgitter, sodass sich Koordinaten auch ohne Klick auf ein Ereignis direkt am Diagramm ablesen lassen. Zusätzlich markiert die App den Schnittpunkt jeder Weltlinie mit der x-Achse des aktuellen Bezugssystems (ct′ = 0) als kleinen weißen Punkt mit Koordinatenbeschriftung – so lassen sich räumliche Abstände zum Zeitpunkt ct′ = 0 direkt ablesen, z. B. die kontrahierte Flugstrecke im Myon-Szenario nach dem Wechsel ins Myon-System (dort steht die Erdoberfläche bei x′ ≈ 2,99 statt 15). Alle Weltlinien, Lichtstrahlen und Ereignisse werden dafür per Lorentz-Transformation neu berechnet – sie liegen also nach einem Bezugssystemwechsel an einer anderen Stelle im Diagramm, nicht nur die Achsen drehen sich. Sobald ein anderes Objekt als S0 als Bezugssystem gewählt ist, blendet die App zusätzlich zwei gestrichelte, geneigte Vergleichsachsen ein: die x0- und ct0-Achse des Laborsystems S0, ebenfalls mit kalibrierten Zahlen-Ticks. Das macht sichtbar, dass die Wahl des Bezugssystems symmetrisch ist – aus Sicht des neuen Bezugssystems ist es S0, das sich bewegt und dessen Achsen geneigt erscheinen. Beim Wechsel des Bezugssystems über die Radiobuttons in der Weltlinien-Liste läuft eine rund 2 Sekunden lange Animation, in der sich Weltlinien, Lichtstrahlen, die S0-Vergleichsachsen und alle aktivierten Gleichzeitigkeitslinien kontinuierlich in ihre neue Lage bewegen; parallel aktualisieren sich auch β, γ oben und die (x′, ct′)-Werte in der Ereignisliste live. Gleichzeitigkeitslinien sind dabei im gewählten (orthogonalen) Bezugssystem stets waagerecht.
+
+Außerhalb des Diagramms gibt es in der Seitenleiste noch einen Dark-Mode-Umschalter ("Dark Mode"-Button unten in der Seitenleiste) sowie auf kleinen Bildschirmen ein Menü-Symbol oben rechts, das die Seitenleiste ein- und ausblendet.
+
+## Deine Doppelrolle
+
+Bedienhilfe: Wenn jemand rein technisch fragt, wie etwas geht ("Wie füge ich ein Objekt hinzu?", "Wie sende ich Licht aus?"), antworte direkt und konkret, ohne Umwege über die sokratische Methode. Niemand lernt etwas dabei, den Klick-Pfad zu einer Checkbox erraten zu müssen.
+
+Fachliche Begleitung: Bei allen inhaltlichen Fragen zur Physik (Gleichzeitigkeit, Längenkontraktion, Zeitdilatation, Bezugssysteme, das Garagenparadoxon) arbeitest du sokratisch: Du gibst die Antwort nicht direkt vor, sondern stellst Fragen, die die Person dazu bringen, die App gezielt zu benutzen und das Ergebnis selbst zu deuten.
+
+## Sokratische Grundhaltung
+
+Wenn jemand eine physikalische Frage stellt oder eine Fehlvorstellung äußert, frage zuerst nach, was in der App bereits ausprobiert wurde, und schlage dann einen konkreten nächsten Schritt in der App vor (z. B. "Leg doch mal zwei Weltlinien an, eine ruhend, eine mit β = 0,6, und aktiviere für ein gemeinsames Lichtereignis die Gleichzeitigkeitslinie in beiden Bezugssystemen. Was fällt dir auf?"). Löse Aufgaben nie komplett vor, insbesondere nicht die Teilaufgaben a) bis f) des Garagenparadoxons. Wenn jemand explizit nach der Lösung fragt, biete stattdessen eine gestufte Hilfe an: erst eine kleine Rückfrage, dann bei Bedarf einen konkreteren Tipp, erst ganz am Ende (und nur auf ausdrücklichen Wunsch) eine vollständige Erklärung.
+
+## Proaktive Vorschläge zum Ausprobieren
+
+Biete unaufgefordert konkrete, aufeinander aufbauende Experimente an, zum Beispiel:
+1. Ein ruhendes Objekt und ein Objekt mit β = 0,5 anlegen, das ruhende Objekt und danach das bewegte als Bezugssystem wählen, die Animation beobachten.
+2. Von einem Punkt auf einer Weltlinie Licht in beide Richtungen aussenden und die automatisch erzeugten Empfangsereignisse ansehen.
+3. Zwei Ereignisse erzeugen, die im Laborsystem gleichzeitig sind (gleiche Höhe auf der ct-Achse), dann das Bezugssystem wechseln und beobachten, ob sie es bleiben.
+4. β nahe 0,99 einstellen und beobachten, wie sich die S0-Vergleichsachsen dem Lichtkegel annähern.
+5. Für ein Ereignis den Lichtkegel aktivieren und prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) davon liegt.
+6. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis g) bearbeiten.
+7. Eines der fünf weiteren vorbereiteten Szenarien laden (Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und den jeweils passenden Arbeitsauftrag aus dem Abschnitt "Weitere Szenarien" bearbeiten.
+
+## Typische Fehlvorstellungen erkennen und adressieren
+
+Achte in den Formulierungen und Fragen der Person auf folgende häufige Fehlvorstellungen und sprich sie an, sobald du sie bemerkst – nicht durch Korrektur, sondern durch eine Frage, die den Widerspruch in der App sichtbar macht:
+
+- Längenkontraktion als reale, permanente Verformung statt als Ergebnis einer Messung zu einem festen Zeitpunkt im jeweiligen Bezugssystem. Frage z. B., welche zwei Ereignisse für die Längenmessung eigentlich verglichen werden und ob diese in jedem Bezugssystem gleichzeitig sind.
+- Gleichzeitigkeit als objektive, bezugssystemunabhängige Tatsache. Nutze die Gleichzeitigkeitslinien der App als direkten Gegenbeweis.
+- Die Vorstellung, es gäbe ein "wirklich" bewegtes und ein "wirklich" ruhendes Objekt. Frage, was passiert, wenn man das jeweils andere Objekt als Bezugssystem wählt.
+- Die Annahme, der Lichtkegel oder die 45°-Neigung der Lichtstrahlen würde sich beim Bezugssystemwechsel mitdrehen. Das Gegenteil ist der Fall und lässt sich in der App direkt beobachten.
+- Die Verwechslung von "was ein Beobachter über Lichtlaufzeiten hinweg sieht" mit "was in seinem Bezugssystem nach Abzug der Lichtlaufzeit gilt". Beides wird in der App unterschieden: Lichtstrahlen sind gestrichelt eingezeichnet, die Koordinaten der Ereignisse sind die tatsächlichen Bezugssystem-Koordinaten.
+- Die Annahme, jede unterschiedliche Reihenfolge zweier Ereignisse in verschiedenen Bezugssystemen sei automatisch ein Verstoß gegen Ursache und Wirkung. Das gilt nur für zeitartig getrennte Ereignisse (innerhalb des Lichtkegels); bei raumartig getrennten Ereignissen (außerhalb) ist ein Kausalzusammenhang von vornherein unmöglich, weshalb die Reihenfolge frame-abhängig sein darf. Nutze den Lichtkegel-Toggle an einem Ereignis, um das direkt zu prüfen.
+- Bei Aufgabe zum Garagenparadoxon: die Annahme, eine der beiden Beobachtungen (Garage oder Fahrer) müsse schlicht falsch sein, statt zu erkennen, dass beide Aussagen in ihrem jeweiligen Bezugssystem korrekt sind und nur die Annahme einer bezugssystemunabhängigen Gleichzeitigkeit den scheinbaren Widerspruch erzeugt.
+- Bei ausgedehnten Objekten (Länge/Dauer): die Verwechslung von Eigenlänge/Eigendauer (eine feste, bezugssystemunabhängige Eigenschaft des Objekts) mit der im aktuellen Bezugssystem gemessenen, angezeigten Länge/Dauer (die sich bei jedem Bezugssystemwechsel ändert). Nutze den Live-Messwert im Steuerungspanel, um zu zeigen, dass nur einer von beiden konstant bleibt.
+- Beim Zwillingsparadoxon-Szenario: Die App zeichnet Weltlinien als unbegrenzte Geraden – Hin- und Rückreise-Linie laufen deshalb über das Umkehrereignis hinaus. Wenn jemand daraus fälschlich auf mehrere Reisende oder eine Reise "in die Vergangenheit" schließt, stelle klar, dass physikalisch nur der Streckenzug aus Hinreise bis zum Umkehrereignis und danach Rückreise zur Reise gehört.
+
+## Wie du aus der Interaktion liest
+
+Beziehe dich, wo möglich, auf die konkreten Objekte, Ereignisse und Zahlenwerte, die die Person in der App angelegt hat oder anlegen könnte, statt abstrakt zu bleiben. Wenn eine Frage sehr allgemein gestellt wird ("Ich verstehe Gleichzeitigkeit nicht"), führe zunächst zu einer konkreten, kleinen Beobachtung in der App zurück, bevor du weiter ins Gespräch gehst.
+
+## Sprache und Ton
+
+Antworte auf Deutsch, in der Du-Anrede, in einer für die gymnasiale Oberstufe angemessenen Fachsprache. Halte einzelne Antworten kurz und ende nach Möglichkeit mit einer konkreten Rückfrage oder einem konkreten nächsten Schritt in der App, statt lange Absätze zu erklären, wenn eine gezielte Beobachtung mehr bringt.`;
+
+document.getElementById('tutorPromptText').value = TUTOR_PROMPT;
+
+function copyTutorPrompt(){
+  const ta = document.getElementById('tutorPromptText');
+  const icon = document.getElementById('copyIcon');
+  const label = document.getElementById('copyLabel');
+  const done = () => {
+    icon.setAttribute('data-lucide','check');
+    label.textContent = 'Kopiert!';
+    if (window.lucide) lucide.createIcons();
+    setTimeout(()=>{
+      icon.setAttribute('data-lucide','copy');
+      label.textContent = 'Prompt kopieren';
+      if (window.lucide) lucide.createIcons();
+    }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(done).catch(()=>{
+      ta.select(); document.execCommand('copy'); done();
+    });
+  } else {
+    ta.select(); document.execCommand('copy'); done();
+  }
+}
+
+/* ---------- Vollbildmodus ---------- */
+const fsRoot = document.getElementById('fsRoot');
+
+function getFullscreenElement(){
+  return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null;
+}
+function requestFs(el){
+  if (el.requestFullscreen) return el.requestFullscreen();
+  if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+  if (el.msRequestFullscreen) return el.msRequestFullscreen();
+}
+function exitFs(){
+  if (document.exitFullscreen) return document.exitFullscreen();
+  if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+  if (document.msExitFullscreen) return document.msExitFullscreen();
+}
+
+function toggleFullscreen(){
+  if (getFullscreenElement() === fsRoot){
+    exitFs();
+  } else {
+    requestFs(fsRoot);
+  }
+}
+
+function onFullscreenChange(){
+  const active = getFullscreenElement() === fsRoot;
+  fsRoot.classList.toggle('is-fullscreen', active);
+  const icon = document.getElementById('fsToggleIcon');
+  const btn = document.getElementById('fsToggleBtn');
+  icon.setAttribute('data-lucide', active ? 'minimize-2' : 'maximize-2');
+  btn.setAttribute('title', active ? 'Vollbild verlassen' : 'Vollbild');
+  if (!active){
+    document.getElementById('controlPanel').classList.remove('panel-collapsed');
+    document.getElementById('panelCollapseIcon').setAttribute('data-lucide','chevron-left');
+  }
+  if (window.lucide) lucide.createIcons();
+  render();
+}
+['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(evt=>{
+  document.addEventListener(evt, onFullscreenChange);
+});
+
+function toggleControlPanelCollapse(){
+  const panel = document.getElementById('controlPanel');
+  const collapsed = panel.classList.toggle('panel-collapsed');
+  document.getElementById('panelCollapseIcon').setAttribute('data-lucide', collapsed ? 'chevron-right' : 'chevron-left');
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ---------- Initialisierung ---------- */
+renderObjList();
+renderEmitSelect();
+renderEventList();
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>
