@@ -535,7 +535,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <div class="step-wizard" id="stepWizard" style="display:none;"></div>
               <button class="step-wizard-reopen" id="stepWizardReopen" style="display:none;" onclick="reopenStepWizard()"><i data-lucide="info"></i> Erklärung wieder öffnen</button>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die rechte Randweltlinie den Ursprung und die ct′-Achse festlegt; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -730,6 +730,7 @@ let referenceId = 'S0';
 let nextId = 1;
 
 let displayBeta = 0;   // aktuell dargestelltes β_ref (animiert während eines Bezugssystemwechsels)
+let displayOrigin = {x:0, ct:0}; // Laborereignis, das im angezeigten Bezugssystem den Koordinatenursprung bildet
 let animToken = 0;     // invalidiert veraltete Animationsschleifen bei schnellem Umschalten
 const FRAME_ANIM_MS = 2000;
 
@@ -751,14 +752,18 @@ function lorentz(x, ct, beta){
 function objGamma(beta){ return 1/Math.sqrt(1-beta*beta); }
 function relativeBeta(beta, betaRef){ return (beta-betaRef) / (1-beta*betaRef); }
 function measuredLength(obj, betaRef){
-  if (obj.extentType !== 'length' || !obj.extentValue) return null;
+  // Die Eigenlänge steckt bei 'length' und 'area' in extentValue.
+  if (!['length', 'area'].includes(obj.extentType) || !(obj.extentValue > 0)) return null;
   const betaRel = relativeBeta(obj.beta, betaRef);
-  return obj.extentValue * Math.sqrt(1 - betaRel*betaRel); // Längenkontraktion
+  return obj.extentValue * Math.sqrt(Math.max(0, 1 - betaRel*betaRel)); // Längenkontraktion
 }
 function measuredDuration(obj, betaRef){
-  if (obj.extentType !== 'duration' || !obj.extentValue) return null;
+  // Bei 'duration' steckt τ₀ in extentValue, bei 'area' in extentValue2.
+  if (!['duration', 'area'].includes(obj.extentType)) return null;
+  const tau0 = obj.extentType === 'area' ? obj.extentValue2 : obj.extentValue;
+  if (!(tau0 > 0)) return null;
   const betaRel = relativeBeta(obj.beta, betaRef);
-  return obj.extentValue / Math.sqrt(1 - betaRel*betaRel); // Zeitdilatation
+  return tau0 / Math.sqrt(Math.max(Number.EPSILON, 1 - betaRel*betaRel)); // Zeitdilatation
 }
 
 function targetBetaRef(){
@@ -770,6 +775,30 @@ function targetBetaRef(){
    sonst identisch zu targetBetaRef(). Alle Zeichen- und Ableseroutinen nutzen diese Funktion. */
 function currentBetaRef(){
   return displayBeta;
+}
+
+/* Ursprung eines gewählten Bezugssystems. Bei räumlich ausgedehnten Objekten
+   wird der rechte Rand verwendet. Für reine Längenobjekte ist (x₀,ct₀) bereits
+   die rechte Randweltlinie; bei Flächenobjekten wird der rechte untere Eckpunkt
+   des Eigenrechtecks ins Laborsystem transformiert. */
+function referenceOrigin(id){
+  if (id === 'S0') return {x:0, ct:0};
+  const o = objects.find(o=>o.id===id);
+  if (!o) return {x:0, ct:0};
+  if (o.extentType === 'area' && o.extentValue > 0){
+    const off = lorentz(o.extentValue, 0, -o.beta); // Ruhesystem → Labor
+    return {x:o.x0 + off.x, ct:o.ct0 + off.ct};
+  }
+  // Beim Typ length ist die Hauptweltlinie definitionsgemäß der rechte Rand.
+  return {x:o.x0, ct:o.ct0};
+}
+function currentFrameOrigin(){ return displayOrigin; }
+function frameTransformPoint(x, ct, beta=currentBetaRef(), origin=currentFrameOrigin()){
+  return lorentz(x-origin.x, ct-origin.ct, beta);
+}
+function frameInversePoint(xp, ctp, beta=currentBetaRef(), origin=currentFrameOrigin()){
+  const lab = lorentz(xp, ctp, -beta);
+  return {x:lab.x+origin.x, ct:lab.ct+origin.ct};
 }
 
 /* Schnittpunkt zweier Geraden, jeweils durch Punkt p + Richtungsvektor d gegeben:
@@ -804,6 +833,7 @@ function updateObjectExtent(id, field, value){
   if (field === 'type') o.extentType = value;
   else if (field === 'value2') o.extentValue2 = Math.max(0, parseFloat(value) || 0);
   else o.extentValue = Math.max(0, parseFloat(value) || 0);
+  if (id === referenceId) displayOrigin = referenceOrigin(id);
   renderObjList();
   render();
 }
@@ -821,7 +851,7 @@ function removeObject(id){
     const swEl = document.getElementById('stepWizard');
     if (swEl) swEl.style.display = 'none';
   }
-  if (referenceId === id){ referenceId = 'S0'; displayBeta = 0; animToken++; }
+  if (referenceId === id){ referenceId = 'S0'; displayBeta = 0; displayOrigin={x:0,ct:0}; animToken++; }
   renderObjList(); renderEmitSelect(); renderEventList(); render();
 }
 
@@ -858,7 +888,7 @@ function updateObject(id, field, value){
   }
   if (o.beta >= 1) o.beta = 0.999;
   if (o.beta <= -1) o.beta = -0.999;
-  if (id === referenceId){ animToken++; displayBeta = o.beta; } // direktes Nachführen, keine Animation beim Reglerziehen
+  if (id === referenceId){ animToken++; displayBeta = o.beta; displayOrigin = referenceOrigin(id); } // direktes Nachführen
   renderObjList(); renderEmitSelect(); renderEventList(); render();
 }
 
@@ -888,10 +918,12 @@ function beginAnimatedReferenceChange(toId){
   const fromId = referenceId;
   const startBeta = displayBeta;
   const endBeta = toId==='S0' ? 0 : ((objects.find(o=>o.id===toId)||{}).beta || 0);
+  const startOrigin = {...displayOrigin};
+  const endOrigin = referenceOrigin(toId);
   const betaRel = relativeBeta(endBeta, startBeta);
   constructionAxis = {
     fromId, toId, fromName:frameName(fromId), toName:frameName(toId),
-    startBeta, endBeta, betaRel, progress:0, persistent:false
+    startBeta, endBeta, startOrigin, endOrigin, betaRel, progress:0, persistent:false
   };
   renderObjList();
   const t0 = performance.now();
@@ -905,21 +937,23 @@ function beginAnimatedReferenceChange(toId){
       referenceId = toId;
       constructionAxis.animating = true;
       renderObjList(); renderEventList();
-      animateFrameChange(startBeta, endBeta, ()=>{ constructionAxis = null; render(); });
+      animateFrameChange(startBeta, endBeta, startOrigin, endOrigin, ()=>{ constructionAxis = null; render(); });
     }
   }
   requestAnimationFrame(drawAxis);
 }
 
 /* Sanfter Übergang zur orthogonalen Darstellung des neuen Bezugssystems. */
-function animateFrameChange(startBeta, endBeta, onComplete){
+function animateFrameChange(startBeta, endBeta, startOrigin, endOrigin, onComplete){
   animToken++;
   const myToken = animToken;
   const t0 = performance.now();
   function step(now){
     if (myToken !== animToken) return;
     const t = Math.min(1, (now-t0)/FRAME_ANIM_MS);
-    displayBeta = startBeta + (endBeta-startBeta)*easeInOutCubic(t);
+    const e = easeInOutCubic(t);
+    displayBeta = startBeta + (endBeta-startBeta)*e;
+    displayOrigin = {x:startOrigin.x+(endOrigin.x-startOrigin.x)*e, ct:startOrigin.ct+(endOrigin.ct-startOrigin.ct)*e};
     render();
     updateFrameIndicator();
     updateEventCoordsOnly();
@@ -927,6 +961,7 @@ function animateFrameChange(startBeta, endBeta, onComplete){
     if (t < 1) requestAnimationFrame(step);
     else {
       displayBeta = endBeta;
+      displayOrigin = {...endOrigin};
       if (onComplete) onComplete();
     }
   }
@@ -940,19 +975,41 @@ function frameName(id){
 
 function openStepWizard(toId){
   animToken++;
+  const myToken = animToken;
   const fromId = referenceId;
   const startBeta = displayBeta;
   const endBeta = toId==='S0' ? 0 : ((objects.find(o=>o.id===toId)||{}).beta || 0);
+  const startOrigin = {...displayOrigin};
+  const endOrigin = referenceOrigin(toId);
   const betaRel = relativeBeta(endBeta, startBeta);
   stepWizardHidden = false;
   stepWizard = {
     fromId, toId, fromName:frameName(fromId), toName:frameName(toId),
-    startBeta, endBeta, betaRel, gammaRel:1/Math.sqrt(1-betaRel*betaRel), phase:1
+    startBeta, endBeta, startOrigin, endOrigin, betaRel, gammaRel:1/Math.sqrt(1-betaRel*betaRel), phase:'drawing'
   };
-  constructionAxis = {...stepWizard, progress:1, persistent:false};
+  constructionAxis = {...stepWizard, progress:0, persistent:false, animating:false};
   renderObjList();
   render();
   renderStepWizard();
+
+  // Schritt 1 ist eine echte, sichtbare Konstruktionsphase: Das alte Koordinatensystem
+  // bleibt unverändert, während ausschließlich die neue x′-Achse vom Ursprung aus wächst.
+  const t0 = performance.now();
+  function drawConstructionAxis(now){
+    if (myToken !== animToken || !stepWizard || stepWizard.toId !== toId) return;
+    const t = Math.min(1, (now-t0)/AXIS_DRAW_MS);
+    constructionAxis.progress = easeInOutCubic(t);
+    render();
+    if (t < 1){
+      requestAnimationFrame(drawConstructionAxis);
+    } else {
+      stepWizard.phase = 1; // nun im sichtbaren Zwischenzustand anhalten
+      constructionAxis.progress = 1;
+      render();
+      renderStepWizard();
+    }
+  }
+  requestAnimationFrame(drawConstructionAxis);
 }
 
 function cancelStepWizard(){
@@ -991,7 +1048,7 @@ function stepWizardPlay(){
   constructionAxis.animating = true;
   renderObjList(); renderEventList();
   renderStepWizard(true);
-  animateFrameChange(sw.startBeta, sw.endBeta, ()=>{
+  animateFrameChange(sw.startBeta, sw.endBeta, sw.startOrigin, sw.endOrigin, ()=>{
     stepWizard = null;
     stepWizardHidden = false;
     constructionAxis = null;
@@ -1028,13 +1085,25 @@ function renderStepWizard(playing){
   const sw = stepWizard;
   el.style.display = 'block';
   const angleDeg = Math.atan(Math.abs(sw.betaRel)) * 180/Math.PI;
-  if (sw.phase === 1){
+  if (sw.phase === 'drawing'){
     el.innerHTML = `
       <div class="step-wizard-title">
-        <span>Schritt 1/2 · Neue x′-Achse</span>
+        <span>Schritt 1/2 · Neue x′-Achse wird eingezeichnet</span>
         <button class="step-wizard-close" onclick="closeStepWizardBox()" title="Erklärung schließen"><i data-lucide="x"></i></button>
       </div>
-      <p>Das Diagramm bleibt zunächst vollständig im bisherigen Bezugssystem <b>${sw.fromName}</b>. Nur die x′-Achse des neuen Systems <b>${sw.toName}</b> wird darin eingezeichnet. Bereits aktivierte Gleichzeitigkeitslinien verlaufen nun gestrichelt parallel zu dieser neuen Achse.</p>
+      <p>Das bisherige Koordinatensystem <b>${sw.fromName}</b> bleibt vollständig unverändert. Jetzt wird ausschließlich die x′-Achse des neuen Systems <b>${sw.toName}</b> vom Ursprung aus eingezeichnet.</p>
+      <div class="formula-box">
+        <span class="label">Lage der neuen x′-Achse im bisherigen System</span>
+        ct = β<sub>rel</sub>·x &nbsp;&nbsp;mit&nbsp;&nbsp; β<sub>rel</sub> = ${sw.betaRel.toFixed(3)}
+      </div>
+      <p style="font-size:.82rem;color:var(--text-muted);"><i data-lucide="loader-circle"></i> Die neue Achse wird gerade eingezeichnet. Weltlinien, Ereignisse, Lichtstrahlen und die alten Achsen bleiben dabei unverändert.</p>`;
+  } else if (sw.phase === 1){
+    el.innerHTML = `
+      <div class="step-wizard-title">
+        <span>Schritt 1/2 · Sichtbarer Zwischenzustand</span>
+        <button class="step-wizard-close" onclick="closeStepWizardBox()" title="Erklärung schließen"><i data-lucide="x"></i></button>
+      </div>
+      <p>Jetzt ist Schritt 1 abgeschlossen: Das alte Koordinatensystem <b>${sw.fromName}</b> ist weiterhin unverändert sichtbar. Zusätzlich ist die geneigte x′-Achse des neuen Systems <b>${sw.toName}</b> vollständig eingezeichnet. Bereits aktivierte Gleichzeitigkeitslinien verlaufen gestrichelt parallel zu dieser neuen Achse.</p>
       <div class="formula-box">
         <span class="label">Lage der neuen x′-Achse im bisherigen System</span>
         ct = β<sub>rel</sub>·x &nbsp;&nbsp;mit&nbsp;&nbsp; β<sub>rel</sub> = ${sw.betaRel.toFixed(3)}
@@ -1042,7 +1111,7 @@ function renderStepWizard(playing){
       <p style="font-size:.78rem;color:var(--text-muted);">Noch wurden weder die alten Achsen noch Weltlinien, Ereignisse oder Lichtstrahlen gedreht. Die neue x′-Achse ist als geneigte Konstruktionslinie ergänzt; die gestrichelten Gleichzeitigkeitslinien des neuen Systems können daran bereits abgelesen werden.</p>
       <div class="step-wizard-actions">
         <button class="btn-secondary" onclick="stepWizardKeepAxis()">Ohne Winkeländerung beenden</button>
-        <button class="btn-primary" onclick="stepWizardNext()">Weiter <i data-lucide="arrow-right"></i></button>
+        <button class="btn-primary" onclick="stepWizardNext()">Schritt 2: Winkel verändern <i data-lucide="arrow-right"></i></button>
       </div>`;
   } else {
     el.innerHTML = `
@@ -1107,7 +1176,7 @@ function renderObjList(){
       <div class="event-coords" id="extentReadout_${o.id}" style="${o.extentType==='none'?'display:none;':''}margin-top:4px;"></div>
       <div class="obj-ref-row">
         <input type="radio" name="refChoice" id="ref_${o.id}" ${referenceId===o.id?'checked':''} onchange="setReference('${o.id}')">
-        <label for="ref_${o.id}">als Bezugssystem verwenden</label>
+        <label for="ref_${o.id}">als Bezugssystem verwenden${(o.extentType==='length'||o.extentType==='area')?' (rechter Rand)':''}</label>
       </div>
     `;
     wrap.appendChild(row);
@@ -1219,7 +1288,7 @@ function updateEventCoordsOnly(){
   events.forEach(e=>{
     const el = document.getElementById('coord_' + e.id);
     if (!el) return;
-    const f = lorentz(e.xLab, e.ctLab, beta);
+    const f = frameTransformPoint(e.xLab, e.ctLab, beta, currentFrameOrigin());
     el.innerHTML = `x′ = ${f.x.toFixed(2)} LE &nbsp;·&nbsp; ct′ = ${f.ct.toFixed(2)} LE`;
   });
 }
@@ -1239,11 +1308,11 @@ function updateExtentReadouts(){
       const T = measuredDuration(o, betaRef);
       el.style.display = 'block';
       el.innerHTML = `Gemessene Dauer hier: <b>${T.toFixed(2)} LE</b> (Eigendauer: ${o.extentValue.toFixed(2)} LE)`;
-    } else if (o.extentType === 'area' && (o.extentValue > 0 || o.extentValue2 > 0)){
-      const L = o.extentValue > 0 ? measuredLength(o, betaRef) : 0;
-      const T = o.extentValue2 > 0 ? measuredDuration({...o, extentType:'duration', extentValue:o.extentValue2}, betaRef) : 0;
+    } else if (o.extentType === 'area' && o.extentValue > 0 && o.extentValue2 > 0){
+      const L = measuredLength(o, betaRef);
+      const T = measuredDuration(o, betaRef);
       el.style.display = 'block';
-      el.innerHTML = `Gemessene Länge: <b>${L.toFixed(2)} LE</b> · Gemessene Dauer: <b>${T.toFixed(2)} LE</b>`;
+      el.innerHTML = `Gemessene Länge: <b>${L.toFixed(2)} LE</b> · Gemessene Dauer: <b>${T.toFixed(2)} LE</b> · Raumzeitfläche: <b>${(o.extentValue * o.extentValue2).toFixed(2)} LE²</b>`;
     } else {
       el.style.display = 'none';
     }
@@ -1259,7 +1328,7 @@ function renderEventList(){
   if (events.length===0){ empty.style.display='block'; return; }
   empty.style.display='none';
   events.forEach((e,i)=>{
-    const f = lorentz(e.xLab, e.ctLab, beta);
+    const f = frameTransformPoint(e.xLab, e.ctLab, beta, currentFrameOrigin());
     const row = document.createElement('div');
     row.className = 'event-row';
     row.innerHTML = `
@@ -1376,7 +1445,7 @@ function loadPreset(key){
   const swEl = document.getElementById('stepWizard');
   if (swEl) swEl.style.display = 'none';
   objects = []; events = []; rays = []; nextId = 1; referenceId = 'S0';
-  displayBeta = 0; animToken++;
+  displayBeta = 0; displayOrigin={x:0,ct:0}; animToken++;
   // Beschleunigungs-Zustand: NUR im Spezialszenario aktiv, sonst immer null
   twinAccState = (key === 'zwilling_acc') ? { beta: 0.6, tTotal: 20, tAcc: 2 } : null;
   const slider = document.getElementById('twinAccTaSlider');
@@ -1581,7 +1650,7 @@ function render(){
   // immer orthogonal. transformPt/transformDir rechnen Laborkoordinaten (bzw. -richtungen) dorthin um.
   // Die Transformation ist linear/homogen (gemeinsamer Ursprung), daher gilt dieselbe Funktion
   // sowohl für Punkte als auch für Richtungsvektoren.
-  const transformPt  = (x, ct) => lorentz(x, ct, betaRef);
+  const transformPt  = (x, ct) => frameTransformPoint(x, ct, betaRef, currentFrameOrigin());
   const transformDir = (dx, dct) => lorentz(dx, dct, betaRef);
 
   // Hintergrund-Gitter des aktuellen Bezugssystems (immer orthogonal, da es das Anzeigesystem ist)
@@ -1617,11 +1686,13 @@ function render(){
       x: gammaNow*(1 - betaNow*constructionAxis.endBeta),
       ct: gammaNow*(constructionAxis.endBeta - betaNow)
     };
-    const seg = clipToView({x:0,ct:0}, dNewX);
+    const axisOriginLab = constructionAxis.endOrigin || referenceOrigin(constructionAxis.toId);
+    const axisOrigin = frameTransformPoint(axisOriginLab.x, axisOriginLab.ct, betaNow, currentFrameOrigin());
+    const seg = clipToView(axisOrigin, dNewX);
     if (seg){
       const p = Math.max(0, Math.min(1, constructionAxis.progress ?? 1));
-      const a = {x:seg.a.x*p, ct:seg.a.ct*p};
-      const b = {x:seg.b.x*p, ct:seg.b.ct*p};
+      const a = {x:axisOrigin.x + (seg.a.x-axisOrigin.x)*p, ct:axisOrigin.ct + (seg.a.ct-axisOrigin.ct)*p};
+      const b = {x:axisOrigin.x + (seg.b.x-axisOrigin.x)*p, ct:axisOrigin.ct + (seg.b.ct-axisOrigin.ct)*p};
       const axisColor = cssVar('--frame-axis');
       svgLine(a, b, {stroke:axisColor,'stroke-width':2.4,'stroke-dasharray':'8,4',opacity:0.95});
       if (p > 0.85){
@@ -1666,12 +1737,13 @@ function render(){
   if (referenceId !== 'S0'){
     const dX0  = transformDir(1,0);
     const dCt0 = transformDir(0,1);
-    const segX0 = clipToView({x:0,ct:0}, dX0);
+    const labOriginShown = transformPt(0,0);
+    const segX0 = clipToView(labOriginShown, dX0);
     if (segX0){
       svgLine(segX0.a, segX0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
       svgText(segX0.b.x, segX0.b.ct, 'x₀', {fill:labColor,'font-weight':'700', dx:'6', dy:'-4', opacity:0.85});
     }
-    const segCt0 = clipToView({x:0,ct:0}, dCt0);
+    const segCt0 = clipToView(labOriginShown, dCt0);
     if (segCt0){
       svgLine(segCt0.a, segCt0.b, {stroke:labColor,'stroke-width':1.4,'stroke-dasharray':'6,3',opacity:0.8});
       svgText(segCt0.b.x, segCt0.b.ct, 'ct₀', {fill:labColor,'font-weight':'700', dx:'-18', dy:'12', opacity:0.85});
@@ -1774,7 +1846,7 @@ function render(){
     // (Eigenlänge L₀ × Eigendauer τ₀) werden per Lorentz-Transformation in das Anzeigesystem
     // gebracht – das Ergebnis ist ein Parallelogramm. Dessen Flächeninhalt ist invariant
     // (det L = 1), nur die Form ändert sich je nach Bezugssystem.
-    if (obj.extentType === 'area' && obj.extentValue >= 0 && obj.extentValue2 >= 0){
+    if (obj.extentType === 'area' && obj.extentValue > 0 && obj.extentValue2 > 0){
       const L0 = obj.extentValue || 0;
       const tau0 = obj.extentValue2 || 0;
       // Korrekte Methode: Ecken im RUHESYSTEM des Objekts definieren (L₀ × τ₀ als Rechteck),
@@ -1977,7 +2049,7 @@ function handleClick(ev){
   // (ins aktuelle Bezugssystem transformierten) Lage, nicht der Lab-Parameter direkt.
   let best = null, bestDist = 14; // Toleranz in px
   objects.forEach(obj=>{
-    const p0 = lorentz(obj.x0, obj.ct0, betaRef);
+    const p0 = frameTransformPoint(obj.x0, obj.ct0, betaRef, currentFrameOrigin());
     const d  = lorentz(obj.beta, 1, betaRef);
     const p1 = toPx(p0.x, p0.ct);
     const p2 = toPx(p0.x + d.x*10, p0.ct + d.ct*10);
@@ -1986,7 +2058,7 @@ function handleClick(ev){
   });
   if (best){
     // Klickpunkt zurück ins Laborsystem transformieren (Objekte sind lab-fest parametrisiert)
-    const clickLab = lorentz(clickPhys.x, clickPhys.ct, -betaRef);
+    const clickLab = frameInversePoint(clickPhys.x, clickPhys.ct, betaRef, currentFrameOrigin());
     emitLight(best, clickLab.ct);
   }
 }
