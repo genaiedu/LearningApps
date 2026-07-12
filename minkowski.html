@@ -403,6 +403,16 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
         <p>Ist s² &gt; 0, liegen die Ereignisse <b>raumartig</b> getrennt: Kein Lichtsignal kann von einem zum anderen gelangen, es gibt keinen möglichen Kausalzusammenhang – und genau deshalb ist es unproblematisch, dass verschiedene Beobachter eine unterschiedliche Reihenfolge messen. Ist s² &lt; 0, liegen sie <b>zeitartig</b> getrennt (innerhalb des Lichtkegels): Dann ist ein Kausalzusammenhang möglich, und die Reihenfolge ist für alle Beobachter gleich – alles andere wäre eine echte Kausalitätsverletzung.</p>
         <p>Aktiviere in der Ereignisliste die Checkbox <b>„Lichtkegel hier"</b> für ein Ereignis, um genau das zu überprüfen: Liegt das zweite Ereignis außerhalb des eingezeichneten Lichtkegels (der X-förmigen 45°-Linien durch den Punkt), ist die Trennung raumartig – die beobachtete Reihenfolge darf dann frame-abhängig sein, ohne dass daraus ein Widerspruch entsteht.</p>
       </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:10px; font-size:1.05rem;">Ausgedehnte Objekte: Länge und Dauer messen</h3>
+        <p>Bisher waren Weltlinien unendlich dünne Punkte. Jedes Objekt kann zusätzlich eine <b>Eigenlänge L₀</b> (räumliche Ausdehnung, z. B. ein Maßstab oder ein Fahrzeug) oder eine <b>Eigendauer τ₀</b> (zeitliche Ausdehnung, z. B. eine Lebensdauer) erhalten. Beide Werte sind als Eigenschaften im <i>Ruhesystem</i> des Objekts definiert und ändern sich nie – gemessen wird aber immer im gerade gewählten Bezugssystem, und genau das liefert Längenkontraktion bzw. Zeitdilatation ganz automatisch:</p>
+        <div class="formula-box">
+          <span class="label">Gemessene Länge bzw. Dauer im gewählten Bezugssystem</span>
+          L = L₀·√(1−β<sub>rel</sub>²) &nbsp;&nbsp;·&nbsp;&nbsp; τ = τ₀ / √(1−β<sub>rel</sub>²)
+        </div>
+        <p>Dabei ist β<sub>rel</sub> die Relativgeschwindigkeit zwischen dem Objekt und dem gewählten Bezugssystem – dieselbe relativistische Geschwindigkeitsaddition, die schon bei den Weltlinien-Neigungen automatisch aus der Lorentz-Transformation folgt. Ein räumlich ausgedehntes Objekt zeigt im Diagramm eine zweite, gestrichelte Weltlinie am hinteren Ende sowie eine waagerechte Messstrecke im aktuellen Bezugssystem; ein zeitlich ausgedehntes Objekt zeigt einen dick hervorgehobenen Abschnitt seiner eigenen Weltlinie zwischen Start- und Endereignis. In beiden Fällen steht der aktuelle Messwert live unter dem Objekt im Steuerungspanel – wechselst du das Bezugssystem, läuft dieser Wert während der 2-Sekunden-Animation sichtbar mit.</p>
+      </div>
     </section>
 
     <!-- 2. Diagramm -->
@@ -483,7 +493,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
                 <button class="zoom-btn" id="fsToggleBtn" onclick="toggleFullscreen()" title="Vollbild"><i data-lucide="maximize-2" id="fsToggleIcon"></i></button>
               </div>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -580,8 +590,8 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
 
       <div class="card reveal">
         <h3 style="margin-bottom:8px; font-size:1.05rem;">Myonenzerfall in der Atmosphäre</h3>
-        <p>Ein Myon entsteht mit β = 0,98 (γ ≈ 5,03) und bewegt sich auf eine ruhende „Erdoberfläche" bei x = 15 LE zu. Geladen werden die Weltlinien „Myon" und „Erdoberfläche".</p>
-        <p><b>Aufgabe:</b> Entstehung und Ankunft an der Erdoberfläche sind bereits als Ereignisse markiert. Prüfe rechnerisch, ob die Laborzeit ct des Ankunftsereignisses zu x = 15 und β = 0,98 passt. Wechsle dann das Bezugssystem zum Myon und lies die Eigenzeit ab, die bis zu diesem Ereignis vergeht. Vergleiche beide Zeiten – wie hängt der Unterschied mit γ zusammen, und warum „schafft" das Myon trotz kurzer Eigenlebensdauer die Strecke bis zum Boden?</p>
+        <p>Ein Myon entsteht mit β = 0,98 (γ ≈ 5,03) und bewegt sich auf eine ruhende „Erdoberfläche" bei x = 15 LE zu. Geladen werden die Weltlinien „Myon" und „Erdoberfläche" – das Myon ist zusätzlich als zeitlich ausgedehntes Objekt mit seiner Eigenlebensdauer τ₀ ≈ 3,05 LE hinterlegt (dick hervorgehobener Abschnitt seiner Weltlinie, mit Live-Messwert im Steuerungspanel).</p>
+        <p><b>Aufgabe:</b> Entstehung und Ankunft an der Erdoberfläche sind bereits als Ereignisse markiert. Prüfe rechnerisch, ob die Laborzeit ct des Ankunftsereignisses zu x = 15 und β = 0,98 passt. Wechsle dann das Bezugssystem zum Myon und beobachte, wie sich der Live-Messwert „Gemessene Dauer" im Steuerungspanel während der Animation verändert – er sollte im Myon-System genau auf τ₀ ≈ 3,05 zulaufen. Vergleiche beide Zeiten – wie hängt der Unterschied mit γ zusammen, und warum „schafft" das Myon trotz kurzer Eigenlebensdauer die Strecke bis zum Boden?</p>
       </div>
 
       <div class="card reveal">
@@ -684,6 +694,23 @@ function lorentz(x, ct, beta){
   return { x: gamma*(x-beta*ct), ct: gamma*(ct-beta*x) };
 }
 
+/* Ausgedehnte Objekte: Eigenlänge/Eigendauer sind Eigenschaften im Ruhesystem des Objekts.
+   Die im aktuell gewählten Bezugssystem GEMESSENE Länge bzw. Dauer folgt aus der
+   Relativgeschwindigkeit zwischen Objekt und Bezugssystem (Geschwindigkeitsaddition ergibt
+   sich automatisch aus der Transformation der Richtungsvektoren, siehe transformDir). */
+function objGamma(beta){ return 1/Math.sqrt(1-beta*beta); }
+function relativeBeta(beta, betaRef){ return (beta-betaRef) / (1-beta*betaRef); }
+function measuredLength(obj, betaRef){
+  if (obj.extentType !== 'length' || !obj.extentValue) return null;
+  const betaRel = relativeBeta(obj.beta, betaRef);
+  return obj.extentValue * Math.sqrt(1 - betaRel*betaRel); // Längenkontraktion
+}
+function measuredDuration(obj, betaRef){
+  if (obj.extentType !== 'duration' || !obj.extentValue) return null;
+  const betaRel = relativeBeta(obj.beta, betaRef);
+  return obj.extentValue / Math.sqrt(1 - betaRel*betaRel); // Zeitdilatation
+}
+
 function targetBetaRef(){
   if (referenceId === 'S0') return 0;
   const o = objects.find(o=>o.id===referenceId);
@@ -709,12 +736,22 @@ function addObject(preset){
   const id = uid();
   const color = OBJ_COLORS[objects.length % OBJ_COLORS.length];
   const obj = Object.assign({
-    id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0
+    id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0,
+    extentType: 'none', extentValue: 0   // 'none' | 'length' (räumlich) | 'duration' (zeitlich), Wert = Eigenlänge/Eigendauer
   }, preset || {});
   objects.push(obj);
   if (objects.length === 1) referenceId = 'S0';
   renderObjList();
   renderEmitSelect();
+  render();
+}
+
+function updateObjectExtent(id, field, value){
+  const o = objects.find(o=>o.id===id);
+  if (!o) return;
+  if (field === 'type') o.extentType = value;
+  else o.extentValue = Math.max(0, parseFloat(value) || 0);
+  renderObjList();
   render();
 }
 
@@ -736,7 +773,8 @@ function cloneObject(id){
     id: uid(),
     name: src.name + ' (Kopie)',
     color: OBJ_COLORS[objects.length % OBJ_COLORS.length],
-    beta: src.beta, x0: src.x0, ct0: src.ct0
+    beta: src.beta, x0: src.x0, ct0: src.ct0,
+    extentType: src.extentType || 'none', extentValue: src.extentValue || 0
   };
   objects.push(clone);
   renderObjList();
@@ -779,6 +817,7 @@ function animateFrameChange(startBeta, endBeta){
     render();
     updateFrameIndicator();
     updateEventCoordsOnly();
+    updateExtentReadouts();
     if (t < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
@@ -804,6 +843,21 @@ function renderObjList(){
         <div><label>β = ${o.beta.toFixed(3)}</label><input type="number" step="0.01" min="-0.999" max="0.999" value="${o.beta}" onchange="updateObject('${o.id}','beta',this.value)"></div>
       </div>
       <input type="range" class="beta-slider" min="-0.99" max="0.99" step="0.01" value="${o.beta}" oninput="updateObject('${o.id}','beta',this.value)">
+      <div class="obj-fields" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <label>Ausdehnung</label>
+          <select class="select-styled" style="margin-bottom:0;padding:5px 6px;font-size:.82rem;" onchange="updateObjectExtent('${o.id}','type',this.value)">
+            <option value="none" ${o.extentType==='none'?'selected':''}>keine</option>
+            <option value="length" ${o.extentType==='length'?'selected':''}>Länge (räumlich)</option>
+            <option value="duration" ${o.extentType==='duration'?'selected':''}>Dauer (zeitlich)</option>
+          </select>
+        </div>
+        <div ${o.extentType==='none'?'style="display:none;"':''}>
+          <label>${o.extentType==='duration' ? 'Eigendauer τ₀ [LE]' : 'Eigenlänge L₀ [LE]'}</label>
+          <input type="number" step="any" min="0" value="${o.extentValue||0}" onchange="updateObjectExtent('${o.id}','value',this.value)">
+        </div>
+      </div>
+      <div class="event-coords" id="extentReadout_${o.id}" style="${o.extentType==='none'?'display:none;':''}margin-top:4px;"></div>
       <div class="obj-ref-row">
         <input type="radio" name="refChoice" id="ref_${o.id}" ${referenceId===o.id?'checked':''} onchange="setReference('${o.id}')">
         <label for="ref_${o.id}">als Bezugssystem verwenden</label>
@@ -819,6 +873,7 @@ function renderObjList(){
     <label for="ref_S0">Laborsystem S₀ als Bezugssystem verwenden</label>`;
   wrap.appendChild(labRow);
   if (window.lucide) lucide.createIcons();
+  updateExtentReadouts();
   updateFrameIndicator();
 }
 
@@ -911,6 +966,27 @@ function updateEventCoordsOnly(){
   });
 }
 
+/* Aktualisiert die "gemessene Länge/Dauer im aktuellen Bezugssystem"-Anzeige jedes ausgedehnten
+   Objekts – wird bei jedem render() aufgerufen, läuft also auch während der 2s-Animation live mit. */
+function updateExtentReadouts(){
+  const betaRef = currentBetaRef();
+  objects.forEach(o=>{
+    const el = document.getElementById('extentReadout_' + o.id);
+    if (!el) return;
+    if (o.extentType === 'length' && o.extentValue > 0){
+      const L = measuredLength(o, betaRef);
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Länge hier: <b>${L.toFixed(2)} LE</b> (Eigenlänge: ${o.extentValue.toFixed(2)} LE)`;
+    } else if (o.extentType === 'duration' && o.extentValue > 0){
+      const T = measuredDuration(o, betaRef);
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Dauer hier: <b>${T.toFixed(2)} LE</b> (Eigendauer: ${o.extentValue.toFixed(2)} LE)`;
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
 /* ---------- UI: Ereignisliste ---------- */
 function renderEventList(){
   const wrap = document.getElementById('eventList');
@@ -959,7 +1035,8 @@ const PRESETS = {
     { name:'Raumschiff B', color:'#1a6fb5', beta:0.8, x0:10, ct0:0 }
   ],
   myon: [
-    { name:'Myon',          color:'#7c3aed', beta:0.98, x0:0,  ct0:0 },
+    { name:'Myon',          color:'#7c3aed', beta:0.98, x0:0,  ct0:0,
+      extentType:'duration', extentValue: (15/0.98) * Math.sqrt(1 - 0.98*0.98) },
     { name:'Erdoberfläche', color:'#334155', beta:0,     x0:15, ct0:0 }
   ],
   symmetrisch: [
@@ -1229,6 +1306,41 @@ function render(){
       svgLine(seg.a, seg.b, {stroke:obj.color,'stroke-width':2.4});
       svgText(seg.b.x, seg.b.ct, obj.name, {fill:obj.color,'font-weight':'600'});
     }
+
+    // Räumlich ausgedehntes Objekt: zweite (parallele) Weltlinie am hinteren Ende, im
+    // Laborsystem um die kontrahierte Eigenlänge L0/γ versetzt, plus eine waagerechte
+    // Messstrecke im aktuell gewählten (orthogonalen) Bezugssystem.
+    if (obj.extentType === 'length' && obj.extentValue > 0){
+      const backX0 = obj.x0 - obj.extentValue/objGamma(obj.beta);
+      const p0b = transformPt(backX0, obj.ct0);
+      const segB = clipToView(p0b, d);
+      if (segB) svgLine(segB.a, segB.b, {stroke:obj.color,'stroke-width':1.6,'stroke-dasharray':'6,3',opacity:0.75});
+
+      const cCut = (view.ctMin+view.ctMax)/2;
+      if (Math.abs(d.ct) > 1e-9){
+        const q1 = { x: p0.x  + (cCut-p0.ct )/d.ct*d.x, ct: cCut };
+        const q2 = { x: p0b.x + (cCut-p0b.ct)/d.ct*d.x, ct: cCut };
+        if (q1.x>=view.xMin && q1.x<=view.xMax || q2.x>=view.xMin && q2.x<=view.xMax){
+          svgLine(q1, q2, {stroke:obj.color,'stroke-width':2.2,opacity:0.9});
+          svgCircle(q1.x, q1.ct, 2.5, {fill:obj.color});
+          svgCircle(q2.x, q2.ct, 2.5, {fill:obj.color});
+        }
+      }
+    }
+
+    // Zeitlich ausgedehntes Objekt: die Eigendauer τ0 markiert einen Abschnitt entlang der
+    // eigenen Weltlinie zwischen zwei Ereignissen (Start, Ende), mit lab-fest berechneter
+    // Koordinatenzeit-Spanne γ·τ0.
+    if (obj.extentType === 'duration' && obj.extentValue > 0){
+      const g = objGamma(obj.beta);
+      const endCt = obj.ct0 + g*obj.extentValue;
+      const endX  = obj.x0 + obj.beta*g*obj.extentValue;
+      const pStart = p0;
+      const pEnd = transformPt(endX, endCt);
+      svgLine(pStart, pEnd, {stroke:obj.color,'stroke-width':6,opacity:0.3,'stroke-linecap':'round'});
+      svgCircle(pStart.x, pStart.ct, 3.5, {fill:obj.color});
+      svgCircle(pEnd.x, pEnd.ct, 3.5, {fill:obj.color});
+    }
   });
 
   // Lichtstrahlen: Startpunkt wird umgerechnet, die Richtung (dir,1) bleibt unter der
@@ -1265,6 +1377,8 @@ function render(){
       svgText(p.x, p.ct, `(${p.x.toFixed(1)}, ${p.ct.toFixed(1)})`, {fill:textMuted,'font-size':'9.5', dx:'7', dy:'-7'});
     }
   });
+
+  updateExtentReadouts();
 }
 
 function drawTick(point, dir, color, label){
@@ -1364,7 +1478,9 @@ Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematisch
 Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit dem Namen des aktuell gewählten Bezugssystems sowie den Werten β und γ. Links liegt das Steuerungspanel, rechts das Diagramm.
 
 Das Steuerungspanel besteht aus vier Blöcken:
-- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Jedes dieser sechs Szenarien bringt bereits ein bis zwei didaktisch zentrale, vorbereitete Ereignisse mit aktivierter Gleichzeitigkeitslinie mit (beim Einstein-Zug sogar echte Lichtemissionen mit automatisch erzeugten Empfangsereignissen) – die Person muss also nicht selbst erst mühsam den richtigen Punkt auf einer Weltlinie anklicken, kann aber jederzeit weitere eigene Ereignisse ergänzen. Die genauen Objektparameter, vorbereiteten Ereignisse und passenden Arbeitsaufträge zu den fünf Szenarien jenseits des Garagenparadoxons stehen im Abschnitt "Weitere Szenarien".
+- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99), einem Dropdown "Ausdehnung" (keine / Länge (räumlich) / Dauer (zeitlich)) mit zugehörigem Zahlenfeld für die Eigenlänge L0 bzw. Eigendauer τ0, einer Live-Anzeige "Gemessene Länge/Dauer hier" (aktualisiert sich automatisch bei jedem Bezugssystemwechsel, auch während der 2-Sekunden-Animation) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Jedes dieser sechs Szenarien bringt bereits ein bis zwei didaktisch zentrale, vorbereitete Ereignisse mit aktivierter Gleichzeitigkeitslinie mit (beim Einstein-Zug sogar echte Lichtemissionen mit automatisch erzeugten Empfangsereignissen); das Myon-Szenario nutzt zusätzlich die Dauer-Ausdehnung, um die Eigenlebensdauer direkt sichtbar zu machen. Die Person muss also nicht selbst erst mühsam den richtigen Punkt auf einer Weltlinie anklicken, kann aber jederzeit weitere eigene Ereignisse oder Ausdehnungen ergänzen. Die genauen Objektparameter, vorbereiteten Ereignisse und passenden Arbeitsaufträge zu den fünf Szenarien jenseits des Garagenparadoxons stehen im Abschnitt "Weitere Szenarien".
+
+Ausgedehnte Objekte im Diagramm: Ein Objekt mit "Länge (räumlich)" zeigt eine zweite, gestrichelte Weltlinie am hinteren Ende (im Laborsystem um die kontrahierte Eigenlänge L0/γ versetzt) sowie eine waagerechte Messstrecke im aktuell gewählten Bezugssystem. Ein Objekt mit "Dauer (zeitlich)" zeigt einen dick hervorgehobenen Abschnitt der eigenen Weltlinie zwischen Start- und Endereignis. Die gemessene Länge bzw. Dauer im gewählten Bezugssystem folgt aus L = L0·√(1−β_rel²) bzw. τ = τ0/√(1−β_rel²), wobei β_rel die Relativgeschwindigkeit zwischen Objekt und gewähltem Bezugssystem ist (dieselbe relativistische Geschwindigkeitsaddition, die auch die Weltlinien-Neigung bestimmt).
 - "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld für den ct-Wert auf dessen Weltlinie, und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
 - Zwei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen" und "S0-Gitter anzeigen".
@@ -1407,6 +1523,7 @@ Achte in den Formulierungen und Fragen der Person auf folgende häufige Fehlvors
 - Die Verwechslung von "was ein Beobachter über Lichtlaufzeiten hinweg sieht" mit "was in seinem Bezugssystem nach Abzug der Lichtlaufzeit gilt". Beides wird in der App unterschieden: Lichtstrahlen sind gestrichelt eingezeichnet, die Koordinaten der Ereignisse sind die tatsächlichen Bezugssystem-Koordinaten.
 - Die Annahme, jede unterschiedliche Reihenfolge zweier Ereignisse in verschiedenen Bezugssystemen sei automatisch ein Verstoß gegen Ursache und Wirkung. Das gilt nur für zeitartig getrennte Ereignisse (innerhalb des Lichtkegels); bei raumartig getrennten Ereignissen (außerhalb) ist ein Kausalzusammenhang von vornherein unmöglich, weshalb die Reihenfolge frame-abhängig sein darf. Nutze den Lichtkegel-Toggle an einem Ereignis, um das direkt zu prüfen.
 - Bei Aufgabe zum Garagenparadoxon: die Annahme, eine der beiden Beobachtungen (Garage oder Fahrer) müsse schlicht falsch sein, statt zu erkennen, dass beide Aussagen in ihrem jeweiligen Bezugssystem korrekt sind und nur die Annahme einer bezugssystemunabhängigen Gleichzeitigkeit den scheinbaren Widerspruch erzeugt.
+- Bei ausgedehnten Objekten (Länge/Dauer): die Verwechslung von Eigenlänge/Eigendauer (eine feste, bezugssystemunabhängige Eigenschaft des Objekts) mit der im aktuellen Bezugssystem gemessenen, angezeigten Länge/Dauer (die sich bei jedem Bezugssystemwechsel ändert). Nutze den Live-Messwert im Steuerungspanel, um zu zeigen, dass nur einer von beiden konstant bleibt.
 
 ## Wie du aus der Interaktion liest
 
