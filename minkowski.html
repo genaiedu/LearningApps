@@ -473,7 +473,6 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <select class="select-styled" id="presetSelect" style="margin-top:8px;">
                 <option value="garage">Beispiel: Garagenparadoxon</option>
                 <option value="einsteinzug">Beispiel: Einstein-Zug (Blitzschlag)</option>
-                <option value="bell">Beispiel: Bell'sches Raumschiffparadoxon</option>
                 <option value="myon">Beispiel: Myonenzerfall</option>
                 <option value="symmetrisch">Beispiel: Symmetrische Zeitdilatation</option>
                 <option value="zwilling">Beispiel: Zwillingsparadoxon</option>
@@ -515,7 +514,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
             </div>
 
             <div class="panel-card">
-              <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung anzeigen</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung des aktuellen Bezugssystems anzeigen</label>
               <label class="checkbox-line"><input type="checkbox" id="toggleProperTicks" onchange="render()"> Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)</label>
               <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> Gitter des aktuellen Bezugssystems anzeigen</label>
             </div>
@@ -535,7 +534,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <div class="step-wizard" id="stepWizard" style="display:none;"></div>
               <button class="step-wizard-reopen" id="stepWizardReopen" style="display:none;" onclick="reopenStepWizard()"><i data-lucide="info"></i> Erklärung wieder öffnen</button>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die linke Randweltlinie den Ursprung und die ct′-Achse festlegt; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die linke Randweltlinie den Ursprung und die ct′-Achse festlegt; Lichtemissionen über die Objektkarte erfolgen weiterhin auf der farbig durchgezogenen Hauptweltlinie; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -620,16 +619,9 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
 
       <div class="card reveal">
         <h3 style="margin-bottom:8px; font-size:1.05rem;">Einstein-Zug (Blitzschlag-Paradoxon)</h3>
-        <p>Das historische Ursprungs-Gedankenexperiment zur Relativität der Gleichzeitigkeit. Zwei Blitze schlagen an Spitze und Ende eines mit β = 0,6 fahrenden Zuges ein – im Bahndamm-System bei x = ±5 gleichzeitig bei ct = 0. Geladen werden vier Weltlinien: die beiden Einschlagorte (ruhend, an denen du selbst Licht aussenden kannst) sowie je ein Beobachter in der Zugmitte und in der Bahndamm-Mitte.</p>
-        <p><b>Aufgabe:</b> Nach dem Laden haben beide Blitz-Objekte bei ct = 0 bereits Licht in beide Richtungen ausgesendet. Vergleiche in der Ereignisliste, wann Bahndamm-Mitte die beiden Signale empfängt – und wann Zugmitte sie empfängt. Wechsle danach das Bezugssystem zu Zugmitte. Warum empfängt der Beobachter im Zug die beiden Blitze nicht gleichzeitig, obwohl beide Blitze in seinem eigenen Bezugssystem ebenfalls an Zuganfang und Zugende einschlagen?</p>
+        <p>Im Bahndammsystem schlagen bei ct = 0 zwei Blitze gleichzeitig an den Orten x = −5 und x = +5 ein. Genau zu diesem Zeitpunkt befinden sich dort Zugende und Zugspitze eines mit β = 0,6 fahrenden Zuges. Die App zeigt deshalb sowohl die beiden ruhenden Einschlagsorte am Bahndamm als auch die bewegten Weltlinien von Zugende, Zugspitze und Zugmitte.</p>
+        <p><b>Aufgabe:</b> Nach dem Laden senden beide Einschlagsereignisse Licht in beide Richtungen aus. Vergleiche, wann die Bahndamm-Mitte und wann die Zugmitte die beiden Signale empfangen. Wechsle danach das Bezugssystem zur Zugmitte. Prüfe außerdem an den Weltlinien, dass die Blitze dort weiterhin an Zugende und Zugspitze einschlagen, die beiden Einschlagsereignisse im Zugsystem aber nicht gleichzeitig sind.</p>
       </div>
-
-      <div class="card reveal">
-        <h3 style="margin-bottom:8px; font-size:1.05rem;">Bell'sches Raumschiffparadoxon</h3>
-        <p>Zwei Raumschiffe starten im Bahndamm- bzw. Laborsystem gleichzeitig und beschleunigen identisch auf β = 0,8; ihr Ortsabstand im Laborsystem bleibt daher für alle Zeiten exakt 10 LE. Geladen werden die beiden Weltlinien „Raumschiff A" und „Raumschiff B".</p>
-        <p><b>Aufgabe:</b> Nach dem Laden sind bereits zwei Ereignisse vorbereitet – je eines auf Raumschiff A und Raumschiff B, beide bei ct = 0 mit aktivierter Gleichzeitigkeitslinie. Wechsle das Bezugssystem zu Raumschiff A und lies den Abstand zwischen den beiden Ereignissen im neuen (orthogonalen) System ab. Vergleiche den abgelesenen Abstand mit 10 LE. Ein straff gespannter, nicht dehnbarer Faden zwischen den Schiffen hätte in seinem eigenen Ruhesystem genau diese Ruhelänge nötig – reißt der Faden?</p>
-      </div>
-
       <div class="card reveal">
         <h3 style="margin-bottom:8px; font-size:1.05rem;">Myonenzerfall in der Atmosphäre</h3>
         <p>Ein Myon entsteht mit β = 0,98 (γ ≈ 5,03) und bewegt sich auf eine ruhende „Erdoberfläche" bei x = 15 LE zu. Geladen werden die Weltlinien „Myon" und „Erdoberfläche" – das Myon ist zusätzlich als zeitlich ausgedehntes Objekt mit seiner Eigenlebensdauer τ₀ ≈ 3,05 LE hinterlegt (dick hervorgehobener Abschnitt seiner Weltlinie, mit Live-Messwert im Steuerungspanel).</p>
@@ -822,7 +814,8 @@ function addObject(preset){
     id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0,
     extentType: 'none',   // 'none' | 'length' | 'duration' | 'area'
     extentValue: 0,       // Eigenlänge L₀ (length/area) oder Eigendauer τ₀ (duration)
-    extentValue2: 0       // Eigendauer τ₀ (nur für area-Typ)
+    extentValue2: 0,      // Eigendauer τ₀ (nur für area-Typ)
+    receivesLight: true // reine Markierungsweltlinien können davon ausgenommen werden
   }, preset || {});
   objects.push(obj);
   if (objects.length === 1) referenceId = 'S0';
@@ -956,7 +949,9 @@ function animateFrameChange(startBeta, endBeta, startOrigin, endOrigin, onComple
     if (myToken !== animToken) return;
     const t = Math.min(1, (now-t0)/FRAME_ANIM_MS);
     const e = easeInOutCubic(t);
-    displayBeta = startBeta + (endBeta-startBeta)*e;
+    const etaStart = Math.atanh(Math.max(-0.999999, Math.min(0.999999, startBeta)));
+    const etaEnd = Math.atanh(Math.max(-0.999999, Math.min(0.999999, endBeta)));
+    displayBeta = Math.tanh(etaStart + (etaEnd-etaStart)*e);
     displayOrigin = {x:startOrigin.x+(endOrigin.x-startOrigin.x)*e, ct:startOrigin.ct+(endOrigin.ct-startOrigin.ct)*e};
     render();
     updateFrameIndicator();
@@ -1232,12 +1227,18 @@ function emitFromInput(){
   const obj = objects.find(o=>o.id===objId);
   if (!obj) return;
   const ctPrime = parseFloat(document.getElementById('emitCtValue').value) || 0;
-  // Die Eingabe ist der ct'-Wert im AKTUELL ANGEZEIGTEN Bezugssystem (so liest der Nutzer das
-  // Diagramm ab). Zurückrechnen auf die Lab-Koordinatenzeit des Weltlinienpunkts:
-  // ct' = γ·[ct·(1−β_ref·β) − β_ref·(x0 − β·ct0)]  →  nach ct auflösen.
-  const bRef = currentBetaRef();
-  const g = 1/Math.sqrt(1-bRef*bRef);
-  const ctLab = (ctPrime/g + bRef*(obj.x0 - obj.beta*obj.ct0)) / (1 - bRef*obj.beta);
+
+  // Die Eingabe bezeichnet die Koordinatenzeit ct′ im aktuell angezeigten Bezugssystem.
+  // Bei einem verschobenen Ursprung O=(xO,ctO) gilt:
+  // ct′ = γR·[(ct−ctO) − βR·(x−xO)]
+  // und auf der Objektweltlinie x = x0 + βO·(ct−ct0).
+  const betaRef = currentBetaRef();
+  const origin = currentFrameOrigin();
+  const gammaRef = 1/Math.sqrt(1-betaRef*betaRef);
+  const constantPart = obj.x0 - obj.beta*obj.ct0 - origin.x;
+  const denominator = 1 - betaRef*obj.beta;
+  if (Math.abs(denominator) < 1e-12) return;
+  const ctLab = (ctPrime/gammaRef + origin.ct + betaRef*constantPart) / denominator;
   emitLight(obj, ctLab);
 }
 
@@ -1256,7 +1257,7 @@ function emitLight(obj, ctEmit){
     rays.push({ id: rayId, emissionId: emissionEvent.id, dir, x0: xEmit, ct0: ctEmit });
     // Schnittpunkte mit allen anderen Weltlinien (nur vorwärts in der Zeit)
     objects.forEach(other=>{
-      if (other.id === obj.id) return;
+      if (other.id === obj.id || other.receivesLight === false) return;
       const pt = intersectLines({x:xEmit, ct:ctEmit}, {x:dir, ct:1}, {x:other.x0, ct:other.ct0}, {x:other.beta, ct:1});
       if (!pt) return;
       if (pt.ct < ctEmit - 1e-9) return; // nur Zukunft
@@ -1361,14 +1362,12 @@ const PRESETS = {
     { name:'Fahrzeugheck',    color:'#f59e0b', beta:0.8,  x0:-12,ct0:0 }
   ],
   einsteinzug: [
-    { name:'Blitz Zugspitze',          color:'#dc2626', beta:0,   x0:5,  ct0:0 },
-    { name:'Blitz Zugende',            color:'#f59e0b', beta:0,   x0:-5, ct0:0 },
-    { name:'Zugmitte (Beobachter M′)', color:'#1a6fb5', beta:0.6, x0:0,  ct0:0 },
-    { name:'Bahndamm-Mitte (Beobachter M)', color:'#334155', beta:0, x0:0, ct0:0 }
-  ],
-  bell: [
-    { name:'Raumschiff A', color:'#dc2626', beta:0.8, x0:0,  ct0:0 },
-    { name:'Raumschiff B', color:'#1a6fb5', beta:0.8, x0:10, ct0:0 }
+    { name:'Einschlagsort rechts am Bahndamm', color:'#dc2626', beta:0,   x0:5,  ct0:0, receivesLight:false },
+    { name:'Einschlagsort links am Bahndamm',  color:'#f59e0b', beta:0,   x0:-5, ct0:0, receivesLight:false },
+    { name:'Zugspitze',                         color:'#db2777', beta:0.6, x0:5,  ct0:0 },
+    { name:'Zugende',                           color:'#0891b2', beta:0.6, x0:-5, ct0:0 },
+    { name:'Zugmitte (Beobachter M′)',          color:'#1a6fb5', beta:0.6, x0:0,  ct0:0 },
+    { name:'Bahndamm-Mitte (Beobachter M)',     color:'#334155', beta:0,   x0:0,  ct0:0 }
   ],
   myon: [
     { name:'Myon',          color:'#7c3aed', beta:0.98, x0:0,  ct0:0,
@@ -1414,12 +1413,8 @@ function applyPresetEvents(key, objs){
       break;
     case 'einsteinzug':
       // Beide Blitzeinschläge senden bei ct=0 Licht in beide Richtungen aus (wie im Original-Gedankenexperiment)
-      emitLight(objs['Blitz Zugspitze'], 0);
-      emitLight(objs['Blitz Zugende'], 0);
-      break;
-    case 'bell':
-      addManualEvent(objs['Raumschiff A'].id, 0, 0, 'Position von Raumschiff A bei ct=0', {showSim:true});
-      addManualEvent(objs['Raumschiff B'].id, 10, 0, 'Position von Raumschiff B bei ct=0', {showSim:true});
+      emitLight(objs['Einschlagsort rechts am Bahndamm'], 0);
+      emitLight(objs['Einschlagsort links am Bahndamm'], 0);
       break;
     case 'myon': {
       addManualEvent(objs['Myon'].id, 0, 0, 'Entstehung des Myons');
@@ -1798,9 +1793,14 @@ function render(){
     // auf schnellen Weltlinien (in Laborzeit) weiter auseinander: Zeitdilatation direkt sichtbar.
     if (document.getElementById('toggleProperTicks').checked){
       const gO = objGamma(obj.beta);
-      const nMin = Math.floor((view.ctMin - obj.ct0) / gO) - 1;
-      const nMax = Math.ceil((view.ctMax - obj.ct0) / gO) + 1;
-      for (let n = nMin; n <= nMax; n++){
+      // Die sichtbaren Grenzen liegen im aktuellen Bezugssystem und dürfen nicht direkt
+      // als Laborzeiten verwendet werden. Stattdessen wird ein ausreichend großer
+      // Eigenzeitbereich erzeugt und anschließend im Anzeigesystem beschnitten.
+      const tauRange = Math.ceil(Math.max(
+        Math.abs(view.xMin), Math.abs(view.xMax),
+        Math.abs(view.ctMin), Math.abs(view.ctMax)
+      ) * 4 + 20);
+      for (let n = -tauRange; n <= tauRange; n++){
         const tLab = obj.ct0 + n*gO;
         const p = transformPt(xOnWorldline(obj, tLab), tLab);
         if (p.x<view.xMin || p.x>view.xMax || p.ct<view.ctMin || p.ct>view.ctMax) continue;
@@ -1818,7 +1818,11 @@ function render(){
       const backX0 = obj.x0 - obj.extentValue/objGamma(obj.beta);
       const p0b = transformPt(backX0, obj.ct0);
       const segB = clipToView(p0b, d);
-      if (segB) svgLine(segB.a, segB.b, {stroke:obj.color,'stroke-width':1.6,'stroke-dasharray':'6,3',opacity:0.75});
+      if (segB){
+        const isRefEdge = referenceId===obj.id;
+        svgLine(segB.a, segB.b, {stroke:obj.color,'stroke-width':isRefEdge?3.2:1.6,'stroke-dasharray':isRefEdge?'':'6,3',opacity:isRefEdge?1:0.75});
+        if (isRefEdge) svgText(segB.b.x, segB.b.ct, 'ct′ (linker Rand)', {fill:obj.color,'font-weight':'700',dx:'6',dy:'-6'});
+      }
 
       const cCut = (view.ctMin+view.ctMax)/2;
       if (Math.abs(d.ct) > 1e-9){
@@ -2087,19 +2091,19 @@ Du bist ein sokratischer Physik-Tutor für die interaktive Web-App "Minkowski-Di
 
 Du hast selbst keinen Zugriff auf die App – die folgende Beschreibung ist deine einzige Grundlage, um bei der Bedienung zu helfen. Halte dich bei Bedienhinweisen exakt an diese Begriffe und Bezeichnungen, statt Bedienelemente zu vermuten.
 
-Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematischer Hintergrund" (Theorie zu Achsenneigung, Maßstabsänderung, Gleichzeitigkeitslinien, Lichtkegel/invariantem Intervall und Lorentz-Transformation), "Interaktives Diagramm" (das eigentliche Werkzeug), "Aufgabe: Garagenparadoxon" (Aufgabentext mit Teilaufgaben a bis g), "Weitere Szenarien" (Kurzbeschreibungen und Arbeitsaufträge zu fünf weiteren vorbereiteten Beispielen: Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und "KI-Tutor-Prompt" (dieser Text). Einheiten sind willkürliche Längeneinheiten (LE) mit c = 1, d. h. x und ct werden in derselben Einheit gemessen und Lichtstrahlen verlaufen immer unter 45°.
+Die App gliedert sich über eine Seitenleiste in fünf Abschnitte: "Mathematischer Hintergrund" (Theorie zu Achsenneigung, Maßstabsänderung, Gleichzeitigkeitslinien, Lichtkegel/invariantem Intervall und Lorentz-Transformation), "Interaktives Diagramm" (das eigentliche Werkzeug), "Aufgabe: Garagenparadoxon" (Aufgabentext mit Teilaufgaben a bis g), "Weitere Szenarien" (Kurzbeschreibungen und Arbeitsaufträge zu fünf weiteren vorbereiteten Beispielen: Einstein-Zug, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und "KI-Tutor-Prompt" (dieser Text). Einheiten sind willkürliche Längeneinheiten (LE) mit c = 1, d. h. x und ct werden in derselben Einheit gemessen und Lichtstrahlen verlaufen immer unter 45°.
 
 Im Bereich "Interaktives Diagramm" gibt es oben eine Bezugssystem-Anzeige mit dem Namen des aktuell gewählten Bezugssystems sowie den Werten β und γ. Links liegt das Steuerungspanel, rechts das Diagramm.
 
 Das Steuerungspanel besteht aus vier Blöcken:
-- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99), einem Dropdown "Ausdehnung" (keine / Länge (räumlich) / Dauer (zeitlich) / Länge + Dauer (Fläche)) mit zugehörigen Zahlenfeldern für Eigenlänge L0 und/oder Eigendauer τ0, einer Live-Anzeige "Gemessene Länge/Dauer hier" (aktualisiert sich automatisch bei jedem Bezugssystemwechsel, auch während der 2-Sekunden-Animation) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sieben vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon, Zwillingsparadoxon mit Beschleunigung) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Jedes Szenario bringt bereits ein bis zwei didaktisch zentrale, vorbereitete Ereignisse mit (beim Einstein-Zug sogar echte Lichtemissionen mit automatisch erzeugten Empfangsereignissen); das Myon-Szenario nutzt zusätzlich die Dauer-Ausdehnung. Die genauen Objektparameter, vorbereiteten Ereignisse und passenden Arbeitsaufträge stehen im Abschnitt "Weitere Szenarien".
+- "Weltlinien": Für jedes angelegte Objekt gibt es eine Karte mit einem Farbwähler, einem Namensfeld, einem Klonen-Button (Kopier-Symbol, dupliziert das Objekt mit identischen Parametern unter dem Namenszusatz "(Kopie)") und einem Löschen-Button (Papierkorb-Symbol), drei Zahlenfeldern für x0 (Ortsversatz), ct0 (Zeitversatz) und β (Geschwindigkeit relativ zu S0), einem Schieberegler für β (Bereich −0,99 bis 0,99), einem Dropdown "Ausdehnung" (keine / Länge (räumlich) / Dauer (zeitlich) / Länge + Dauer (Fläche)) mit zugehörigen Zahlenfeldern für Eigenlänge L0 und/oder Eigendauer τ0, einer Live-Anzeige "Gemessene Länge/Dauer hier" (aktualisiert sich automatisch bei jedem Bezugssystemwechsel, auch während der 2-Sekunden-Animation) sowie einem Radiobutton "als Bezugssystem verwenden". Am Ende der Liste steht ein Radiobutton "Laborsystem S0 als Bezugssystem verwenden". Darunter befindet sich der Button "+ Objekt hinzufügen" (legt eine neue Weltlinie mit Standardwerten an), ein Dropdown zur Auswahl eines von sechs vorbereiteten Beispielszenarien (Garagenparadoxon, Einstein-Zug, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon, Zwillingsparadoxon mit Beschleunigung) sowie der Button "Gewähltes Beispiel laden", der alle vorhandenen Objekte und Ereignisse durch die zum gewählten Szenario passenden Weltlinien ersetzt. Jedes Szenario bringt bereits ein bis zwei didaktisch zentrale, vorbereitete Ereignisse mit (beim Einstein-Zug sogar echte Lichtemissionen mit automatisch erzeugten Empfangsereignissen); das Myon-Szenario nutzt zusätzlich die Dauer-Ausdehnung. Die genauen Objektparameter, vorbereiteten Ereignisse und passenden Arbeitsaufträge stehen im Abschnitt "Weitere Szenarien".
 
 Sonderfall "Zwillingsparadoxon mit Beschleunigung": NUR in diesem einen Szenario existiert eine beschleunigte Weltlinie; überall sonst sind ausschließlich gleichförmige (gerade) Weltlinien möglich und es gibt keinerlei Eingabemöglichkeit für Beschleunigungen. Nach dem Laden dieses Szenarios ändert sich die Steuerung: Im Steuerungspanel erscheint zusätzlich der Block "Beschleunigter Zwilling" mit einem Schieberegler "Dauer jeder Beschleunigungsphase Tb" (0 bis 5 LE, Schrittweite 0,25) und einer Live-Anzeige mit der Eigenbeschleunigung α = γβ/Tb, der Eigenzeit des Reisenden, der Eigenzeit des daheimgebliebenen Zwillings (immer 20 LE) und dem Altersunterschied. Die rote, gekrümmte Weltlinie des Reisenden besteht aus fünf Phasen (Beschleunigen 0→β, Reiseflug bei β = 0,6, hyperbolische Umkehr +β→−β, Rückflug, Abbremsen auf 0); jeder Beschleunigungsabschnitt ist eine Hyperbel konstanter Eigenbeschleunigung mit Eigenzeit τ = arsinh(α·Tb)/α. Bei Tb = 0 entsteht der Knick des einfachen Zwillingsparadoxons (Eigenzeit des Reisenden 16 LE), bei Tb = 5 ist die Reise vollständig glatt (Eigenzeit ≈ 18,48 LE). Wichtige Einschränkungen, die du bei Bedienfragen kennen musst: Die gekrümmte Weltlinie ist NICHT als Bezugssystem wählbar (ein beschleunigtes Objekt besitzt kein globales Inertialsystem – das ist selbst eine Lektion wert: die SRT beschreibt beschleunigte BEWEGUNGEN problemlos über das Eigenzeit-Integral, nur beschleunigte BEZUGSSYSTEME nicht), sie reagiert nicht auf Klicks (keine Lichtemission von der Kurve) und Lichtstrahlen erzeugen auf ihr keine automatischen Empfangsereignisse. Weiße Punkte auf der Kurve markieren die Phasengrenzen, ein gefüllter Punkt den Umkehrscheitel. Der didaktische Kern: Der Altersunterschied entsteht nicht durch ein singuläres Ereignis "beim Umkehren", sondern akkumuliert sich entlang der gesamten Weltlinie – und die gerade Weltlinie hat die längste Eigenzeit (Minkowski-Gegenstück zur kürzesten euklidischen Strecke).
 
 Ausgedehnte Objekte im Diagramm: Ein Objekt mit "Länge (räumlich)" zeigt eine zweite, gestrichelte Weltlinie am hinteren Ende (im Laborsystem um die kontrahierte Eigenlänge L0/γ versetzt) sowie eine waagerechte Messstrecke im aktuell gewählten Bezugssystem. Ein Objekt mit "Dauer (zeitlich)" zeigt einen dick hervorgehobenen Abschnitt der eigenen Weltlinie zwischen Start- und Endereignis. Die gemessene Länge bzw. Dauer im gewählten Bezugssystem folgt aus L = L0·√(1−β_rel²) bzw. τ = τ0/√(1−β_rel²), wobei β_rel die Relativgeschwindigkeit zwischen Objekt und gewähltem Bezugssystem ist (dieselbe relativistische Geschwindigkeitsaddition, die auch die Weltlinien-Neigung bestimmt).
 - "Licht aussenden": ein Dropdown zur Auswahl des sendenden Objekts, ein Zahlenfeld "ct′-Wert (im aktuellen Bezugssystem)" – die Eingabe wird also in dem Bezugssystem interpretiert, das gerade im Diagramm angezeigt wird, nicht als Labor-ct – und der Button "Licht in beide Richtungen aussenden". Alternativ kann man direkt im Diagramm auf eine Weltlinie klicken, um dort ein Lichtsignal auszusenden – das erzeugt automatisch ein Emissionsereignis und, wo die Lichtstrahlen andere Weltlinien in der Zukunft kreuzen, je ein Empfangsereignis.
 - "Ereignisse": eine Liste aller bisher erzeugten Ereignisse (E1, E2, …) mit ihrer Beschreibung, den Koordinaten (x′, ct′) im aktuell gewählten Bezugssystem, sowie drei Checkboxen pro Ereignis: "Punkt" (blendet den Ereignispunkt im Diagramm ein), "Gleichzeitigkeitslinie" (blendet eine Waagerechte durch dieses Ereignis ein, da das gewählte Bezugssystem orthogonal gezeichnet wird) und "Lichtkegel hier" (blendet die beiden 45°-Lichtlinien durch dieses Ereignis in Vergangenheit und Zukunft ein, X-förmig). Über ein x-Symbol lässt sich jedes Ereignis einzeln löschen.
-- Drei weitere Checkboxen: "Lichtkegel am Ursprung anzeigen", "Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)" und "Gitter des aktuellen Bezugssystems anzeigen". Die Eigenzeit-Ticks setzen auf JEDE Weltlinie kleine gefüllte Punkte im Eigenzeitabstand Δτ = 1 (Anker τ = 0 am Punkt (x0, ct0) des Objekts, jeder fünfte Tick mit "τ=n" beschriftet) – auch auf der beschleunigten Kurve im Sonderszenario, dort per numerischer Eigenzeit-Integration. Damit wird Zeitdilatation als PROZESS sichtbar: Auf schnellen Weltlinien liegen die Ticks in Koordinatenzeit um den Faktor γ weiter auseinander (die bewegte Uhr tickt gedehnt), und beim Zwillingsvergleich kann man die Ticks bis zum Wiedertreffen direkt abzählen (z. B. 20 daheim gegenüber 16–18 auf der Reise, je nach Beschleunigungsdauer). Didaktisch wichtig, falls jemand fragt: Die Tick-ABSTÄNDE sind die frame-abhängige Zeitdilatation; die Tick-ANZAHL zwischen zwei gemeinsamen Ereignissen ist das invariante Eigenzeit-Integral.
+- Drei weitere Checkboxen: "Lichtkegel am Ursprung des aktuellen Bezugssystems anzeigen", "Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)" und "Gitter des aktuellen Bezugssystems anzeigen". Die Eigenzeit-Ticks setzen auf JEDE Weltlinie kleine gefüllte Punkte im Eigenzeitabstand Δτ = 1 (Anker τ = 0 am Punkt (x0, ct0) des Objekts, jeder fünfte Tick mit "τ=n" beschriftet) – auch auf der beschleunigten Kurve im Sonderszenario, dort per numerischer Eigenzeit-Integration. Damit wird Zeitdilatation als PROZESS sichtbar: Auf schnellen Weltlinien liegen die Ticks in Koordinatenzeit um den Faktor γ weiter auseinander (die bewegte Uhr tickt gedehnt), und beim Zwillingsvergleich kann man die Ticks bis zum Wiedertreffen direkt abzählen (z. B. 20 daheim gegenüber 16–18 auf der Reise, je nach Beschleunigungsdauer). Didaktisch wichtig, falls jemand fragt: Die Tick-ABSTÄNDE sind die frame-abhängige Zeitdilatation; die Tick-ANZAHL zwischen zwei gemeinsamen Ereignissen ist das invariante Eigenzeit-Integral.
 
 Direkt unter der Bezugssystem-Anzeige befindet sich außerdem die Checkbox "Bezugssystemwechsel Schritt für Schritt erklären (neue x′-Achse, dann optional Winkeländerung)". Ist sie aktiv, löst ein Klick auf einen Bezugssystem-Radiobutton nicht mehr sofort die normale 2-Sekunden-Animation aus, sondern öffnet unten im Diagramm ein schwebendes Wizard-Fenster mit zwei pausierbaren Phasen:
 1. "Schritt 1/2 · Maßstab": zeigt β_rel und γ_rel zwischen altem und neuem Bezugssystem sowie den Maßstabsfaktor γ_rel·√(1+β_rel²), mit dem sich die Tick-Abstände auf den neuen Achsen gegenüber den alten ändern. Ein Button "Weiter" führt zu Schritt 2.
@@ -2131,7 +2135,7 @@ Biete unaufgefordert konkrete, aufeinander aufbauende Experimente an, zum Beispi
 4. β nahe 0,99 einstellen und beobachten, wie sich die S0-Vergleichsachsen dem Lichtkegel annähern.
 5. Für ein Ereignis den Lichtkegel aktivieren und prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) davon liegt.
 6. Das Garagenparadoxon-Beispiel laden und Schritt für Schritt die Teilaufgaben a) bis g) bearbeiten.
-7. Eines der fünf weiteren vorbereiteten Szenarien laden (Einstein-Zug, Bell'sches Raumschiffparadoxon, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und den jeweils passenden Arbeitsauftrag aus dem Abschnitt "Weitere Szenarien" bearbeiten.
+7. Eines der vier weiteren vorbereiteten Szenarien laden (Einstein-Zug, Myonenzerfall, Symmetrische Zeitdilatation, Zwillingsparadoxon) und den jeweils passenden Arbeitsauftrag aus dem Abschnitt "Weitere Szenarien" bearbeiten.
 
 ## Typische Fehlvorstellungen erkennen und adressieren
 
