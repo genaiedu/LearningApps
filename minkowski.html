@@ -517,6 +517,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <label class="checkbox-line"><input type="checkbox" id="toggleLightcone" onchange="render()"> Lichtkegel am Ursprung des aktuellen Bezugssystems anzeigen</label>
               <label class="checkbox-line"><input type="checkbox" id="toggleProperTicks" onchange="render()"> Eigenzeit-Ticks auf Weltlinien (Uhrenticks, Δτ = 1 LE)</label>
               <label class="checkbox-line"><input type="checkbox" id="toggleGrid" checked onchange="render()"> Gitter des aktuellen Bezugssystems anzeigen</label>
+              <label class="checkbox-line"><input type="checkbox" id="toggleIntersections" checked onchange="render()"> Alle Achsen- und Weltlinien-Schnittpunkte anzeigen</label>
             </div>
             </div>
           </div>
@@ -534,7 +535,7 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
               <div class="step-wizard" id="stepWizard" style="display:none;"></div>
               <button class="step-wizard-reopen" id="stepWizardReopen" style="display:none;" onclick="reopenStepWizard()"><i data-lucide="info"></i> Erklärung wieder öffnen</button>
             </div>
-            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die linke Randweltlinie den Ursprung und die ct′-Achse festlegt; Lichtemissionen über die Objektkarte erfolgen weiterhin auf der farbig durchgezogenen Hauptweltlinie; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
+            <p class="diagram-hint"><b>Bedienung:</b> Ziehen verschiebt den Ausschnitt. Klick auf eine Weltlinie sendet dort ein Lichtsignal aus. Bei aktivierter Option „Alle Achsen- und Weltlinien-Schnittpunkte anzeigen“ werden sämtliche geometrisch eindeutigen Kreuzungen der sichtbaren Achsen mit den Weltlinien sowie alle paarweisen Weltlinienkreuzungen markiert; parallele oder deckungsgleiche Geraden besitzen keinen einzelnen Kreuzpunkt. Die Achsen des gewählten Bezugssystems sind immer orthogonal und tragen Zahlen-Ticks im Abstand des Hintergrundgitters (rot = x′, blau = ct′, sofern nicht S₀ gewählt ist); die gestrichelten grauen Achsen zeigen zum Vergleich das Laborsystem S₀ und erscheinen geneigt, sobald ein anderes Objekt als Bezugssystem gewählt ist. Beim Wechsel des Bezugssystems werden innerhalb von 2 Sekunden alle Weltlinien, Lichtstrahlen, Ereignisse und Gleichzeitigkeitslinien neu ins gewählte System umgerechnet und drehen sich entsprechend in ihre neue Lage – das ist eine reine Ableseanimation, kein physisch beschleunigtes Objekt. Über die Checkbox „Schritt für Schritt erklären" oben lässt sich dieser Wechsel stattdessen geometrisch zerlegen: Zuerst wird nur die neue x′-Achse in das bisherige Bezugssystem eingezeichnet; aktivierte Gleichzeitigkeitslinien werden dabei bereits gestrichelt parallel zu dieser Achse dargestellt. Danach kann wahlweise die orthogonale Darstellung des neuen Bezugssystems ausgeführt oder auf diese Winkeländerung verzichtet werden. Über die Checkbox „Lichtkegel hier" bei einem Ereignis lässt sich zusätzlich prüfen, ob ein zweites Ereignis innerhalb (zeitartig) oder außerhalb (raumartig) seines Lichtkegels liegt. Über „Ausdehnung" bei einem Objekt lässt sich eine Eigenlänge oder Eigendauer festlegen; räumlich ausgedehnte Objekte können ebenfalls als Bezugssystem gewählt werden, wobei die linke Randweltlinie den Ursprung und die ct′-Achse festlegt; Lichtemissionen über die Objektkarte erfolgen weiterhin auf der farbig durchgezogenen Hauptweltlinie; die gemessene Länge bzw. Dauer im aktuellen Bezugssystem wird dann live im Steuerungspanel angezeigt und läuft während der Animation sichtbar mit – so werden Längenkontraktion und Zeitdilatation direkt ablesbar. Die Checkbox „Eigenzeit-Ticks auf Weltlinien" setzt auf jede Weltlinie Uhrenticks im Eigenzeitabstand Δτ = 1 (Anker τ = 0 bei x₀, ct₀; jeder fünfte beschriftet): Auf schnellen Weltlinien liegen sie in Koordinatenzeit um γ gedehnt auseinander, und beim Zwillingsvergleich lässt sich die Eigenzeit bis zum Wiedertreffen direkt abzählen. Über das Vollbild-Symbol oben rechts lässt sich das Diagramm bildschirmfüllend darstellen, die Steuerung bleibt dabei oben links erreichbar und lässt sich dort einklappen.</p>
           </div>
         </div>
       </div>
@@ -1775,19 +1776,6 @@ function render(){
       svgText(seg.b.x, seg.b.ct, obj.name, {fill:obj.color,'font-weight':'600'});
     }
 
-    // Schnittpunkt der Weltlinie mit der x-Achse des AKTUELLEN Bezugssystems (ct' = 0):
-    // markierter Punkt mit Koordinaten, damit sich Abstände bei ct' = 0 direkt ablesen
-    // lassen (z. B. die kontrahierte Flugstrecke im Myon-Beispiel nach Bezugssystemwechsel).
-    {
-      // p0 + t·d liegt auf ct'=0 bei t = −p0.ct/d.ct (d.ct > 0 für zeitartige Weltlinien)
-      const tCross = -p0.ct / d.ct;
-      const xCross = p0.x + tCross * d.x;
-      if (xCross >= view.xMin && xCross <= view.xMax && 0 >= view.ctMin && 0 <= view.ctMax){
-        svgCircle(xCross, 0, 3.5, {fill:'#fff', stroke:obj.color, 'stroke-width':2});
-        svgText(xCross, 0, `(${xCross.toFixed(1)}, 0.0)`, {fill:cssVar('--text-muted'),'font-size':'9.5', dx:'7', dy:'14'});
-      }
-    }
-
     // Eigenzeit-Ticks ("Uhrenticks") auf der geraden Weltlinie: Δτ = 1, Anker τ=0 bei (x0, ct0).
     // Zwischen zwei Ticks vergeht im Labor die Koordinatenzeit γ·Δτ – die Ticks liegen also
     // auf schnellen Weltlinien (in Laborzeit) weiter auseinander: Zeitdilatation direkt sichtbar.
@@ -1936,6 +1924,105 @@ function render(){
         }
       }
     }
+  }
+
+  // Alle geometrisch eindeutigen Schnittpunkte der sichtbaren Achsen mit den
+  // Weltlinien sowie alle paarweisen Weltlinien-Schnittpunkte. Parallele oder
+  // deckungsgleiche Geraden besitzen keinen einzelnen markierbaren Kreuzpunkt.
+  if (document.getElementById('toggleIntersections')?.checked){
+    const lineDefs = [];
+
+    // Hauptweltlinie jedes Objekts.
+    objects.forEach(obj=>{
+      lineDefs.push({
+        id:'world:'+obj.id,
+        name:obj.name,
+        kind:'world',
+        color:obj.color,
+        p:transformPt(obj.x0, obj.ct0),
+        d:transformDir(obj.beta, 1)
+      });
+
+      // Bei einem reinen Längenobjekt ist auch der linke Rand eine eigenständige,
+      // im Diagramm sichtbare Weltlinie.
+      if (obj.extentType === 'length' && obj.extentValue > 0){
+        const leftX0 = obj.x0 - obj.extentValue/objGamma(obj.beta);
+        lineDefs.push({
+          id:'world-left:'+obj.id,
+          name:obj.name+' – linker Rand',
+          kind:'world',
+          color:obj.color,
+          p:transformPt(leftX0, obj.ct0),
+          d:transformDir(obj.beta, 1)
+        });
+      }
+    });
+
+    // Achsen, die im aktuellen Diagramm tatsächlich sichtbar sind.
+    const axisDefs = [
+      {id:'axis:x',  name:referenceId==='S0'?'x-Achse':'x′-Achse',  kind:'axis', color:referenceId==='S0'?labColor:cssVar('--frame-axis'), p:{x:0,ct:0}, d:{x:1,ct:0}},
+      {id:'axis:ct', name:referenceId==='S0'?'ct-Achse':'ct′-Achse', kind:'axis', color:referenceId==='S0'?labColor:cssVar('--primary'),    p:{x:0,ct:0}, d:{x:0,ct:1}}
+    ];
+
+    if (referenceId !== 'S0'){
+      const labOriginShown = transformPt(0,0);
+      axisDefs.push(
+        {id:'axis:x0',  name:'x₀-Achse',  kind:'axis', color:labColor, p:labOriginShown, d:transformDir(1,0)},
+        {id:'axis:ct0', name:'ct₀-Achse', kind:'axis', color:labColor, p:labOriginShown, d:transformDir(0,1)}
+      );
+    }
+
+    if (constructionAxis){
+      const betaNow = currentBetaRef();
+      const gammaNow = 1/Math.sqrt(1-betaNow*betaNow);
+      const dNewX = {
+        x:gammaNow*(1-betaNow*constructionAxis.endBeta),
+        ct:gammaNow*(constructionAxis.endBeta-betaNow)
+      };
+      const axisOriginLab = constructionAxis.endOrigin || referenceOrigin(constructionAxis.toId);
+      axisDefs.push({
+        id:'axis:construction-x', name:'neu eingezeichnete x′-Achse', kind:'axis',
+        color:cssVar('--frame-axis'),
+        p:frameTransformPoint(axisOriginLab.x, axisOriginLab.ct, betaNow, currentFrameOrigin()),
+        d:dNewX
+      });
+    }
+
+    // Mehrere Linien können sich im selben Ereignis treffen. Die Punkte werden daher
+    // geometrisch zusammengefasst, statt mehrfach übereinander gezeichnet zu werden.
+    const hits = new Map();
+    const addHit = (pt, a, b)=>{
+      if (!pt || !Number.isFinite(pt.x) || !Number.isFinite(pt.ct)) return;
+      if (pt.x < view.xMin || pt.x > view.xMax || pt.ct < view.ctMin || pt.ct > view.ctMax) return;
+      const key = `${Math.round(pt.x*1e6)},${Math.round(pt.ct*1e6)}`;
+      if (!hits.has(key)) hits.set(key,{x:pt.x,ct:pt.ct,lines:new Map(),hasWorldWorld:false,hasAxis:false});
+      const h=hits.get(key);
+      h.lines.set(a.id,a); h.lines.set(b.id,b);
+      if (a.kind==='world' && b.kind==='world') h.hasWorldWorld=true;
+      if (a.kind==='axis' || b.kind==='axis') h.hasAxis=true;
+    };
+
+    // Jede Achse mit jeder Weltlinie.
+    axisDefs.forEach(axis=>{
+      lineDefs.forEach(world=>addHit(intersectLines(axis.p,axis.d,world.p,world.d),axis,world));
+    });
+
+    // Jede Weltlinie mit jeder anderen Weltlinie.
+    for (let i=0;i<lineDefs.length;i++){
+      for (let j=i+1;j<lineDefs.length;j++){
+        addHit(intersectLines(lineDefs[i].p,lineDefs[i].d,lineDefs[j].p,lineDefs[j].d),lineDefs[i],lineDefs[j]);
+      }
+    }
+
+    // Markierungen werden über den Linien, aber unter den expliziten Ereignispunkten gezeichnet.
+    hits.forEach(h=>{
+      const stroke = h.hasWorldWorld ? cssVar('--wrong') : cssVar('--primary');
+      const radius = h.hasWorldWorld ? 4.2 : 3.4;
+      svgCircle(h.x,h.ct,radius,{fill:'#fff',stroke,'stroke-width':2.1});
+      svgText(h.x,h.ct,`(${h.x.toFixed(1)}, ${h.ct.toFixed(1)})`,{
+        fill:textMuted,'font-size':'9.5',dx:'7',dy:'-7'
+      });
+    });
   }
 
   // Lichtstrahlen: Startpunkt wird umgerechnet, die Richtung (dir,1) bleibt unter der
