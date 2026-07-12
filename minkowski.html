@@ -420,12 +420,12 @@ body.dark .prompt-box{ background:rgba(56,189,248,.06); }
 
       <div class="card reveal">
         <h3 style="margin-bottom:10px; font-size:1.05rem;">Ausgedehnte Objekte: Länge und Dauer messen</h3>
-        <p>Bisher waren Weltlinien unendlich dünne Punkte. Jedes Objekt kann zusätzlich eine <b>Eigenlänge L₀</b> (räumliche Ausdehnung, z. B. ein Maßstab oder ein Fahrzeug) oder eine <b>Eigendauer τ₀</b> (zeitliche Ausdehnung, z. B. eine Lebensdauer) erhalten. Beide Werte sind als Eigenschaften im <i>Ruhesystem</i> des Objekts definiert und ändern sich nie – gemessen wird aber immer im gerade gewählten Bezugssystem, und genau das liefert Längenkontraktion bzw. Zeitdilatation ganz automatisch:</p>
+        <p>Bisher waren Weltlinien unendlich dünne Punkte. Jedes Objekt kann zusätzlich eine <b>Eigenlänge L₀</b> (räumliche Ausdehnung), eine <b>Eigendauer τ₀</b> (zeitliche Ausdehnung) oder <b>beides zusammen</b> erhalten. Alle Werte sind als Eigenschaften im <i>Ruhesystem</i> des Objekts definiert und ändern sich nie – gemessen wird aber immer im gerade gewählten Bezugssystem:</p>
         <div class="formula-box">
           <span class="label">Gemessene Länge bzw. Dauer im gewählten Bezugssystem</span>
           L = L₀·√(1−β<sub>rel</sub>²) &nbsp;&nbsp;·&nbsp;&nbsp; τ = τ₀ / √(1−β<sub>rel</sub>²)
         </div>
-        <p>Dabei ist β<sub>rel</sub> die Relativgeschwindigkeit zwischen dem Objekt und dem gewählten Bezugssystem – dieselbe relativistische Geschwindigkeitsaddition, die schon bei den Weltlinien-Neigungen automatisch aus der Lorentz-Transformation folgt. Ein räumlich ausgedehntes Objekt zeigt im Diagramm eine zweite, gestrichelte Weltlinie am hinteren Ende sowie eine waagerechte Messstrecke im aktuellen Bezugssystem; ein zeitlich ausgedehntes Objekt zeigt einen dick hervorgehobenen Abschnitt seiner eigenen Weltlinie zwischen Start- und Endereignis. In beiden Fällen steht der aktuelle Messwert live unter dem Objekt im Steuerungspanel – wechselst du das Bezugssystem, läuft dieser Wert während der 2-Sekunden-Animation sichtbar mit.</p>
+        <p>Dabei ist β<sub>rel</sub> die Relativgeschwindigkeit zwischen dem Objekt und dem gewählten Bezugssystem. Wählt man <b>„Länge + Dauer (Fläche)"</b>, erscheint im Diagramm ein <b>Parallelogramm</b>: Die vier Ecken des Eigenzeit-Rechtecks (L₀ × τ₀ im Ruhesystem) werden per Lorentz-Transformation ins Anzeigesystem gebracht. Dabei gilt eine bemerkenswerte Invarianz: Der Flächeninhalt des Parallelogramms ist in jedem Bezugssystem gleich – da det(L) = 1, bleibt das Raumzeit-Volumen erhalten. Die Fläche wird deutlich heller als die Randlinien gezeichnet. In allen Fällen steht der aktuelle Messwert live unter dem Objekt im Steuerungspanel – wechselst du das Bezugssystem, läuft er während der 2-Sekunden-Animation sichtbar mit.</p>
       </div>
     </section>
 
@@ -756,7 +756,9 @@ function addObject(preset){
   const color = OBJ_COLORS[objects.length % OBJ_COLORS.length];
   const obj = Object.assign({
     id, name: 'Objekt ' + (objects.length+1), color, beta: 0, x0: 0, ct0: 0,
-    extentType: 'none', extentValue: 0   // 'none' | 'length' (räumlich) | 'duration' (zeitlich), Wert = Eigenlänge/Eigendauer
+    extentType: 'none',   // 'none' | 'length' | 'duration' | 'area'
+    extentValue: 0,       // Eigenlänge L₀ (length/area) oder Eigendauer τ₀ (duration)
+    extentValue2: 0       // Eigendauer τ₀ (nur für area-Typ)
   }, preset || {});
   objects.push(obj);
   if (objects.length === 1) referenceId = 'S0';
@@ -769,6 +771,7 @@ function updateObjectExtent(id, field, value){
   const o = objects.find(o=>o.id===id);
   if (!o) return;
   if (field === 'type') o.extentType = value;
+  else if (field === 'value2') o.extentValue2 = Math.max(0, parseFloat(value) || 0);
   else o.extentValue = Math.max(0, parseFloat(value) || 0);
   renderObjList();
   render();
@@ -798,7 +801,9 @@ function cloneObject(id){
     name: src.name + ' (Kopie)',
     color: OBJ_COLORS[objects.length % OBJ_COLORS.length],
     beta: src.beta, x0: src.x0, ct0: src.ct0,
-    extentType: src.extentType || 'none', extentValue: src.extentValue || 0
+    extentType: src.extentType || 'none',
+    extentValue: src.extentValue || 0,
+    extentValue2: src.extentValue2 || 0
   };
   objects.push(clone);
   renderObjList();
@@ -984,14 +989,21 @@ function renderObjList(){
         <div>
           <label>Ausdehnung</label>
           <select class="select-styled" style="margin-bottom:0;padding:5px 6px;font-size:.82rem;" onchange="updateObjectExtent('${o.id}','type',this.value)">
-            <option value="none" ${o.extentType==='none'?'selected':''}>keine</option>
-            <option value="length" ${o.extentType==='length'?'selected':''}>Länge (räumlich)</option>
+            <option value="none"     ${o.extentType==='none'    ?'selected':''}>keine</option>
+            <option value="length"   ${o.extentType==='length'  ?'selected':''}>Länge (räumlich)</option>
             <option value="duration" ${o.extentType==='duration'?'selected':''}>Dauer (zeitlich)</option>
+            <option value="area"     ${o.extentType==='area'    ?'selected':''}>Länge + Dauer (Fläche)</option>
           </select>
         </div>
         <div ${o.extentType==='none'?'style="display:none;"':''}>
           <label>${o.extentType==='duration' ? 'Eigendauer τ₀ [LE]' : 'Eigenlänge L₀ [LE]'}</label>
           <input type="number" step="any" min="0" value="${o.extentValue||0}" onchange="updateObjectExtent('${o.id}','value',this.value)">
+        </div>
+      </div>
+      <div ${o.extentType!=='area'?'style="display:none;"':''}>
+        <div style="margin-top:5px;">
+          <label style="font-size:.68rem;color:var(--text-muted);display:block;margin-bottom:2px;">Eigendauer τ₀ [LE] (für Fläche)</label>
+          <input type="number" step="any" min="0" value="${o.extentValue2||0}" style="width:100%;padding:5px 6px;border-radius:7px;border:1px solid var(--glass-border);background:var(--surface);color:var(--text);font-size:.82rem;" onchange="updateObjectExtent('${o.id}','value2',this.value)">
         </div>
       </div>
       <div class="event-coords" id="extentReadout_${o.id}" style="${o.extentType==='none'?'display:none;':''}margin-top:4px;"></div>
@@ -1129,6 +1141,11 @@ function updateExtentReadouts(){
       const T = measuredDuration(o, betaRef);
       el.style.display = 'block';
       el.innerHTML = `Gemessene Dauer hier: <b>${T.toFixed(2)} LE</b> (Eigendauer: ${o.extentValue.toFixed(2)} LE)`;
+    } else if (o.extentType === 'area' && (o.extentValue > 0 || o.extentValue2 > 0)){
+      const L = o.extentValue > 0 ? measuredLength(o, betaRef) : 0;
+      const T = o.extentValue2 > 0 ? measuredDuration({...o, extentType:'duration', extentValue:o.extentValue2}, betaRef) : 0;
+      el.style.display = 'block';
+      el.innerHTML = `Gemessene Länge: <b>${L.toFixed(2)} LE</b> · Gemessene Dauer: <b>${T.toFixed(2)} LE</b>`;
     } else {
       el.style.display = 'none';
     }
@@ -1347,6 +1364,20 @@ function svgCircle(x, ct, r, opts){
   return c;
 }
 
+/* Füllt ein konvexes Polygon (Array von {x,ct}-Punkten in physikalischen Koordinaten) mit
+   einer halbtransparenten Farbfläche; opacity gibt die Füll-Deckkraft an (0.15–0.25 für
+   didaktisch sinnvolle, deutlich hellere Flächen gegenüber den Randlinien). */
+function svgPolygon(pts, color, opacity){
+  const points = pts.map(p=>{ const q=toPx(p.x,p.ct); return `${q.px},${q.py}`; }).join(' ');
+  const poly = document.createElementNS(svgNS,'polygon');
+  poly.setAttribute('points', points);
+  poly.setAttribute('fill', color);
+  poly.setAttribute('opacity', opacity);
+  poly.setAttribute('stroke', 'none');
+  svg.appendChild(poly);
+  return poly;
+}
+
 function cssVar(name){
   return getComputedStyle(document.body).getPropertyValue(name).trim();
 }
@@ -1491,6 +1522,31 @@ function render(){
       svgLine(pStart, pEnd, {stroke:obj.color,'stroke-width':6,opacity:0.3,'stroke-linecap':'round'});
       svgCircle(pStart.x, pStart.ct, 3.5, {fill:obj.color});
       svgCircle(pEnd.x, pEnd.ct, 3.5, {fill:obj.color});
+    }
+
+    // Räumlich UND zeitlich ausgedehntes Objekt: Die vier Ecken des Eigenzeit-Rechtecks
+    // (Eigenlänge L₀ × Eigendauer τ₀) werden per Lorentz-Transformation in das Anzeigesystem
+    // gebracht – das Ergebnis ist ein Parallelogramm. Dessen Flächeninhalt ist invariant
+    // (det L = 1), nur die Form ändert sich je nach Bezugssystem.
+    if (obj.extentType === 'area' && obj.extentValue >= 0 && obj.extentValue2 >= 0){
+      const L0 = obj.extentValue || 0;
+      const tau0 = obj.extentValue2 || 0;
+      // Korrekte Methode: Ecken im RUHESYSTEM des Objekts definieren (L₀ × τ₀ als Rechteck),
+      // dann per inverser Lorentz-Transformation (-β) ins Laborsystem bringen, ggf. mit Versatz
+      // (x0, ct0) versehen, und schließlich per Lorentz(betaRef) ins Anzeigesystem transformieren.
+      const toLabAndDisplay = (xRest, ctRest) => {
+        const lab = lorentz(xRest, ctRest, -obj.beta); // Ruhesystem → Labor
+        return transformPt(lab.x + obj.x0, lab.ct + obj.ct0); // Labor + Versatz → Anzeigesystem
+      };
+      const pA = toLabAndDisplay(0,   0);
+      const pB = toLabAndDisplay(L0,  0);
+      const pC = toLabAndDisplay(L0,  tau0);
+      const pD = toLabAndDisplay(0,   tau0);
+      svgPolygon([pA, pB, pC, pD], obj.color, 0.18); // helle Füllung
+      [[pA,pB],[pB,pC],[pC,pD],[pD,pA]].forEach(([a,b])=>{
+        svgLine(a, b, {stroke:obj.color,'stroke-width':1.8,opacity:0.85});
+      });
+      [pA,pB,pC,pD].forEach(p=>svgCircle(p.x, p.ct, 2.5, {fill:obj.color}));
     }
   });
 
