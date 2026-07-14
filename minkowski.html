@@ -1757,6 +1757,59 @@ function render(){
           fill:constructionBlue,'font-weight':'700',dx:'7',dy:'-6'
         });
       }
+
+      // Ist die Anzeige der Eigenzeit-Ticks aktiviert, erhält im angehaltenen
+      // Zwischenzustand auch die geneigte x′-Achse ihre physikalisch korrekte Skala.
+      // Der Vektor dNewX ist genau der transformierte Ziel-Einheitsvektor:
+      // axisOrigin + n·dNewX kennzeichnet daher den Punkt x′=n bei ct′=0.
+      if (document.getElementById('toggleProperTicks').checked){
+        const scaleRange = Math.ceil(Math.max(
+          Math.abs(view.xMin), Math.abs(view.xMax),
+          Math.abs(view.ctMin), Math.abs(view.ctMax)
+        ) * 4 + 20);
+
+        const normal = {x:-dNewX.ct, ct:dNewX.x};
+        const normalLength = Math.hypot(normal.x, normal.ct) || 1;
+        const ux = normal.x / normalLength;
+        const uct = normal.ct / normalLength;
+
+        for (let n=-scaleRange; n<=scaleRange; n++){
+          if (n===0) continue;
+          const tickPoint = {
+            x:axisOrigin.x + n*dNewX.x,
+            ct:axisOrigin.ct + n*dNewX.ct
+          };
+          if (tickPoint.x<view.xMin || tickPoint.x>view.xMax ||
+              tickPoint.ct<view.ctMin || tickPoint.ct>view.ctMax) continue;
+
+          const major = (n % 5 === 0);
+          const halfLength = major ? 0.42 : 0.24;
+          svgLine(
+            {x:tickPoint.x-ux*halfLength, ct:tickPoint.ct-uct*halfLength},
+            {x:tickPoint.x+ux*halfLength, ct:tickPoint.ct+uct*halfLength},
+            {stroke:constructionBlue,'stroke-width':major?1.8:1.15,opacity:major?0.98:0.8}
+          );
+
+          if (major){
+            svgText(tickPoint.x, tickPoint.ct, `x′=${n}`, {
+              fill:constructionBlue,
+              'font-size':'8.8',
+              'font-weight':'600',
+              dx:String(ux*10 + 3),
+              dy:String(-uct*10 - 3),
+              opacity:0.95
+            });
+          }
+        }
+
+        // Der neue Ursprung wird eindeutig als x′=0 markiert.
+        svgCircle(axisOrigin.x, axisOrigin.ct, 3.2, {
+          fill:'#fff', stroke:constructionBlue, 'stroke-width':1.8
+        });
+        svgText(axisOrigin.x, axisOrigin.ct, 'x′=0', {
+          fill:constructionBlue,'font-size':'8.8','font-weight':'600',dx:'7',dy:'13'
+        });
+      }
     }
   }
 
