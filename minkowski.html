@@ -1691,23 +1691,44 @@ function render(){
     const constructionBlue = '#2563eb';
     const constructionBlueLight = '#60a5fa';
 
-    // Nach Abschluss der ersten Stufe erscheint ein leichtes blaues Rautengitter.
-    // Die Linien ct′ = konstant sind Gleichzeitigkeitslinien und deshalb gestrichelt.
+    // Nach Abschluss der ersten Stufe erscheint ein vollständiges blaues Rautengitter.
+    // 1. ct′ = konstant: Gleichzeitigkeitslinien, parallel zur neuen x′-Achse.
+    // 2. x′ = konstant: Ortslinien, parallel zur neuen ct′-Achse.
+    // Beide Linienscharen werden bewusst deutlich gezeichnet, damit das Gitter nicht
+    // fälschlich wie eine bloße Folge paralleler Gleichzeitigkeitslinien wirkt.
     if (p > 0.995){
       const gridStep = 5;
-      const gridRange = 80;
-      for (let n=-gridRange; n<=gridRange; n+=gridStep){
-        if (n===0) continue;
-        const baseSim = {x:axisOrigin.x+n*dNewCt.x, ct:axisOrigin.ct+n*dNewCt.ct};
+      const gridRange = 100;
+
+      // Gleichzeitigkeitslinien ct′ = konstant
+      for (let ctPrime=-gridRange; ctPrime<=gridRange; ctPrime+=gridStep){
+        if (ctPrime===0) continue; // ct′=0 ist die kräftige x′-Achse
+        const baseSim = {
+          x: axisOrigin.x + ctPrime*dNewCt.x,
+          ct: axisOrigin.ct + ctPrime*dNewCt.ct
+        };
         const simSeg = clipToView(baseSim, dNewX);
         if (simSeg) svgLine(simSeg.a, simSeg.b, {
-          stroke:constructionBlueLight,'stroke-width':1.05,'stroke-dasharray':'5,4',opacity:0.42
+          stroke:constructionBlueLight,
+          'stroke-width':1.15,
+          'stroke-dasharray':'7,5',
+          opacity:0.48
         });
+      }
 
-        const baseSpace = {x:axisOrigin.x+n*dNewX.x, ct:axisOrigin.ct+n*dNewX.ct};
+      // Ortslinien x′ = konstant; diese zweite Linienschar fehlte optisch bislang.
+      for (let xPrime=-gridRange; xPrime<=gridRange; xPrime+=gridStep){
+        if (xPrime===0) continue; // x′=0 ist die kräftige ct′-Achse
+        const baseSpace = {
+          x: axisOrigin.x + xPrime*dNewX.x,
+          ct: axisOrigin.ct + xPrime*dNewX.ct
+        };
         const spaceSeg = clipToView(baseSpace, dNewCt);
         if (spaceSeg) svgLine(spaceSeg.a, spaceSeg.b, {
-          stroke:constructionBlueLight,'stroke-width':0.9,'stroke-dasharray':'2,5',opacity:0.25
+          stroke:constructionBlueLight,
+          'stroke-width':1.15,
+          'stroke-dasharray':'3,4',
+          opacity:0.48
         });
       }
     }
