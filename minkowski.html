@@ -1760,17 +1760,23 @@ function render(){
     }
   }
 
-  // Achsen des gewählten Bezugssystems: immer orthogonal, da dies das Anzeigesystem ist
+  // Achsen des momentan tatsächlich angezeigten, orthogonalen Systems.
+  // Im angehaltenen ersten Konstruktionsschritt bleibt dies ausdrücklich das ALTE System.
+  // Deshalb dürfen diese waagerechte und senkrechte Achse dort noch nicht x′ und ct′ heißen;
+  // x′ und ct′ gehören in diesem Zustand ausschließlich zum blauen Rautensystem.
   {
+    const constructionIntermediate = !!(constructionAxis && !constructionAxis.animating);
     const isLab = (referenceId === 'S0');
     const xColor = isLab ? labColor : cssVar('--frame-axis');
     const ctColor = isLab ? labColor : cssVar('--primary');
+    const mainXLabel = constructionIntermediate ? 'x' : (isLab ? 'x' : 'x′');
+    const mainCtLabel = constructionIntermediate ? 'ct' : (isLab ? 'ct' : 'ct′');
     const segX = clipToView({x:0,ct:0},{x:1,ct:0});
     if (segX) svgLine(segX.a, segX.b, {stroke:xColor,'stroke-width':1.8});
     const segCt = clipToView({x:0,ct:0},{x:0,ct:1});
     if (segCt) svgLine(segCt.a, segCt.b, {stroke:ctColor,'stroke-width':1.8});
-    svgText(view.xMax-1.5, 1.2, isLab?'x':'x′', {fill:xColor,'font-weight':'700','text-anchor':'end'});
-    svgText(0.6, view.ctMax-1.5, isLab?'ct':'ct′', {fill:ctColor,'font-weight':'700'});
+    svgText(view.xMax-1.5, 1.2, mainXLabel, {fill:xColor,'font-weight':'700','text-anchor':'end'});
+    svgText(0.6, view.ctMax-1.5, mainCtLabel, {fill:ctColor,'font-weight':'700'});
 
     // Zahlenbeschriftete Ticks auf den orthogonalen Achsen, im selben Abstand wie das Hintergrundgitter
     const axStep = 5;
@@ -2018,9 +2024,12 @@ function render(){
     });
 
     // Achsen, die im aktuellen Diagramm tatsächlich sichtbar sind.
+    const constructionIntermediate = !!(constructionAxis && !constructionAxis.animating);
+    const oldXName = constructionIntermediate ? 'x-Achse des bisherigen Systems' : (referenceId==='S0'?'x-Achse':'x′-Achse');
+    const oldCtName = constructionIntermediate ? 'ct-Achse des bisherigen Systems' : (referenceId==='S0'?'ct-Achse':'ct′-Achse');
     const axisDefs = [
-      {id:'axis:x',  name:referenceId==='S0'?'x-Achse':'x′-Achse',  kind:'axis', color:referenceId==='S0'?labColor:cssVar('--frame-axis'), p:{x:0,ct:0}, d:{x:1,ct:0}},
-      {id:'axis:ct', name:referenceId==='S0'?'ct-Achse':'ct′-Achse', kind:'axis', color:referenceId==='S0'?labColor:cssVar('--primary'),    p:{x:0,ct:0}, d:{x:0,ct:1}}
+      {id:'axis:x',  name:oldXName,  kind:'axis', color:referenceId==='S0'?labColor:cssVar('--frame-axis'), p:{x:0,ct:0}, d:{x:1,ct:0}},
+      {id:'axis:ct', name:oldCtName, kind:'axis', color:referenceId==='S0'?labColor:cssVar('--primary'),    p:{x:0,ct:0}, d:{x:0,ct:1}}
     ];
 
     if (referenceId !== 'S0'){
