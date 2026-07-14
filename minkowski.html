@@ -1103,12 +1103,12 @@ function renderStepWizard(playing){
         <span>Schritt 1/2 · Sichtbarer Zwischenzustand</span>
         <button class="step-wizard-close" onclick="closeStepWizardBox()" title="Erklärung schließen"><i data-lucide="x"></i></button>
       </div>
-      <p>Jetzt ist Schritt 1 abgeschlossen: Das alte Koordinatensystem <b>${sw.fromName}</b> ist weiterhin unverändert sichtbar. Zusätzlich ist die geneigte x′-Achse des neuen Systems <b>${sw.toName}</b> vollständig eingezeichnet. Bereits aktivierte Gleichzeitigkeitslinien verlaufen gestrichelt parallel zu dieser neuen Achse.</p>
+      <p>Jetzt ist Schritt 1 abgeschlossen: Das alte Koordinatensystem <b>${sw.fromName}</b> bleibt unverändert sichtbar. Zusätzlich ist das Koordinatensystem von <b>${sw.toName}</b> blau eingezeichnet. Seine x′- und ct′-Achse bilden in der noch nicht winkelveränderten Darstellung eine Raute. Die neue x′-Achse ist ausdrücklich beschriftet; gestrichelte blaue Linien parallel zu ihr zeigen die Gleichzeitigkeitslinien ct′ = konstant.</p>
       <div class="formula-box">
         <span class="label">Lage der neuen x′-Achse im bisherigen System</span>
         ct = β<sub>rel</sub>·x &nbsp;&nbsp;mit&nbsp;&nbsp; β<sub>rel</sub> = ${sw.betaRel.toFixed(3)}
       </div>
-      <p style="font-size:.78rem;color:var(--text-muted);">Noch wurden weder die alten Achsen noch Weltlinien, Ereignisse oder Lichtstrahlen gedreht. Die neue x′-Achse ist als geneigte Konstruktionslinie ergänzt; die gestrichelten Gleichzeitigkeitslinien des neuen Systems können daran bereits abgelesen werden.</p>
+      <p style="font-size:.78rem;color:var(--text-muted);">Noch wurden weder die alten Achsen noch Weltlinien, Ereignisse oder Lichtstrahlen gedreht. Das blaue Koordinatensystem zeigt bereits die Geometrie des neuen Bezugssystems im alten Diagramm: Die gestrichelten Linien parallel zur blauen x′-Achse sind dessen Gleichzeitigkeitslinien.</p>
       <div class="step-wizard-actions">
         <button class="btn-secondary" onclick="stepWizardKeepAxis()">Ohne Winkeländerung beenden</button>
         <button class="btn-primary" onclick="stepWizardNext()">Schritt 2: Winkel verändern <i data-lucide="arrow-right"></i></button>
@@ -1672,31 +1672,69 @@ function render(){
     });
   }
 
-  // Konstruktionsschritt: neue x′-Achse im NOCH ALTEN Bezugssystem.
-  // ct_alt = β_rel · x_alt; während des Einzeichnens wächst sie vom Ursprung aus.
+  // Konstruktionsschritt: blaues, noch rautenförmiges Koordinatensystem des Zielsystems.
+  // Das bisherige Bezugssystem bleibt das Anzeigesystem. Die Basisvektoren des neuen Systems
+  // werden in diesem alten System dargestellt. Dadurch sind x′- und ct′-Achse zunächst nicht
+  // rechtwinklig, sondern bilden das klassische rautenförmige Minkowski-Koordinatensystem.
   if (constructionAxis){
-    /* Die Ziel-x′-Achse ist in Laborkoordinaten die Gerade ct = β_ziel·x.
-       Während der Winkelanimation wird genau diese bereits eingezeichnete Achse
-       fortlaufend in das momentan dargestellte Zwischen-Bezugssystem transformiert.
-       Dadurch klappt sie sichtbar in die waagerechte x′-Achse ein, während die
-       Weltlinie des Zielsystems gleichzeitig zur senkrechten ct′-Achse wird. */
     const betaNow = currentBetaRef();
-    const gammaNow = 1/Math.sqrt(1-betaNow*betaNow);
-    const dNewX = {
-      x: gammaNow*(1 - betaNow*constructionAxis.endBeta),
-      ct: gammaNow*(constructionAxis.endBeta - betaNow)
-    };
+    const betaRelNow = relativeBeta(constructionAxis.endBeta, betaNow);
+    const gammaRelNow = 1/Math.sqrt(1-betaRelNow*betaRelNow);
+
+    // Einheits-Basisvektoren des Zielsystems, ausgedrückt im momentan sichtbaren System.
+    // dNewX: Richtung gleicher Zielzeit ct′ = const.; dNewCt: Weltlinie x′ = const.
+    const dNewX  = {x:gammaRelNow,             ct:gammaRelNow*betaRelNow};
+    const dNewCt = {x:gammaRelNow*betaRelNow,  ct:gammaRelNow};
     const axisOriginLab = constructionAxis.endOrigin || referenceOrigin(constructionAxis.toId);
     const axisOrigin = frameTransformPoint(axisOriginLab.x, axisOriginLab.ct, betaNow, currentFrameOrigin());
-    const seg = clipToView(axisOrigin, dNewX);
-    if (seg){
-      const p = Math.max(0, Math.min(1, constructionAxis.progress ?? 1));
-      const a = {x:axisOrigin.x + (seg.a.x-axisOrigin.x)*p, ct:axisOrigin.ct + (seg.a.ct-axisOrigin.ct)*p};
-      const b = {x:axisOrigin.x + (seg.b.x-axisOrigin.x)*p, ct:axisOrigin.ct + (seg.b.ct-axisOrigin.ct)*p};
-      const axisColor = cssVar('--frame-axis');
-      svgLine(a, b, {stroke:axisColor,'stroke-width':2.4,'stroke-dasharray':'8,4',opacity:0.95});
+    const p = Math.max(0, Math.min(1, constructionAxis.progress ?? 1));
+    const constructionBlue = '#2563eb';
+    const constructionBlueLight = '#60a5fa';
+
+    // Nach Abschluss der ersten Stufe erscheint ein leichtes blaues Rautengitter.
+    // Die Linien ct′ = konstant sind Gleichzeitigkeitslinien und deshalb gestrichelt.
+    if (p > 0.995){
+      const gridStep = 5;
+      const gridRange = 80;
+      for (let n=-gridRange; n<=gridRange; n+=gridStep){
+        if (n===0) continue;
+        const baseSim = {x:axisOrigin.x+n*dNewCt.x, ct:axisOrigin.ct+n*dNewCt.ct};
+        const simSeg = clipToView(baseSim, dNewX);
+        if (simSeg) svgLine(simSeg.a, simSeg.b, {
+          stroke:constructionBlueLight,'stroke-width':1.05,'stroke-dasharray':'5,4',opacity:0.42
+        });
+
+        const baseSpace = {x:axisOrigin.x+n*dNewX.x, ct:axisOrigin.ct+n*dNewX.ct};
+        const spaceSeg = clipToView(baseSpace, dNewCt);
+        if (spaceSeg) svgLine(spaceSeg.a, spaceSeg.b, {
+          stroke:constructionBlueLight,'stroke-width':0.9,'stroke-dasharray':'2,5',opacity:0.25
+        });
+      }
+    }
+
+    // Die neue x′-Achse wächst in Stufe 1 sichtbar vom neuen Ursprung aus.
+    const segX = clipToView(axisOrigin, dNewX);
+    if (segX){
+      const a = {x:axisOrigin.x + (segX.a.x-axisOrigin.x)*p, ct:axisOrigin.ct + (segX.a.ct-axisOrigin.ct)*p};
+      const b = {x:axisOrigin.x + (segX.b.x-axisOrigin.x)*p, ct:axisOrigin.ct + (segX.b.ct-axisOrigin.ct)*p};
+      svgLine(a, b, {stroke:constructionBlue,'stroke-width':2.6,opacity:0.98});
       if (p > 0.85){
-        svgText(b.x, b.ct, `x′ (${constructionAxis.toName})`, {fill:axisColor,'font-weight':'700', dx:'7', dy:'-6'});
+        svgText(b.x, b.ct, `x′ (${constructionAxis.toName})`, {
+          fill:constructionBlue,'font-weight':'700',dx:'7',dy:'-6'
+        });
+      }
+    }
+
+    // Am Ende von Stufe 1 wird zusätzlich die ct′-Achse des neuen Systems sichtbar.
+    // Beim zweiten Schritt klappt dieses blaue Rautensystem kontinuierlich in ein
+    // orthogonales Koordinatensystem um.
+    if (p > 0.995){
+      const segCtNew = clipToView(axisOrigin, dNewCt);
+      if (segCtNew){
+        svgLine(segCtNew.a, segCtNew.b, {stroke:constructionBlue,'stroke-width':2.6,opacity:0.98});
+        svgText(segCtNew.b.x, segCtNew.b.ct, `ct′ (${constructionAxis.toName})`, {
+          fill:constructionBlue,'font-weight':'700',dx:'7',dy:'-6'
+        });
       }
     }
   }
@@ -1974,18 +2012,22 @@ function render(){
 
     if (constructionAxis){
       const betaNow = currentBetaRef();
-      const gammaNow = 1/Math.sqrt(1-betaNow*betaNow);
-      const dNewX = {
-        x:gammaNow*(1-betaNow*constructionAxis.endBeta),
-        ct:gammaNow*(constructionAxis.endBeta-betaNow)
-      };
+      const betaRelNow = relativeBeta(constructionAxis.endBeta, betaNow);
+      const gammaRelNow = 1/Math.sqrt(1-betaRelNow*betaRelNow);
+      const dNewX  = {x:gammaRelNow,            ct:gammaRelNow*betaRelNow};
+      const dNewCt = {x:gammaRelNow*betaRelNow, ct:gammaRelNow};
       const axisOriginLab = constructionAxis.endOrigin || referenceOrigin(constructionAxis.toId);
-      axisDefs.push({
-        id:'axis:construction-x', name:'neu eingezeichnete x′-Achse', kind:'axis',
-        color:cssVar('--frame-axis'),
-        p:frameTransformPoint(axisOriginLab.x, axisOriginLab.ct, betaNow, currentFrameOrigin()),
-        d:dNewX
-      });
+      const pConstruction = frameTransformPoint(axisOriginLab.x, axisOriginLab.ct, betaNow, currentFrameOrigin());
+      axisDefs.push(
+        {
+          id:'axis:construction-x', name:'blaue x′-Achse des neuen Systems', kind:'axis',
+          color:'#2563eb', p:pConstruction, d:dNewX
+        },
+        {
+          id:'axis:construction-ct', name:'blaue ct′-Achse des neuen Systems', kind:'axis',
+          color:'#2563eb', p:pConstruction, d:dNewCt
+        }
+      );
     }
 
     // Mehrere Linien können sich im selben Ereignis treffen. Die Punkte werden daher
@@ -2066,14 +2108,15 @@ function render(){
         };
       }
       const seg = clipToView(p, simDir);
-      if (seg) svgLine(seg.a, seg.b, {stroke:'#94a3b8','stroke-width':1.4,'stroke-dasharray':'4,3'});
+      const simColor = constructionSimActive ? '#2563eb' : '#94a3b8';
+      if (seg) svgLine(seg.a, seg.b, {stroke:simColor,'stroke-width':1.5,'stroke-dasharray':'5,4'});
 
       // Markierung des Schnittpunkts mit der ct-Achse des aktuell sichtbaren Koordinatensystems.
       if (Math.abs(simDir.x) > 1e-12){
         const lambda = -p.x / simDir.x;
         const ctAtAxis = p.ct + lambda*simDir.ct;
         if (ctAtAxis>=view.ctMin && ctAtAxis<=view.ctMax && view.xMin<=0 && 0<=view.xMax){
-          svgCircle(0, ctAtAxis, 3, {fill:'#94a3b8'});
+          svgCircle(0, ctAtAxis, 3, {fill:simColor});
         }
       }
     }
