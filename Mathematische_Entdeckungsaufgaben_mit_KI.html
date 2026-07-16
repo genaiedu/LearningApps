@@ -51,7 +51,7 @@ button{color:inherit}
 .hamburger{display:none;position:fixed;right:14px;top:14px;z-index:500;width:44px;height:44px;border:1px solid var(--glass-border);border-radius:11px;background:var(--surface);backdrop-filter:var(--blur);cursor:pointer;font-size:1.25rem}
 .main{margin-left:var(--sidebar-width);flex:1;max-width:1180px;padding:44px 5.5vw 100px}
 .hero{margin-bottom:30px}.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px;margin-bottom:16px}.hero h1{font-size:clamp(2.2rem,4.5vw,3.45rem);line-height:1.05;font-weight:900;max-width:900px}.hero h1 span{color:var(--primary)}.hero p{font-size:1.07rem;color:var(--text-muted);line-height:1.7;max-width:860px;margin-top:15px}
-.meta-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}.meta-field{background:var(--surface);border:1px solid var(--glass-border);border-radius:13px;padding:10px 13px}.meta-field label{display:block;font-size:.72rem;color:var(--text-muted);font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}.meta-field input{width:100%;border:0;border-bottom:1px solid rgba(100,116,139,.35);background:transparent;color:var(--text);padding:4px 0;outline:none}
+
 .intro-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:48px}.glass{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--shadow)}.intro-card{padding:24px 26px}.intro-card h2{font-size:1.25rem;margin-bottom:10px}.intro-card p,.intro-card li{line-height:1.65}.intro-card ol{padding-left:20px}.progress-card{padding:22px}.progress-card h3{font-size:1rem;color:var(--primary);margin-bottom:10px}.progress-number{font-family:'Poppins';font-size:2.2rem;font-weight:900;color:var(--primary)}.mini-progress{height:10px;border-radius:999px;background:rgba(100,116,139,.18);overflow:hidden;margin:10px 0 8px}.mini-progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .35s}.progress-card p{font-size:.87rem;color:var(--text-muted);line-height:1.5}
 .stage{margin-bottom:58px;scroll-margin-top:25px}.stage-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px}.stage-number{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;display:grid;place-items:center;font-family:'Poppins';font-size:1.12rem;font-weight:900;flex:0 0 auto}.stage-head h2{font-size:1.55rem}.stage-head p{color:var(--text-muted);line-height:1.55;margin-top:3px}
 .task-list{display:grid;gap:18px}.task-card{padding:0;overflow:hidden;transition:transform .2s,border-color .2s}.task-card:hover{transform:translateY(-2px);border-color:rgba(26,111,181,.35)}.task-card.done{border-color:rgba(21,128,61,.5);box-shadow:0 10px 36px rgba(21,128,61,.10)}
@@ -61,9 +61,9 @@ button{color:inherit}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .toast{position:fixed;right:22px;bottom:22px;z-index:800;background:#111827;color:#fff;border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);opacity:0;transform:translateY(14px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translateY(0)}
 footer{text-align:center;color:var(--text-muted);font-size:.83rem;padding:25px 0 0}
-@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:grid;place-items:center}.main{margin-left:0;padding:74px 5vw 80px}.intro-grid{grid-template-columns:1fr}.meta-row{grid-template-columns:1fr}.task-top{flex-wrap:wrap}.done-toggle{margin-left:57px}.hero h1{font-size:2.25rem}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:grid;place-items:center}.main{margin-left:0;padding:74px 5vw 80px}.intro-grid{grid-template-columns:1fr}.task-top{flex-wrap:wrap}.done-toggle{margin-left:57px}.hero h1{font-size:2.25rem}}
 @media(max-width:560px){.main{padding-left:4vw;padding-right:4vw}.task-top,.task-body{padding-left:17px;padding-right:17px}.task-title{font-size:1.08rem}.problem{padding:15px}.done-toggle{margin-left:0}.actions{display:grid;grid-template-columns:1fr}.action-btn{width:100%}.copy-row{align-items:stretch}.copy-btn{width:100%}}
-@media print{body{background:#fff!important;color:#111}.blob,.sidebar,.hamburger,#progress-wrap,.actions,.panel,.progress-card,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:15mm}.hero h1{font-size:24pt}.intro-grid{display:block}.intro-card{box-shadow:none;border:1px solid #ccc;margin-bottom:10mm}.task-card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.task-list{gap:8mm}.stage{break-before:page}.stage:first-of-type{break-before:auto}.meta-row{grid-template-columns:repeat(3,1fr)}.done-toggle{display:none}.problem{background:#fff;border:1px solid #ddd}.reveal{opacity:1!important;transform:none!important}}
+@media print{body{background:#fff!important;color:#111}.blob,.sidebar,.hamburger,#progress-wrap,.actions,.panel,.progress-card,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:15mm}.hero h1{font-size:24pt}.intro-grid{display:block}.intro-card{box-shadow:none;border:1px solid #ccc;margin-bottom:10mm}.task-card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.task-list{gap:8mm}.stage{break-before:page}.stage:first-of-type{break-before:auto}.done-toggle{display:none}.problem{background:#fff;border:1px solid #ddd}.reveal{opacity:1!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -89,11 +89,6 @@ footer{text-align:center;color:var(--text-muted);font-size:.83rem;padding:25px 0
     <span class="eyebrow">Projektwoche KI · Mathematik</span>
     <h1>Mathematik nicht nur berechnen, sondern <span>entdecken</span></h1>
     <p>Wähle eine Aufgabe, versuche zunächst selbst einen Einstieg und nutze bei Bedarf den kurzen Hinweis. Der kopierbare KI-Prompt verwandelt eine beliebige KI in einen sokratischen Tutor: Sie soll dich mit Fragen führen, aber dir die Lösung nicht vorsagen.</p>
-    <div class="meta-row">
-      <div class="meta-field"><label for="name">Name</label><input id="name" autocomplete="name"></div>
-      <div class="meta-field"><label for="group">Gruppe</label><input id="group"></div>
-      <div class="meta-field"><label for="date">Datum</label><input id="date" type="date"></div>
-    </div>
   </header>
   <div class="intro-grid reveal">
     <div class="glass intro-card">
@@ -122,7 +117,6 @@ const TASKS = [{"id": 1, "stage": 1, "title": "Die fehlende Zahl", "task": "Setz
 const STAGES = {"1": {"title": "Muster und Grundideen", "description": "Einstieg: Strukturen erkennen, Größen deuten und einfache Regeln verallgemeinern."}, "2": {"title": "Algebra und logisches Denken", "description": "Alltagssituationen mathematisieren, geschickt umformen und Informationen systematisch nutzen."}, "3": {"title": "Wahrscheinlichkeit und Kombinatorik", "description": "Intuition überprüfen, Fälle zählen und verborgene Strukturen in Zufallsproblemen erkennen."}, "4": {"title": "Beweise, Invarianten und Rekursion", "description": "Nicht nur Ergebnisse finden, sondern zwingende mathematische Argumente entwickeln."}, "5": {"title": "Modellierung und weiterführende Konzepte", "description": "Optimierung, Grenzwerte, Unendlichkeit und komplexe Zwischenwege untersuchen."}};
 const TOTAL = TASKS.length;
 const STORAGE_KEY = 'math-discovery-workbook-v1';
-const PROFILE_KEY = 'math-discovery-profile-v1';
 let state = loadState();
 
 function loadState(){
@@ -197,8 +191,6 @@ function randomTask(){const t=TASKS[Math.floor(Math.random()*TASKS.length)];cons
 function toggleDark(){state.dark=!state.dark;document.body.classList.toggle('dark',state.dark);saveState()}
 function resetProgress(){if(confirm('Alle Erledigt-Markierungen wirklich zurücksetzen?')){state.done={};saveState();document.querySelectorAll('[data-done]').forEach(i=>i.checked=false);document.querySelectorAll('.task-card').forEach(c=>c.classList.remove('done'));updateProgress()}}
 function bindReveal(){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))}
-function saveProfile(){const p={};['name','group','date'].forEach(id=>p[id]=document.getElementById(id).value);localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}
-function loadProfile(){try{const p=JSON.parse(localStorage.getItem(PROFILE_KEY))||{};['name','group','date'].forEach(id=>{document.getElementById(id).value=p[id]||'';document.getElementById(id).addEventListener('input',saveProfile)})}catch{}}
 
 document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
 document.getElementById('dark-btn').addEventListener('click',toggleDark);
@@ -207,7 +199,7 @@ document.getElementById('close-panels-btn').addEventListener('click',closePanels
 document.getElementById('reset-btn').addEventListener('click',resetProgress);
 document.addEventListener('click',e=>{if(window.innerWidth<930 && !e.target.closest('#sidebar') && !e.target.closest('#hamburger'))document.getElementById('sidebar').classList.remove('open')});
 if(state.dark)document.body.classList.add('dark');
-render();loadProfile();
+render();
 </script>
 </body>
 </html>
