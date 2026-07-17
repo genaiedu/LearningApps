@@ -300,7 +300,7 @@ function revealStages(scroll=false){
   $$('.after-answer').forEach(a=>a.style.display='flex');
   setTimeout(()=>$$('.stage,.hero,.intro').forEach(el=>el.classList.add('visible')),20);
   if(scroll) $('#intuition').scrollIntoView({behavior:'smooth',block:'start'});
-  resizeCanvas(); draw();
+  setTimeout(()=>{resizeCanvas();draw()},30);
 }
 $$('.after-answer').forEach(a=>a.style.display=state.answered?'flex':'none');
 
