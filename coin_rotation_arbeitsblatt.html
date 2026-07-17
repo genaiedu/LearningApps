@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Das rollende Kreisrätsel · Interaktives Arbeitsblatt</title>
+<meta name="description" content="Interaktives Arbeitsblatt zum Coin-Rotation-Paradox und zur fehlerhaften SAT-Aufgabe von 1982">
+<style>
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{
+  --primary:#0f766e;--primary2:#2563eb;--primary-light:#dff7f3;--accent:#ea580c;
+  --text:#172033;--muted:#64748b;--surface:rgba(255,255,255,.84);--surface-solid:#fff;
+  --border:rgba(255,255,255,.42);--line:rgba(100,116,139,.23);--shadow:0 10px 34px rgba(15,23,42,.12);
+  --radius:18px;--sidebar:310px;--success:#15803d;--danger:#b91c1c;--warn:#9a5b00;--purple:#6d28d9;
+  --canvas:#f8fafc;--circleB:#2563eb;--circleA:#0f766e;--marker:#ea580c;
+}
+body.dark{
+  --primary:#2dd4bf;--primary2:#60a5fa;--primary-light:rgba(45,212,191,.13);--accent:#fb923c;
+  --text:#e2e8f0;--muted:#94a3b8;--surface:rgba(15,23,42,.86);--surface-solid:#0f172a;
+  --border:rgba(255,255,255,.14);--line:rgba(148,163,184,.22);--shadow:0 10px 34px rgba(0,0,0,.28);
+  --success:#4ade80;--danger:#f87171;--warn:#fbbf24;--purple:#c4b5fd;
+  --canvas:#09111f;--circleB:#60a5fa;--circleA:#2dd4bf;--marker:#fb923c;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:linear-gradient(135deg,#ecfeff,#eef2ff 48%,#fff7ed);min-height:100vh;transition:.3s}body.dark{background:linear-gradient(135deg,#071a1a,#0f172a 55%,#1c1410)}
+h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}button,input,select{font:inherit;color:inherit}
+.blob{position:fixed;border-radius:50%;filter:blur(85px);opacity:.25;z-index:-1;animation:float 22s ease-in-out infinite alternate}.b1{width:500px;height:500px;background:#14b8a6;top:-14%;left:-10%}.b2{width:420px;height:420px;background:#4f46e5;right:-8%;top:35%}.b3{width:360px;height:360px;background:#f97316;left:35%;bottom:-12%}@keyframes float{to{transform:translate(35px,-25px) scale(1.06)}}
+#barwrap{position:fixed;top:0;left:0;width:100%;height:5px;background:rgba(0,0,0,.08);z-index:700}#bar{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.25s}
+.layout{display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;overflow:auto;background:rgba(255,255,255,.12);backdrop-filter:blur(20px);border-right:1px solid var(--border);z-index:400;transition:.3s}.brand{display:flex;gap:12px;align-items:center}.mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));font-weight:900;font-size:1.15rem}.sidebar h2{font-size:1.03rem;color:var(--primary);margin:0}.sub{margin:4px 0 22px 58px;color:var(--muted);font-size:.8rem}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:11px;color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}.dot{width:25px;height:25px;border-radius:8px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-size:.75rem;font-weight:800}.tools{display:grid;gap:9px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}.tool{border:1px solid var(--border);background:var(--surface);border-radius:11px;padding:10px 12px;text-align:left;cursor:pointer;font-weight:600}.tool:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08)}.school{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);font-size:.74rem;color:var(--muted);line-height:1.55}.hamb{display:none;position:fixed;right:14px;top:14px;width:44px;height:44px;border-radius:11px;border:1px solid var(--border);background:var(--surface);z-index:500;cursor:pointer}.main{margin-left:var(--sidebar);max-width:1240px;padding:46px 5vw 100px;flex:1}.hero{margin-bottom:32px}.eyebrow{display:inline-block;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px}.hero h1{font-size:clamp(2.25rem,4.7vw,3.65rem);line-height:1.04;margin:16px 0 14px}.hero h1 span{color:var(--primary)}.hero p{max-width:900px;color:var(--muted);font-size:1.06rem;line-height:1.7}.glass{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.intro{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:48px}.introcard,.progress{padding:24px 26px}.introcard p{line-height:1.7}.progress h3{color:var(--primary);font-size:1rem;margin-top:0}.num{font-size:2.2rem;font-weight:900;color:var(--primary)}.minibar{height:10px;border-radius:999px;background:rgba(100,116,139,.18);overflow:hidden}.minibar div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.3s}.progress small{color:var(--muted)}
+.stage{margin-bottom:58px;scroll-margin-top:24px}.stagehead{display:flex;gap:14px;margin-bottom:18px}.stageid{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-weight:900}.stagehead h2{margin:0;font-size:1.55rem}.stagehead p{color:var(--muted);margin:3px 0 0;line-height:1.55}.card{padding:25px}.problem{line-height:1.75;background:linear-gradient(135deg,rgba(15,118,110,.07),rgba(234,88,12,.06));border:1px solid var(--border);border-radius:15px;padding:20px}.problem h3{margin:0 0 8px}.diagram{display:grid;grid-template-columns:minmax(280px,.85fr) 1.15fr;gap:22px;align-items:center}.sat-figure{min-height:320px;display:grid;place-items:center;border-radius:16px;background:var(--canvas);border:1px solid var(--line);overflow:hidden}.sat-figure svg{width:100%;height:auto;max-height:310px}.question-text{line-height:1.72}.question-text .original-note{font-size:.78rem;color:var(--muted);margin-top:12px}.choices{display:grid;grid-template-columns:repeat(5,minmax(76px,1fr));gap:10px;margin:20px 0 15px}.choice{position:relative}.choice input{position:absolute;opacity:0}.choice label{display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font-weight:800;transition:.18s}.choice input:checked+label{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);color:var(--primary);transform:translateY(-1px)}.custom-answer{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;margin-top:14px;padding:14px;border:1px dashed var(--line);border-radius:13px}.custom-answer input,.textinput,.rangevalue{width:100%;border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:11px 12px;outline:none}.custom-answer input:focus,.textinput:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.11)}.btn.primary{color:#fff;border:0;background:linear-gradient(135deg,var(--primary),var(--primary2))}.btn.accent{color:#fff;border:0;background:linear-gradient(135deg,var(--accent),#f59e0b)}.btn.ghost{background:transparent;border-color:var(--line)}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}.feedback{display:none;margin-top:18px;padding:17px 18px;border-radius:14px;border:1px solid var(--line);line-height:1.65}.feedback.show{display:block}.feedback.good{background:rgba(21,128,61,.10);border-color:rgba(21,128,61,.35)}.feedback.think{background:rgba(245,158,11,.11);border-color:rgba(245,158,11,.38)}.feedback.bad{background:rgba(185,28,28,.08);border-color:rgba(185,28,28,.3)}.feedback strong{display:block;margin-bottom:4px}.unlock-note{display:none;margin-top:12px;color:var(--primary);font-weight:700}.unlock-note.show{display:block}
+.hidden-stage{display:none}.reveal{opacity:0;transform:translateY(18px);transition:.5s}.reveal.visible{opacity:1;transform:none}.concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.concept{padding:22px}.concept h3{margin-top:0}.concept p{line-height:1.7}.equation{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(1rem,2vw,1.25rem);background:var(--canvas);border:1px solid var(--line);border-radius:13px;padding:16px;overflow:auto}.temptation{border-left:5px solid var(--warn)}.resolution{border-left:5px solid var(--success)}
+.lab{padding:0;overflow:hidden}.labtop{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 13px;font-weight:750;cursor:pointer}.tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary)}.labbody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.65fr);min-height:620px}.canvaswrap{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}#simCanvas{display:block;width:100%;height:100%;min-height:620px}.canvasbadge{position:absolute;left:15px;top:15px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}.badge{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:800}.controls{padding:21px;overflow:auto}.controlgroup{margin-bottom:21px}.controlgroup h3{font-size:1rem;margin:0 0 10px}.controlgroup p{font-size:.87rem;color:var(--muted);line-height:1.55}.rangeline{display:grid;grid-template-columns:1fr 64px;gap:10px;align-items:center}.rangeline input[type=range]{width:100%;accent-color:var(--primary)}.rangevalue{text-align:center;padding:8px 5px;font-weight:800}.presets{display:flex;gap:7px;flex-wrap:wrap}.preset{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 9px;font-size:.8rem;font-weight:750;cursor:pointer}.preset:hover{border-color:var(--primary);color:var(--primary)}.simbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.readouts{display:grid;gap:8px}.readout{display:flex;justify-content:space-between;gap:12px;padding:10px 11px;border-radius:10px;background:rgba(100,116,139,.09);border:1px solid var(--line);font-size:.88rem}.readout b{color:var(--primary)}.toggleline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0}.switch{position:relative;width:46px;height:25px;flex:0 0 46px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;background:rgba(100,116,139,.3);border-radius:999px;cursor:pointer;transition:.2s}.slider:before{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.2)}.switch input:checked+.slider{background:var(--primary)}.switch input:checked+.slider:before{transform:translateX(21px)}
+.mission{display:grid;grid-template-columns:1fr 1fr;gap:18px}.missioncard{padding:22px}.missioncard h3{margin-top:0}.predictrow{display:grid;grid-template-columns:1fr auto;gap:9px}.resultline{min-height:28px;margin-top:10px;font-weight:700;line-height:1.5}.resultline.ok{color:var(--success)}.resultline.no{color:var(--danger)}.data-table{width:100%;border-collapse:collapse;margin-top:14px}.data-table th,.data-table td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:left}.data-table th{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.data-table td:last-child{font-weight:800;color:var(--primary)}
+.steps{display:grid;gap:13px}.step{display:grid;grid-template-columns:42px 1fr;gap:13px;align-items:start;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.stepnum{width:42px;height:42px;border-radius:13px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-weight:900}.step h3{font-size:1rem;margin:2px 0 5px}.step p{margin:0;line-height:1.65;color:var(--muted)}.formula-final{font-size:clamp(1.45rem,3vw,2.3rem);font-weight:900;color:var(--primary);text-align:center;padding:24px;border-radius:16px;background:linear-gradient(135deg,var(--primary-light),rgba(37,99,235,.1));border:1px solid var(--line)}
+.quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.quizcard{padding:22px}.quizcard h3{margin-top:0}.quizoptions{display:grid;gap:8px}.quizoption{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.quizoption:hover{background:var(--primary-light)}.sourcebox{padding:20px;line-height:1.65;color:var(--muted)}.sourcebox a{color:var(--primary);font-weight:700}footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;z-index:900}.toast.show{opacity:1;transform:none}
+@media(max-width:1050px){.labbody{grid-template-columns:1fr}.canvaswrap{border-right:0;border-bottom:1px solid var(--line)}#simCanvas{min-height:540px}.diagram{grid-template-columns:1fr}.sat-figure{min-height:270px}.mission,.quizgrid{grid-template-columns:1fr}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.intro,.concept-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.card{padding:17px}.choices{grid-template-columns:repeat(2,1fr)}.custom-answer{grid-template-columns:1fr}.labtop{align-items:flex-start}.canvasbadge{position:static;padding:10px;background:var(--canvas)}#simCanvas{min-height:430px}.predictrow{grid-template-columns:1fr}.simbuttons{grid-template-columns:1fr}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}}
+@media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.toast,.sourcebox,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.card,.concept,.missioncard,.quizcard{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody{display:block}.canvaswrap{border:1px solid #bbb}#simCanvas{min-height:470px}.feedback{display:block!important}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="barwrap"><div id="bar"></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen">☰</button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark">↻</div><h2>Das rollende<br>Kreisrätsel</h2></div>
+  <div class="sub">vermuten · beobachten · erklären</div>
+  <nav id="nav">
+    <a href="#frage"><span class="dot">1</span>Originalfrage</a>
+    <a href="#intuition" class="after-answer"><span class="dot">2</span>Die Falle</a>
+    <a href="#labor" class="after-answer"><span class="dot">3</span>Experimentierlabor</a>
+    <a href="#erklaerung" class="after-answer"><span class="dot">4</span>Mathematische Erklärung</a>
+    <a href="#transfer" class="after-answer"><span class="dot">5</span>Transfer & Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark">◐ Darstellung wechseln</button>
+    <button class="tool" id="restart">↺ Arbeitsblatt zurücksetzen</button>
+    <button class="tool" onclick="window.print()">⎙ Arbeitsblatt drucken</button>
+  </div>
+  <div class="school">Interaktives Mathematik-Arbeitsblatt<br>Coin-Rotation-Paradox<br>Fortschritt wird lokal gespeichert.</div>
+</aside>
+<main class="main">
+<header class="hero reveal">
+  <span class="eyebrow">Mathematik · Geometrie · überraschende Umdrehungen</span>
+  <h1>Wie oft dreht sich der <span>kleine Kreis?</span></h1>
+  <p>Eine scheinbar einfache Testfrage führte 1982 zu einer falschen Musterlösung. Entscheide zuerst selbst. Erst nach deiner Antwort werden Erklärung und Experimentierlabor freigeschaltet.</p>
+</header>
+<div class="intro reveal">
+  <div class="glass introcard">
+    <h2>Arbeitsweise</h2>
+    <p>Wähle zunächst eine Antwort, ohne die Bewegung nachzustellen. Begründe deine Vermutung gedanklich. Untersuche danach die Animation mit verschiedenen Radienverhältnissen und leite schließlich eine allgemeine Regel her.</p>
+  </div>
+  <div class="glass progress">
+    <h3>Fortschritt</h3>
+    <div class="num"><span id="donecount">0</span>/3</div>
+    <div class="minibar"><div id="minibar"></div></div>
+    <small>Antwort abgegeben · Versuch durchgeführt · Selbsttest gelöst</small>
+  </div>
+</div>
+
+<section class="stage reveal" id="frage">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Die Originalfrage</h2><p>Die damalige SAT-Aufgabe, sinngemäß ins Deutsche übertragen.</p></div></div>
+  <div class="glass card">
+    <div class="problem diagram">
+      <div class="sat-figure" aria-label="Zwei sich berührende Kreise A und B">
+        <svg viewBox="0 0 520 330" role="img" aria-labelledby="figtitle figdesc">
+          <title id="figtitle">Ausgangslage der beiden Kreise</title>
+          <desc id="figdesc">Der kleine Kreis A berührt den dreimal so großen Kreis B außen am oberen Punkt.</desc>
+          <defs>
+            <linearGradient id="gb" x1="0" x2="1"><stop stop-color="#2563eb" stop-opacity=".16"/><stop offset="1" stop-color="#60a5fa" stop-opacity=".06"/></linearGradient>
+            <linearGradient id="ga" x1="0" x2="1"><stop stop-color="#0f766e" stop-opacity=".22"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".08"/></linearGradient>
+          </defs>
+          <circle cx="260" cy="210" r="105" fill="url(#gb)" stroke="var(--circleB)" stroke-width="5"/>
+          <circle cx="260" cy="70" r="35" fill="url(#ga)" stroke="var(--circleA)" stroke-width="5"/>
+          <line x1="260" y1="70" x2="260" y2="210" stroke="var(--muted)" stroke-dasharray="7 7" stroke-width="2"/>
+          <circle cx="260" cy="70" r="5" fill="var(--circleA)"/><circle cx="260" cy="210" r="5" fill="var(--circleB)"/>
+          <circle cx="260" cy="105" r="5.5" fill="var(--marker)"/>
+          <text x="307" y="66" fill="var(--text)" font-size="24" font-weight="800">A</text>
+          <text x="310" y="218" fill="var(--text)" font-size="29" font-weight="800">B</text>
+          <path d="M315 55 C365 72, 385 105, 390 142" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M381 130 L391 145 L398 127" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="360" y="40" fill="var(--accent)" font-size="16" font-weight="700">Rollrichtung</text>
+        </svg>
+      </div>
+      <div class="question-text">
+        <h3>Kreis A rollt außen um Kreis B</h3>
+        <p>Der Radius von Kreis A beträgt ein Drittel des Radius von Kreis B. Aus der abgebildeten Position rollt Kreis A ohne zu gleiten einmal außen um Kreis B.</p>
+        <p><strong>Nach wie vielen Umdrehungen von Kreis A erreicht sein Mittelpunkt erstmals wieder die Ausgangsposition?</strong></p>
+        <div class="choices" role="radiogroup" aria-label="Antwortmöglichkeiten">
+          <div class="choice"><input type="radio" id="a1" name="sat" value="1.5"><label for="a1">A&nbsp; 3/2</label></div>
+          <div class="choice"><input type="radio" id="a2" name="sat" value="3"><label for="a2">B&nbsp; 3</label></div>
+          <div class="choice"><input type="radio" id="a3" name="sat" value="6"><label for="a3">C&nbsp; 6</label></div>
+          <div class="choice"><input type="radio" id="a4" name="sat" value="4.5"><label for="a4">D&nbsp; 9/2</label></div>
+          <div class="choice"><input type="radio" id="a5" name="sat" value="9"><label for="a5">E&nbsp; 9</label></div>
+        </div>
+        <div class="custom-answer">
+          <label for="ownAnswer"><strong>Oder eigene Antwort:</strong></label>
+          <input id="ownAnswer" inputmode="decimal" placeholder="z. B. 4 oder 7/2" aria-label="Eigene numerische Antwort">
+        </div>
+        <div class="actions"><button class="btn primary" id="submitAnswer">Antwort abgeben</button></div>
+        <p class="original-note">Hinweis: Das zusätzliche Eingabefeld gehört nicht zur historischen Multiple-Choice-Aufgabe.</p>
+      </div>
+    </div>
+    <div class="feedback" id="answerFeedback" aria-live="polite"></div>
+    <div class="unlock-note" id="unlockNote">Die weiteren Abschnitte sind jetzt freigeschaltet.</div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="intuition">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>Warum die naheliegende Rechnung nicht genügt</h2><p>Zwei richtige Beobachtungen führen zunächst zu einer unvollständigen Schlussfolgerung.</p></div></div>
+  <div class="concept-grid">
+    <article class="glass concept temptation">
+      <h3>Die verführerische Antwort</h3>
+      <p>Der große Kreis hat den dreifachen Radius und damit auch den dreifachen Umfang:</p>
+      <div class="equation">U<sub>B</sub> / U<sub>A</sub> = 2πR / 2πr = R/r = 3</div>
+      <p>Würde Kreis A auf einer <strong>geraden Strecke</strong> rollen, deren Länge genau dem Umfang von B entspricht, wären es tatsächlich drei Umdrehungen.</p>
+    </article>
+    <article class="glass concept resolution">
+      <h3>Der entscheidende Unterschied</h3>
+      <p>Beim Rollen außen um B bewegt sich der Mittelpunkt von A nicht auf dem Rand von B. Sein Abstand vom Mittelpunkt von B ist stets <strong>R + r</strong>.</p>
+      <div class="equation">Weg des Mittelpunkts = 2π(R + r)</div>
+      <p>Der Mittelpunkt legt daher eine um genau einen kleinen Kreisumfang längere Strecke zurück.</p>
+    </article>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="labor">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Interaktives Experimentierlabor</h2><p>Vergleiche eine gerade Rollstrecke mit dem Umlauf außen um einen Kreis.</p></div></div>
+  <div class="glass lab">
+    <div class="labtop">
+      <div class="tabs">
+        <button class="tab active" data-mode="around">Außen um Kreis B</button>
+        <button class="tab" data-mode="straight">Abgerollter Umfang von B</button>
+      </div>
+      <div class="actions" style="margin:0"><button class="btn ghost" id="snapshot">Momentaufnahme speichern</button></div>
+    </div>
+    <div class="labbody">
+      <div class="canvaswrap">
+        <div class="canvasbadge"><span class="badge" id="modeBadge">Außenbahn</span><span class="badge" id="ratioBadge">R : r = 3 : 1</span></div>
+        <canvas id="simCanvas" aria-label="Animation eines rollenden Kreises"></canvas>
+      </div>
+      <aside class="controls">
+        <div class="controlgroup">
+          <h3>Größenverhältnis</h3>
+          <p>q = R/r gibt an, wie oft der Radius von A in den Radius von B passt.</p>
+          <div class="rangeline"><input type="range" id="ratio" min="1" max="8" step="0.25" value="3"><output class="rangevalue" id="ratioOut">3</output></div>
+          <div class="presets" aria-label="Voreinstellungen">
+            <button class="preset" data-ratio="1">1 : 1</button><button class="preset" data-ratio="2">2 : 1</button><button class="preset" data-ratio="3">3 : 1</button><button class="preset" data-ratio="2.5">5 : 2</button><button class="preset" data-ratio="5">5 : 1</button>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Bewegung</h3>
+          <div class="rangeline"><input type="range" id="progressRange" min="0" max="1000" value="0"><output class="rangevalue" id="progressOut">0%</output></div>
+          <div class="simbuttons">
+            <button class="btn primary" id="play">▶ Start</button>
+            <button class="btn" id="step">+ 1/8 Umlauf</button>
+            <button class="btn" id="resetSim">↺ Zurücksetzen</button>
+            <button class="btn" id="fullOrbit">Zum Ende</button>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Darstellung</h3>
+          <div class="toggleline"><span>Mittelpunktbahn zeigen</span><label class="switch"><input type="checkbox" id="showPath" checked><span class="slider"></span></label></div>
+          <div class="toggleline"><span>Kontaktpunkt zeigen</span><label class="switch"><input type="checkbox" id="showContact" checked><span class="slider"></span></label></div>
+          <div class="toggleline"><span>Spur des Markers zeigen</span><label class="switch"><input type="checkbox" id="showTrace" checked><span class="slider"></span></label></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Messwerte</h3>
+          <div class="readouts">
+            <div class="readout"><span>Radiusverhältnis q</span><b id="readQ">3</b></div>
+            <div class="readout"><span>Aktuelle Umdrehungen</span><b id="readNow">0,00</b></div>
+            <div class="readout"><span>Nach einem Außenumlauf</span><b id="readTotal">4</b></div>
+            <div class="readout"><span>Gerade Vergleichsstrecke</span><b id="readStraight">3</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="mission" style="margin-top:18px">
+    <article class="glass missioncard">
+      <h3>Vorhersage prüfen</h3>
+      <p>Stelle ein Verhältnis ein. Notiere zuerst deine Vermutung für die Zahl der Umdrehungen beim Außenumlauf.</p>
+      <div class="predictrow"><input class="textinput" id="prediction" placeholder="Deine Vorhersage"><button class="btn accent" id="checkPrediction">Prüfen</button></div>
+      <div class="resultline" id="predictionResult"></div>
+    </article>
+    <article class="glass missioncard">
+      <h3>Beobachtungstabelle</h3>
+      <table class="data-table">
+        <thead><tr><th>R : r</th><th>Gerade</th><th>Außen herum</th></tr></thead>
+        <tbody>
+          <tr><td>1 : 1</td><td>1</td><td>2</td></tr>
+          <tr><td>2 : 1</td><td>2</td><td>3</td></tr>
+          <tr><td>3 : 1</td><td>3</td><td>4</td></tr>
+          <tr><td>5 : 2</td><td>2,5</td><td>3,5</td></tr>
+        </tbody>
+      </table>
+    </article>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="erklaerung">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Die allgemeine mathematische Erklärung</h2><p>Die Zahl der Umdrehungen folgt direkt aus der Länge der Mittelpunktbahn.</p></div></div>
+  <div class="glass card">
+    <div class="steps">
+      <div class="step"><div class="stepnum">1</div><div><h3>Radien benennen</h3><p>Der feste Kreis B habe den Radius R, der rollende Kreis A den Radius r. Das Größenverhältnis ist q = R/r.</p></div></div>
+      <div class="step"><div class="stepnum">2</div><div><h3>Bahn des Mittelpunkts bestimmen</h3><p>Der Mittelpunkt von A bleibt vom Mittelpunkt von B stets R + r entfernt. Er beschreibt daher einen Kreis mit dem Radius R + r.</p></div></div>
+      <div class="step"><div class="stepnum">3</div><div><h3>Zurückgelegten Weg berechnen</h3><p>Nach einem Umlauf hat der Mittelpunkt von A den Weg 2π(R + r) zurückgelegt.</p></div></div>
+      <div class="step"><div class="stepnum">4</div><div><h3>Durch einen kleinen Kreisumfang teilen</h3><p>Eine vollständige Eigendrehung entspricht beim Rollen ohne Gleiten dem Weg 2πr. Deshalb wird die Bahnlänge durch 2πr geteilt.</p></div></div>
+    </div>
+    <div class="formula-final" style="margin-top:18px">N = 2π(R + r) / 2πr = R/r + 1 = q + 1</div>
+    <div class="problem" style="margin-top:18px">
+      <h3>Für die SAT-Aufgabe</h3>
+      <div class="equation">R/r = 3 &nbsp; ⇒ &nbsp; N = 3 + 1 = 4 Umdrehungen</div>
+      <p>Keine der fünf damaligen Antwortmöglichkeiten ist richtig. Die erwartete Antwort 3 berücksichtigt nur das Umfangsverhältnis, nicht die Krümmung der geschlossenen Bahn.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="transfer">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Transfer und Selbsttest</h2><p>Prüfe, ob du die zusätzliche Umdrehung erklären und anwenden kannst.</p></div></div>
+  <div class="quizgrid">
+    <article class="glass quizcard">
+      <h3>1. Neues Verhältnis</h3>
+      <p>Der Radius von B ist 4,5-mal so groß wie der Radius von A. Wie viele Umdrehungen macht A bei einem Außenumlauf?</p>
+      <div class="predictrow"><input class="textinput" id="transferNumber" placeholder="Anzahl der Umdrehungen"><button class="btn primary" id="checkTransferNumber">Prüfen</button></div>
+      <div class="resultline" id="transferNumberResult"></div>
+    </article>
+    <article class="glass quizcard">
+      <h3>2. Warum kommt „+1“ hinzu?</h3>
+      <div class="quizoptions" id="reasonOptions">
+        <label class="quizoption"><input type="radio" name="reason" value="a"> Weil der kleine Kreis beim Start bereits einmal gedreht wurde.</label>
+        <label class="quizoption"><input type="radio" name="reason" value="b"> Weil die Mittelpunktbahn den Radius R + r statt R hat.</label>
+        <label class="quizoption"><input type="radio" name="reason" value="c"> Weil Kreisflächen statt Kreisumfänge verglichen werden müssen.</label>
+      </div>
+      <div class="actions"><button class="btn primary" id="checkReason">Begründung prüfen</button></div>
+      <div class="resultline" id="reasonResult"></div>
+    </article>
+  </div>
+  <div class="glass sourcebox" style="margin-top:18px">
+    <strong>Quellen und Weiterführung:</strong> Das Arbeitsblatt basiert auf der SAT-Aufgabe vom 1. Mai 1982 und dem Video „The SAT Question Everyone Got Wrong“ von Veritasium. 
+    <a href="https://youtu.be/FUHkTs-Ipfg" target="_blank" rel="noopener">Video öffnen</a> · 
+    <a href="https://www.scientificamerican.com/article/the-sat-problem-that-everybody-got-wrong/" target="_blank" rel="noopener">Hintergrundartikel öffnen</a>
+  </div>
+</section>
+<footer>Interaktives Arbeitsblatt · Das rollende Kreisrätsel</footer>
+</main>
+</div>
+<div class="toast" id="toast">Gespeichert</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const STORAGE_KEY = 'coinRotationWorksheetV1';
+let state = {answered:false, experiment:false, transfer:false, answer:null, dark:false};
+try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
+
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}updateProgress()}
+function updateProgress(){
+  const count=[state.answered,state.experiment,state.transfer].filter(Boolean).length;
+  $('#donecount').textContent=count; $('#minibar').style.width=(count/3*100)+'%'; $('#bar').style.width=(count/3*100)+'%';
+}
+function showToast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+function fmt(n,d=2){return Number(n).toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:0})}
+function parseNumber(raw){
+  if(raw==null)return NaN; let s=String(raw).trim().replace(',','.').replace(/\s/g,'');
+  if(/^[-+]?\d+(\.\d+)?\/[-+]?\d+(\.\d+)?$/.test(s)){const [a,b]=s.split('/').map(Number);return b? a/b:NaN}
+  return Number(s);
+}
+function revealStages(scroll=false){
+  ['#intuition','#labor','#erklaerung','#transfer'].forEach(sel=>$(sel).classList.remove('hidden-stage'));
+  $$('.after-answer').forEach(a=>a.style.display='flex');
+  setTimeout(()=>$$('.stage,.hero,.intro').forEach(el=>el.classList.add('visible')),20);
+  if(scroll) $('#intuition').scrollIntoView({behavior:'smooth',block:'start'});
+  resizeCanvas(); draw();
+}
+$$('.after-answer').forEach(a=>a.style.display=state.answered?'flex':'none');
+
+function handleAnswer(){
+  const custom=$('#ownAnswer').value.trim();
+  const selected=$('input[name="sat"]:checked');
+  if(!custom && !selected){
+    const box=$('#answerFeedback'); box.className='feedback show bad'; box.innerHTML='<strong>Noch keine Antwort ausgewählt</strong>Wähle eine der historischen Optionen oder trage eine eigene Zahl ein.'; return;
+  }
+  const value=custom?parseNumber(custom):Number(selected.value);
+  if(!Number.isFinite(value)){
+    const box=$('#answerFeedback'); box.className='feedback show bad'; box.innerHTML='<strong>Die Eingabe konnte nicht gelesen werden.</strong>Verwende zum Beispiel 4, 3,5 oder 7/2.'; return;
+  }
+  const box=$('#answerFeedback');
+  if(Math.abs(value-4)<1e-9){
+    box.className='feedback show good';
+    box.innerHTML='<strong>Richtig: 4 Umdrehungen.</strong>Du hast eine Antwort gefunden, die in der damaligen Auswahl gar nicht vorkam. Im nächsten Abschnitt kannst du prüfen, woher die zusätzliche Umdrehung stammt.';
+  }else if(Math.abs(value-3)<1e-9){
+    box.className='feedback show think';
+    box.innerHTML='<strong>Sehr naheliegend – aber nicht vollständig.</strong>Drei ist das Verhältnis der Kreisumfänge. Diese Rechnung wäre auf einer geraden Strecke richtig. Beim Umlauf auf einer geschlossenen, gekrümmten Bahn kommt jedoch eine weitere Umdrehung hinzu.';
+  }else{
+    box.className='feedback show think';
+    box.innerHTML='<strong>Diese Antwort stimmt nicht mit der beobachtbaren Bewegung überein.</strong>Der Schlüssel liegt nicht in den Flächen und auch nicht nur im Verhältnis der beiden Umfänge. Verfolge im Experiment besonders die Bahn des Mittelpunktes von A.';
+  }
+  $('#unlockNote').classList.add('show'); state.answered=true;state.answer=value;saveState();revealStages(true);
+}
+$('#submitAnswer').addEventListener('click',handleAnswer);
+$('#ownAnswer').addEventListener('keydown',e=>{if(e.key==='Enter')handleAnswer()});
+
+if(state.answered){
+  revealStages(false);
+  const box=$('#answerFeedback');box.className='feedback show good';box.innerHTML='<strong>Bereits beantwortet.</strong>Die Erklärung und das Experimentierlabor sind freigeschaltet.';$('#unlockNote').classList.add('show');
+}
+
+// Simulation
+const canvas=$('#simCanvas'),ctx=canvas.getContext('2d');
+let mode='around',q=3,t=0,playing=false,lastTime=0,trace=[],raf=0;
+let showPath=true,showContact=true,showTrace=true;
+function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim()}
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect(); if(rect.width<10)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2); canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+function line(x1,y1,x2,y2,color,width=2,dash=[]){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
+function circle(x,y,r,fill,stroke,width=3){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}
+function drawArrow(x1,y1,x2,y2,color){line(x1,y1,x2,y2,color,2);const a=Math.atan2(y2-y1,x2-x1),s=8;line(x2,y2,x2-s*Math.cos(a-.55),y2-s*Math.sin(a-.55),color,2);line(x2,y2,x2-s*Math.cos(a+.55),y2-s*Math.sin(a+.55),color,2)}
+function drawLabel(text,x,y,align='left',color=css('--text'),size=14,weight='700'){ctx.font=`${weight} ${size}px Inter,system-ui`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(text,x,y)}
+function drawAround(w,h){
+  const cB=css('--circleB'),cA=css('--circleA'),marker=css('--marker'),muted=css('--muted'),text=css('--text'),canvasBg=css('--canvas');
+  const R=Math.min(w*.23,h*.235); const r=R/q; const orbit=R+r; const cx=w*.49,cy=h*.51;
+  const theta=t*Math.PI*2; const sx=cx+orbit*Math.cos(theta), sy=cy-orbit*Math.sin(theta); const phi=(q+1)*theta;
+  if(showPath){ctx.beginPath();ctx.arc(cx,cy,orbit,0,Math.PI*2);ctx.strokeStyle=muted;ctx.globalAlpha=.55;ctx.lineWidth=2;ctx.setLineDash([7,8]);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
+  circle(cx,cy,R,'rgba(37,99,235,.10)',cB,4);
+  // spokes on B
+  for(let i=0;i<12;i++){const a=i*Math.PI/6;line(cx,cy,cx+R*.92*Math.cos(a),cy-R*.92*Math.sin(a),cB,1)}
+  const unitX=Math.cos(theta),unitY=-Math.sin(theta); const contactX=cx+R*unitX,contactY=cy+R*unitY;
+  if(showContact){line(cx,cy,sx,sy,muted,1.5,[5,6]);circle(contactX,contactY,5,marker,marker,1);drawLabel('Kontakt',contactX+10,contactY-9,'left',marker,12,'700')}
+  circle(sx,sy,r,'rgba(15,118,110,.16)',cA,4);
+  // rotating spokes
+  for(let i=0;i<8;i++){const a=phi+i*Math.PI/4;line(sx,sy,sx+r*.88*Math.cos(a),sy-r*.88*Math.sin(a),cA,1.2)}
+  const ma=phi+Math.PI/2; const mx=sx+r*.82*Math.cos(ma),my=sy-r*.82*Math.sin(ma);
+  line(sx,sy,mx,my,marker,3);circle(mx,my,5.5,marker,marker,1);
+  if(showTrace){
+    if(!trace.length||Math.abs(trace[trace.length-1].t-t)>.003)trace.push({t,x:mx,y:my}); if(trace.length>1000)trace.shift();
+    ctx.beginPath();trace.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=marker;ctx.globalAlpha=.42;ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=1;
+  }
+  circle(cx,cy,4,cB,cB,1);circle(sx,sy,4,cA,cA,1);
+  drawLabel('B',cx,cy+8,'center',cB,25,'900');drawLabel('A',sx,sy+6,'center',cA,Math.max(12,Math.min(21,r*.45)),'900');
+  drawArrow(cx,cy,cx+R*.62,cy,cB);drawLabel('R',cx+R*.34,cy-8,'center',cB,14,'800');
+  if(r>22){drawArrow(sx,sy,sx+r*.58,sy,cA);drawLabel('r',sx+r*.32,sy-8,'center',cA,13,'800')}
+  drawLabel(`Mittelpunktbahn: Radius R + r`,w/2,h-28,'center',text,15,'700');
+  drawLabel(`A hat sich ${fmt((q+1)*t,2)}-mal gedreht`,w/2,30,'center',text,16,'800');
+}
+function drawStraight(w,h){
+  const cA=css('--circleA'),marker=css('--marker'),muted=css('--muted'),text=css('--text'),cB=css('--circleB');
+  const margin=Math.max(55,w*.08),trackW=w-2*margin,baseY=h*.66; const r=Math.min(trackW/(2*Math.PI*q),h*.23,115); const x=margin+t*trackW, y=baseY-r; const phi=-q*t*Math.PI*2;
+  line(margin,baseY,w-margin,baseY,cB,5);drawLabel('Streckenlänge = Umfang von B = 2πR',w/2,baseY+34,'center',cB,15,'800');
+  for(let i=0;i<=10;i++){const xx=margin+i*trackW/10;line(xx,baseY-6,xx,baseY+6,cB,1)}
+  circle(x,y,r,'rgba(15,118,110,.16)',cA,4);
+  for(let i=0;i<8;i++){const a=phi+i*Math.PI/4;line(x,y,x+r*.88*Math.cos(a),y-r*.88*Math.sin(a),cA,1.2)}
+  const ma=phi+Math.PI/2,mx=x+r*.82*Math.cos(ma),my=y-r*.82*Math.sin(ma);line(x,y,mx,my,marker,3);circle(mx,my,5.5,marker,marker,1);
+  if(showContact)circle(x,baseY,5,marker,marker,1);
+  if(showTrace){if(!trace.length||Math.abs(trace[trace.length-1].t-t)>.003)trace.push({t,x:mx,y:my});if(trace.length>1000)trace.shift();ctx.beginPath();trace.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=marker;ctx.globalAlpha=.42;ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=1}
+  circle(x,y,4,cA,cA,1);drawLabel('A',x,y+6,'center',cA,Math.max(12,Math.min(22,r*.43)),'900');
+  drawLabel(`Auf der Geraden: ${fmt(q*t,2)} Umdrehungen`,w/2,34,'center',text,16,'800');
+  drawLabel(`Nach der gesamten Strecke: q = ${fmt(q,2)}`,w/2,h-28,'center',text,15,'700');
+}
+function draw(){
+  const rect=canvas.getBoundingClientRect();const w=rect.width,h=rect.height;if(!w||!h)return;ctx.clearRect(0,0,w,h);ctx.fillStyle=css('--canvas');ctx.fillRect(0,0,w,h);
+  if(mode==='around')drawAround(w,h);else drawStraight(w,h);updateReadouts();
+}
+function updateReadouts(){
+  $('#ratioOut').textContent=fmt(q,2);$('#ratioBadge').textContent=`R : r = ${fmt(q,2)} : 1`;$('#readQ').textContent=fmt(q,2);$('#readNow').textContent=fmt((mode==='around'?q+1:q)*t,2);$('#readTotal').textContent=fmt(q+1,2);$('#readStraight').textContent=fmt(q,2);$('#progressOut').textContent=Math.round(t*100)+'%';$('#progressRange').value=Math.round(t*1000);$('#modeBadge').textContent=mode==='around'?'Außenbahn':'Gerade Vergleichsstrecke';
+}
+function animate(ts){
+  if(!playing)return; if(!lastTime)lastTime=ts;const dt=Math.min((ts-lastTime)/1000,.05);lastTime=ts;t+=dt*.09;
+  if(t>=1){t=1;playing=false;$('#play').textContent='▶ Start';state.experiment=true;saveState();showToast('Ein vollständiger Versuch ist abgeschlossen')}
+  draw();raf=requestAnimationFrame(animate);
+}
+function setPlaying(on){playing=on;lastTime=0;$('#play').textContent=on?'⏸ Pause':'▶ Start';if(on){cancelAnimationFrame(raf);raf=requestAnimationFrame(animate)}}
+$('#play').addEventListener('click',()=>setPlaying(!playing));
+$('#resetSim').addEventListener('click',()=>{setPlaying(false);t=0;trace=[];draw()});
+$('#fullOrbit').addEventListener('click',()=>{setPlaying(false);t=1;trace=[];draw();state.experiment=true;saveState();showToast('Endposition erreicht')});
+$('#step').addEventListener('click',()=>{setPlaying(false);t=Math.min(1,t+.125);trace=[];draw();if(t>=1){state.experiment=true;saveState()}});
+$('#progressRange').addEventListener('input',e=>{setPlaying(false);t=Number(e.target.value)/1000;trace=[];draw();if(t>=.999){state.experiment=true;saveState()}});
+$('#ratio').addEventListener('input',e=>{q=Number(e.target.value);trace=[];draw()});
+$$('.preset').forEach(b=>b.addEventListener('click',()=>{q=Number(b.dataset.ratio);$('#ratio').value=q;trace=[];draw()}));
+$$('.tab').forEach(tab=>tab.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('active'));tab.classList.add('active');mode=tab.dataset.mode;setPlaying(false);t=0;trace=[];draw()}));
+$('#showPath').addEventListener('change',e=>{showPath=e.target.checked;draw()});$('#showContact').addEventListener('change',e=>{showContact=e.target.checked;draw()});$('#showTrace').addEventListener('change',e=>{showTrace=e.target.checked;trace=[];draw()});
+$('#snapshot').addEventListener('click',()=>{const link=document.createElement('a');link.download=`kreisraetsel_${mode}_${String(q).replace('.','-')}zu1.png`;link.href=canvas.toDataURL('image/png');link.click();showToast('Momentaufnahme gespeichert')});
+window.addEventListener('resize',resizeCanvas);
+
+$('#checkPrediction').addEventListener('click',()=>{
+  const v=parseNumber($('#prediction').value),target=q+1,r=$('#predictionResult');
+  if(!Number.isFinite(v)){r.className='resultline no';r.textContent='Bitte gib eine Zahl ein.';return}
+  if(Math.abs(v-target)<1e-8){r.className='resultline ok';r.textContent=`Richtig. Bei q = ${fmt(q,2)} sind es q + 1 = ${fmt(target,2)} Umdrehungen.`}
+  else{r.className='resultline no';r.textContent=`Noch nicht. Vergleiche deine Antwort mit der Mittelpunktbahn vom Radius R + r.`}
+});
+
+let transferNumOK=false,reasonOK=false;
+function updateTransfer(){if(transferNumOK&&reasonOK){state.transfer=true;saveState();showToast('Selbsttest abgeschlossen')}}
+$('#checkTransferNumber').addEventListener('click',()=>{const v=parseNumber($('#transferNumber').value),r=$('#transferNumberResult');if(Math.abs(v-5.5)<1e-8){r.className='resultline ok';r.textContent='Richtig: 4,5 + 1 = 5,5 Umdrehungen.';transferNumOK=true;updateTransfer()}else{r.className='resultline no';r.textContent='Noch nicht. Verwende N = q + 1.'}});
+$('#checkReason').addEventListener('click',()=>{const sel=$('input[name="reason"]:checked'),r=$('#reasonResult');if(!sel){r.className='resultline no';r.textContent='Wähle zunächst eine Begründung.';return}if(sel.value==='b'){r.className='resultline ok';r.textContent='Richtig. Der Mittelpunkt läuft auf einem Kreis mit dem Radius R + r.';reasonOK=true;updateTransfer()}else{r.className='resultline no';r.textContent='Diese Begründung erklärt die zusätzliche Weglänge nicht. Betrachte den Abstand der beiden Mittelpunkte.'}});
+
+// Navigation, theme, reveal and reset
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});$$('.reveal,.stage').forEach(el=>io.observe(el));
+const navIO=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('.stage').forEach(s=>navIO.observe(s));
+$('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(draw,30)}
+$('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();
+$('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});
+updateProgress();setTimeout(()=>{resizeCanvas();draw()},80);
+</script>
+</body>
+</html>
