@@ -38,10 +38,13 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
 .mission{display:grid;grid-template-columns:1fr 1fr;gap:18px}.missioncard{padding:22px}.missioncard h3{margin-top:0}.predictrow{display:grid;grid-template-columns:1fr auto;gap:9px}.resultline{min-height:28px;margin-top:10px;font-weight:700;line-height:1.5}.resultline.ok{color:var(--success)}.resultline.no{color:var(--danger)}.data-table{width:100%;border-collapse:collapse;margin-top:14px}.data-table th,.data-table td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:left}.data-table th{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.data-table td:last-child{font-weight:800;color:var(--primary)}
 .steps{display:grid;gap:13px}.step{display:grid;grid-template-columns:42px 1fr;gap:13px;align-items:start;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.stepnum{width:42px;height:42px;border-radius:13px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-weight:900}.step h3{font-size:1rem;margin:2px 0 5px}.step p{margin:0;line-height:1.65;color:var(--muted)}.formula-final{font-size:clamp(1.45rem,3vw,2.3rem);font-weight:900;color:var(--primary);text-align:center;padding:24px;border-radius:16px;background:linear-gradient(135deg,var(--primary-light),rgba(37,99,235,.1));border:1px solid var(--line)}
 .quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.quizcard{padding:22px}.quizcard h3{margin-top:0}.quizoptions{display:grid;gap:8px}.quizoption{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.quizoption:hover{background:var(--primary-light)}.sourcebox{padding:20px;line-height:1.65;color:var(--muted)}.sourcebox a{color:var(--primary);font-weight:700}footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;z-index:900}.toast.show{opacity:1;transform:none}
-@media(max-width:1050px){.labbody{grid-template-columns:1fr}.canvaswrap{border-right:0;border-bottom:1px solid var(--line)}#simCanvas{min-height:540px}.diagram{grid-template-columns:1fr}.sat-figure{min-height:270px}.mission,.quizgrid{grid-template-columns:1fr}}
+
+.solar-lab{padding:0;overflow:hidden}.solar-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.75fr);min-height:620px}.solar-canvas-wrap{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}#solarCanvas{display:block;width:100%;height:100%;min-height:620px}.solar-overlay{position:absolute;left:15px;top:15px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}.solar-controls{padding:22px;overflow:auto}.solar-question{margin-bottom:18px}.solar-equation{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(1rem,2vw,1.2rem);text-align:center;padding:17px;border-radius:13px;background:var(--canvas);border:1px solid var(--line);font-weight:800}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.82rem;color:var(--muted)}.legend span{display:flex;align-items:center;gap:6px}.legend i{display:inline-block;width:12px;height:12px;border-radius:50%}.solar-readout{display:grid;grid-template-columns:1fr 1fr;gap:9px}.solar-readout .readout{display:block}.solar-readout .readout span{display:block;margin-bottom:5px}.solar-readout .readout b{font-size:1.18rem}.direction-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.direction-buttons .btn.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+
+@media(max-width:1050px){.labbody,.solar-grid{grid-template-columns:1fr}.solar-canvas-wrap{border-right:0;border-bottom:1px solid var(--line)}#solarCanvas{min-height:540px}.labbody{grid-template-columns:1fr}.canvaswrap{border-right:0;border-bottom:1px solid var(--line)}#simCanvas{min-height:540px}.diagram{grid-template-columns:1fr}.sat-figure{min-height:270px}.mission,.quizgrid{grid-template-columns:1fr}}
 @media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.intro,.concept-grid{grid-template-columns:1fr}}
-@media(max-width:620px){.card{padding:17px}.choices{grid-template-columns:repeat(2,1fr)}.custom-answer{grid-template-columns:1fr}.labtop{align-items:flex-start}.canvasbadge{position:static;padding:10px;background:var(--canvas)}#simCanvas{min-height:430px}.predictrow{grid-template-columns:1fr}.simbuttons{grid-template-columns:1fr}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}}
-@media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.toast,.sourcebox,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.card,.concept,.missioncard,.quizcard{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody{display:block}.canvaswrap{border:1px solid #bbb}#simCanvas{min-height:470px}.feedback{display:block!important}}
+@media(max-width:620px){.card{padding:17px}.solar-overlay{position:static;padding:10px;background:var(--canvas)}#solarCanvas{min-height:440px}.solar-readout{grid-template-columns:1fr}.choices{grid-template-columns:repeat(2,1fr)}.custom-answer{grid-template-columns:1fr}.labtop{align-items:flex-start}.canvasbadge{position:static;padding:10px;background:var(--canvas)}#simCanvas{min-height:430px}.predictrow{grid-template-columns:1fr}.simbuttons{grid-template-columns:1fr}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}}
+@media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.toast,.sourcebox,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.card,.concept,.missioncard,.quizcard{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody{display:block}.canvaswrap{border:1px solid #bbb}#simCanvas,#solarCanvas{min-height:470px}.feedback{display:block!important}}
 </style>
 </head>
 <body>
@@ -57,7 +60,8 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
     <a href="#intuition" class="after-answer"><span class="dot">2</span>Die Falle</a>
     <a href="#labor" class="after-answer"><span class="dot">3</span>Experimentierlabor</a>
     <a href="#erklaerung" class="after-answer"><span class="dot">4</span>Mathematische Erklärung</a>
-    <a href="#transfer" class="after-answer"><span class="dot">5</span>Transfer & Selbsttest</a>
+    <a href="#sonnensystem" class="after-answer"><span class="dot">5</span>Sonnen- und Sterntag</a>
+    <a href="#transfer" class="after-answer"><span class="dot">6</span>Selbsttest</a>
   </nav>
   <div class="tools">
     <button class="tool" id="dark">◐ Darstellung wechseln</button>
@@ -79,7 +83,7 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
   </div>
   <div class="glass progress">
     <h3>Fortschritt</h3>
-    <div class="num"><span id="donecount">0</span>/3</div>
+    <div class="num"><span id="donecount">0</span>/4</div>
     <div class="minibar"><div id="minibar"></div></div>
     <small>Antwort abgegeben · Versuch durchgeführt · Selbsttest gelöst</small>
   </div>
@@ -244,8 +248,63 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
   </div>
 </section>
 
+
+<section class="stage hidden-stage" id="sonnensystem">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Sonnen- und Sterntag</h2><p>Dasselbe Zählproblem begegnet uns bei der Erde: Eine Drehung relativ zu den Sternen ist nicht dasselbe wie ein vollständiger Tag relativ zur Sonne.</p></div></div>
+  <div class="glass card solar-question">
+    <h3>Zuerst vorhersagen</h3>
+    <p>Angenommen, die Erde dreht sich während eines vollständigen Umlaufs <strong>zwölfmal relativ zu den Fixsternen</strong>. Wie viele vollständige Sonnentage entstehen bei gleichsinniger Rotation und Umlaufbewegung?</p>
+    <div class="predictrow"><input class="textinput" id="solarPrediction" placeholder="Deine Vorhersage"><button class="btn accent" id="checkSolarPrediction">Prüfen</button></div>
+    <div class="resultline" id="solarPredictionResult"></div>
+  </div>
+  <div class="glass solar-lab">
+    <div class="solar-grid">
+      <div class="solar-canvas-wrap">
+        <div class="solar-overlay"><span class="badge" id="solarDirectionBadge">gleichsinnig</span><span class="badge" id="solarCountBadge">12 Sternrotationen</span></div>
+        <canvas id="solarCanvas" aria-label="Animation von Erdumlauf, Sternrotationen und Sonnentagen"></canvas>
+      </div>
+      <aside class="solar-controls">
+        <div class="controlgroup">
+          <h3>Sternrotationen pro Umlauf</h3>
+          <p>Diese Zahl gibt an, wie oft sich die Erde relativ zu einer festen Richtung im Weltraum dreht.</p>
+          <div class="rangeline"><input type="range" id="solarRotations" min="1" max="24" step="1" value="12"><output class="rangevalue" id="solarRotationsOut">12</output></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Drehrichtung</h3>
+          <div class="direction-buttons"><button class="btn active" id="solarPrograde">gleichsinnig</button><button class="btn" id="solarRetrograde">gegenläufig</button></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Bewegung</h3>
+          <div class="rangeline"><input type="range" id="solarProgress" min="0" max="1000" value="0"><output class="rangevalue" id="solarProgressOut">0%</output></div>
+          <div class="simbuttons"><button class="btn primary" id="solarPlay">▶ Start</button><button class="btn" id="solarStep">+ 1/12 Umlauf</button><button class="btn" id="solarReset">↺ Zurücksetzen</button><button class="btn" id="solarEnd">Zum Ende</button></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Darstellung</h3>
+          <div class="toggleline"><span>Fixsternrichtung zeigen</span><label class="switch"><input type="checkbox" id="showStarDirection" checked><span class="slider"></span></label></div>
+          <div class="toggleline"><span>Verbindung zur Sonne zeigen</span><label class="switch"><input type="checkbox" id="showSunLine" checked><span class="slider"></span></label></div>
+          <div class="toggleline"><span>Tag- und Nachtseite zeigen</span><label class="switch"><input type="checkbox" id="showDayNight" checked><span class="slider"></span></label></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Messwerte</h3>
+          <div class="solar-readout">
+            <div class="readout"><span>Umlauf</span><b id="solarOrbitRead">0,00</b></div>
+            <div class="readout"><span>Sternrotationen</span><b id="solarSiderealRead">0,00</b></div>
+            <div class="readout"><span>Sonnentage</span><b id="solarSolarRead">0,00</b></div>
+            <div class="readout"><span>Nach einem Umlauf</span><b id="solarTotalRead">11</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <div class="concept-grid" style="margin-top:18px">
+    <article class="glass concept resolution"><h3>Gleichsinnige Bewegung</h3><p>Während die Erde die Sonne einmal umläuft, dreht sich die Richtung zur Sonne selbst einmal mit. Deshalb entsteht relativ zur Sonne ein Zyklus weniger als relativ zu den Sternen.</p><div class="solar-equation">N<sub>Sonnentage</sub> = N<sub>Sternrotationen</sub> − 1</div></article>
+    <article class="glass concept temptation"><h3>Gegenläufige Bewegung</h3><p>Dreht sich die Erde entgegengesetzt zur Umlaufrichtung, addieren sich beide Winkeländerungen. Dann entsteht ein zusätzlicher Sonnenzyklus.</p><div class="solar-equation">N<sub>Sonnentage</sub> = N<sub>Sternrotationen</sub> + 1</div></article>
+  </div>
+  <div class="glass card" style="margin-top:18px"><h3>Verbindung zum Kreisrätsel</h3><p>In beiden Fällen muss genau angegeben werden, <strong>relativ zu welcher Richtung</strong> eine Drehung gezählt wird. Beim rollenden Kreis liefert der Umlauf um das Zentrum eine zusätzliche Orientierungänderung. Beim Sonnentag wird die mitwandernde Richtung zur Sonne von den Sternrotationen abgezogen.</p></div>
+</section>
+
 <section class="stage hidden-stage" id="transfer">
-  <div class="stagehead"><div class="stageid">5</div><div><h2>Transfer und Selbsttest</h2><p>Prüfe, ob du die zusätzliche Umdrehung erklären und anwenden kannst.</p></div></div>
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Abschließender Selbsttest</h2><p>Prüfe, ob du die zusätzliche Umdrehung erklären und anwenden kannst.</p></div></div>
   <div class="quizgrid">
     <article class="glass quizcard">
       <h3>1. Neues Verhältnis</h3>
@@ -280,13 +339,13 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const STORAGE_KEY = 'coinRotationWorksheetV1';
-let state = {answered:false, experiment:false, transfer:false, answer:null, dark:false};
+let state = {answered:false, experiment:false, solar:false, transfer:false, answer:null, dark:false};
 try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
 
 function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}updateProgress()}
 function updateProgress(){
-  const count=[state.answered,state.experiment,state.transfer].filter(Boolean).length;
-  $('#donecount').textContent=count; $('#minibar').style.width=(count/3*100)+'%'; $('#bar').style.width=(count/3*100)+'%';
+  const count=[state.answered,state.experiment,state.solar,state.transfer].filter(Boolean).length;
+  $('#donecount').textContent=count; $('#minibar').style.width=(count/4*100)+'%'; $('#bar').style.width=(count/4*100)+'%';
 }
 function showToast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
 function fmt(n,d=2){return Number(n).toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:0})}
@@ -296,11 +355,11 @@ function parseNumber(raw){
   return Number(s);
 }
 function revealStages(scroll=false){
-  ['#intuition','#labor','#erklaerung','#transfer'].forEach(sel=>$(sel).classList.remove('hidden-stage'));
+  ['#intuition','#labor','#erklaerung','#sonnensystem','#transfer'].forEach(sel=>$(sel).classList.remove('hidden-stage'));
   $$('.after-answer').forEach(a=>a.style.display='flex');
   setTimeout(()=>$$('.stage,.hero,.intro').forEach(el=>el.classList.add('visible')),20);
   if(scroll) $('#intuition').scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(()=>{resizeCanvas();draw()},30);
+  setTimeout(()=>{resizeCanvas();draw();resizeSolarCanvas();drawSolar()},50);
 }
 $$('.after-answer').forEach(a=>a.style.display=state.answered?'flex':'none');
 
@@ -421,6 +480,43 @@ $('#checkPrediction').addEventListener('click',()=>{
   else{r.className='resultline no';r.textContent=`Noch nicht. Vergleiche deine Antwort mit der Mittelpunktbahn vom Radius R + r.`}
 });
 
+
+// Sonnen- und Sterntag
+const solarCanvas=$('#solarCanvas'),solarCtx=solarCanvas.getContext('2d');
+let solarN=12,solarT=0,solarPlaying=false,solarLast=0,solarRaf=0,solarDir=1;
+let showStarDirection=true,showSunLine=true,showDayNight=true;
+function resizeSolarCanvas(){const rect=solarCanvas.getBoundingClientRect();if(rect.width<10)return;const dpr=Math.min(window.devicePixelRatio||1,2);solarCanvas.width=Math.round(rect.width*dpr);solarCanvas.height=Math.round(rect.height*dpr);solarCtx.setTransform(dpr,0,0,dpr,0,0);drawSolar()}
+function sLine(x1,y1,x2,y2,color,width=2,dash=[]){solarCtx.beginPath();solarCtx.moveTo(x1,y1);solarCtx.lineTo(x2,y2);solarCtx.strokeStyle=color;solarCtx.lineWidth=width;solarCtx.setLineDash(dash);solarCtx.stroke();solarCtx.setLineDash([])}
+function sCircle(x,y,r,fill,stroke,width=2){solarCtx.beginPath();solarCtx.arc(x,y,r,0,Math.PI*2);solarCtx.fillStyle=fill;solarCtx.fill();solarCtx.strokeStyle=stroke;solarCtx.lineWidth=width;solarCtx.stroke()}
+function sLabel(text,x,y,align='center',color=css('--text'),size=14,weight='700'){solarCtx.font=`${weight} ${size}px Inter,system-ui`;solarCtx.fillStyle=color;solarCtx.textAlign=align;solarCtx.fillText(text,x,y)}
+function drawSolar(){
+  const rect=solarCanvas.getBoundingClientRect(),w=rect.width,h=rect.height;if(!w||!h)return;
+  solarCtx.clearRect(0,0,w,h);solarCtx.fillStyle=css('--canvas');solarCtx.fillRect(0,0,w,h);
+  const cx=w*.48,cy=h*.52,orbit=Math.min(w*.31,h*.34),sunR=Math.max(27,Math.min(48,orbit*.17)),earthR=Math.max(22,Math.min(40,orbit*.13));
+  const orb=solarT*Math.PI*2,ex=cx+orbit*Math.cos(orb),ey=cy-orbit*Math.sin(orb);
+  const spin=solarDir*solarN*orb;
+  solarCtx.beginPath();solarCtx.arc(cx,cy,orbit,0,Math.PI*2);solarCtx.strokeStyle=css('--muted');solarCtx.globalAlpha=.48;solarCtx.setLineDash([8,8]);solarCtx.lineWidth=2;solarCtx.stroke();solarCtx.setLineDash([]);solarCtx.globalAlpha=1;
+  if(showStarDirection){const starX=w-42,starY=55;sLabel('★',starX,starY,'center','#f59e0b',27,'900');sLine(ex,ey,starX,starY,'#f59e0b',1.5,[5,6]);sLabel('feste Fixsternrichtung',starX-10,starY+24,'right',css('--muted'),12,'600')}
+  const grad=solarCtx.createRadialGradient(cx,cy,2,cx,cy,sunR*2.1);grad.addColorStop(0,'rgba(250,204,21,.95)');grad.addColorStop(.45,'rgba(249,115,22,.65)');grad.addColorStop(1,'rgba(249,115,22,0)');solarCtx.fillStyle=grad;solarCtx.beginPath();solarCtx.arc(cx,cy,sunR*2.1,0,Math.PI*2);solarCtx.fill();sCircle(cx,cy,sunR,'#fbbf24','#f97316',3);sLabel('Sonne',cx,cy+5,'center','#7c2d12',13,'900');
+  if(showSunLine)sLine(ex,ey,cx,cy,css('--accent'),2,[6,5]);
+  if(showDayNight){
+    const toward=Math.atan2(cy-ey,cx-ex);solarCtx.save();solarCtx.beginPath();solarCtx.arc(ex,ey,earthR,0,Math.PI*2);solarCtx.clip();solarCtx.fillStyle='#1d4ed8';solarCtx.fillRect(ex-earthR,ey-earthR,earthR*2,earthR*2);solarCtx.beginPath();solarCtx.arc(ex+Math.cos(toward)*earthR,ey+Math.sin(toward)*earthR,earthR,0,Math.PI*2);solarCtx.fillStyle='rgba(254,240,138,.72)';solarCtx.fill();solarCtx.restore();solarCtx.beginPath();solarCtx.arc(ex,ey,earthR,0,Math.PI*2);solarCtx.strokeStyle=css('--primary2');solarCtx.lineWidth=3;solarCtx.stroke();
+  }else sCircle(ex,ey,earthR,'rgba(37,99,235,.28)',css('--primary2'),3);
+  for(let i=0;i<6;i++){const a=spin+i*Math.PI/3;sLine(ex,ey,ex+earthR*.85*Math.cos(a),ey-earthR*.85*Math.sin(a),css('--primary2'),1)}
+  const px=ex+earthR*.82*Math.cos(spin),py=ey-earthR*.82*Math.sin(spin);sLine(ex,ey,px,py,css('--marker'),3);sCircle(px,py,5,css('--marker'),css('--marker'),1);sCircle(ex,ey,3,css('--primary2'),css('--primary2'),1);
+  const solarCycles=(solarDir*solarN-1)*solarT;
+  sLabel(`Sternrotationen: ${fmt(solarDir*solarN*solarT,2)}`,w/2,29,'center',css('--text'),15,'800');
+  sLabel(`Sonnentage: ${fmt(Math.abs(solarCycles),2)}`,w/2,h-25,'center',css('--text'),15,'800');
+  $('#solarRotationsOut').textContent=solarN;$('#solarCountBadge').textContent=`${solarN} Sternrotationen`;$('#solarDirectionBadge').textContent=solarDir===1?'gleichsinnig':'gegenläufig';$('#solarProgressOut').textContent=Math.round(solarT*100)+'%';$('#solarProgress').value=Math.round(solarT*1000);$('#solarOrbitRead').textContent=fmt(solarT,2);$('#solarSiderealRead').textContent=fmt(solarDir*solarN*solarT,2);$('#solarSolarRead').textContent=fmt(Math.abs(solarCycles),2);$('#solarTotalRead').textContent=fmt(solarDir===1?solarN-1:solarN+1,2);
+}
+function solarAnimate(ts){if(!solarPlaying)return;if(!solarLast)solarLast=ts;const dt=Math.min((ts-solarLast)/1000,.05);solarLast=ts;solarT+=dt*.075;if(solarT>=1){solarT=1;solarPlaying=false;$('#solarPlay').textContent='▶ Start';state.solar=true;saveState();showToast('Sonnensystem-Versuch abgeschlossen')}drawSolar();solarRaf=requestAnimationFrame(solarAnimate)}
+function setSolarPlaying(on){solarPlaying=on;solarLast=0;$('#solarPlay').textContent=on?'⏸ Pause':'▶ Start';if(on){cancelAnimationFrame(solarRaf);solarRaf=requestAnimationFrame(solarAnimate)}}
+$('#solarPlay').addEventListener('click',()=>setSolarPlaying(!solarPlaying));$('#solarReset').addEventListener('click',()=>{setSolarPlaying(false);solarT=0;drawSolar()});$('#solarEnd').addEventListener('click',()=>{setSolarPlaying(false);solarT=1;drawSolar();state.solar=true;saveState()});$('#solarStep').addEventListener('click',()=>{setSolarPlaying(false);solarT=Math.min(1,solarT+1/12);drawSolar();if(solarT>=1){state.solar=true;saveState()}});$('#solarProgress').addEventListener('input',e=>{setSolarPlaying(false);solarT=Number(e.target.value)/1000;drawSolar();if(solarT>=.999){state.solar=true;saveState()}});$('#solarRotations').addEventListener('input',e=>{solarN=Number(e.target.value);drawSolar()});
+function setSolarDirection(dir){solarDir=dir;$('#solarPrograde').classList.toggle('active',dir===1);$('#solarRetrograde').classList.toggle('active',dir===-1);drawSolar()}
+$('#solarPrograde').addEventListener('click',()=>setSolarDirection(1));$('#solarRetrograde').addEventListener('click',()=>setSolarDirection(-1));$('#showStarDirection').addEventListener('change',e=>{showStarDirection=e.target.checked;drawSolar()});$('#showSunLine').addEventListener('change',e=>{showSunLine=e.target.checked;drawSolar()});$('#showDayNight').addEventListener('change',e=>{showDayNight=e.target.checked;drawSolar()});
+$('#checkSolarPrediction').addEventListener('click',()=>{const v=parseNumber($('#solarPrediction').value),r=$('#solarPredictionResult');if(!Number.isFinite(v)){r.className='resultline no';r.textContent='Bitte gib eine Zahl ein.';return}if(Math.abs(v-11)<1e-8){r.className='resultline ok';r.textContent='Richtig: 12 Sternrotationen ergeben 11 Sonnentage.'}else{r.className='resultline no';r.textContent='Noch nicht. Während eines Umlaufs wandert die Richtung zur Sonne selbst einmal mit.'}});
+window.addEventListener('resize',resizeSolarCanvas);
+
 let transferNumOK=false,reasonOK=false;
 function updateTransfer(){if(transferNumOK&&reasonOK){state.transfer=true;saveState();showToast('Selbsttest abgeschlossen')}}
 $('#checkTransferNumber').addEventListener('click',()=>{const v=parseNumber($('#transferNumber').value),r=$('#transferNumberResult');if(Math.abs(v-5.5)<1e-8){r.className='resultline ok';r.textContent='Richtig: 4,5 + 1 = 5,5 Umdrehungen.';transferNumOK=true;updateTransfer()}else{r.className='resultline no';r.textContent='Noch nicht. Verwende N = q + 1.'}});
@@ -430,10 +526,10 @@ $('#checkReason').addEventListener('click',()=>{const sel=$('input[name="reason"
 const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});$$('.reveal,.stage').forEach(el=>io.observe(el));
 const navIO=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('.stage').forEach(s=>navIO.observe(s));
 $('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
-function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(draw,30)}
+function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(()=>{draw();drawSolar()},30)}
 $('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();
 $('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});
-updateProgress();setTimeout(()=>{resizeCanvas();draw()},80);
+updateProgress();setTimeout(()=>{resizeCanvas();draw();resizeSolarCanvas();drawSolar()},100);
 </script>
 </body>
 </html>
