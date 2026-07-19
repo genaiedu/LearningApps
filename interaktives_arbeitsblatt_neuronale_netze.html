@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wie lernt ein neuronales Netz? · Interaktives Arbeitsblatt</title>
+<meta name="description" content="Interaktives Arbeitsblatt zu künstlichen Neuronen, Gewichten, Bias, Entscheidungsgrenzen, Perzeptron-Training und dem XOR-Problem">
+<style>
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{
+  --primary:#6d28d9;--primary2:#2563eb;--primary-light:#eee8ff;--accent:#ea580c;
+  --cyan:#0891b2;--pink:#db2777;--green:#15803d;--red:#b91c1c;--warn:#9a5b00;
+  --text:#172033;--muted:#64748b;--surface:rgba(255,255,255,.86);--surface-solid:#fff;
+  --border:rgba(255,255,255,.48);--line:rgba(100,116,139,.23);--shadow:0 10px 34px rgba(15,23,42,.12);
+  --radius:18px;--sidebar:310px;--canvas:#f8fafc;--grid:#dbe4f0;--classA:#2563eb;--classB:#ea580c;
+}
+body.dark{
+  --primary:#c4b5fd;--primary2:#60a5fa;--primary-light:rgba(196,181,253,.14);--accent:#fb923c;
+  --cyan:#22d3ee;--pink:#f472b6;--green:#4ade80;--red:#f87171;--warn:#fbbf24;
+  --text:#e2e8f0;--muted:#94a3b8;--surface:rgba(15,23,42,.87);--surface-solid:#0f172a;
+  --border:rgba(255,255,255,.14);--line:rgba(148,163,184,.22);--shadow:0 10px 34px rgba(0,0,0,.29);
+  --canvas:#09111f;--grid:#223047;--classA:#60a5fa;--classB:#fb923c;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:linear-gradient(135deg,#f5f3ff,#eff6ff 48%,#fff7ed);min-height:100vh;transition:.3s}body.dark{background:linear-gradient(135deg,#130d24,#0f172a 55%,#1f140c)}
+h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}button,input,select,textarea{font:inherit;color:inherit}
+button{touch-action:manipulation}.blob{position:fixed;border-radius:50%;filter:blur(85px);opacity:.24;z-index:-1;animation:float 22s ease-in-out infinite alternate}.b1{width:500px;height:500px;background:#8b5cf6;top:-14%;left:-10%}.b2{width:430px;height:430px;background:#3b82f6;right:-8%;top:34%}.b3{width:360px;height:360px;background:#f97316;left:35%;bottom:-12%}@keyframes float{to{transform:translate(35px,-25px) scale(1.06)}}
+#barwrap{position:fixed;top:0;left:0;width:100%;height:5px;background:rgba(0,0,0,.08);z-index:700}#bar{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.25s}
+.layout{display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;overflow:auto;background:rgba(255,255,255,.12);backdrop-filter:blur(20px);border-right:1px solid var(--border);z-index:400;transition:.3s}.brand{display:flex;gap:12px;align-items:center}.mark{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));font-weight:900;font-size:1.15rem}.mark .ico{width:26px;height:26px}.sidebar h2{font-size:1.03rem;color:var(--primary);margin:0}.sub{margin:4px 0 22px 60px;color:var(--muted);font-size:.8rem}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:11px;color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}.dot{width:25px;height:25px;border-radius:8px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-size:.75rem;font-weight:800}.tools{display:grid;gap:9px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}.tool{display:flex;align-items:center;gap:9px;border:1px solid var(--border);background:var(--surface);border-radius:11px;padding:10px 12px;text-align:left;cursor:pointer;font-weight:600}.tool:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08)}.school{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);font-size:.74rem;color:var(--muted);line-height:1.55}.hamb{display:none;position:fixed;right:14px;top:14px;width:44px;height:44px;border-radius:11px;border:1px solid var(--border);background:var(--surface);z-index:500;cursor:pointer}.main{margin-left:var(--sidebar);max-width:1280px;padding:46px 5vw 100px;flex:1}.hero{margin-bottom:32px}.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:.8rem;padding:7px 14px;border-radius:999px}.hero h1{font-size:clamp(2.25rem,4.7vw,3.75rem);line-height:1.04;margin:16px 0 14px}.hero h1 span{color:var(--primary)}.hero p{max-width:920px;color:var(--muted);font-size:1.06rem;line-height:1.7}.glass{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.intro{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:48px}.introcard,.progress{padding:24px 26px}.introcard p{line-height:1.7}.progress h3{color:var(--primary);font-size:1rem;margin-top:0}.num{font-size:2.2rem;font-weight:900;color:var(--primary)}.minibar{height:10px;border-radius:999px;background:rgba(100,116,139,.18);overflow:hidden}.minibar div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.3s}.progress small{color:var(--muted)}
+.stage{margin-bottom:58px;scroll-margin-top:24px}.stagehead{display:flex;gap:14px;margin-bottom:18px}.stageid{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-weight:900}.stagehead h2{margin:0;font-size:1.55rem}.stagehead p{color:var(--muted);margin:3px 0 0;line-height:1.55}.card{padding:25px}.problem{line-height:1.75;background:linear-gradient(135deg,rgba(109,40,217,.075),rgba(234,88,12,.06));border:1px solid var(--border);border-radius:15px;padding:20px}.problem h3{margin:0 0 8px}.hidden-stage{display:none}.reveal{opacity:0;transform:translateY(18px);transition:.5s}.reveal.visible{opacity:1;transform:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.11)}.btn.primary{color:#fff;border:0;background:linear-gradient(135deg,var(--primary),var(--primary2))}.btn.accent{color:#fff;border:0;background:linear-gradient(135deg,var(--accent),#f59e0b)}.btn.ghost{background:transparent;border-color:var(--line)}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}.feedback{display:none;margin-top:18px;padding:17px 18px;border-radius:14px;border:1px solid var(--line);line-height:1.65}.feedback.show{display:block}.feedback.good{background:rgba(21,128,61,.10);border-color:rgba(21,128,61,.35)}.feedback.think{background:rgba(245,158,11,.11);border-color:rgba(245,158,11,.38)}.feedback.bad{background:rgba(185,28,28,.08);border-color:rgba(185,28,28,.3)}.feedback strong{display:block;margin-bottom:4px}.unlock-note{display:none;margin-top:12px;color:var(--primary);font-weight:700}.unlock-note.show{display:block}
+.classify-grid{display:grid;grid-template-columns:minmax(300px,1.08fr) minmax(280px,.92fr);gap:22px;align-items:center}.plotbox{position:relative;background:var(--canvas);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:410px}.plotbox canvas{display:block;width:100%;height:410px}.plotlegend{position:absolute;left:14px;top:14px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}.badge{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:800}.question-text{line-height:1.72}.choices2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.choicecard{position:relative}.choicecard input{position:absolute;opacity:0}.choicecard label{min-height:72px;border:1px solid var(--line);border-radius:13px;background:var(--surface);display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-weight:800;transition:.18s}.choicecard input:checked+label{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);color:var(--primary);transform:translateY(-1px)}.swatch{width:15px;height:15px;border-radius:50%}.swatch.a{background:var(--classA)}.swatch.b{background:var(--classB)}
+.concept-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.concept{padding:22px}.concept h3{margin-top:0}.concept p{line-height:1.7}.equation{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(.95rem,2vw,1.18rem);background:var(--canvas);border:1px solid var(--line);border-radius:13px;padding:16px;overflow:auto}.key{border-left:5px solid var(--primary)}.warning{border-left:5px solid var(--warn)}.success{border-left:5px solid var(--green)}
+.lab{padding:0;overflow:hidden}.labtop{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 13px;font-weight:750;cursor:pointer}.tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary)}.labbody{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.72fr);min-height:625px}.canvaswrap{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}.canvaswrap canvas{display:block;width:100%;height:100%;min-height:625px}.canvasbadge{position:absolute;left:15px;top:15px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}.controls{padding:21px;overflow:auto}.controlgroup{margin-bottom:21px}.controlgroup h3{font-size:1rem;margin:0 0 10px}.controlgroup p{font-size:.87rem;color:var(--muted);line-height:1.55}.rangeline{display:grid;grid-template-columns:1fr 70px;gap:10px;align-items:center}.rangeline input[type=range]{width:100%;accent-color:var(--primary)}.rangevalue{width:100%;border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:8px 5px;text-align:center;font-weight:800}.simbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.readouts{display:grid;gap:8px}.readout{display:flex;justify-content:space-between;gap:12px;padding:10px 11px;border-radius:10px;background:rgba(100,116,139,.09);border:1px solid var(--line);font-size:.88rem}.readout b{color:var(--primary)}.toggleline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0}.switch{position:relative;width:46px;height:25px;flex:0 0 46px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;background:rgba(100,116,139,.3);border-radius:999px;cursor:pointer;transition:.2s}.slider:before{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.2)}.switch input:checked+.slider{background:var(--primary)}.switch input:checked+.slider:before{transform:translateX(21px)}
+.formula-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:10px;margin-top:16px}.formula-node{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:center}.formula-node b{display:block;color:var(--primary);font-size:1.08rem}.arrow{color:var(--muted);font-weight:900}
+.training-panel{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(300px,.68fr);min-height:650px}.training-canvas{background:var(--canvas);border-right:1px solid var(--line);position:relative}.training-canvas canvas{display:block;width:100%;height:650px}.training-side{padding:22px}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{padding:12px;border:1px solid var(--line);border-radius:11px;background:rgba(100,116,139,.08)}.metric span{display:block;font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.045em}.metric b{display:block;margin-top:5px;font-size:1.18rem;color:var(--primary)}.sample-card{padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--surface);margin-top:14px;line-height:1.6}.sample-card .calc{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--primary);font-weight:700}.error-chart{height:145px;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--canvas);overflow:hidden}.error-chart canvas{width:100%;height:145px;display:block}
+.xor-grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);gap:18px}.xor-card{padding:22px}.xor-card canvas{width:100%;height:360px;display:block;background:var(--canvas);border:1px solid var(--line);border-radius:14px}.network{display:grid;grid-template-columns:100px 1fr 100px;gap:18px;align-items:center;min-height:330px}.layer{display:grid;gap:16px}.neuron{width:78px;height:78px;margin:auto;border-radius:50%;display:grid;place-items:center;text-align:center;font-weight:900;border:4px solid var(--primary);background:var(--surface-solid);box-shadow:0 8px 20px rgba(15,23,42,.12)}.neuron.small{width:64px;height:64px;font-size:.8rem}.connections{position:relative;height:310px}.connections svg{position:absolute;inset:0;width:100%;height:100%}.wire{stroke:var(--muted);stroke-width:3;opacity:.55}.wire.pos{stroke:var(--primary2)}.wire.neg{stroke:var(--accent)}.xor-table{width:100%;border-collapse:collapse;margin-top:14px}.xor-table th,.xor-table td{padding:10px 8px;text-align:center;border-bottom:1px solid var(--line)}.xor-table th{font-size:.78rem;text-transform:uppercase;color:var(--muted)}.xor-table tr.active{background:var(--primary-light)}
+.overfit-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);gap:18px}.overfit-canvas{background:var(--canvas);border:1px solid var(--line);border-radius:14px;overflow:hidden}.overfit-canvas canvas{width:100%;height:430px;display:block}.textinput{width:100%;border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:11px 12px;outline:none}.textinput:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.quizcard{padding:22px}.quizcard h3{margin-top:0}.quizoptions{display:grid;gap:8px}.quizoption{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.quizoption:hover{background:var(--primary-light)}.resultline{min-height:28px;margin-top:10px;font-weight:700;line-height:1.5}.resultline.ok{color:var(--green)}.resultline.no{color:var(--red)}.summary-box{padding:22px;line-height:1.75}.summary-box ul{padding-left:20px}.summary-box li{margin:7px 0}footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;z-index:900}.toast.show{opacity:1;transform:none}.ico{width:18px;height:18px;display:inline-block;vertical-align:-3px}.ico[data-lucide]::before{content:attr(data-fallback);font-style:normal}.muted{color:var(--muted)}.note{font-size:.84rem;color:var(--muted);line-height:1.55}.pillrow{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:7px 10px;border-radius:999px;background:var(--primary-light);color:var(--primary);font-size:.78rem;font-weight:800}
+@media(max-width:1080px){.labbody,.training-panel{grid-template-columns:1fr}.canvaswrap,.training-canvas{border-right:0;border-bottom:1px solid var(--line)}.classify-grid,.overfit-grid{grid-template-columns:1fr}.concept-grid{grid-template-columns:1fr 1fr}.canvaswrap canvas{min-height:540px}.training-canvas canvas{height:560px}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:grid;place-items:center}.main{margin-left:0;padding:74px 5vw 80px}.intro{grid-template-columns:1fr}.xor-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.card{padding:17px}.choices2,.quizgrid,.concept-grid{grid-template-columns:1fr}.labtop{align-items:flex-start}.canvasbadge{position:static;padding:10px;background:var(--canvas)}.canvaswrap canvas{min-height:470px}.simbuttons{grid-template-columns:1fr}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}.formula-flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.network{grid-template-columns:75px 1fr 75px;gap:7px}.neuron{width:62px;height:62px;font-size:.8rem}.neuron.small{width:54px;height:54px}.metric-grid{grid-template-columns:1fr}.training-canvas canvas{height:500px}}
+@media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.training-side .actions,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.glass{box-shadow:none;border:1px solid #bbb}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody,.training-panel{display:block}.canvaswrap,.training-canvas{border:1px solid #bbb}.canvaswrap canvas,.training-canvas canvas{min-height:470px}.feedback{display:block!important}}
+</style>
+<script src="fonts/lucide.min.js"></script>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="barwrap"><div id="bar"></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen"><i class="ico" data-lucide="menu" data-fallback="☰"></i></button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark"><i class="ico" data-lucide="brain-circuit" data-fallback="◎"></i></div><h2>Neuronale<br>Netze</h2></div>
+  <div class="sub">vorhersagen · trainieren · erklären</div>
+  <nav id="nav">
+    <a href="#start"><span class="dot">1</span>Erste Entscheidung</a>
+    <a href="#neuron" class="after-answer"><span class="dot">2</span>Ein künstliches Neuron</a>
+    <a href="#training" class="after-answer"><span class="dot">3</span>Das Netz lernt</a>
+    <a href="#xor" class="after-answer"><span class="dot">4</span>Warum mehrere Schichten?</a>
+    <a href="#overfitting" class="after-answer"><span class="dot">5</span>Training ist nicht alles</a>
+    <a href="#transfer" class="after-answer"><span class="dot">6</span>Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark"><i class="ico" data-lucide="moon-star" data-fallback="◐"></i>Darstellung wechseln</button>
+    <button class="tool" id="restart"><i class="ico" data-lucide="rotate-ccw" data-fallback="↺"></i>Arbeitsblatt zurücksetzen</button>
+    <button class="tool" onclick="window.print()"><i class="ico" data-lucide="printer" data-fallback="⎙"></i>Arbeitsblatt drucken</button>
+  </div>
+  <div class="school">Interaktives Informatik-Arbeitsblatt<br>Künstliches Neuron · Training · XOR<br>Fortschritt wird lokal gespeichert.</div>
+</aside>
+<main class="main">
+<header class="hero reveal">
+  <span class="eyebrow"><i class="ico" data-lucide="sparkles" data-fallback="✦"></i>Informatik · KI · maschinelles Lernen</span>
+  <h1>Wie lernt ein <span>neuronales Netz?</span></h1>
+  <p>Du beginnst mit einer eigenen Entscheidung. Danach untersuchst du ein künstliches Neuron, veränderst Gewichte und Bias, trainierst ein Perzeptron und stößt schließlich auf ein Problem, das ein einzelnes Neuron grundsätzlich nicht lösen kann.</p>
+</header>
+<div class="intro reveal">
+  <div class="glass introcard">
+    <h2>Arbeitsweise</h2>
+    <p>Formuliere zuerst eine Vermutung. Verändere anschließend immer nur eine Größe und beobachte die Wirkung. Die Simulationen verwenden bewusst kleine Netze, damit jede Rechnung nachvollziehbar bleibt.</p>
+  </div>
+  <div class="glass progress">
+    <h3>Fortschritt</h3>
+    <div class="num"><span id="donecount">0</span>/5</div>
+    <div class="minibar"><div id="minibar"></div></div>
+    <small>Startaufgabe · Neuron untersucht · Training · XOR · Selbsttest</small>
+  </div>
+</div>
+
+<section class="stage reveal" id="start">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Eine Entscheidung aus Beispielen ableiten</h2><p>Die Punkte stehen für Früchte. Blau und Orange sind bereits bekannte Trainingsbeispiele.</p></div></div>
+  <div class="glass card">
+    <div class="problem classify-grid">
+      <div class="plotbox">
+        <div class="plotlegend"><span class="badge">x₁: Rotfärbung</span><span class="badge">x₂: Rundheit</span></div>
+        <canvas id="startCanvas" aria-label="Punktdiagramm mit zwei Fruchtklassen und einem unbekannten Punkt"></canvas>
+      </div>
+      <div class="question-text">
+        <h3>Welcher Klasse würdest du den neuen Punkt zuordnen?</h3>
+        <p>Die Position des violetten Fragezeichens ist durch zwei Merkmale beschrieben. Entscheide zunächst nur nach dem Muster der bekannten Beispiele.</p>
+        <div class="choices2" role="radiogroup" aria-label="Klassenzuordnung">
+          <div class="choicecard"><input type="radio" id="classA" name="startClass" value="A"><label for="classA"><span class="swatch a"></span>Klasse A</label></div>
+          <div class="choicecard"><input type="radio" id="classB" name="startClass" value="B"><label for="classB"><span class="swatch b"></span>Klasse B</label></div>
+        </div>
+        <label for="startReason"><strong>Begründe kurz:</strong></label>
+        <textarea class="textinput" id="startReason" rows="3" placeholder="Welche Merkmale oder Nachbarpunkte waren für deine Entscheidung wichtig?"></textarea>
+        <div class="actions"><button class="btn primary" id="submitStart"><i class="ico" data-lucide="send" data-fallback="→"></i>Entscheidung abgeben</button></div>
+      </div>
+    </div>
+    <div class="feedback" id="startFeedback" aria-live="polite"></div>
+    <div class="unlock-note" id="unlockNote">Die weiteren Abschnitte sind jetzt freigeschaltet.</div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="neuron">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>Ein künstliches Neuron</h2><p>Gewichte bestimmen die Bedeutung der Eingaben; der Bias verschiebt die Entscheidungsschwelle.</p></div></div>
+  <div class="concept-grid" style="margin-bottom:18px">
+    <article class="glass concept key"><h3>Eingaben</h3><p>Jedes Merkmal wird als Zahl dargestellt. Hier sind das <strong>x₁</strong> und <strong>x₂</strong>.</p><div class="equation">x = (x₁, x₂)</div></article>
+    <article class="glass concept key"><h3>Gewichtete Summe</h3><p>Jede Eingabe wird mit einem Gewicht multipliziert. Der Bias <strong>b</strong> wird addiert.</p><div class="equation">z = w₁x₁ + w₂x₂ + b</div></article>
+    <article class="glass concept success"><h3>Aktivierung</h3><p>In diesem Arbeitsblatt gilt zunächst eine Schwellenfunktion: Bei z ≥ 0 wird Klasse A ausgegeben, sonst Klasse B.</p><div class="equation">y = 1, falls z ≥ 0</div></article>
+  </div>
+  <div class="glass lab">
+    <div class="labtop">
+      <div class="tabs">
+        <button class="tab active" data-neuron-mode="boundary"><i class="ico" data-lucide="chart-scatter" data-fallback="◫"></i>Entscheidungsraum</button>
+        <button class="tab" data-neuron-mode="network"><i class="ico" data-lucide="git-branch" data-fallback="⑂"></i>Signalfluss</button>
+      </div>
+      <span class="pill">Ein einzelnes Neuron = lineare Trennung</span>
+    </div>
+    <div class="labbody">
+      <div class="canvaswrap">
+        <div class="canvasbadge"><span class="badge" id="neuronBadge">Entscheidungsgrenze</span><span class="badge" id="outputBadge">Ausgabe: Klasse A</span></div>
+        <canvas id="neuronCanvas" aria-label="Interaktive Darstellung eines künstlichen Neurons"></canvas>
+      </div>
+      <aside class="controls">
+        <div class="controlgroup">
+          <h3>Eingaben</h3>
+          <div class="rangeline"><input type="range" id="x1" min="0" max="10" step="0.1" value="7"><output class="rangevalue" id="x1Out">7,0</output></div>
+          <div class="rangeline"><input type="range" id="x2" min="0" max="10" step="0.1" value="6"><output class="rangevalue" id="x2Out">6,0</output></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Gewichte und Bias</h3>
+          <p>Positive Gewichte erhöhen z, negative Gewichte senken z.</p>
+          <div class="rangeline"><input type="range" id="w1" min="-2" max="2" step="0.1" value="0.8"><output class="rangevalue" id="w1Out">0,8</output></div>
+          <div class="rangeline"><input type="range" id="w2" min="-2" max="2" step="0.1" value="0.6"><output class="rangevalue" id="w2Out">0,6</output></div>
+          <div class="rangeline"><input type="range" id="bias" min="-15" max="15" step="0.5" value="-7"><output class="rangevalue" id="biasOut">−7,0</output></div>
+        </div>
+        <div class="controlgroup">
+          <h3>Aktuelle Rechnung</h3>
+          <div class="readouts">
+            <div class="readout"><span>w₁ · x₁</span><b id="term1">5,60</b></div>
+            <div class="readout"><span>w₂ · x₂</span><b id="term2">3,60</b></div>
+            <div class="readout"><span>Summe z</span><b id="sumZ">2,20</b></div>
+            <div class="readout"><span>Vorhersage</span><b id="predictionClass">Klasse A</b></div>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Untersuchungsaufträge</h3>
+          <div class="simbuttons">
+            <button class="btn" data-preset="flip"><i class="ico" data-lucide="shuffle" data-fallback="⇄"></i>Gewicht umkehren</button>
+            <button class="btn" data-preset="bias"><i class="ico" data-lucide="move-horizontal" data-fallback="↔"></i>Bias verschieben</button>
+            <button class="btn" data-preset="vertical"><i class="ico" data-lucide="move-vertical" data-fallback="↕"></i>Nur x₁ nutzen</button>
+            <button class="btn" data-preset="reset"><i class="ico" data-lucide="rotate-ccw" data-fallback="↺"></i>Zurücksetzen</button>
+          </div>
+        </div>
+        <div class="actions"><button class="btn accent" id="completeNeuron"><i class="ico" data-lucide="check-circle-2" data-fallback="✓"></i>Neuron untersucht</button></div>
+      </aside>
+    </div>
+  </div>
+  <div class="glass card" style="margin-top:18px">
+    <h3>Geometrische Bedeutung</h3>
+    <div class="formula-flow">
+      <div class="formula-node"><b>z &gt; 0</b>Klasse A</div><div class="arrow">→</div>
+      <div class="formula-node"><b>z = 0</b>Entscheidungsgrenze</div><div class="arrow">→</div>
+      <div class="formula-node"><b>z &lt; 0</b>Klasse B</div>
+    </div>
+    <p class="note">Bei zwei Eingaben ist die Grenze eine Gerade. Bei drei Eingaben wäre sie eine Ebene; allgemein spricht man von einer Hyperebene.</p>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="training">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Wie das Neuron aus Fehlern lernt</h2><p>Das Perzeptron verändert seine Parameter nur dann, wenn ein Trainingsbeispiel falsch klassifiziert wurde.</p></div></div>
+  <div class="glass lab">
+    <div class="labtop">
+      <div><strong>Perzeptron-Lernregel</strong><div class="note">Vereinfachtes, aber echtes Lernverfahren für linear trennbare Daten.</div></div>
+      <div class="equation" style="padding:10px 13px">w ← w + η · (Ziel − Ausgabe) · x</div>
+    </div>
+    <div class="training-panel">
+      <div class="training-canvas">
+        <div class="canvasbadge"><span class="badge" id="epochBadge">Epoche 0</span><span class="badge" id="accuracyBadge">Genauigkeit 50 %</span></div>
+        <canvas id="trainingCanvas" aria-label="Trainingsdaten und sich verändernde Entscheidungsgrenze"></canvas>
+      </div>
+      <aside class="training-side">
+        <div class="controlgroup">
+          <h3>Lernrate η</h3>
+          <div class="rangeline"><input type="range" id="learningRate" min="0.05" max="1" step="0.05" value="0.2"><output class="rangevalue" id="lrOut">0,20</output></div>
+          <p>Die Lernrate bestimmt die Größe eines Korrekturschritts.</p>
+        </div>
+        <div class="actions" style="margin-top:0">
+          <button class="btn primary" id="trainOne"><i class="ico" data-lucide="step-forward" data-fallback="▶"></i>1 Beispiel</button>
+          <button class="btn" id="trainEpoch"><i class="ico" data-lucide="repeat-2" data-fallback="↻"></i>1 Epoche</button>
+          <button class="btn accent" id="trainAuto"><i class="ico" data-lucide="fast-forward" data-fallback="≫"></i>Bis zur Lösung</button>
+          <button class="btn ghost" id="resetTraining"><i class="ico" data-lucide="rotate-ccw" data-fallback="↺"></i>Zurücksetzen</button>
+        </div>
+        <div class="metric-grid" style="margin-top:18px">
+          <div class="metric"><span>Gewicht w₁</span><b id="trainW1">0,00</b></div>
+          <div class="metric"><span>Gewicht w₂</span><b id="trainW2">0,00</b></div>
+          <div class="metric"><span>Bias b</span><b id="trainB">0,00</b></div>
+          <div class="metric"><span>Fehler gesamt</span><b id="trainErrors">8</b></div>
+        </div>
+        <div class="sample-card" id="sampleCard">
+          <strong>Noch kein Trainingsschritt</strong><br>
+          Wähle „1 Beispiel“, um die erste Vorhersage und eine mögliche Gewichtsänderung zu sehen.
+        </div>
+        <div class="controlgroup" style="margin-top:18px">
+          <h3>Fehlerverlauf</h3>
+          <div class="error-chart"><canvas id="errorCanvas" aria-label="Verlauf der Fehlklassifikationen"></canvas></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <div class="concept-grid" style="margin-top:18px">
+    <article class="glass concept key"><h3>1. Vorhersagen</h3><p>Das aktuelle Modell berechnet für ein Trainingsbeispiel eine Klasse.</p></article>
+    <article class="glass concept warning"><h3>2. Vergleichen</h3><p>Vorhersage und richtige Zielklasse werden miteinander verglichen.</p></article>
+    <article class="glass concept success"><h3>3. Korrigieren</h3><p>Bei einem Fehler werden Gewichte und Bias in eine günstigere Richtung verändert.</p></article>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="xor">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Warum ein einzelnes Neuron nicht genügt</h2><p>Das XOR-Problem lässt sich nicht durch eine einzige Gerade trennen.</p></div></div>
+  <div class="xor-grid">
+    <article class="glass xor-card">
+      <h3>Versuche es mit einer Geraden</h3>
+      <p>Blau bedeutet Ausgabe 0, Orange Ausgabe 1. Verschiebe die Gerade über Winkel und Abstand.</p>
+      <canvas id="xorCanvas" aria-label="XOR-Punkte und veränderbare lineare Entscheidungsgrenze"></canvas>
+      <div class="controlgroup" style="margin-top:14px">
+        <div class="rangeline"><input type="range" id="xorAngle" min="0" max="180" step="1" value="45"><output class="rangevalue" id="xorAngleOut">45°</output></div>
+        <div class="rangeline"><input type="range" id="xorOffset" min="-1.4" max="1.4" step="0.05" value="0"><output class="rangevalue" id="xorOffsetOut">0,00</output></div>
+      </div>
+      <div class="readout"><span>Richtig getrennte Punkte</span><b id="xorScore">2 von 4</b></div>
+      <p class="note">Du kannst die Gerade drehen und verschieben, aber nie alle vier Punkte gleichzeitig korrekt trennen.</p>
+    </article>
+    <article class="glass xor-card">
+      <h3>Zwei versteckte Neuronen kombinieren Grenzen</h3>
+      <div class="network" aria-label="Kleines Netz zur Berechnung von XOR">
+        <div class="layer"><div class="neuron small">x₁</div><div class="neuron small">x₂</div></div>
+        <div class="connections">
+          <svg viewBox="0 0 300 310" preserveAspectRatio="none" aria-hidden="true">
+            <line class="wire pos" x1="0" y1="82" x2="300" y2="82"/><line class="wire pos" x1="0" y1="82" x2="300" y2="228"/>
+            <line class="wire pos" x1="0" y1="228" x2="300" y2="82"/><line class="wire pos" x1="0" y1="228" x2="300" y2="228"/>
+          </svg>
+          <div class="layer" style="position:absolute;inset:0;display:grid;align-content:space-around"><div class="neuron">ODER</div><div class="neuron">UND</div></div>
+        </div>
+        <div class="layer"><div class="neuron">XOR</div></div>
+      </div>
+      <div class="actions"><button class="btn primary" id="nextXor"><i class="ico" data-lucide="play" data-fallback="▶"></i>Nächste Eingabe</button><button class="btn ghost" id="resetXor"><i class="ico" data-lucide="rotate-ccw" data-fallback="↺"></i>Zurücksetzen</button></div>
+      <table class="xor-table">
+        <thead><tr><th>x₁</th><th>x₂</th><th>ODER</th><th>UND</th><th>XOR</th></tr></thead>
+        <tbody id="xorRows">
+          <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+        </tbody>
+      </table>
+      <div class="feedback" id="xorFeedback"></div>
+    </article>
+  </div>
+  <div class="glass card" style="margin-top:18px">
+    <h3>Die zentrale Idee tiefer Netze</h3>
+    <p>Versteckte Neuronen erzeugen Zwischenmerkmale. Das Ausgabeneuron kombiniert diese Zwischenmerkmale zu einer komplexeren Entscheidung. Reale tiefe Netze verwenden sehr viele solcher Schichten und meist glatte Aktivierungsfunktionen, damit die Gewichte mit Backpropagation und Gradientenverfahren angepasst werden können.</p>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="overfitting">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Trainingserfolg ist nicht automatisch Lernerfolg</h2><p>Ein zu komplexes Modell kann Trainingsbeispiele auswendig lernen und bei neuen Daten schlechter werden. Die folgende Darstellung ist eine didaktische Simulation.</p></div></div>
+  <div class="glass card">
+    <div class="overfit-grid">
+      <div class="overfit-canvas"><canvas id="overfitCanvas" aria-label="Trainings- und Testdaten mit unterschiedlich komplexer Entscheidungsgrenze"></canvas></div>
+      <aside>
+        <div class="controlgroup">
+          <h3>Modellkomplexität</h3>
+          <div class="rangeline"><input type="range" id="complexity" min="1" max="10" step="1" value="2"><output class="rangevalue" id="complexityOut">2</output></div>
+          <p>Mit steigender Komplexität kann sich die Grenze stärker an einzelne Trainingspunkte anpassen.</p>
+        </div>
+        <div class="controlgroup">
+          <h3>Messwerte</h3>
+          <div class="readouts">
+            <div class="readout"><span>Trainingsgenauigkeit</span><b id="trainAccOver">84 %</b></div>
+            <div class="readout"><span>Testgenauigkeit</span><b id="testAccOver">82 %</b></div>
+            <div class="readout"><span>Bewertung</span><b id="fitLabel">gute Balance</b></div>
+          </div>
+        </div>
+        <div class="toggleline"><span>Testdaten anzeigen</span><label class="switch"><input type="checkbox" id="showTest" checked><span class="slider"></span></label></div>
+        <div class="problem" style="margin-top:14px">
+          <h3>Beobachtungsauftrag</h3>
+          <p>Erhöhe die Komplexität langsam. Ab welchem Wert steigt die Trainingsgenauigkeit weiter, während die Testgenauigkeit sinkt?</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="transfer">
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Abschließender Selbsttest</h2><p>Ordne die zentralen Begriffe den beobachteten Funktionen zu.</p></div></div>
+  <div class="quizgrid">
+    <article class="glass quizcard">
+      <h3>1. Was bewirkt ein Gewicht?</h3>
+      <div class="quizoptions">
+        <label class="quizoption"><input type="radio" name="q1" value="a"> Es speichert unmittelbar die richtige Klasse.</label>
+        <label class="quizoption"><input type="radio" name="q1" value="b"> Es bestimmt, wie stark und in welcher Richtung eine Eingabe die Summe beeinflusst.</label>
+        <label class="quizoption"><input type="radio" name="q1" value="c"> Es legt die Anzahl der Trainingsbeispiele fest.</label>
+      </div>
+      <div class="actions"><button class="btn primary quizcheck" data-q="1"><i class="ico" data-lucide="check" data-fallback="✓"></i>Prüfen</button></div>
+      <div class="resultline" id="q1Result"></div>
+    </article>
+    <article class="glass quizcard">
+      <h3>2. Was bewirkt der Bias?</h3>
+      <div class="quizoptions">
+        <label class="quizoption"><input type="radio" name="q2" value="a"> Er verschiebt die Entscheidungsschwelle beziehungsweise die Entscheidungsgrenze.</label>
+        <label class="quizoption"><input type="radio" name="q2" value="b"> Er ersetzt alle Eingabewerte durch 0.</label>
+        <label class="quizoption"><input type="radio" name="q2" value="c"> Er macht jedes Netz automatisch fehlerfrei.</label>
+      </div>
+      <div class="actions"><button class="btn primary quizcheck" data-q="2"><i class="ico" data-lucide="check" data-fallback="✓"></i>Prüfen</button></div>
+      <div class="resultline" id="q2Result"></div>
+    </article>
+    <article class="glass quizcard">
+      <h3>3. Warum braucht XOR mehrere Neuronen?</h3>
+      <div class="quizoptions">
+        <label class="quizoption"><input type="radio" name="q3" value="a"> Weil XOR keine lineare Entscheidungsgrenze besitzt.</label>
+        <label class="quizoption"><input type="radio" name="q3" value="b"> Weil zwei Eingaben grundsätzlich zwei Ausgaben verlangen.</label>
+        <label class="quizoption"><input type="radio" name="q3" value="c"> Weil ein einzelnes Neuron keine Zahlen verarbeiten kann.</label>
+      </div>
+      <div class="actions"><button class="btn primary quizcheck" data-q="3"><i class="ico" data-lucide="check" data-fallback="✓"></i>Prüfen</button></div>
+      <div class="resultline" id="q3Result"></div>
+    </article>
+    <article class="glass quizcard">
+      <h3>4. Woran erkennt man Überanpassung?</h3>
+      <div class="quizoptions">
+        <label class="quizoption"><input type="radio" name="q4" value="a"> Trainings- und Testfehler sinken dauerhaft gemeinsam.</label>
+        <label class="quizoption"><input type="radio" name="q4" value="b"> Das Modell besitzt überhaupt keine Parameter.</label>
+        <label class="quizoption"><input type="radio" name="q4" value="c"> Das Modell wird auf Trainingsdaten besser, aber auf neuen Testdaten schlechter.</label>
+      </div>
+      <div class="actions"><button class="btn primary quizcheck" data-q="4"><i class="ico" data-lucide="check" data-fallback="✓"></i>Prüfen</button></div>
+      <div class="resultline" id="q4Result"></div>
+    </article>
+  </div>
+  <div class="glass summary-box" style="margin-top:18px">
+    <h3>Das solltest du erklären können</h3>
+    <ul>
+      <li>Ein künstliches Neuron berechnet aus Eingaben, Gewichten und Bias zunächst eine gewichtete Summe.</li>
+      <li>Training verändert die Parameter so, dass die Vorhersagen auf Beispieldaten besser werden.</li>
+      <li>Ein einzelnes Neuron erzeugt nur eine lineare Entscheidungsgrenze.</li>
+      <li>Versteckte Schichten ermöglichen nichtlineare Entscheidungen, erhöhen aber auch die Modellkomplexität.</li>
+      <li>Gute Leistung auf Trainingsdaten reicht nicht aus; entscheidend ist die Übertragung auf neue Daten.</li>
+    </ul>
+  </div>
+</section>
+<footer>Interaktives Arbeitsblatt · Wie lernt ein neuronales Netz?</footer>
+</main>
+</div>
+<div class="toast" id="toast">Gespeichert</div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const STORAGE_KEY='neuralNetworkWorksheetV1';
+let state={answered:false,neuron:false,training:false,xor:false,quiz:false,dark:false,answer:null};
+try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}updateProgress()}
+function updateProgress(){const count=[state.answered,state.neuron,state.training,state.xor,state.quiz].filter(Boolean).length;$('#donecount').textContent=count;$('#minibar').style.width=(count/5*100)+'%';$('#bar').style.width=(count/5*100)+'%'}
+function showToast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+function fmt(n,d=2){return Number(n).toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})}
+function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim()}
+function initIcons(){try{if(window.lucide){window.lucide.createIcons({attrs:{'stroke-width':2}})}}catch(e){}}
+function revealStages(scroll=false){['#neuron','#training','#xor','#overfitting','#transfer'].forEach(sel=>$(sel).classList.remove('hidden-stage'));$$('.after-answer').forEach(a=>a.style.display='flex');setTimeout(()=>$$('.stage,.hero,.intro').forEach(el=>el.classList.add('visible')),20);if(scroll)$('#neuron').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(resizeAll,70)}
+$$('.after-answer').forEach(a=>a.style.display=state.answered?'flex':'none');
+
+function setupCanvas(canvas,draw){const rect=canvas.getBoundingClientRect();if(rect.width<10)return null;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);draw();return ctx}
+function line(ctx,x1,y1,x2,y2,color,width=2,dash=[]){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
+function circle(ctx,x,y,r,fill,stroke,width=2){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}
+function label(ctx,text,x,y,align='center',color=css('--text'),size=14,weight='700'){ctx.font=`${weight} ${size}px Inter,system-ui`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(text,x,y)}
+function axes(ctx,w,h,pad=54,xLabel='x₁',yLabel='x₂'){
+  const grid=css('--grid'),muted=css('--muted');ctx.strokeStyle=grid;ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){const x=pad+(w-2*pad)*i/10,y=h-pad-(h-2*pad)*i/10;line(ctx,x,pad,x,h-pad,grid,1);line(ctx,pad,y,w-pad,y,grid,1);if(i%2===0){label(ctx,String(i),x,h-pad+22,'center',muted,11,'600');label(ctx,String(i),pad-14,y+4,'right',muted,11,'600')}}
+  line(ctx,pad,h-pad,w-pad,h-pad,muted,2);line(ctx,pad,h-pad,pad,pad,muted,2);label(ctx,xLabel,w-pad,h-pad+39,'right',muted,13,'800');label(ctx,yLabel,pad-6,pad-15,'right',muted,13,'800')
+}
+function toPx(x,y,w,h,pad=54){return[pad+(w-2*pad)*x/10,h-pad-(h-2*pad)*y/10]}
+
+// Startaufgabe
+const startCanvas=$('#startCanvas');
+const startDataA=[[1.5,2.2],[2.2,3.0],[3.0,2.3],[3.4,4.0],[4.0,3.2]],startDataB=[[6.1,6.6],[6.8,7.5],[7.8,6.4],[8.4,8.1],[6.9,8.6]],startUnknown=[7.0,6.9];
+function drawStart(){const c=startCanvas.getContext('2d'),r=startCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);axes(c,w,h,52,'Rotfärbung x₁','Rundheit x₂');startDataA.forEach(p=>{const[x,y]=toPx(p[0],p[1],w,h,52);circle(c,x,y,8,css('--classA'),'#fff',2)});startDataB.forEach(p=>{const[x,y]=toPx(p[0],p[1],w,h,52);circle(c,x,y,8,css('--classB'),'#fff',2)});const[x,y]=toPx(startUnknown[0],startUnknown[1],w,h,52);circle(c,x,y,16,css('--primary-light'),css('--primary'),3);label(c,'?',x,y+7,'center',css('--primary'),20,'900')}
+function resizeStart(){setupCanvas(startCanvas,drawStart)}
+$('#submitStart').addEventListener('click',()=>{const sel=$('input[name="startClass"]:checked'),box=$('#startFeedback');if(!sel){box.className='feedback show bad';box.innerHTML='<strong>Noch keine Klasse gewählt.</strong>Ordne den unbekannten Punkt zunächst einer der beiden Gruppen zu.';return}state.answered=true;state.answer=sel.value;saveState();if(sel.value==='B'){box.className='feedback show good';box.innerHTML='<strong>Plausible Zuordnung: Klasse B.</strong>Der neue Punkt liegt im Merkmalsraum nahe bei den orangefarbenen Trainingsbeispielen. Ein neuronales Netz soll eine solche Entscheidungsregel aus Daten ableiten, statt sie als fertige Wenn-dann-Regel zu erhalten.'}else{box.className='feedback show think';box.innerHTML='<strong>Deine Entscheidung wird als Hypothese festgehalten.</strong>Im Diagramm liegt der Punkt allerdings deutlich näher bei Klasse B. Entscheidend ist nun nicht nur das Ergebnis, sondern wie ein Modell eine Grenze zwischen den Gruppen berechnet.'}$('#unlockNote').classList.add('show');revealStages(true)});
+if(state.answered){revealStages(false);const box=$('#startFeedback');box.className='feedback show good';box.innerHTML='<strong>Bereits beantwortet.</strong>Alle weiteren Lernstationen sind freigeschaltet.';$('#unlockNote').classList.add('show')}
+
+// Neuron-Labor
+const neuronCanvas=$('#neuronCanvas');let neuronMode='boundary';
+const n={x1:7,x2:6,w1:.8,w2:.6,b:-7};
+function neuronZ(){return n.w1*n.x1+n.w2*n.x2+n.b}
+function drawBoundary(ctx,w,h){axes(ctx,w,h,58);const pad=58;const z=neuronZ();const positive=z>=0;const sample=toPx(n.x1,n.x2,w,h,pad);for(let gx=0;gx<40;gx++){for(let gy=0;gy<40;gy++){const x=gx/4,y=gy/4,val=n.w1*x+n.w2*y+n.b;ctx.fillStyle=val>=0?'rgba(37,99,235,.095)':'rgba(234,88,12,.085)';const x0=pad+(w-2*pad)*gx/40,y0=pad+(h-2*pad)*(39-gy)/40;ctx.fillRect(x0,y0,(w-2*pad)/40+1,(h-2*pad)/40+1)}}
+  if(Math.abs(n.w2)>.0001){const y0=-(n.b+n.w1*0)/n.w2,y10=-(n.b+n.w1*10)/n.w2;const p0=toPx(0,y0,w,h,pad),p1=toPx(10,y10,w,h,pad);line(ctx,p0[0],p0[1],p1[0],p1[1],css('--primary'),4)}else if(Math.abs(n.w1)>.0001){const x=-n.b/n.w1;const p0=toPx(x,0,w,h,pad),p1=toPx(x,10,w,h,pad);line(ctx,p0[0],p0[1],p1[0],p1[1],css('--primary'),4)}
+  circle(ctx,sample[0],sample[1],13,positive?css('--classA'):css('--classB'),'#fff',3);label(ctx,'x',sample[0],sample[1]+5,'center','#fff',13,'900');label(ctx,'z = 0',w-70,42,'center',css('--primary'),14,'800')
+}
+function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}
+function drawNetwork(ctx,w,h){const left=90,mid=w*.52,right=w-100;const y1=h*.35,y2=h*.65,ym=h*.5;const z=neuronZ(),positive=z>=0;line(ctx,left+34,y1,mid-52,ym,css('--primary2'),Math.max(2,Math.abs(n.w1)*4));line(ctx,left+34,y2,mid-52,ym,n.w2>=0?css('--primary2'):css('--accent'),Math.max(2,Math.abs(n.w2)*4));line(ctx,mid+52,ym,right-38,ym,positive?css('--classA'):css('--classB'),5);circle(ctx,left,y1,34,css('--surface-solid'),css('--primary2'),4);circle(ctx,left,y2,34,css('--surface-solid'),css('--primary2'),4);circle(ctx,mid,ym,52,css('--surface-solid'),css('--primary'),5);roundRect(ctx,right-38,ym-38,76,76,18,positive?'rgba(37,99,235,.14)':'rgba(234,88,12,.14)',positive?css('--classA'):css('--classB'));label(ctx,'x₁',left,y1-2,'center',css('--primary2'),18,'900');label(ctx,fmt(n.x1,1),left,y1+18,'center',css('--muted'),12,'700');label(ctx,'x₂',left,y2-2,'center',css('--primary2'),18,'900');label(ctx,fmt(n.x2,1),left,y2+18,'center',css('--muted'),12,'700');label(ctx,'Σ',mid,ym-9,'center',css('--primary'),26,'900');label(ctx,`z = ${fmt(z,2)}`,mid,ym+20,'center',css('--text'),14,'800');label(ctx,positive?'A':'B',right,ym+9,'center',positive?css('--classA'):css('--classB'),28,'900');label(ctx,`w₁ = ${fmt(n.w1,1)}`,(left+mid)/2-15,(y1+ym)/2-14,'center',css('--primary2'),13,'800');label(ctx,`w₂ = ${fmt(n.w2,1)}`,(left+mid)/2-15,(y2+ym)/2+22,'center',n.w2>=0?css('--primary2'):css('--accent'),13,'800');label(ctx,`Bias b = ${fmt(n.b,1)}`,mid,ym-80,'center',css('--accent'),14,'800')}
+function drawNeuron(){const c=neuronCanvas.getContext('2d'),r=neuronCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);if(neuronMode==='boundary')drawBoundary(c,w,h);else drawNetwork(c,w,h);updateNeuronReadouts()}
+function updateNeuronReadouts(){const z=neuronZ(),a=z>=0;$('#x1Out').textContent=fmt(n.x1,1);$('#x2Out').textContent=fmt(n.x2,1);$('#w1Out').textContent=fmt(n.w1,1);$('#w2Out').textContent=fmt(n.w2,1);$('#biasOut').textContent=fmt(n.b,1);$('#term1').textContent=fmt(n.w1*n.x1,2);$('#term2').textContent=fmt(n.w2*n.x2,2);$('#sumZ').textContent=fmt(z,2);$('#predictionClass').textContent=a?'Klasse A':'Klasse B';$('#outputBadge').textContent=`Ausgabe: Klasse ${a?'A':'B'}`;$('#neuronBadge').textContent=neuronMode==='boundary'?'Entscheidungsgrenze':'Signalfluss'}
+function resizeNeuron(){setupCanvas(neuronCanvas,drawNeuron)}
+[['x1','x1'],['x2','x2'],['w1','w1'],['w2','w2'],['bias','b']].forEach(([id,key])=>$('#'+id).addEventListener('input',e=>{n[key]=Number(e.target.value);drawNeuron()}));
+$$('[data-neuron-mode]').forEach(tab=>tab.addEventListener('click',()=>{$$('[data-neuron-mode]').forEach(x=>x.classList.remove('active'));tab.classList.add('active');neuronMode=tab.dataset.neuronMode;drawNeuron()}));
+$$('[data-preset]').forEach(btn=>btn.addEventListener('click',()=>{const p=btn.dataset.preset;if(p==='flip')n.w2=-n.w2||-.6;if(p==='bias')n.b=n.b<0?3:-7;if(p==='vertical'){n.w1=1;n.w2=0;n.b=-5}if(p==='reset'){Object.assign(n,{x1:7,x2:6,w1:.8,w2:.6,b:-7})}['x1','x2','w1','w2'].forEach(id=>$('#'+id).value=n[id]);$('#bias').value=n.b;drawNeuron()}));
+$('#completeNeuron').addEventListener('click',()=>{state.neuron=true;saveState();showToast('Neuron-Labor abgeschlossen')});
+
+// Perzeptron-Training
+const trainingCanvas=$('#trainingCanvas'),errorCanvas=$('#errorCanvas');
+const trainData=[{x:[1.4,2.1],y:-1},{x:[2.0,3.4],y:-1},{x:[2.8,2.5],y:-1},{x:[3.6,4.1],y:-1},{x:[6.0,5.9],y:1},{x:[6.8,7.2],y:1},{x:[7.8,6.5],y:1},{x:[8.5,8.0],y:1}];
+let tw=[0,0],tb=0,tIndex=0,epoch=0,errorHistory=[],lastSample=null,autoTimer=null;
+function predictRaw(p){return tw[0]*p[0]+tw[1]*p[1]+tb>=0?1:-1}
+function totalErrors(){return trainData.reduce((s,d)=>s+(predictRaw(d.x)!==d.y),0)}
+function accuracy(){return 1-totalErrors()/trainData.length}
+function trainStep(){const d=trainData[tIndex],pred=predictRaw(d.x),err=d.y-pred,eta=Number($('#learningRate').value),old=[...tw,tb];if(err!==0){tw[0]+=eta*err*d.x[0];tw[1]+=eta*err*d.x[1];tb+=eta*err}lastSample={d,pred,err,old,newv:[...tw,tb]};tIndex++;if(tIndex>=trainData.length){tIndex=0;epoch++;errorHistory.push(totalErrors())}drawTraining();return totalErrors()===0}
+function drawTraining(){const c=trainingCanvas.getContext('2d'),r=trainingCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);axes(c,w,h,58);const pad=58;for(let gx=0;gx<50;gx++){for(let gy=0;gy<50;gy++){const x=gx/5,y=gy/5;const val=tw[0]*x+tw[1]*y+tb;ctxFillCell(c,w,h,pad,gx,gy,val>=0)}}if(Math.abs(tw[1])>.001){const y0=-(tb+tw[0]*0)/tw[1],y10=-(tb+tw[0]*10)/tw[1],p0=toPx(0,y0,w,h,pad),p1=toPx(10,y10,w,h,pad);line(c,p0[0],p0[1],p1[0],p1[1],css('--primary'),4)}else if(Math.abs(tw[0])>.001){const x=-tb/tw[0],p0=toPx(x,0,w,h,pad),p1=toPx(x,10,w,h,pad);line(c,p0[0],p0[1],p1[0],p1[1],css('--primary'),4)}trainData.forEach((d,i)=>{const[x,y]=toPx(d.x[0],d.x[1],w,h,pad),active=i===tIndex;circle(c,x,y,active?12:9,d.y===1?css('--classB'):css('--classA'),active?css('--primary'):'#fff',active?4:2)});updateTrainingUI();drawError()}
+function ctxFillCell(c,w,h,pad,gx,gy,pos){c.fillStyle=pos?'rgba(234,88,12,.055)':'rgba(37,99,235,.055)';const x0=pad+(w-2*pad)*gx/50,y0=pad+(h-2*pad)*(49-gy)/50;c.fillRect(x0,y0,(w-2*pad)/50+1,(h-2*pad)/50+1)}
+function updateTrainingUI(){const errors=totalErrors(),acc=Math.round(accuracy()*100);$('#trainW1').textContent=fmt(tw[0],2);$('#trainW2').textContent=fmt(tw[1],2);$('#trainB').textContent=fmt(tb,2);$('#trainErrors').textContent=errors;$('#epochBadge').textContent=`Epoche ${epoch}`;$('#accuracyBadge').textContent=`Genauigkeit ${acc} %`;$('#lrOut').textContent=fmt(Number($('#learningRate').value),2);if(lastSample){const d=lastSample.d,p=lastSample.pred===1?'Orange':'Blau',target=d.y===1?'Orange':'Blau',changed=lastSample.err!==0;$('#sampleCard').innerHTML=`<strong>Beispiel: x = (${fmt(d.x[0],1)}; ${fmt(d.x[1],1)})</strong><br>Vorhersage: ${p} · Ziel: ${target}<br><span class="calc">Fehlerterm = ${lastSample.err}</span><br>${changed?'Gewichte und Bias wurden korrigiert.':'Richtig klassifiziert – keine Änderung.'}`}}
+function drawError(){const c=errorCanvas.getContext('2d'),r=errorCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);const pad=24,max=8;line(c,pad,h-pad,w-pad,h-pad,css('--muted'),1);line(c,pad,pad,pad,h-pad,css('--muted'),1);if(!errorHistory.length){label(c,'Nach jeder Epoche erscheint hier die Fehlerzahl.',w/2,h/2,'center',css('--muted'),12,'600');return}c.beginPath();errorHistory.forEach((v,i)=>{const x=pad+(w-2*pad)*(errorHistory.length===1?0:i/(Math.max(1,errorHistory.length-1))),y=h-pad-(h-2*pad)*v/max;i?c.lineTo(x,y):c.moveTo(x,y)});c.strokeStyle=css('--primary');c.lineWidth=3;c.stroke();errorHistory.forEach((v,i)=>{const x=pad+(w-2*pad)*(errorHistory.length===1?0:i/(Math.max(1,errorHistory.length-1))),y=h-pad-(h-2*pad)*v/max;circle(c,x,y,4,css('--primary'),css('--primary'),1)})}
+function resizeTraining(){setupCanvas(trainingCanvas,drawTraining);setupCanvas(errorCanvas,drawError)}
+$('#learningRate').addEventListener('input',updateTrainingUI);$('#trainOne').addEventListener('click',()=>{clearInterval(autoTimer);trainStep()});$('#trainEpoch').addEventListener('click',()=>{clearInterval(autoTimer);const start=tIndex;do{trainStep()}while(tIndex!==start&&totalErrors()>0);if(totalErrors()===0){state.training=true;saveState();showToast('Datensatz vollständig getrennt')}});$('#trainAuto').addEventListener('click',()=>{clearInterval(autoTimer);let guard=0;autoTimer=setInterval(()=>{guard++;const solved=trainStep();if(solved||guard>300){clearInterval(autoTimer);if(solved){state.training=true;saveState();showToast('Perzeptron hat eine trennende Gerade gefunden')}}},140)});$('#resetTraining').addEventListener('click',()=>{clearInterval(autoTimer);tw=[0,0];tb=0;tIndex=0;epoch=0;errorHistory=[];lastSample=null;drawTraining()});
+
+// XOR
+const xorCanvas=$('#xorCanvas');let xorStepIndex=-1;
+function xorClass(x,y){return x!==y?1:0}
+function drawXor(){const c=xorCanvas.getContext('2d'),r=xorCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);const pad=48;line(c,pad,h-pad,w-pad,h-pad,css('--muted'),2);line(c,pad,h-pad,pad,pad,css('--muted'),2);label(c,'x₁',w-pad,h-pad+28,'right',css('--muted'),13,'800');label(c,'x₂',pad-4,pad-13,'right',css('--muted'),13,'800');const pts=[[0,0],[0,1],[1,0],[1,1]],scale=Math.min(w-2*pad,h-2*pad)*.72,ox=(w-scale)/2,oy=(h+scale)/2;const angle=Number($('#xorAngle').value)*Math.PI/180,offset=Number($('#xorOffset').value);const nx=Math.cos(angle),ny=Math.sin(angle),cx=w/2+offset*scale*.28,cy=h/2-offset*scale*.28;const dx=-ny*1000,dy=nx*1000;line(c,cx-dx,cy+dy,cx+dx,cy-dy,css('--primary'),4);let score=0;pts.forEach(p=>{const x=ox+p[0]*scale,y=oy-p[1]*scale,target=xorClass(p[0],p[1]),pred=((x-cx)*nx-(y-cy)*ny)>=0?1:0;if(pred===target)score++;circle(c,x,y,14,target?css('--classB'):css('--classA'),'#fff',3);label(c,String(target),x,y+5,'center','#fff',13,'900')});$('#xorAngleOut').textContent=$('#xorAngle').value+'°';$('#xorOffsetOut').textContent=fmt(offset,2);$('#xorScore').textContent=`${score} von 4`}
+function resizeXor(){setupCanvas(xorCanvas,drawXor)}
+$('#xorAngle').addEventListener('input',drawXor);$('#xorOffset').addEventListener('input',drawXor);$('#nextXor').addEventListener('click',()=>{xorStepIndex=(xorStepIndex+1)%4;$$('#xorRows tr').forEach((tr,i)=>tr.classList.toggle('active',i===xorStepIndex));const vals=[[0,0,0,0,0],[0,1,1,0,1],[1,0,1,0,1],[1,1,1,1,0]][xorStepIndex];const box=$('#xorFeedback');box.className='feedback show good';box.innerHTML=`<strong>Eingabe (${vals[0]}, ${vals[1]})</strong>Das ODER-Neuron liefert ${vals[2]}, das UND-Neuron ${vals[3]}. Aus beiden Zwischenmerkmalen entsteht die XOR-Ausgabe ${vals[4]}.`;if(xorStepIndex===3){state.xor=true;saveState();showToast('Alle XOR-Fälle durchlaufen')}});$('#resetXor').addEventListener('click',()=>{xorStepIndex=-1;$$('#xorRows tr').forEach(tr=>tr.classList.remove('active'));$('#xorFeedback').className='feedback'});
+
+// Overfitting
+const overfitCanvas=$('#overfitCanvas');const overTrain=[.08,.15,.22,.31,.39,.47,.56,.65,.72,.8,.88,.95].map((x,i)=>({x,y:.5+.22*Math.sin(x*7)+(i%3-1)*.035,c:i%2}));const overTest=[.11,.19,.27,.35,.43,.51,.59,.68,.76,.84,.92].map((x,i)=>({x,y:.5+.22*Math.sin(x*7+.2)+(i%2?-.025:.025),c:(i+1)%2}));
+function drawOverfit(){const c=overfitCanvas.getContext('2d'),r=overfitCanvas.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;c.clearRect(0,0,w,h);c.fillStyle=css('--canvas');c.fillRect(0,0,w,h);const pad=42,k=Number($('#complexity').value);for(let i=0;i<=10;i++){line(c,pad+(w-2*pad)*i/10,pad,pad+(w-2*pad)*i/10,h-pad,css('--grid'),1);line(c,pad,pad+(h-2*pad)*i/10,w-pad,pad+(h-2*pad)*i/10,css('--grid'),1)}c.beginPath();for(let i=0;i<=180;i++){const x=i/180,y=.5+.20*Math.sin(x*(3.5+k*.55))+Math.max(0,k-5)*.018*Math.sin(x*(18+k*2));const px=pad+x*(w-2*pad),py=h-pad-y*(h-2*pad);i?c.lineTo(px,py):c.moveTo(px,py)}c.strokeStyle=css('--primary');c.lineWidth=4;c.stroke();function dp(p,test=false){const x=pad+p.x*(w-2*pad),y=h-pad-p.y*(h-2*pad);circle(c,x,y,test?7:9,p.c?css('--classB'):css('--classA'),test?css('--muted'):'#fff',test?2:2);if(test)circle(c,x,y,2,css('--surface-solid'),css('--surface-solid'),1)}overTrain.forEach(p=>dp(p));if($('#showTest').checked)overTest.forEach(p=>dp(p,true));const trainAcc=Math.min(99,76+k*3),testAcc=Math.round(86-Math.max(0,k-4)*4.6-Math.max(0,2-k)*2);$('#complexityOut').textContent=k;$('#trainAccOver').textContent=trainAcc+' %';$('#testAccOver').textContent=testAcc+' %';let lbl='gute Balance';if(k<=2)lbl='eher zu einfach';if(k>=7)lbl='überangepasst';$('#fitLabel').textContent=lbl}
+function resizeOverfit(){setupCanvas(overfitCanvas,drawOverfit)}
+$('#complexity').addEventListener('input',drawOverfit);$('#showTest').addEventListener('change',drawOverfit);
+
+// Selbsttest
+const answers={1:'b',2:'a',3:'a',4:'c'},quizDone=new Set();$$('.quizcheck').forEach(btn=>btn.addEventListener('click',()=>{const q=btn.dataset.q,sel=$(`input[name="q${q}"]:checked`),r=$(`#q${q}Result`);if(!sel){r.className='resultline no';r.textContent='Wähle zunächst eine Antwort.';return}if(sel.value===answers[q]){r.className='resultline ok';r.textContent='Richtig.';quizDone.add(q);if(quizDone.size===4){state.quiz=true;saveState();showToast('Selbsttest abgeschlossen')}}else{r.className='resultline no';r.textContent='Noch nicht. Prüfe den zugehörigen Abschnitt des Arbeitsblatts.'}}));
+
+// Navigation, Theme, Resize
+function resizeAll(){resizeStart();resizeNeuron();resizeTraining();resizeXor();resizeOverfit()}
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});$$('.reveal,.stage').forEach(el=>io.observe(el));const navIO=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('.stage').forEach(s=>navIO.observe(s));
+$('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(resizeAll,30)}$('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();$('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});window.addEventListener('resize',resizeAll);
+updateProgress();initIcons();setTimeout(resizeAll,120);
+</script>
+</body>
+</html>
