@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Das Doppelspalt-Experiment</title>
+<meta name="description" content="Interaktives Arbeitsblatt zum Doppelspalt-Experiment, Interferenz, spukhafter Fernwirkung und Superdeterminismus">
+<style>
+/* Schriften lokal referenziert */
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+
+:root{
+  --primary:#0f766e;--primary2:#2563eb;--primary-light:#dff7f3;--accent:#ea580c;
+  --text:#172033;--muted:#64748b;--surface:rgba(255,255,255,.84);--surface-solid:#fff;
+  --border:rgba(255,255,255,.42);--line:rgba(100,116,139,.23);--shadow:0 10px 34px rgba(15,23,42,.12);
+  --radius:18px;--sidebar:310px;--success:#15803d;--danger:#b91c1c;--warn:#9a5b00;--purple:#6d28d9;
+  --canvas:#f8fafc;--waveA:#2563eb;--waveB:#0f766e;--marker:#ea580c;
+}
+body.dark{
+  --primary:#2dd4bf;--primary2:#60a5fa;--primary-light:rgba(45,212,191,.13);--accent:#fb923c;
+  --text:#e2e8f0;--muted:#94a3b8;--surface:rgba(15,23,42,.86);--surface-solid:#0f172a;
+  --border:rgba(255,255,255,.14);--line:rgba(148,163,184,.22);--shadow:0 10px 34px rgba(0,0,0,.28);
+  --success:#4ade80;--danger:#f87171;--warn:#fbbf24;--purple:#c4b5fd;
+  --canvas:#09111f;--waveA:#60a5fa;--waveB:#2dd4bf;--marker:#fb923c;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:linear-gradient(135deg,#ecfeff,#eef2ff 48%,#fff7ed);min-height:100vh;transition:.3s}
+body.dark{background:linear-gradient(135deg,#071a1a,#0f172a 55%,#1c1410)}
+h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}button,input,select{font:inherit;color:inherit}
+.blob{position:fixed;border-radius:50%;filter:blur(85px);opacity:.25;z-index:-1;animation:float 22s ease-in-out infinite alternate}
+.b1{width:500px;height:500px;background:#14b8a6;top:-14%;left:-10%}.b2{width:420px;height:420px;background:#4f46e5;right:-8%;top:35%}.b3{width:360px;height:360px;background:#f97316;left:35%;bottom:-12%}
+@keyframes float{to{transform:translate(35px,-25px) scale(1.06)}}
+#barwrap{position:fixed;top:0;left:0;width:100%;height:5px;background:rgba(0,0,0,.08);z-index:700}#bar{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.25s}
+
+.layout{display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;overflow:auto;background:rgba(255,255,255,.12);backdrop-filter:blur(20px);border-right:1px solid var(--border);z-index:400;transition:.3s}
+.brand{display:flex;gap:12px;align-items:center}
+.mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));font-weight:900;font-size:1.15rem}
+.sidebar h2{font-size:1.03rem;color:var(--primary);margin:0}.sub{margin:4px 0 22px 58px;color:var(--muted);font-size:.8rem}
+.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:11px;color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem}
+.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}
+.dot{width:25px;height:25px;border-radius:8px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.tools{display:grid;gap:9px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}
+.tool{border:1px solid var(--border);background:var(--surface);border-radius:11px;padding:10px 12px;text-align:left;cursor:pointer;font-weight:600}
+.tool:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08)}
+.school{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);font-size:.74rem;color:var(--muted);line-height:1.55}
+.hamb{display:none;position:fixed;right:14px;top:14px;width:44px;height:44px;border-radius:11px;border:1px solid var(--border);background:var(--surface);z-index:500;cursor:pointer}
+.main{margin-left:var(--sidebar);max-width:1240px;padding:46px 5vw 100px;flex:1}
+
+.hero{margin-bottom:32px}.eyebrow{display:inline-block;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px}
+.hero h1{font-size:clamp(2.25rem,4.7vw,3.65rem);line-height:1.04;margin:16px 0 14px}.hero h1 span{color:var(--primary)}.hero p{max-width:900px;color:var(--muted);font-size:1.06rem;line-height:1.7}
+.glass{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.stage{margin-bottom:58px;scroll-margin-top:24px}.stagehead{display:flex;gap:14px;margin-bottom:18px}.stageid{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-weight:900}.stagehead h2{margin:0;font-size:1.55rem}.stagehead p{color:var(--muted);margin:3px 0 0;line-height:1.55}
+.card{padding:25px}
+.equation{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(1rem,2vw,1.15rem);background:var(--canvas);border:1px solid var(--line);border-radius:13px;padding:16px;overflow:auto;margin:16px 0;text-align:center;font-weight:700;color:var(--primary2)}
+
+.btn{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.11)}.btn.primary{color:#fff;border:0;background:linear-gradient(135deg,var(--primary),var(--primary2))}.btn.accent{color:#fff;border:0;background:linear-gradient(135deg,var(--accent),#f59e0b)}.btn.ghost{background:transparent;border-color:var(--line)}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}
+
+.concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.concept{padding:22px}.concept h3{margin-top:0}.concept p{line-height:1.7}
+.temptation{border-left:5px solid var(--warn)}.resolution{border-left:5px solid var(--success)}
+
+.lab{padding:0;overflow:hidden}.labtop{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 13px;font-weight:750;cursor:pointer}.tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary)}
+.labbody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.65fr);min-height:520px}
+.canvaswrap{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}
+canvas{display:block;width:100%;height:100%;min-height:520px}
+.canvasbadge{position:absolute;left:15px;top:15px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}
+.badge{background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:800}
+
+.controls{padding:21px;overflow:auto}.controlgroup{margin-bottom:21px}.controlgroup h3{font-size:1rem;margin:0 0 10px}.controlgroup p{font-size:.87rem;color:var(--muted);line-height:1.55}
+.simbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rangeline{display:grid;grid-template-columns:1fr 64px;gap:10px;align-items:center;margin-bottom:8px}
+.rangeline input[type=range]{width:100%;accent-color:var(--primary)}
+.rangevalue{text-align:center;padding:8px 5px;font-weight:800;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:.85rem}
+.readouts{display:grid;gap:8px}.readout{display:flex;justify-content:space-between;gap:12px;padding:10px 11px;border-radius:10px;background:rgba(100,116,139,.09);border:1px solid var(--line);font-size:.88rem}.readout b{color:var(--primary)}
+
+.steps{display:grid;gap:13px}.step{display:grid;grid-template-columns:42px 1fr;gap:13px;align-items:start;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.stepnum{width:42px;height:42px;border-radius:13px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-weight:900}.step h3{font-size:1rem;margin:2px 0 5px}.step p{margin:0;line-height:1.65;color:var(--muted)}
+
+.quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.quizcard{padding:22px}.quizcard h3{margin-top:0}.quizoptions{display:grid;gap:8px}.quizoption{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.quizoption:hover{background:var(--primary-light)}
+.sourcebox{padding:20px;line-height:1.65;color:var(--muted)}.sourcebox a{color:var(--primary);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}
+.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;z-index:900}.toast.show{opacity:1;transform:none}
+.resultline{min-height:28px;margin-top:10px;font-weight:700;line-height:1.5}.resultline.ok{color:var(--success)}.resultline.no{color:var(--danger)}
+
+@media(max-width:1050px){.labbody{grid-template-columns:1fr}.canvaswrap{border-right:0;border-bottom:1px solid var(--line)}canvas{min-height:440px}.quizgrid{grid-template-columns:1fr}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.concept-grid{grid-template-columns:1fr}}
+.reveal{opacity:0;transform:translateY(18px);transition:.5s}.reveal.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="barwrap"><div id="bar"></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen">☰</button>
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark">ψ</div><h2>Das Doppelspalt<br>Experiment</h2></div>
+  <div class="sub">Wellen · Spuk · Determinismus</div>
+  <nav id="nav">
+    <a href="#phaenomen"><span class="dot">1</span>Das Phänomen</a>
+    <a href="#intuition"><span class="dot">2</span>Die Teilchen-Falle</a>
+    <a href="#labor"><span class="dot">3</span>Das Mess-Labor</a>
+    <a href="#erklaerung"><span class="dot">4</span>Die Fernwirkung</a>
+    <a href="#superdeterminismus"><span class="dot">5</span>Superdeterminismus</a>
+    <a href="#transfer"><span class="dot">6</span>Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark">◐ Darstellung wechseln</button>
+    <button class="tool" id="restart">↺ Fortschritt zurücksetzen</button>
+  </div>
+  <div class="school">Basierend auf Sabine Hossenfelders Erklärungen<br>Fortschritt wird lokal gespeichert.</div>
+</aside>
+
+<main class="main">
+<header class="hero reveal">
+  <span class="eyebrow">Quantenmechanik · Grundlagen · Interferenz</span>
+  <h1>Das <span>Doppelspalt-Experiment</span></h1>
+  <p>Es ist das berühmteste Experiment der Physik – und das am meisten missverstandene. Wir klären, wie das Interferenzmuster entsteht, was wirklich passiert, wenn wir messen, und warum dieses Experiment Einstein so beunruhigte.</p>
+</header>
+
+<section class="stage reveal" id="phaenomen">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Wellen und Interferenz</h2><p>Die Grundlagen der Musterbildung auf dem Schirm.</p></div></div>
+  <div class="glass card" style="margin-bottom: 24px;">
+    <p style="margin-top:0; line-height: 1.7;">
+      Wenn wir Teilchen (wie Elektronen oder Photonen) durch einen Doppelspalt feuern, verhalten sie sich wie eine Welle. Die Wahrscheinlichkeit, ein Teilchen auf dem Schirm zu finden, entspricht der Intensität $I$ der Welle. 
+      Nach der De-Broglie-Gleichung ist die Wellenlänge $\lambda$ umgekehrt proportional zur Energie $E$ des Teilchens ($\lambda \propto 1/\sqrt{E}$). Je höher die Energie, desto kürzer die Welle.
+    </p>
+    <div class="equation">I(θ) = I_0 · cos²(π·d·sin(θ) / λ) · sinc²(π·b·sin(θ) / λ)</div>
+    <p style="margin-bottom:0; line-height: 1.7;">
+      Das Muster wird durch zwei Faktoren bestimmt: Der <strong>cos²-Term</strong> erzeugt die feinen Interferenzstreifen (abhängig vom Spaltabstand $d$), während der <strong>sinc²-Term</strong> (Beugung am Einzelspalt der Breite $b$) die äußere Hüllkurve bildet.
+    </p>
+  </div>
+
+  <div class="glass lab">
+    <div class="labtop">
+      <div class="tabs">
+        <button class="tab active" data-intro-mode="double">Doppelspalt</button>
+        <button class="tab" data-intro-mode="single">Einzelspalt</button>
+      </div>
+    </div>
+    <div class="labbody">
+      <div class="canvaswrap">
+        <div class="canvasbadge"><span class="badge" id="introBadge">Doppelspalt (Interferenz + Beugung)</span></div>
+        <canvas id="introCanvas" aria-label="Interferenzmuster Parameter"></canvas>
+      </div>
+      <aside class="controls">
+        <div class="controlgroup">
+          <h3>Teilchen-Energie (Wellenlänge)</h3>
+          <p>Höhere Energie bedeutet eine kürzere Wellenlänge.</p>
+          <div class="rangeline">
+            <input type="range" id="introEnergy" min="1" max="100" value="30">
+            <output class="rangevalue" id="outEnergy">Niedrig</output>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Spaltabstand (d)</h3>
+          <p>Abstand der beiden Spalte zueinander.</p>
+          <div class="rangeline">
+            <input type="range" id="introDist" min="20" max="120" value="60">
+            <output class="rangevalue" id="outDist">60px</output>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Simulation</h3>
+          <div class="simbuttons">
+            <button class="btn primary" id="playIntro">⏸ Pause</button>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <div class="readouts">
+            <div class="readout"><span>Sichtbares Muster</span><b id="readIntroPattern">Interferenzstreifen</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="stage reveal" id="intuition">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>Die Falle der "kleinen Bälle"</h2><p>Ein weit verbreiteter Mythos der Quantenmechanik.</p></div></div>
+  <div class="concept-grid">
+    <article class="glass concept temptation">
+      <h3>Die falsche Erzählung</h3>
+      <p>Oft wird in populärwissenschaftlichen Dokus erklärt: "Wenn man nicht misst, verhält sich das Teilchen wie eine Welle. Sobald man aber einen Detektor aufstellt und misst, durch welchen Spalt das Teilchen fliegt, verhält es sich wie ein kleines Projektil und es entstehen zwei scharfe Streifen."</p>
+      <p><strong>Das ist falsch.</strong> Dieses 2-Streifen-Muster entsteht im echten Experiment nie, solange die Spalte schmal sind.</p>
+    </article>
+    <article class="glass concept resolution">
+      <h3>Die quantenmechanische Realität</h3>
+      <p>Auch wenn du misst, durch welchen Spalt das Teilchen geht, <strong>bleibt es eine Welle</strong>. Die Messung zwingt die Welle jedoch, nur noch durch <em>einen einzigen Spalt</em> zu wandern. Eine Welle, die durch einen schmalen Einzelspalt geht, erzeugt auf dem Schirm ein sogenanntes <strong>Beugungsmuster (sinc²-Funktion)</strong> mit einem breiten Hauptmaximum und schwächeren Nebenmaxima – aber eben keine scharfe Linie.</p>
+    </article>
+  </div>
+</section>
+
+<section class="stage reveal" id="labor">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Das Mess-Labor</h2><p>Beobachte den Unterschied der Intensitätsverteilung mit und ohne Detektor.</p></div></div>
+  <div class="glass lab">
+    <div class="labtop">
+      <div class="tabs">
+        <button class="tab active" data-mode="unmeasured">Keine Messung (Beide Spalte)</button>
+        <button class="tab" data-mode="measured">Mit Messung (Detektor an)</button>
+      </div>
+    </div>
+    <div class="labbody">
+      <div class="canvaswrap">
+        <div class="canvasbadge"><span class="badge" id="modeBadge">Welle geht durch beide Spalte</span></div>
+        <canvas id="simCanvas" aria-label="Wellen im Doppelspalt mit Detektor"></canvas>
+      </div>
+      <aside class="controls">
+        <div class="controlgroup">
+          <h3>Erklärung</h3>
+          <p>Ohne Detektor addieren sich die Wellenfunktionen ($\psi_1 + \psi_2$) und werden dann quadriert, was den <strong>Interferenz-Term</strong> (cos²) erzeugt.</p>
+          <p>Ist der Detektor an, wissen wir, durch welchen Spalt das Teilchen geht. Wir erhalten keinen Interferenzterm mehr, sondern lediglich die Summe der Wahrscheinlichkeiten zweier Einzelspalt-Beugungsmuster: $|\psi_1|^2 + |\psi_2|^2$.</p>
+          <div class="simbuttons" style="margin-top:15px">
+            <button class="btn primary" id="playWave">⏸ Pause</button>
+            <button class="btn" id="resetWave">↺ Zurücksetzen</button>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Status</h3>
+          <div class="readouts">
+            <div class="readout"><span>Messung aktiv?</span><b id="readMeasure">Nein</b></div>
+            <div class="readout"><span>Mathematik (Intensität I)</span><b id="readBehavior">|ψ₁ + ψ₂|²</b></div>
+            <div class="readout"><span>Sichtbares Muster</span><b id="readPattern">Feine Interferenz</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="stage reveal" id="erklaerung">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Das wahre Problem: Die Spukhafte Fernwirkung</h2><p>Wenn der Verlust des Interferenzmusters ganz logisch erklärbar ist, was war dann Einsteins Problem?</p></div></div>
+  <div class="glass card">
+    <div class="steps">
+      <div class="step"><div class="stepnum">1</div><div><h3>Die verzögerte Entscheidung (Delayed Choice)</h3><p>Du kannst ein einzelnes Teilchen auf den Weg zur Wand schicken und <strong>erst dann spontan entscheiden</strong>, ob du den Detektor einschaltest, während sich die Welle bereits im Flug befindet.</p></div></div>
+      <div class="step"><div class="stepnum">2</div><div><h3>Das plötzliche Update</h3><p>Ist der Detektor aus, breitet sich die Wahrscheinlichkeitswelle großflächig aus, um durch <em>beide</em> Spalte zu gehen. Schaltest du ihn ein, "weiß" die Welle, dass sie nur durch <em>einen</em> Spalt gehen darf.</p></div></div>
+      <div class="step"><div class="stepnum">3</div><div><h3>Schneller als das Licht</h3><p>Damit das funktioniert, muss sich die ausgedehnte Wellenfunktion <strong>sofort und überall gleichzeitig</strong> updaten. Sie kollabiert instantan. Einstein nannte diesen überlichtschnellen Vorgang abwertend "spukhafte Fernwirkung".</p></div></div>
+      <div class="step"><div class="stepnum">4</div><div><h3>Das Verrückte</h3><p>Selbst wenn das Teilchen letztlich durch den <em>unteren</em> (ungemessenen) Spalt fliegt, verschwindet das Interferenzmuster. Das Teilchen hat den oberen Detektor nie berührt, aber seine Welle musste sich dennoch im gesamten Raum instantan an die Tatsache anpassen, dass du dort eine Messung vorgenommen hast.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="stage reveal" id="superdeterminismus">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Labor: Delayed Choice & Superdeterminismus</h2><p>Wie entkommen wir dem Überlichtgeschwindigkeits-Paradoxon?</p></div></div>
+  <div class="glass lab">
+    <div class="labbody" style="grid-template-columns: minmax(0,1.3fr) minmax(280px,.7fr);">
+      <div class="canvaswrap">
+        <canvas id="spookyCanvas" aria-label="Spukhafte Fernwirkung"></canvas>
+      </div>
+      <aside class="controls">
+        <div class="controlgroup">
+          <h3>Das Gedankenexperiment</h3>
+          <p>Sende ein Teilchen ab. Bevor es die Spalte erreicht (Flugzeit ca. 3,5s), klicke schnell auf den Button, um den Detektor nachträglich einzuschalten.</p>
+          <div class="simbuttons">
+            <button class="btn primary" id="fireParticle" style="grid-column: span 2;">Welle abfeuern</button>
+            <button class="btn accent" id="toggleDetector" disabled style="grid-column: span 2;">Detektor JETZT einschalten!</button>
+          </div>
+        </div>
+        <div class="controlgroup">
+          <h3>Status</h3>
+          <div class="readouts">
+            <div class="readout"><span>Wellen-Status</span><b id="spookyStatus">Bereit</b></div>
+            <div class="readout"><span>Verteilung im Raum</span><b id="spookyWave">Ausgebreitet</b></div>
+          </div>
+        </div>
+        <div class="controlgroup" style="margin-top: 15px; border-top: 1px solid var(--line); padding-top:15px;">
+          <h3>Der Ausweg: Superdeterminismus</h3>
+          <p style="font-size: 0.85rem; line-height: 1.6;">
+            Wenn sich absolut nichts schneller als das Licht bewegen oder "updaten" darf, bleibt laut Hossenfelder nur ein logischer Ausweg: <strong>Superdeterminismus</strong>.<br><br>
+            Das bedeutet: Die Welle musste gar nicht überlichtschnell reagieren, weil sie (und das gesamte Universum) <strong>bereits beim Abfeuern wusste</strong>, dass du in exakt 2 Sekunden den Button klicken würdest. Deine Entscheidung war bereits vorherbestimmt.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="stage reveal" id="transfer">
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Abschließender Selbsttest</h2><p>Weitere Mythen rund um den Doppelspalt.</p></div></div>
+  <div class="quizgrid">
+    <article class="glass quizcard">
+      <h3>1. Das Bewusstsein</h3>
+      <p>Braucht es den "Blick" oder das Bewusstsein eines Menschen, um die Welle zum Kollabieren zu bringen und das Interferenzmuster zu zerstören?</p>
+      <div class="quizoptions" id="quiz1">
+        <label class="quizoption"><input type="radio" name="q2" value="yes"> Ja, die Quantenphysik zeigt, dass Realität Bewusstsein erfordert.</label>
+        <label class="quizoption"><input type="radio" name="q2" value="no"> Nein, ein einfacher elektronischer Sensor ohne Bewusstsein reicht völlig.</label>
+      </div>
+      <div class="resultline" id="res1"></div>
+    </article>
+    <article class="glass quizcard">
+      <h3>2. Impulserhaltung</h3>
+      <p>Ein Teilchen ändert seine Flugbahn im Interferenzmuster, um an einem ganz bestimmten Punkt auf dem Schirm zu landen. Verletzt das die Impulserhaltung?</p>
+      <div class="quizoptions" id="quiz2">
+        <label class="quizoption"><input type="radio" name="q3" value="wrong"> Ja, auf Quantenebene ist der Impuls nicht strikt erhalten.</label>
+        <label class="quizoption"><input type="radio" name="q3" value="right"> Nein. Das Teilchen verschränkt sich mit der Wand. Die schwere Wand bekommt einen unmessbar kleinen Impuls ("Kick") in die Gegenrichtung.</label>
+      </div>
+      <div class="resultline" id="res2"></div>
+    </article>
+  </div>
+</section>
+<footer>Interaktives Arbeitsblatt · Quantenmechanik · Erstellt für die Lehre</footer>
+</main>
+</div>
+<div class="toast" id="toast">Gespeichert</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const STORAGE_KEY = 'doubleSlitV2';
+let state = { q1:false, q2:false, dark:false };
+try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
+
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}}
+function showToast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim()}
+
+// Global Animation Loops
+let time = 0;
+let lastFrameTime = performance.now();
+function globalLoop(now) {
+  const dt = (now - lastFrameTime) / 1000;
+  lastFrameTime = now;
+  
+  if(introPlaying) { introT += dt * introSpeed; drawIntro(); }
+  if(wavePlaying) { waveT += dt * 1.5; drawWave(); }
+  if(spStatus === 'firing') {
+    spT += dt * 0.28; // takes approx 3.5 seconds to reach slit
+    if(spT >= 1.8) {
+      spStatus = 'hit';
+      $('#fireParticle').textContent = 'Neuer Versuch';
+      $('#toggleDetector').disabled = true;
+      $('#spookyStatus').textContent = 'Eingeschlagen';
+    }
+    drawSpooky();
+  }
+  
+  time += dt;
+  requestAnimationFrame(globalLoop);
+}
+
+const introCanvas=$('#introCanvas'), iCtx=introCanvas.getContext('2d');
+let introMode='double', introPlaying=true, introT=0;
+let introEnergy = 30; // 1 to 100
+let introDist = 60;   // 20 to 120
+let introSpeed = 1;
+
+function resizeIntro(){
+  const rect=introCanvas.getBoundingClientRect(); if(rect.width<10)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2); 
+  introCanvas.width=Math.round(rect.width*dpr); introCanvas.height=Math.round(rect.height*dpr); 
+  iCtx.setTransform(dpr,0,0,dpr,0,0);
+  drawIntro();
+}
+
+function drawIntro(){
+  const rect=introCanvas.getBoundingClientRect(); const w=rect.width, h=rect.height; if(!w||!h)return;
+  iCtx.clearRect(0,0,w,h); iCtx.fillStyle=css('--canvas'); iCtx.fillRect(0,0,w,h);
+  
+  const barrierX = w * 0.35;
+  const screenX = w - 80;
+  
+  // Physics parameters mapped to display
+  // Higher energy = shorter wavelength (lambda)
+  const lambda = 12 + (100 - introEnergy) * 0.4; 
+  introSpeed = 0.5 + (introEnergy / 100) * 1.5; // faster waves for higher energy
+  
+  const d = introMode === 'double' ? introDist : 0;
+  const slitWidth = 15;
+  const s1y = h/2 - d/2;
+  const s2y = h/2 + d/2;
+  
+  const cWall = css('--muted');
+  const cWave = css('--primary');
+  
+  // Barrier
+  iCtx.fillStyle = cWall;
+  if(introMode === 'double') {
+    iCtx.fillRect(barrierX, 0, 10, s1y - slitWidth/2);
+    iCtx.fillRect(barrierX, s1y + slitWidth/2, 10, d - slitWidth);
+    iCtx.fillRect(barrierX, s2y + slitWidth/2, 10, h);
+  } else {
+    iCtx.fillRect(barrierX, 0, 10, h/2 - slitWidth/2);
+    iCtx.fillRect(barrierX, h/2 + slitWidth/2, 10, h);
+  }
+
+  // Incoming Waves (Plane waves)
+  iCtx.strokeStyle = cWave; iCtx.lineWidth = 1.5;
+  for(let x = barrierX - ((introT*lambda*2) % lambda); x > 0; x -= lambda) {
+    iCtx.beginPath(); iCtx.moveTo(x, 0); iCtx.lineTo(x, h);
+    iCtx.globalAlpha = Math.max(0, 1 - (barrierX-x)/200); iCtx.stroke();
+  }
+  iCtx.globalAlpha = 1;
+
+  // Outgoing Waves
+  const maxRadius = screenX - barrierX + 50;
+  for(let r = ((introT*lambda*2) % lambda); r < maxRadius; r += lambda) {
+    iCtx.globalAlpha = Math.max(0, 1 - (r/maxRadius));
+    if(introMode === 'double') {
+      iCtx.beginPath(); iCtx.arc(barrierX+10, s1y, r, -Math.PI/2, Math.PI/2); iCtx.stroke();
+      iCtx.beginPath(); iCtx.arc(barrierX+10, s2y, r, -Math.PI/2, Math.PI/2); iCtx.stroke();
+    } else {
+      iCtx.beginPath(); iCtx.arc(barrierX+10, h/2, r, -Math.PI/2, Math.PI/2); iCtx.stroke();
+    }
+  }
+  iCtx.globalAlpha = 1;
+
+  // Screen & Intensity
+  iCtx.fillStyle = css('--text'); iCtx.fillRect(screenX, 20, 5, h-40);
+  
+  iCtx.beginPath(); iCtx.strokeStyle = css('--primary2'); iCtx.lineWidth = 2.5;
+  const graphScale = 70;
+  
+  for(let y = 20; y < h-20; y++){
+    let dy = y - h/2;
+    // Map pixels to physical angle theta
+    let sinTheta = dy / Math.sqrt(dy*dy + (screenX - barrierX)*(screenX - barrierX));
+    
+    // Diffraction envelope (sinc^2)
+    let beta = (Math.PI * slitWidth * sinTheta * 3) / lambda; // factor 3 for visual scaling
+    let sinc = (beta === 0) ? 1 : Math.sin(beta)/beta;
+    let env = sinc * sinc;
+    
+    let intensity = 0;
+    if(introMode === 'double') {
+      // Interference (cos^2)
+      let alpha = (Math.PI * d * sinTheta * 2) / lambda;
+      let inter = Math.cos(alpha) * Math.cos(alpha);
+      intensity = env * inter;
+    } else {
+      intensity = env;
+    }
+    
+    let gx = screenX + 10 + intensity * graphScale;
+    if(y===20) iCtx.moveTo(gx, y); else iCtx.lineTo(gx, y);
+  }
+  iCtx.stroke();
+  iCtx.lineTo(screenX + 10, h-20); iCtx.lineTo(screenX + 10, 20);
+  iCtx.fillStyle = 'rgba(37,99,235, 0.15)'; iCtx.fill();
+}
+
+$('#introEnergy').addEventListener('input', (e)=>{
+  introEnergy = Number(e.target.value); 
+  let txt = introEnergy < 33 ? 'Niedrig (lange Welle)' : (introEnergy > 66 ? 'Hoch (kurze Welle)' : 'Mittel');
+  $('#outEnergy').textContent = txt;
+  if(!introPlaying) drawIntro();
+});
+$('#introDist').addEventListener('input', (e)=>{
+  introDist = Number(e.target.value); $('#outDist').textContent = introDist + 'px';
+  if(!introPlaying) drawIntro();
+});
+$('#playIntro').addEventListener('click', ()=>{
+  introPlaying = !introPlaying; $('#playIntro').textContent = introPlaying ? '⏸ Pause' : '▶ Start';
+});
+$$('#phaenomen .tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    $$('#phaenomen .tab').forEach(x=>x.classList.remove('active')); tab.classList.add('active');
+    introMode = tab.dataset.introMode;
+    $('#introBadge').textContent = introMode === 'double' ? 'Doppelspalt (Interferenz + Beugung)' : 'Einzelspalt (Nur Beugung)';
+    $('#readIntroPattern').textContent = introMode === 'double' ? 'Viele feine Streifen' : 'Breites Hauptmaximum';
+    if(!introPlaying) drawIntro();
+  });
+});
+
+
+const canvas=$('#simCanvas'), ctx=canvas.getContext('2d');
+let waveMode='unmeasured'; // unmeasured, measured
+let waveT=0, wavePlaying=true;
+
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect(); if(rect.width<10)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2); 
+  canvas.width=Math.round(rect.width*dpr); canvas.height=Math.round(rect.height*dpr); 
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  drawWave();
+}
+
+function drawWave(){
+  const rect=canvas.getBoundingClientRect(); const w=rect.width, h=rect.height; if(!w||!h)return;
+  ctx.clearRect(0,0,w,h); ctx.fillStyle=css('--canvas'); ctx.fillRect(0,0,w,h);
+  
+  const barrierX = w * 0.4;
+  const slitGap = 60;
+  const slitWidth = 14;
+  const s1y = h/2 - slitGap/2;
+  const s2y = h/2 + slitGap/2;
+  const screenX = w - 80;
+  
+  const cWall = css('--muted');
+  const cWave = waveMode === 'unmeasured' ? css('--primary') : css('--accent');
+  const lambda = 25;
+  
+  // Draw Incoming Waves
+  ctx.strokeStyle = cWave; ctx.lineWidth = 2;
+  for(let x = barrierX - ((waveT*lambda*2) % lambda); x > 0; x -= lambda) {
+    ctx.beginPath(); ctx.moveTo(x, h/2 - 100); ctx.lineTo(x, h/2 + 100);
+    ctx.globalAlpha = Math.max(0, 1 - (barrierX-x)/150); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // Barrier
+  ctx.fillStyle = cWall;
+  ctx.fillRect(barrierX, 0, 10, s1y - slitWidth/2);
+  ctx.fillRect(barrierX, s1y + slitWidth/2, 10, slitGap - slitWidth);
+  ctx.fillRect(barrierX, s2y + slitWidth/2, 10, h);
+
+  // Detector
+  if(waveMode === 'measured') {
+    ctx.fillStyle = css('--marker');
+    ctx.fillRect(barrierX - 6, s1y - 20, 22, 12); 
+    ctx.fillRect(barrierX - 6, s2y + 8, 22, 12); 
+    ctx.fillStyle = '#fff'; ctx.font = '9px Inter'; 
+    ctx.fillText('DET', barrierX - 3, s1y - 11);
+    ctx.fillText('DET', barrierX - 3, s2y + 17);
+  }
+
+  // Outgoing Waves
+  const maxRadius = screenX - barrierX + 50;
+  for(let r = ((waveT*lambda*2) % lambda); r < maxRadius; r += lambda) {
+    ctx.globalAlpha = Math.max(0, 1 - (r/maxRadius));
+    if(waveMode === 'unmeasured') {
+      ctx.beginPath(); ctx.arc(barrierX+10, s1y, r, -Math.PI/2, Math.PI/2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(barrierX+10, s2y, r, -Math.PI/2, Math.PI/2); ctx.stroke();
+    } else {
+      // Draw both but differently colored/dashed to show incoherence
+      ctx.strokeStyle = css('--accent');
+      ctx.beginPath(); ctx.arc(barrierX+10, s1y, r, -Math.PI/2, Math.PI/2); ctx.stroke();
+      ctx.strokeStyle = css('--marker');
+      ctx.beginPath(); ctx.arc(barrierX+10, s2y, r, -Math.PI/2, Math.PI/2); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = css('--primary2'); // reset for graph
+
+  // Screen
+  ctx.fillStyle = css('--text'); ctx.fillRect(screenX, 20, 5, h-40);
+
+  // Intensity Graph
+  ctx.beginPath(); ctx.lineWidth = 2.5;
+  const graphScale = 60;
+  
+  for(let y = 20; y < h-20; y++){
+    let dy = y - h/2;
+    let sinTheta = dy / Math.sqrt(dy*dy + (screenX - barrierX)**2);
+    
+    // Single slit diffraction envelope
+    let beta = (Math.PI * slitWidth * sinTheta * 4) / lambda;
+    let sinc = (beta === 0) ? 1 : Math.sin(beta)/beta;
+    let env = sinc * sinc;
+    
+    let intensity = 0;
+    if(waveMode === 'unmeasured') {
+      // Interference
+      let alpha = (Math.PI * slitGap * sinTheta * 2) / lambda;
+      intensity = env * Math.cos(alpha) * Math.cos(alpha);
+    } else {
+      // Sum of probabilities: |psi_1|^2 + |psi_2|^2
+      // Each slit produces a diffraction pattern shifted slightly
+      // For visual clarity, we just show the broad envelope without interference fringes
+      // Notice: The secondary diffraction maxima remain! It's not a single "ball" peak.
+      let dy1 = y - s1y; let st1 = dy1 / Math.sqrt(dy1*dy1 + (screenX-barrierX)**2);
+      let b1 = (Math.PI * slitWidth * st1 * 4)/lambda; let env1 = (b1===0)?1:Math.sin(b1)/b1;
+      
+      let dy2 = y - s2y; let st2 = dy2 / Math.sqrt(dy2*dy2 + (screenX-barrierX)**2);
+      let b2 = (Math.PI * slitWidth * st2 * 4)/lambda; let env2 = (b2===0)?1:Math.sin(b2)/b2;
+      
+      intensity = (env1*env1 + env2*env2) * 0.5; // average to keep scale similar
+    }
+    
+    let gx = screenX + 10 + intensity * graphScale;
+    if(y===20) ctx.moveTo(gx, y); else ctx.lineTo(gx, y);
+  }
+  ctx.strokeStyle = waveMode === 'unmeasured' ? css('--primary2') : css('--accent');
+  ctx.stroke();
+  ctx.lineTo(screenX + 10, h-20); ctx.lineTo(screenX + 10, 20);
+  ctx.fillStyle = waveMode === 'unmeasured' ? 'rgba(37,99,235, 0.15)' : 'rgba(234,88,12, 0.15)'; 
+  ctx.fill();
+}
+
+$('#playWave').addEventListener('click', ()=>{
+  wavePlaying = !wavePlaying; $('#playWave').textContent = wavePlaying ? '⏸ Pause' : '▶ Start';
+});
+$('#resetWave').addEventListener('click', ()=>{ waveT = 0; drawWave(); });
+
+$$('#labor .tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    $$('#labor .tab').forEach(x=>x.classList.remove('active')); tab.classList.add('active');
+    waveMode = tab.dataset.mode;
+    
+    $('#modeBadge').textContent = waveMode === 'unmeasured' ? 'Welle geht durch beide Spalte' : 'Welle ist gezwungen (Inkohärent)';
+    $('#readMeasure').textContent = waveMode === 'unmeasured' ? 'Nein' : 'Ja (an beiden Spalten)';
+    $('#readBehavior').textContent = waveMode === 'unmeasured' ? '|ψ₁ + ψ₂|² (Interferenzterm)' : '|ψ₁|² + |ψ₂|² (Summe d. Wahrscheinlichkeiten)';
+    $('#readPattern').textContent = waveMode === 'unmeasured' ? 'Feine Interferenzstreifen' : 'Zwei überlagerte Beugungsmuster (keine Streifen)';
+    
+    if(!wavePlaying) drawWave();
+  });
+});
+
+
+const spookyCanvas=$('#spookyCanvas'), sCtx=spookyCanvas.getContext('2d');
+let spT = 0, spStatus = 'ready', spMeasured = false; // ready, firing, hit
+let shockwaveT = 0;
+
+function resizeSpooky(){
+  const rect=spookyCanvas.getBoundingClientRect(); if(rect.width<10)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2); 
+  spookyCanvas.width=Math.round(rect.width*dpr); spookyCanvas.height=Math.round(rect.height*dpr); 
+  sCtx.setTransform(dpr,0,0,dpr,0,0);
+  drawSpooky();
+}
+
+function drawSpooky(){
+  const rect=spookyCanvas.getBoundingClientRect(); const w=rect.width, h=rect.height; if(!w||!h)return;
+  sCtx.clearRect(0,0,w,h); sCtx.fillStyle=css('--canvas'); sCtx.fillRect(0,0,w,h);
+  
+  const barrierX = w * 0.6;
+  const slitGap = 80;
+  const s1y = h/2 - slitGap/2;
+  const s2y = h/2 + slitGap/2;
+  
+  // Barrier
+  sCtx.fillStyle = css('--muted');
+  sCtx.fillRect(barrierX, 20, 10, s1y - 30);
+  sCtx.fillRect(barrierX, s1y + 10, 10, slitGap - 20);
+  sCtx.fillRect(barrierX, s2y + 10, 10, h - (s2y + 30));
+
+  // Detector Box
+  if(spMeasured) {
+    sCtx.fillStyle = css('--accent');
+    sCtx.fillRect(barrierX - 8, s1y - 15, 26, 15);
+    sCtx.fillStyle = '#fff'; sCtx.font='10px Inter'; sCtx.fillText('ON', barrierX - 3, s1y - 4);
+    
+    // Shockwave effect expanding across entire left side
+    if(shockwaveT < 1) {
+      sCtx.beginPath(); sCtx.arc(barrierX+5, s1y-7, shockwaveT*400, 0, Math.PI*2);
+      sCtx.lineWidth = 3; sCtx.strokeStyle = `rgba(234,88,12,${1-shockwaveT})`; sCtx.stroke();
+      shockwaveT += 0.05;
+    }
+  } else {
+    sCtx.fillStyle = 'rgba(100,116,139, 0.3)';
+    sCtx.fillRect(barrierX - 8, s1y - 15, 26, 15);
+  }
+
+  // Particle / Wave Packet
+  if(spStatus === 'firing' || spStatus === 'hit') {
+    const px = 40 + spT * (barrierX - 40);
+    
+    if(spT <= 1) { 
+      // Phase 1: In flight before slits
+      if(!spMeasured) {
+        // Dual Wave (spread out covering both possible paths)
+        sCtx.fillStyle = css('--primary');
+        sCtx.beginPath(); sCtx.arc(px, h/2 - 20, 12, 0, Math.PI*2); sCtx.fill();
+        sCtx.beginPath(); sCtx.arc(px, h/2 + 20, 12, 0, Math.PI*2); sCtx.fill();
+        
+        sCtx.strokeStyle = 'rgba(15,118,110,0.3)'; sCtx.lineWidth=20; sCtx.lineCap='round';
+        sCtx.beginPath(); sCtx.moveTo(px, h/2 - 20); sCtx.lineTo(px, h/2 + 20); sCtx.stroke();
+      } else {
+        // Collapsed to one immediately upon click
+        sCtx.fillStyle = css('--accent');
+        sCtx.beginPath(); sCtx.arc(px, s1y, 12, 0, Math.PI*2); sCtx.fill();
+      }
+    } else {
+      // Phase 2: Past slits
+      let postT = spT - 1;
+      let outX = barrierX + 10 + postT * 150;
+      if(!spMeasured) {
+        sCtx.fillStyle = css('--primary');
+        sCtx.beginPath(); sCtx.arc(outX, s1y + postT*30, 10, 0, Math.PI*2); sCtx.fill();
+        sCtx.beginPath(); sCtx.arc(outX, s2y - postT*30, 10, 0, Math.PI*2); sCtx.fill();
+      } else {
+        sCtx.fillStyle = css('--accent');
+        sCtx.beginPath(); sCtx.arc(outX, s1y + postT*15, 10, 0, Math.PI*2); sCtx.fill();
+      }
+    }
+  }
+}
+
+$('#fireParticle').addEventListener('click', ()=>{
+  if(spStatus === 'firing') return; 
+  spStatus = 'firing'; spT = 0; spMeasured = false; shockwaveT = 2;
+  $('#fireParticle').textContent = 'Fliegt... (Klick den Detektor!)';
+  $('#toggleDetector').disabled = false;
+  $('#spookyStatus').textContent = 'Unterwegs zur Wand';
+  $('#spookyWave').textContent = 'Großräumig verteilt (beide Wege)';
+});
+
+$('#toggleDetector').addEventListener('click', ()=>{
+  // Allow turning on only if particle hasn't reached the slits yet (spT < 1.0)
+  if(spStatus === 'firing' && spT < 0.95) {
+    spMeasured = true;
+    shockwaveT = 0; // Trigger shockwave animation
+    $('#toggleDetector').disabled = true;
+    $('#spookyWave').textContent = 'INSTANTAN KOLLABIERT (1 Weg)';
+    drawSpooky(); 
+  }
+});
+
+$$('input[name="q2"]').forEach(rad => {
+  rad.addEventListener('change', (e) => {
+    const res = $('#res1');
+    if(e.target.value === 'no') {
+      res.className = 'resultline ok'; res.textContent = 'Richtig. Ein lebloses Messgerät (z.B. ein Photomultiplier) reicht. Menschliches Bewusstsein spielt keine physikalische Rolle.'; state.q1=true;
+    } else {
+      res.className = 'resultline no'; res.textContent = 'Falsch. Das ist eine esoterische Fehlinterpretation. Reale Messgeräte ohne Bewusstsein verändern das Ergebnis ebenso.';
+    }
+  });
+});
+
+$$('input[name="q3"]').forEach(rad => {
+  rad.addEventListener('change', (e) => {
+    const res = $('#res2');
+    if(e.target.value === 'right') {
+      res.className = 'resultline ok'; res.textContent = 'Korrekt! Da die Wand im Vergleich zum Teilchen gigantisch schwer ist, ist dieser Rückstoß unmessbar klein, aber der Impuls bleibt stets streng erhalten.'; state.q2=true;
+    } else {
+      res.className = 'resultline no'; res.textContent = 'Falsch. Erhaltungssätze (Energie, Impuls) gelten auch in der Quantenmechanik ausnahmslos.';
+    }
+  });
+});
+
+// Setup Observers for revealing sections on scroll
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});$$('.reveal,.stage').forEach(el=>io.observe(el));
+const navIO=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('.stage').forEach(s=>navIO.observe(s));
+$('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+
+function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(()=>{drawIntro();drawWave();drawSpooky()},30)}
+$('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();
+$('#restart').addEventListener('click',()=>{if(confirm('Fortschritt zurücksetzen?')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});
+
+// Start
+window.addEventListener('resize', ()=>{resizeIntro();resizeCanvas();resizeSpooky();});
+setTimeout(()=>{resizeIntro();resizeCanvas();resizeSpooky(); requestAnimationFrame(globalLoop);}, 100);
+</script>
+</body>
+</html>
