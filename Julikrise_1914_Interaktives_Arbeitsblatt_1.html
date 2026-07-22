@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Julikrise 1914 · Interaktives Arbeitsblatt</title>
+<meta name="description" content="Interaktives Geschichtsarbeitsblatt zur Julikrise 1914: Akteure, Quellen, Entscheidungen, Eskalation und historische Urteilsbildung">
+<style>
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{
+  --primary:#7c2d12;--primary2:#b45309;--primary-light:#fff0e5;--accent:#1d4ed8;
+  --text:#1f2937;--muted:#64748b;--surface:rgba(255,255,255,.86);--surface-solid:#fff;
+  --border:rgba(255,255,255,.48);--line:rgba(100,116,139,.25);--shadow:0 10px 34px rgba(30,41,59,.12);
+  --radius:18px;--sidebar:310px;--success:#15803d;--danger:#b91c1c;--warn:#a16207;--purple:#6d28d9;
+  --canvas:#f8fafc;--ink:#334155;--austria:#b91c1c;--germany:#111827;--serbia:#2563eb;--russia:#15803d;--france:#7c3aed;--britain:#0e7490;
+  --map-sea:#dbeafe;--map-label:#0f172a;--map-label-halo:rgba(255,255,255,.85);--map-central:#fecaca;--map-central-line:#b91c1c;--map-entente:#bfdbfe;--map-entente-line:#1d4ed8;--map-serbia:#fde68a;--map-serbia-line:#b45309;--map-neutral:#e2e8f0;--map-neutral-line:#94a3b8;--map-context:#e8eef5;--map-context-line:#cbd5e1;--map-tie:#16a34a;--map-krise:#fcd34d;--map-krise-line:#d97706;--map-mobil:#fdba74;--map-mobil-line:#ea580c;--map-krieg:#f87171;--map-krieg-line:#b91c1c;--map-support:#0e7490;--map-ultimatum:#a16207;--map-war:#b91c1c;--map-invasion:#7f1d1d;
+}
+body.dark{
+  --primary:#fb923c;--primary2:#fbbf24;--primary-light:rgba(251,146,60,.14);--accent:#60a5fa;
+  --text:#e5e7eb;--muted:#94a3b8;--surface:rgba(15,23,42,.88);--surface-solid:#0f172a;
+  --border:rgba(255,255,255,.14);--line:rgba(148,163,184,.23);--shadow:0 10px 34px rgba(0,0,0,.3);
+  --success:#4ade80;--danger:#f87171;--warn:#fbbf24;--purple:#c4b5fd;--canvas:#09111f;--ink:#cbd5e1;
+  --austria:#fb7185;--germany:#e5e7eb;--serbia:#60a5fa;--russia:#4ade80;--france:#c4b5fd;--britain:#67e8f9;
+  --map-sea:#0b1b33;--map-label:#e5e7eb;--map-label-halo:rgba(2,6,23,.85);--map-central:#7f1d1d;--map-central-line:#fca5a5;--map-entente:#1e3a8a;--map-entente-line:#93c5fd;--map-serbia:#78350f;--map-serbia-line:#fcd34d;--map-neutral:#334155;--map-neutral-line:#64748b;--map-context:#1e293b;--map-context-line:#334155;--map-tie:#4ade80;--map-krise:#a16207;--map-krise-line:#fcd34d;--map-mobil:#c2410c;--map-mobil-line:#fdba74;--map-krieg:#b91c1c;--map-krieg-line:#fca5a5;--map-support:#22d3ee;--map-ultimatum:#fbbf24;--map-war:#f87171;--map-invasion:#fca5a5;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:linear-gradient(135deg,#fff7ed,#fef2f2 48%,#eff6ff);min-height:100vh;transition:.3s}body.dark{background:linear-gradient(135deg,#1c1009,#1f1417 48%,#071524)}
+h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}button,input,select,textarea{font:inherit;color:inherit}.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.22;z-index:-1;animation:float 22s ease-in-out infinite alternate}.b1{width:500px;height:500px;background:#f97316;top:-15%;left:-10%}.b2{width:430px;height:430px;background:#dc2626;right:-9%;top:32%}.b3{width:370px;height:370px;background:#2563eb;left:36%;bottom:-13%}@keyframes float{to{transform:translate(38px,-28px) scale(1.07)}}
+#barwrap{position:fixed;top:0;left:0;width:100%;height:5px;background:rgba(0,0,0,.08);z-index:700}#bar{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.25s}
+.layout{display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;overflow:auto;background:rgba(255,255,255,.13);backdrop-filter:blur(20px);border-right:1px solid var(--border);z-index:400;transition:.3s}.brand{display:flex;gap:12px;align-items:center}.mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));font-weight:900;font-size:1.08rem}.sidebar h2{font-size:1.03rem;color:var(--primary);margin:0}.sub{margin:4px 0 22px 58px;color:var(--muted);font-size:.8rem}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:11px;color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}.dot{width:25px;height:25px;border-radius:8px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-size:.75rem;font-weight:800}.tools{display:grid;gap:9px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}.tool{border:1px solid var(--border);background:var(--surface);border-radius:11px;padding:10px 12px;text-align:left;cursor:pointer;font-weight:600}.tool:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,23,42,.08)}.school{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);font-size:.74rem;color:var(--muted);line-height:1.55}.hamb{display:none;position:fixed;right:14px;top:14px;width:44px;height:44px;border-radius:11px;border:1px solid var(--border);background:var(--surface);z-index:500;cursor:pointer}.main{margin-left:var(--sidebar);max-width:1240px;padding:46px 5vw 100px;flex:1}.hero{margin-bottom:32px}.eyebrow{display:inline-block;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px}.hero h1{font-size:clamp(2.25rem,4.7vw,3.65rem);line-height:1.04;margin:16px 0 14px}.hero h1 span{color:var(--primary)}.hero p{max-width:920px;color:var(--muted);font-size:1.06rem;line-height:1.7}.glass{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.intro{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:48px}.introcard,.progress{padding:24px 26px}.introcard p{line-height:1.7}.progress h3{color:var(--primary);font-size:1rem;margin-top:0}.num{font-size:2.2rem;font-weight:900;color:var(--primary)}.minibar{height:10px;border-radius:999px;background:rgba(100,116,139,.18);overflow:hidden}.minibar div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.3s}.progress small{color:var(--muted)}
+.stage{margin-bottom:58px;scroll-margin-top:24px}.stagehead{display:flex;gap:14px;margin-bottom:18px}.stageid{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-weight:900}.stagehead h2{margin:0;font-size:1.55rem}.stagehead p{color:var(--muted);margin:3px 0 0;line-height:1.55}.card{padding:25px}.problem{line-height:1.75;background:linear-gradient(135deg,rgba(124,45,18,.07),rgba(29,78,216,.06));border:1px solid var(--border);border-radius:15px;padding:20px}.problem h3{margin:0 0 8px}.question-grid{display:grid;grid-template-columns:minmax(320px,.95fr) 1.05fr;gap:22px;align-items:start}.scene{width:100%;aspect-ratio:760/460;min-height:0;border-radius:16px;background:var(--canvas);border:1px solid var(--line);overflow:hidden;position:relative;display:block}.scene svg{display:block;width:100%;height:auto;aspect-ratio:760/460}.scene-caption{position:absolute;left:14px;bottom:14px;max-width:calc(100% - 28px);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:800;white-space:normal}.question-text{line-height:1.72}.choices{display:grid;gap:9px;margin:18px 0 12px}.choice{position:relative}.choice input{position:absolute;opacity:0}.choice label{display:block;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font-weight:700;padding:13px 14px;transition:.18s}.choice input:checked+label{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);color:var(--primary);transform:translateY(-1px)}.textinput,textarea,select{width:100%;border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:11px 12px;outline:none}.textinput:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}textarea{min-height:110px;resize:vertical}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.11)}.btn.primary{color:#fff;border:0;background:linear-gradient(135deg,var(--primary),var(--primary2))}.btn.accent{color:#fff;border:0;background:linear-gradient(135deg,var(--accent),#0e7490)}.btn.ghost{background:transparent;border-color:var(--line)}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}.feedback{display:none;margin-top:18px;padding:17px 18px;border-radius:14px;border:1px solid var(--line);line-height:1.65}.feedback.show{display:block}.feedback.good{background:rgba(21,128,61,.10);border-color:rgba(21,128,61,.35)}.feedback.think{background:rgba(245,158,11,.11);border-color:rgba(245,158,11,.38)}.feedback.bad{background:rgba(185,28,28,.08);border-color:rgba(185,28,28,.3)}.feedback strong{display:block;margin-bottom:4px}.unlock-note{display:none;margin-top:12px;color:var(--primary);font-weight:700}.unlock-note.show{display:block}.hidden-stage{display:none}.reveal{opacity:0;transform:translateY(18px);transition:.5s}.reveal.visible{opacity:1;transform:none}
+.actor-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:18px}.actor-map{padding:18px;min-height:0;overflow:hidden}.actor-map svg{display:block;width:100%;height:auto;aspect-ratio:820/600;max-height:600px}.actor-node{cursor:pointer;transition:.2s;outline:none}.actor-node .actor-shape{transition:stroke-width .18s,filter .18s,transform .18s;transform-box:fill-box;transform-origin:center}.actor-node:hover .actor-shape,.actor-node.active .actor-shape,.actor-node:focus .actor-shape{stroke-width:6;filter:drop-shadow(0 7px 9px rgba(15,23,42,.22));transform:translateY(-2px)}.actor-node:focus-visible .actor-shape{stroke-dasharray:7 4}.actor-panel{padding:23px;display:flex;flex-direction:column}.actor-panel h3{margin:0 0 8px}.actor-tag{display:inline-block;width:max-content;border-radius:999px;padding:6px 10px;background:var(--primary-light);color:var(--primary);font-size:.78rem;font-weight:800;margin-bottom:12px}.actor-facts{display:grid;gap:11px}.actor-fact{padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(100,116,139,.07)}.actor-fact b{display:block;color:var(--primary);margin-bottom:4px}.actor-question{margin-top:auto;padding-top:18px}.micro-result{min-height:24px;margin-top:9px;font-weight:700;line-height:1.5}.micro-result.ok{color:var(--success)}.micro-result.no{color:var(--danger)}
+.source-toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}.source-progress{font-size:.88rem;color:var(--muted);font-weight:700}.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.source-card{padding:22px;position:relative}.source-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.source-date{font-weight:900;color:var(--primary);font-size:.9rem}.source-kind{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800}.source-text{line-height:1.7;padding:15px;border-radius:13px;background:var(--canvas);border:1px solid var(--line);margin:13px 0}.source-note{font-size:.78rem;color:var(--muted);line-height:1.5}.classify{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}.classify button{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 7px;font-weight:750;cursor:pointer;font-size:.82rem}.classify button.selected{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.source-result{min-height:54px;margin-top:11px;font-size:.86rem;line-height:1.55}.source-card.done{outline:2px solid rgba(21,128,61,.3)}
+.timeline-shell{padding:0;overflow:hidden}.timeline-top{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.timeline-body{display:grid;grid-template-columns:minmax(250px,.55fr) minmax(0,1.45fr);min-height:620px}.timeline-list{padding:17px;border-right:1px solid var(--line);display:grid;gap:9px;align-content:start}.time-item{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 12px;text-align:left;cursor:pointer}.time-item.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}.time-item.locked{opacity:.45;cursor:not-allowed}.time-item small{display:block;color:var(--muted);margin-top:3px}.decision-panel{padding:26px;display:flex;flex-direction:column}.decision-date{font-weight:900;color:var(--primary);font-size:.9rem}.decision-panel h3{font-size:1.35rem;margin:7px 0 9px}.decision-context{line-height:1.7;color:var(--muted)}.decision-options{display:grid;gap:9px;margin:16px 0}.decision-option{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:var(--surface);cursor:pointer;text-align:left;font-weight:700}.decision-option:hover{background:var(--primary-light)}.decision-option.chosen{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.12)}.history-reveal{display:none;padding:17px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(29,78,216,.08),rgba(124,45,18,.08));line-height:1.65}.history-reveal.show{display:block}.history-reveal h4{margin:0 0 6px}.counter-note{font-size:.78rem;color:var(--muted);line-height:1.5;margin-top:10px}.timeline-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:20px}
+.model-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);gap:18px}.model-visual{padding:20px;min-height:500px}.pressure-meter{height:25px;border-radius:999px;background:rgba(100,116,139,.18);overflow:hidden;border:1px solid var(--line);margin:16px 0}.pressure-meter div{height:100%;width:50%;background:linear-gradient(90deg,#16a34a,#f59e0b 55%,#dc2626);transition:.35s}.pressure-label{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem}.chain{display:grid;gap:13px;margin-top:22px}.chain-step{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:13px;padding:14px;background:var(--surface)}.chain-icon{width:42px;height:42px;border-radius:13px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-weight:900}.chain-step h4{margin:1px 0 4px}.chain-step p{margin:0;color:var(--muted);line-height:1.55}.model-controls{padding:22px}.controlgroup{margin-bottom:22px}.controlgroup h3{font-size:1rem;margin:0 0 8px}.controlgroup p{font-size:.87rem;color:var(--muted);line-height:1.55}.rangeline{display:grid;grid-template-columns:1fr 58px;gap:10px;align-items:center}.rangeline input[type=range]{width:100%;accent-color:var(--primary)}.rangevalue{width:100%;border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:8px 5px;text-align:center;font-weight:800}.model-note{padding:14px;border-left:5px solid var(--warn);background:rgba(245,158,11,.1);border-radius:12px;line-height:1.6;font-size:.87rem}
+.judgement-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.thesis-card{padding:22px}.thesis-card h3{margin-top:0}.thesis-card p{line-height:1.68}.evidence-list{display:grid;gap:8px}.evidence{border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:var(--surface)}.allocation{padding:24px;margin-top:18px}.allocation-row{display:grid;grid-template-columns:150px 1fr 58px;gap:12px;align-items:center;margin:12px 0}.allocation-row input{width:100%;accent-color:var(--primary)}.totalbox{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-radius:12px;background:var(--canvas);border:1px solid var(--line);font-weight:800}.totalbox.bad{border-color:var(--danger);color:var(--danger)}.totalbox.good{border-color:var(--success);color:var(--success)}
+.quizgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.quizcard{padding:22px}.quizcard h3{margin-top:0}.quizoptions{display:grid;gap:8px}.quizoption{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.quizoption:hover{background:var(--primary-light)}.resultline{min-height:28px;margin-top:10px;font-weight:700;line-height:1.5}.resultline.ok{color:var(--success)}.resultline.no{color:var(--danger)}.sourcebox{padding:20px;line-height:1.65;color:var(--muted)}.sourcebox a{color:var(--primary);font-weight:700}footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s;z-index:900}.toast.show{opacity:1;transform:none}
+@media(max-width:1100px){.actor-layout,.model-grid{grid-template-columns:1fr}.actor-map{min-height:auto}.actor-map svg{height:auto;max-height:540px}.timeline-body{grid-template-columns:1fr}.timeline-list{border-right:0;border-bottom:1px solid var(--line);grid-template-columns:repeat(3,1fr)}.question-grid{grid-template-columns:1fr}.source-grid{grid-template-columns:1fr}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.intro,.judgement-grid{grid-template-columns:1fr}}
+@media(max-width:660px){.card{padding:17px}.timeline-list{grid-template-columns:1fr}.classify{grid-template-columns:1fr}.quizgrid{grid-template-columns:1fr}.allocation-row{grid-template-columns:1fr 58px}.allocation-row strong{grid-column:1/-1}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}.actor-map svg{height:auto;max-height:none}.scene{min-height:0}.source-toolbar{align-items:flex-start}}
+@media print{.blob,.sidebar,.hamb,#barwrap,.actions,.tools,.toast,footer,.timeline-nav,.classify,.sourcebox{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.card,.actor-map,.actor-panel,.source-card,.timeline-shell,.model-visual,.model-controls,.thesis-card,.allocation,.quizcard{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.history-reveal{display:block!important}.timeline-body{display:block}.timeline-list{display:none}.source-grid,.quizgrid,.judgement-grid{grid-template-columns:1fr 1fr}}
+
+/* ===== injiziert: Europakarte ===== */
+/* ===================== Europakarte ===================== */
+.europe-map-host{width:100%}
+.europe-map-host svg{display:block;width:100%;height:auto;border-radius:16px}
+.emap-sea{fill:var(--map-sea)}
+.emap-country{stroke-width:2.4;transition:fill .5s,stroke .35s,filter .25s,opacity .35s;paint-order:stroke}
+.emap-label{font-family:'Inter',system-ui,sans-serif;font-weight:800;fill:var(--map-label);pointer-events:none;paint-order:stroke;stroke:var(--map-label-halo);stroke-width:3.2;stroke-linejoin:round}
+.emap-note{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--muted);pointer-events:none}
+/* Blockfarben */
+.b-central{fill:var(--map-central);stroke:var(--map-central-line)}
+.b-entente{fill:var(--map-entente);stroke:var(--map-entente-line)}
+.b-serbia{fill:var(--map-serbia);stroke:var(--map-serbia-line)}
+.b-neutral{fill:var(--map-neutral);stroke:var(--map-neutral-line)}
+.b-context{fill:var(--map-context);stroke:var(--map-context-line);stroke-width:1.2}
+/* interaktiv */
+.emap-actor{cursor:pointer;outline:none}
+.emap-actor:hover .emap-country,.emap-actor:focus-visible .emap-country,.emap-actor.active .emap-country{filter:drop-shadow(0 7px 11px rgba(15,23,42,.3));stroke-width:4.2}
+.emap-actor.active .emap-country{stroke-width:4.8}
+.emap-dim{opacity:.28}
+/* Bündnislinien (Hover) */
+.tie{fill:none;stroke:var(--map-tie);stroke-width:4;stroke-linecap:round;stroke-dasharray:2 9;opacity:0;transition:opacity .3s;pointer-events:none}
+.tie.show{opacity:.95}
+/* Status (Eskalationsmodus) */
+.emap-country.s-neutral{fill:var(--map-neutral);stroke:var(--map-neutral-line)}
+.emap-country.s-krise{fill:var(--map-krise);stroke:var(--map-krise-line)}
+.emap-country.s-mobil{fill:var(--map-mobil);stroke:var(--map-mobil-line)}
+.emap-country.s-krieg{fill:var(--map-krieg);stroke:var(--map-krieg-line)}
+/* Kriegs-/Druckpfeile */
+.warflow{fill:none;stroke-width:5;stroke-linecap:round;opacity:0;transition:opacity .55s}
+.warflow.show{opacity:.95}
+.wf-support{stroke:var(--map-support);stroke-dasharray:10 8;stroke-width:4}
+.wf-ultimatum{stroke:var(--map-ultimatum);stroke-dasharray:2 8;stroke-width:5}
+.wf-war{stroke:var(--map-war)}
+.wf-invasion{stroke:var(--map-invasion);stroke-dasharray:12 8}
+#mk-support path{fill:var(--map-support)}
+#mk-ultimatum path{fill:var(--map-ultimatum)}
+#mk-war path{fill:var(--map-war)}
+#mk-invasion path{fill:var(--map-invasion)}
+.emap-marker{transition:opacity .4s}
+.emap-marker .star{fill:var(--map-krieg);stroke:#fff;stroke-width:1.5}
+.emap-marker text{font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:12px;fill:var(--map-label);paint-order:stroke;stroke:var(--map-label-halo);stroke-width:3;stroke-linejoin:round}
+/* Legende */
+.emap-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:13px;font-size:.8rem;font-weight:700;color:var(--muted)}
+.emap-legend span{display:inline-flex;align-items:center;gap:7px}
+.emap-legend i{width:15px;height:15px;border-radius:5px;display:inline-block;border:2px solid;flex:0 0 auto}
+.lg-central{background:var(--map-central);border-color:var(--map-central-line)}
+.lg-entente{background:var(--map-entente);border-color:var(--map-entente-line)}
+.lg-serbia{background:var(--map-serbia);border-color:var(--map-serbia-line)}
+.lg-neutral{background:var(--map-neutral);border-color:var(--map-neutral-line)}
+/* Eskalations-Player */
+.escala{margin-top:16px;border-top:1px solid var(--line);padding-top:15px}
+.escala-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.escala-title{font-weight:800;font-size:.92rem}
+.escala-date{font-weight:900;color:var(--primary);font-size:1.02rem}
+.escala-controls{display:flex;gap:7px}
+.escala-btn{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:800;font-size:1rem;display:grid;place-items:center;transition:.16s}
+.escala-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,23,42,.12)}
+.escala-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border:0}
+.escala-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.escala-track{display:flex;gap:6px;margin:13px 0 10px}
+.escala-track button{flex:1;height:9px;border-radius:999px;border:0;background:rgba(100,116,139,.28);cursor:pointer;padding:0;transition:.2s}
+.escala-track button.done{background:var(--primary)}
+.escala-track button.cur{background:var(--accent);box-shadow:0 0 0 3px var(--primary-light)}
+.escala-text{line-height:1.62;font-size:.92rem;color:var(--text)}
+.escala-text b{color:var(--primary);font-weight:800}
+.escala-hint{font-size:.78rem;color:var(--muted);margin-top:8px}
+@media(max-width:660px){.escala-btn{width:38px;height:38px}}
+@media print{.escala-controls,.escala-track,.tie,#emapFlows{display:none!important}.europe-map-host svg{max-height:150mm}.escala{break-inside:avoid}}
+
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="barwrap"><div id="bar"></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen">☰</button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark">1914</div><h2>Die Julikrise<br>1914</h2></div>
+  <div class="sub">entscheiden · prüfen · urteilen</div>
+  <nav id="nav">
+    <a href="#frage"><span class="dot">1</span>Ausgangsfrage</a>
+    <a href="#akteure" class="after-answer"><span class="dot">2</span>Akteure und Interessen</a>
+    <a href="#quellen" class="after-answer"><span class="dot">3</span>Quellenlabor</a>
+    <a href="#entscheidungen" class="after-answer"><span class="dot">4</span>Krisenrekonstruktion</a>
+    <a href="#modell" class="after-answer"><span class="dot">5</span>Eskalationsmodell</a>
+    <a href="#urteil" class="after-answer"><span class="dot">6</span>Historisches Urteil</a>
+    <a href="#transfer" class="after-answer"><span class="dot">7</span>Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark">◐ Darstellung wechseln</button>
+    <button class="tool" id="restart">↺ Arbeitsblatt zurücksetzen</button>
+    <button class="tool" onclick="window.print()">⎙ Arbeitsblatt drucken</button>
+  </div>
+  <div class="school">Interaktives Geschichts-Arbeitsblatt<br>Julikrise und Kriegsausbruch 1914<br>Fortschritt wird lokal gespeichert.</div>
+</aside>
+<main class="main">
+<header class="hero reveal">
+  <span class="eyebrow">Geschichte · Erster Weltkrieg · historische Urteilsbildung</span>
+  <h1>War der Krieg nach Sarajevo <span>unvermeidlich?</span></h1>
+  <p>Zwischen dem Attentat vom 28. Juni und dem britischen Kriegseintritt am 4. August 1914 verwandelte sich ein Konflikt zwischen Österreich-Ungarn und Serbien in einen europäischen Krieg. Untersuche, welche Entscheidungen diese Eskalation vorantrieben – und an welchen Stellen andere Wege denkbar waren.</p>
+</header>
+<div class="intro reveal">
+  <div class="glass introcard">
+    <h2>Arbeitsweise</h2>
+    <p>Du entscheidest zunächst aus deiner heutigen Perspektive. Danach arbeitest du mit Akteursinteressen, gekürzten Quellen und historischen Entscheidungssituationen. Die Alternativen in der Krisenrekonstruktion sind keine Behauptungen darüber, was sicher geschehen wäre, sondern machen vorhandene Handlungsspielräume sichtbar.</p>
+  </div>
+  <div class="glass progress">
+    <h3>Fortschritt</h3>
+    <div class="num"><span id="donecount">0</span>/5</div>
+    <div class="minibar"><div id="minibar"></div></div>
+    <small>Ausgangsurteil · Quellen · Rekonstruktion · Modell · Selbsttest</small>
+  </div>
+</div>
+
+<section class="stage reveal" id="frage">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Dein erstes Urteil</h2><p>Beurteile die Situation, bevor du die Einzelentscheidungen kennst.</p></div></div>
+  <div class="glass card">
+    <div class="problem question-grid">
+      <div class="europe-map-host" id="mapIntro" aria-label="Schematische Übersichtskarte Europas 1914"></div>
+      <div class="question-text">
+        <h3>28. Juni 1914: Attentat in Sarajevo</h3>
+        <p>Der österreichisch-ungarische Thronfolger Franz Ferdinand und seine Frau Sophie werden von Gavrilo Princip ermordet. Princip gehört zum Umfeld bosnisch-serbischer Nationalisten. Die genaue Beteiligung staatlicher serbischer Stellen ist zu diesem Zeitpunkt nicht geklärt.</p>
+        <p><strong>Welche Aussage erscheint dir zunächst am überzeugendsten?</strong></p>
+        <div class="choices">
+          <div class="choice"><input type="radio" id="start1" name="start" value="inevitable"><label for="start1">Der europäische Krieg war nach dem Attentat praktisch unvermeidlich.</label></div>
+          <div class="choice"><input type="radio" id="start2" name="start" value="avoidable"><label for="start2">Der Krieg war vermeidbar; erst spätere politische Entscheidungen machten ihn wahrscheinlich.</label></div>
+          <div class="choice"><input type="radio" id="start3" name="start" value="single"><label for="start3">Ein einzelner Staat löste den Krieg planmäßig aus.</label></div>
+          <div class="choice"><input type="radio" id="start4" name="start" value="system"><label for="start4">Das Bündnissystem setzte automatisch einen Krieg in Gang; individuelle Entscheidungen waren kaum bedeutsam.</label></div>
+        </div>
+        <label for="startReason"><strong>Kurze Begründung:</strong></label>
+        <textarea id="startReason" placeholder="Welche Faktoren hältst du schon jetzt für entscheidend?"></textarea>
+        <div class="actions"><button class="btn primary" id="submitStart">Urteil festhalten</button></div>
+      </div>
+    </div>
+    <div class="feedback" id="startFeedback" aria-live="polite"></div>
+    <div class="unlock-note" id="unlockNote">Die Untersuchung ist jetzt freigeschaltet.</div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="akteure">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>Akteure und Interessen</h2><p>Klicke auf die Staaten. Unterscheide Ziele, Befürchtungen und politische Zwänge.</p></div></div>
+  <div class="actor-layout">
+    <div class="glass actor-map"><div class="europe-map-host" id="mapActors"></div></div>
+    <aside class="glass actor-panel">
+      <span class="actor-tag" id="actorTag">Akteur auswählen</span>
+      <h3 id="actorTitle">Europa war kein Automat</h3>
+      <p id="actorIntro">Bündnisse schufen Erwartungen und Risiken. Sie legten aber nicht jede Reaktion zwingend fest. Entscheidend war, wie Regierungen ihre Lage deuteten und welche Risiken sie einzugehen bereit waren.</p>
+      <div class="actor-facts" id="actorFacts">
+        <div class="actor-fact"><b>Ziel der Untersuchung</b>Rekonstruiere nicht nur, was ein Staat wollte, sondern auch, was seine Entscheidungsträger befürchteten.</div>
+        <div class="actor-fact"><b>Wichtige Unterscheidung</b>Langfristige Ursachen erklären die Spannung. Die Julikrise untersucht die konkreten Entscheidungen im Sommer 1914.</div>
+      </div>
+      <div class="actor-question">
+        <label for="actorSelect"><strong>Welche Kategorie ist für diesen Akteur besonders wichtig?</strong></label>
+        <select id="actorSelect"><option value="">Bitte auswählen</option><option value="security">Sicherheitsinteresse</option><option value="prestige">Prestige und Großmachtstatus</option><option value="nationalism">Nationalismus und innere Stabilität</option><option value="alliance">Bündnisverpflichtung</option></select>
+        <button class="btn ghost" id="checkActor" style="margin-top:9px">Einordnung prüfen</button>
+        <div class="micro-result" id="actorResult"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="quellen">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Quellenlabor</h2><p>Ordne vier gekürzte Dokumente ein. Frage immer: Wer spricht, wann, mit welchem Ziel?</p></div></div>
+  <div class="source-toolbar"><div class="source-progress">Bearbeitet: <span id="sourceDone">0</span>/4</div><button class="btn ghost" id="sourceHint">Hinweis zur Quellenkritik</button></div>
+  <div class="source-grid">
+    <article class="glass source-card" data-correct="escalating" data-source="blank">
+      <div class="source-head"><div><div class="source-date">5./6. Juli 1914</div><h3>Deutsche Unterstützung für Wien</h3></div><span class="source-kind">Diplomatischer Bericht</span></div>
+      <div class="source-text">Der österreichisch-ungarische Botschafter berichtet aus Berlin, Kaiser und Reichsleitung hätten auch bei schweren europäischen Folgen feste Unterstützung zugesagt. Die Entscheidung über das konkrete Vorgehen gegen Serbien liege bei Wien.</div>
+      <div class="source-note">Sprachlich vereinfachte Paraphrase des später sogenannten „Blankoschecks“. Der Bericht gibt die Wahrnehmung des österreichisch-ungarischen Botschafters wieder.</div>
+      <div class="classify"><button data-value="deescalating">deeskalierend</button><button data-value="ambiguous">mehrdeutig</button><button data-value="escalating">eskalierend</button></div><div class="source-result"></div>
+    </article>
+    <article class="glass source-card" data-correct="escalating" data-source="ultimatum">
+      <div class="source-head"><div><div class="source-date">23. Juli 1914</div><h3>Ultimatum an Serbien</h3></div><span class="source-kind">Regierungsnote</span></div>
+      <div class="source-text">Serbien soll antiösterreichische Aktivitäten unterdrücken, beschuldigte Beamte entfernen und bei Ermittlungen gegen die Attentatsnetzwerke mitwirken. Österreichisch-ungarische Organe sollen dabei auf serbischem Gebiet beteiligt werden. Für die Antwort bleiben 48 Stunden.</div>
+      <div class="source-note">Zusammenfassung zentraler Forderungen. Besonders umstritten waren Eingriffe österreichisch-ungarischer Stellen auf serbischem Hoheitsgebiet.</div>
+      <div class="classify"><button data-value="deescalating">deeskalierend</button><button data-value="ambiguous">mehrdeutig</button><button data-value="escalating">eskalierend</button></div><div class="source-result"></div>
+    </article>
+    <article class="glass source-card" data-correct="ambiguous" data-source="serbia">
+      <div class="source-head"><div><div class="source-date">25. Juli 1914</div><h3>Serbische Antwort</h3></div><span class="source-kind">Regierungsnote</span></div>
+      <div class="source-text">Serbien akzeptiert zahlreiche Forderungen, kündigt Verbote und Ermittlungen an und bietet an, Streitfragen internationalen Instanzen vorzulegen. Eine unmittelbare Mitwirkung österreichisch-ungarischer Behörden in Serbien wird jedoch nicht vollständig akzeptiert.</div>
+      <div class="source-note">Die Antwort enthielt weitgehende Zugeständnisse, wahrte aber an entscheidenden Punkten die staatliche Souveränität.</div>
+      <div class="classify"><button data-value="deescalating">deeskalierend</button><button data-value="ambiguous">mehrdeutig</button><button data-value="escalating">eskalierend</button></div><div class="source-result"></div>
+    </article>
+    <article class="glass source-card" data-correct="deescalating" data-source="mediation">
+      <div class="source-head"><div><div class="source-date">26.–29. Juli 1914</div><h3>Vermittlungsvorschläge</h3></div><span class="source-kind">Diplomatische Initiative</span></div>
+      <div class="source-text">Großbritannien schlägt Gespräche der nicht unmittelbar beteiligten Großmächte vor. Daneben wird erwogen, Österreich-Ungarn könne Belgrad vorläufig besetzen und danach verhandeln. Die Vorschläge konkurrieren mit bereits begonnenen militärischen Maßnahmen.</div>
+      <div class="source-note">Mehrere Vermittlungsansätze existierten gleichzeitig. Ihre Erfolgsaussichten sind rückblickend nicht sicher bestimmbar.</div>
+      <div class="classify"><button data-value="deescalating">deeskalierend</button><button data-value="ambiguous">mehrdeutig</button><button data-value="escalating">eskalierend</button></div><div class="source-result"></div>
+    </article>
+  </div>
+  <div class="feedback" id="sourceFeedback"></div>
+</section>
+
+<section class="stage hidden-stage" id="entscheidungen">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Krisenrekonstruktion</h2><p>Entscheide mit dem Wissen, das den Akteuren zu diesem Zeitpunkt ungefähr zur Verfügung stand.</p></div></div>
+  <div class="glass timeline-shell">
+    <div class="timeline-top"><strong>Von Sarajevo zum europäischen Krieg</strong><span class="source-progress">Station <span id="timelineNumber">1</span>/7</span></div>
+    <div class="timeline-body">
+      <div class="timeline-list" id="timelineList"></div>
+      <div class="decision-panel">
+        <div class="decision-date" id="decisionDate"></div><h3 id="decisionTitle"></h3><p class="decision-context" id="decisionContext"></p>
+        <div class="decision-options" id="decisionOptions"></div>
+        <div class="history-reveal" id="historyReveal"><h4>Historische Entscheidung</h4><div id="historyText"></div><div class="counter-note">Die nicht gewählten Optionen sind didaktische Alternativen. Sie zeigen Handlungsspielräume, aber keine sicher vorhersehbaren Gegenwelten.</div></div>
+        <div class="timeline-nav"><button class="btn ghost" id="timelineBack">← Zurück</button><button class="btn primary" id="timelineNext" disabled>Weiter →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="modell">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Ein Modell der Eskalation</h2><p>Untersuche, wie mehrere Faktoren gemeinsam den politischen Entscheidungsspielraum verengten.</p></div></div>
+  <div class="model-grid">
+    <div class="glass model-visual">
+      <h3>Eskalationsdruck</h3><p>Das Modell fasst keine historische Wahrscheinlichkeit zusammen. Es visualisiert nur, wie sich vier häufig genannte Faktoren gegenseitig verstärken können.</p>
+      <div class="pressure-label"><span>größerer Verhandlungsspielraum</span><span>hoher Eskalationsdruck</span></div><div class="pressure-meter"><div id="pressureFill"></div></div>
+      <div class="totalbox" id="pressureBox"><span>Modellwert</span><strong><span id="pressureValue">50</span>/100</strong></div>
+      <div class="chain" id="chainText"></div>
+    </div>
+    <aside class="glass model-controls">
+      <div class="controlgroup"><h3>Bündnisbindung</h3><p>Wie stark erwarten Regierungen, dass ein Nachgeben den Bündnispartner schwächt oder unglaubwürdig macht?</p><div class="rangeline"><input type="range" id="alliancePressure" min="0" max="100" value="70"><output class="rangevalue" id="allianceOut">70</output></div></div>
+      <div class="controlgroup"><h3>Militärischer Zeitdruck</h3><p>Mobilmachungs- und Aufmarschpläne erzeugen die Wahrnehmung, früher handeln zu müssen als der Gegner.</p><div class="rangeline"><input type="range" id="militaryPressure" min="0" max="100" value="75"><output class="rangevalue" id="militaryOut">75</output></div></div>
+      <div class="controlgroup"><h3>Prestige und Glaubwürdigkeit</h3><p>Führungseliten fürchten, durch Zurückweichen innen- oder außenpolitisch an Ansehen zu verlieren.</p><div class="rangeline"><input type="range" id="prestigePressure" min="0" max="100" value="65"><output class="rangevalue" id="prestigeOut">65</output></div></div>
+      <div class="controlgroup"><h3>Diplomatische Kommunikation</h3><p>Ein hoher Wert bedeutet klare, schnelle und glaubwürdige Kommunikation. Er senkt im Modell den Eskalationsdruck.</p><div class="rangeline"><input type="range" id="diplomacyPressure" min="0" max="100" value="35"><output class="rangevalue" id="diplomacyOut">35</output></div></div>
+      <div class="model-note"><strong>Modellgrenze:</strong> Historische Entscheidungen lassen sich nicht auf Regler reduzieren. Das Modell dient dazu, Wechselwirkungen zu benennen und anschließend wieder an konkreten Quellen zu prüfen.</div>
+      <button class="btn accent" id="modelComplete" style="margin-top:14px">Modellversuch abschließen</button>
+    </aside>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="urteil">
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Historisches Urteil: Wer trug Verantwortung?</h2><p>Trenne moralische Schuld, politische Verantwortung und kausale Bedeutung.</p></div></div>
+  <div class="judgement-grid">
+    <article class="glass thesis-card"><h3>Deutung A: besondere Verantwortung Berlins und Wiens</h3><p>Diese Deutung hebt hervor, dass Österreich-Ungarn den Konflikt bewusst militärisch gegen Serbien zuspitzte und Deutschland dieses Vorgehen mit weitreichender Unterstützung absicherte. Das Ultimatum, die Ablehnung der serbischen Antwort und der Druck auf eine schnelle Lösung gelten als zentrale Eskalationsschritte.</p><div class="evidence-list"><div class="evidence">Der deutsche „Blankoscheck“ verringerte für Wien das Risiko politischer Isolation.</div><div class="evidence">Das Ultimatum enthielt schwer akzeptierbare Eingriffe in die serbische Souveränität.</div><div class="evidence">Österreich-Ungarn erklärte trotz weitgehender serbischer Zugeständnisse den Krieg.</div></div></article>
+    <article class="glass thesis-card"><h3>Deutung B: eine europäische Kette riskanter Entscheidungen</h3><p>Diese Deutung richtet den Blick stärker auf die Wechselwirkung mehrerer Staaten. Serbischer Nationalismus, russische Unterstützung für Serbien, französische Rückendeckung, deutsche Sicherheitsängste und britische Unklarheit werden als Teile einer offenen, nicht zwangsläufigen Krise untersucht.</p><div class="evidence-list"><div class="evidence">Russische Mobilmachungsentscheidungen verschärften den militärischen Zeitdruck.</div><div class="evidence">Frankreich bestärkte seinen russischen Bündnispartner, ohne die Krise kontrollieren zu können.</div><div class="evidence">Alle Großmächte trafen Entscheidungen unter Unsicherheit und akzeptierten unterschiedliche Kriegsrisiken.</div></div></article>
+  </div>
+  <div class="glass allocation">
+    <h3>Dein begründetes Gewichtungsurteil</h3><p>Verteile insgesamt 100 Verantwortungspunkte. Die Verteilung ist kein objektives Messergebnis, sondern zwingt dich, dein Urteil transparent zu gewichten.</p>
+    <div class="allocation-row"><strong>Österreich-Ungarn</strong><input type="range" class="alloc" data-name="Österreich-Ungarn" min="0" max="100" value="30"><output class="rangevalue">30</output></div>
+    <div class="allocation-row"><strong>Deutsches Reich</strong><input type="range" class="alloc" data-name="Deutsches Reich" min="0" max="100" value="30"><output class="rangevalue">30</output></div>
+    <div class="allocation-row"><strong>Russland</strong><input type="range" class="alloc" data-name="Russland" min="0" max="100" value="15"><output class="rangevalue">15</output></div>
+    <div class="allocation-row"><strong>Serbien</strong><input type="range" class="alloc" data-name="Serbien" min="0" max="100" value="10"><output class="rangevalue">10</output></div>
+    <div class="allocation-row"><strong>Frankreich</strong><input type="range" class="alloc" data-name="Frankreich" min="0" max="100" value="10"><output class="rangevalue">10</output></div>
+    <div class="allocation-row"><strong>Großbritannien</strong><input type="range" class="alloc" data-name="Großbritannien" min="0" max="100" value="5"><output class="rangevalue">5</output></div>
+    <div class="totalbox good" id="allocTotal"><span>Summe</span><strong><span id="allocValue">100</span>/100</strong></div>
+    <label for="judgementText" style="display:block;margin-top:16px"><strong>Begründung mit mindestens drei konkreten Entscheidungen oder Quellen:</strong></label><textarea id="judgementText" placeholder="Formuliere ein Sachurteil und berücksichtige mindestens eine Gegenposition."></textarea>
+    <div class="actions"><button class="btn primary" id="saveJudgement">Urteil sichern</button></div><div class="resultline" id="judgementResult"></div>
+  </div>
+</section>
+
+<section class="stage hidden-stage" id="transfer">
+  <div class="stagehead"><div class="stageid">7</div><div><h2>Abschließender Selbsttest</h2><p>Prüfe Chronologie, Quellenkritik und Urteilskompetenz.</p></div></div>
+  <div class="quizgrid">
+    <article class="glass quizcard"><h3>1. Was war der „Blankoscheck“?</h3><div class="quizoptions"><label class="quizoption"><input type="radio" name="q1" value="a"> Ein geheimer russisch-serbischer Mobilmachungsplan.</label><label class="quizoption"><input type="radio" name="q1" value="b"> Die weitreichende deutsche Unterstützungszusage an Österreich-Ungarn.</label><label class="quizoption"><input type="radio" name="q1" value="c"> Die britische Garantie der belgischen Neutralität.</label></div><button class="btn primary quizcheck" data-q="q1" data-answer="b">Prüfen</button><div class="resultline"></div></article>
+    <article class="glass quizcard"><h3>2. Warum war das Ultimatum problematisch?</h3><div class="quizoptions"><label class="quizoption"><input type="radio" name="q2" value="a"> Es verlangte ausschließlich eine öffentliche Entschuldigung.</label><label class="quizoption"><input type="radio" name="q2" value="b"> Es gab Serbien sechs Monate Bedenkzeit.</label><label class="quizoption"><input type="radio" name="q2" value="c"> Einige Forderungen griffen in die serbische Souveränität ein; die Frist betrug nur 48 Stunden.</label></div><button class="btn primary quizcheck" data-q="q2" data-answer="c">Prüfen</button><div class="resultline"></div></article>
+    <article class="glass quizcard"><h3>3. Welche Aussage zur Mobilmachung ist angemessen?</h3><div class="quizoptions"><label class="quizoption"><input type="radio" name="q3" value="a"> Mobilmachung war rein symbolisch und hatte keinen Einfluss.</label><label class="quizoption"><input type="radio" name="q3" value="b"> Mobilmachungspläne erhöhten Zeitdruck und wurden von Gegnern als Bedrohung interpretiert.</label><label class="quizoption"><input type="radio" name="q3" value="c"> Jede Mobilmachung bedeutete rechtlich automatisch eine Kriegserklärung.</label></div><button class="btn primary quizcheck" data-q="q3" data-answer="b">Prüfen</button><div class="resultline"></div></article>
+    <article class="glass quizcard"><h3>4. Was kennzeichnet ein gutes historisches Urteil?</h3><div class="quizoptions"><label class="quizoption"><input type="radio" name="q4" value="a"> Es benennt nur einen Schuldigen und vermeidet Unsicherheit.</label><label class="quizoption"><input type="radio" name="q4" value="b"> Es trennt Fakten und Wertungen, gewichtet Belege und berücksichtigt Gegenargumente.</label><label class="quizoption"><input type="radio" name="q4" value="c"> Es bewertet alle Staaten grundsätzlich gleich, damit es neutral wirkt.</label></div><button class="btn primary quizcheck" data-q="q4" data-answer="b">Prüfen</button><div class="resultline"></div></article>
+  </div>
+  <div class="glass sourcebox" style="margin-top:18px"><strong>Quellen und Weiterführung:</strong> Die historischen Angaben und die vereinfachten Dokumentfassungen orientieren sich an Darstellungen und Quellensammlungen des Deutschen Historischen Museums, der Bundeszentrale für politische Bildung, 1914–1918 Online und German History in Documents and Images. <a href="https://www.dhm.de/lemo/kapitel/erster-weltkrieg/kriegsverlauf/juli-krise-1914" target="_blank" rel="noopener">DHM: Julikrise</a> · <a href="https://www.bpb.de/shop/zeitschriften/apuz/182558/julikrise-und-kriegsschuld-thesen-und-stand-der-forschung/" target="_blank" rel="noopener">bpb: Forschung und Kriegsschuld</a> · <a href="https://encyclopedia.1914-1918-online.net/article/july-crisis-1914-1-1/" target="_blank" rel="noopener">1914–1918 Online</a> · <a href="https://germanhistorydocs.org/en/wilhelmine-germany-and-the-first-world-war-1890-1918/the-blank-check-ladislaus-count-von-szoegyeny-marich-berlin-to-leopold-count-von-berchtold-july-5-1914" target="_blank" rel="noopener">Quelle zum Blankoscheck</a></div>
+</section>
+<footer>Interaktives Arbeitsblatt · Die Julikrise 1914</footer>
+</main>
+</div>
+<div class="toast" id="toast">Gespeichert</div>
+<script>
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const STORAGE_KEY='julyCrisisWorksheetV1';
+let state={answered:false,sources:false,timeline:false,model:false,transfer:false,dark:false,startChoice:'',startReason:'',timelineChoices:{},judgement:''};
+try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}updateProgress()}
+function updateProgress(){const count=[state.answered,state.sources,state.timeline,state.model,state.transfer].filter(Boolean).length;$('#donecount').textContent=count;$('#minibar').style.width=(count/5*100)+'%';$('#bar').style.width=(count/5*100)+'%'}
+function showToast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+function revealStages(scroll=false){['#akteure','#quellen','#entscheidungen','#modell','#urteil','#transfer'].forEach(sel=>$(sel).classList.remove('hidden-stage'));$$('.after-answer').forEach(a=>a.style.display='flex');setTimeout(()=>$$('.stage,.hero,.intro').forEach(el=>el.classList.add('visible')),20);if(scroll)$('#akteure').scrollIntoView({behavior:'smooth',block:'start'})}
+$$('.after-answer').forEach(a=>a.style.display=state.answered?'flex':'none');
+
+function submitStart(){const selected=$('input[name="start"]:checked'),reason=$('#startReason').value.trim(),box=$('#startFeedback');if(!selected){box.className='feedback show bad';box.innerHTML='<strong>Noch kein Urteil ausgewählt.</strong>Wähle zunächst eine Aussage.';return}state.answered=true;state.startChoice=selected.value;state.startReason=reason;saveState();box.className='feedback show think';box.innerHTML='<strong>Ausgangsurteil gespeichert.</strong>Die Forschung betrachtet den Kriegsausbruch weder als bloße automatische Folge des Attentats noch als Ergebnis eines einzigen isolierten Moments. Prüfe nun, welche Entscheidungen den Handlungsspielraum schrittweise verengten.';$('#unlockNote').classList.add('show');revealStages(true)}
+$('#submitStart').addEventListener('click',submitStart);
+if(state.answered){revealStages(false);const r=$(`input[name="start"][value="${state.startChoice}"]`);if(r)r.checked=true;$('#startReason').value=state.startReason||'';const box=$('#startFeedback');box.className='feedback show good';box.innerHTML='<strong>Ausgangsurteil bereits festgehalten.</strong>Du kannst es nach der Untersuchung mit deinem Schlussurteil vergleichen.';$('#unlockNote').classList.add('show')}
+
+const actors={
+ germany:{tag:'Deutsches Reich',title:'Unterstützung des Bündnispartners – und Angst vor Einkreisung',intro:'Die Reichsleitung wollte Österreich-Ungarn als handlungsfähige Großmacht erhalten. Zugleich rechneten wichtige Entscheidungsträger mit einem möglichen Krieg gegen Russland und Frankreich und hielten einen späteren Krieg teilweise für ungünstiger.',facts:[['Zentrale Entscheidung','Die weitreichende Unterstützungszusage vom 5./6. Juli stärkte Wien den Rücken.'],['Fehleinschätzung','Berlin hoffte zunächst, der Konflikt könne auf Österreich-Ungarn und Serbien begrenzt bleiben.'],['Handlungsspielraum','Unterstützung hätte an Bedingungen, Vermittlung oder eine begrenzte Reaktion geknüpft werden können.']],best:['alliance','security']},
+ austria:{tag:'Österreich-Ungarn',title:'Serbien bestrafen und den Zerfall der Monarchie verhindern',intro:'Führungskreise betrachteten den südslawischen Nationalismus als existenzielle Gefahr für den Vielvölkerstaat. Das Attentat wurde als Gelegenheit gesehen, Serbien politisch oder militärisch entscheidend zu schwächen.',facts:[['Zentrale Entscheidung','Wien formulierte ein sehr scharfes Ultimatum und hielt trotz weitgehender Zugeständnisse an militärischem Vorgehen fest.'],['Innere Perspektive','Nachgeben schien Teilen der Elite als Zeichen dauerhafter Schwäche.'],['Risiko','Ein Eingreifen Russlands war möglich, wurde aber in Kauf genommen oder unterschätzt.']],best:['nationalism','prestige']},
+ serbia:{tag:'Königreich Serbien',title:'Souveränität wahren – bei problematischen nationalistischen Netzwerken',intro:'Serbien war nach den Balkankriegen gestärkt. Teile des militärisch-nationalistischen Umfelds unterstützten großserbische Ziele. Die Regierung musste zwischen äußerem Druck, inneren Machtgruppen und staatlicher Souveränität handeln.',facts:[['Belastender Faktor','Waffen und Helfer des Attentats stammten aus serbischen Netzwerken; eine direkte Steuerung durch die Regierung ist damit nicht gleichgesetzt.'],['Zentrale Entscheidung','Belgrad akzeptierte den Großteil des Ultimatums, wies aber bestimmte Eingriffe fremder Organe zurück.'],['Dilemma','Vollständige Annahme hätte als Aufgabe staatlicher Souveränität erscheinen können.']],best:['nationalism','security']},
+ russia:{tag:'Russisches Reich',title:'Serbien schützen und den eigenen Großmachtstatus behaupten',intro:'Russland verstand sich als Schutzmacht slawischer Staaten und wollte nach früheren diplomatischen Niederlagen auf dem Balkan nicht erneut zurückweichen. Die Unterstützung Serbiens war zugleich Teil des Wettbewerbs mit Österreich-Ungarn.',facts:[['Zentrale Entscheidung','Teil- und Generalmobilmachung sollten Druck ausüben und militärische Handlungsfähigkeit sichern.'],['Signalwirkung','Deutschland deutete die russische Generalmobilmachung als unmittelbare strategische Bedrohung.'],['Handlungsspielraum','Mobilmachung, Vermittlung und politische Rückendeckung hätten anders abgestuft werden können.']],best:['prestige','security']},
+ france:{tag:'Frankreich',title:'Das russische Bündnis sichern und Deutschland abschrecken',intro:'Frankreich war auf das Bündnis mit Russland angewiesen, um nicht allein gegen Deutschland zu stehen. In der Krise vermied Paris, den Bündnispartner öffentlich zu schwächen, und unterstützte eine feste Haltung.',facts:[['Sicherheitslogik','Ein russisches Zurückweichen konnte das Bündnis und damit Frankreichs strategische Lage schwächen.'],['Begrenzte Kontrolle','Unterstützung für Russland bedeutete nicht, dessen einzelne Schritte vollständig steuern zu können.'],['Forschungsfrage','Wie weit französische Rückendeckung zur russischen Risikobereitschaft beitrug, wird unterschiedlich gewichtet.']],best:['alliance','security']},
+ britain:{tag:'Großbritannien',title:'Vermitteln, ohne früh eine eindeutige Kriegszusage zu geben',intro:'Großbritannien war mit Frankreich und Russland verbunden, aber nicht durch dieselbe automatische militärische Verpflichtung. Außenminister Grey versuchte zu vermitteln; zugleich blieb für Berlin lange unklar, ob Großbritannien in einen europäischen Krieg eintreten würde.',facts:[['Zentrale Initiative','London schlug eine Konferenz beziehungsweise Vermittlung der nicht unmittelbar beteiligten Großmächte vor.'],['Unklarheit','Die fehlende frühe Festlegung konnte Spielraum für Diplomatie lassen, aber auch Fehleinschätzungen begünstigen.'],['Entscheidender Faktor','Der deutsche Einmarsch in das neutrale Belgien trug maßgeblich zum britischen Kriegseintritt bei.']],best:['security','prestige']}
+};
+let currentActor=null;
+function selectActor(key){currentActor=key;$$('.actor-node').forEach(n=>n.classList.toggle('active',n.dataset.actor===key));const a=actors[key];$('#actorTag').textContent=a.tag;$('#actorTitle').textContent=a.title;$('#actorIntro').textContent=a.intro;$('#actorFacts').innerHTML=a.facts.map(f=>`<div class="actor-fact"><b>${f[0]}</b>${f[1]}</div>`).join('');$('#actorSelect').value='';$('#actorResult').textContent=''}
+$$('.actor-node').forEach(n=>{n.addEventListener('click',()=>selectActor(n.dataset.actor));n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectActor(n.dataset.actor)}})});
+$('#checkActor').addEventListener('click',()=>{const r=$('#actorResult');if(!currentActor){r.className='micro-result no';r.textContent='Wähle zuerst einen Akteur auf der Karte.';return}const v=$('#actorSelect').value;if(!v){r.className='micro-result no';r.textContent='Wähle eine Kategorie.';return}if(actors[currentActor].best.includes(v)){r.className='micro-result ok';r.textContent='Plausible Einordnung. Bei diesem Akteur wirkten allerdings mehrere Motive gleichzeitig.'}else{r.className='micro-result no';r.textContent='Nicht völlig ausgeschlossen, aber die dargestellten Informationen sprechen stärker für eine andere Hauptkategorie.'}});
+
+const sourceAnswers={};
+$$('.source-card').forEach(card=>{$$('.classify button',card).forEach(btn=>btn.addEventListener('click',()=>{const value=btn.dataset.value,correct=card.dataset.correct,result=$('.source-result',card);$$('.classify button',card).forEach(b=>b.classList.toggle('selected',b===btn));sourceAnswers[card.dataset.source]=value;card.classList.add('done');if(value===correct){result.innerHTML='<strong style="color:var(--success)">Plausibel.</strong> Prüfe dennoch, ob Absicht, Wirkung und spätere Folgen identisch sind.'}else{const hints={blank:'Die Zusage verringerte den Druck auf Wien, vorsichtig vorzugehen.',ultimatum:'Beachte Frist, Ton und Eingriff in staatliche Hoheitsrechte.',serbia:'Die Antwort enthält Zugeständnisse, aber auch Grenzen; ihre Wirkung hängt vom Adressaten ab.',mediation:'Das erklärte Ziel war, Verhandlungen vor militärische Entscheidungen zu schalten.'};result.innerHTML=`<strong style="color:var(--danger)">Noch einmal prüfen.</strong> ${hints[card.dataset.source]}` }updateSourceProgress()}))});
+function updateSourceProgress(){const n=Object.keys(sourceAnswers).length;$('#sourceDone').textContent=n;if(n===4){state.sources=true;saveState();const box=$('#sourceFeedback');box.className='feedback show good';box.innerHTML='<strong>Quellenstation abgeschlossen.</strong>Du hast erkannt, dass Quellen nicht nur Informationen liefern, sondern selbst Teil der politischen Kommunikation und Eskalation sind.'}}
+$('#sourceHint').addEventListener('click',()=>{showToast('Frage nach Urheber, Adressat, Zeitpunkt, Absicht und Handlungsspielraum.')});
+
+const timeline=[
+ {date:'28. Juni 1914',short:'Attentat',title:'Wie reagiert Österreich-Ungarn auf Sarajevo?',context:'Das Attentat erschüttert die Monarchie. Ein Teil der Führung sieht darin einen Angriff auf den Staat; die Beweise für eine direkte Verantwortung der serbischen Regierung sind noch nicht vollständig.',options:['Sofort militärisch gegen Serbien vorgehen.','Erst eine internationale Untersuchung und begrenzte Forderungen an Serbien stellen.','Eine besonders harte diplomatische Note vorbereiten und vorher deutsche Unterstützung sichern.'],history:'Wien entschied sich für die dritte Linie. Die Regierung wollte Serbien nachhaltig schwächen und suchte zunächst die Rückendeckung des Deutschen Reiches.'},
+ {date:'5./6. Juli 1914',short:'Blankoscheck',title:'Wie reagiert Deutschland auf das österreichisch-ungarische Vorhaben?',context:'Berlin fürchtet um die Stellung seines wichtigsten Bündnispartners. Zugleich besteht das Risiko, dass Russland Serbien unterstützt und daraus ein europäischer Krieg entsteht.',options:['Unterstützung nur für eine begrenzte, international abgestimmte Reaktion zusagen.','Österreich-Ungarn weitreichende Unterstützung auch bei europäischen Komplikationen zusagen.','Österreich-Ungarn ausdrücklich von jedem Vorgehen gegen Serbien abraten.'],history:'Kaiser und Reichsleitung gaben Wien eine sehr weitreichende Unterstützungszusage. Diese wurde später als „Blankoscheck“ bezeichnet.'},
+ {date:'23. Juli 1914',short:'Ultimatum',title:'Welche Forderungen stellt Österreich-Ungarn?',context:'Fast vier Wochen nach dem Attentat wird Serbien eine Note übergeben. Die lange Vorbereitung steht einer sehr kurzen Antwortfrist gegenüber.',options:['Ein begrenztes Ermittlungsabkommen ohne Eingriff in serbische Hoheitsrechte.','Ein scharfes Zehn-Punkte-Ultimatum mit 48-Stunden-Frist und Beteiligung österreichisch-ungarischer Organe.','Sofortige Kriegserklärung ohne vorherige Forderungen.'],history:'Österreich-Ungarn wählte das scharfe Ultimatum. Mehrere Forderungen waren für Serbien schwer akzeptierbar, besonders soweit sie fremde Mitwirkung auf serbischem Gebiet vorsahen.'},
+ {date:'25. Juli 1914',short:'Serbische Antwort',title:'Wie beantwortet Serbien das Ultimatum?',context:'Serbien steht unter starkem Druck und rechnet mit militärischen Folgen. Russland signalisiert politische Unterstützung, ohne die weitere Eskalation vollständig kontrollieren zu können.',options:['Alle Forderungen ohne Vorbehalt annehmen.','Die Note vollständig zurückweisen.','Die meisten Forderungen akzeptieren, Eingriffe in die Souveränität begrenzen und internationale Klärung anbieten.'],history:'Serbien akzeptierte viele Forderungen, machte bei der Mitwirkung österreichisch-ungarischer Stellen jedoch Vorbehalte. Wien erklärte die Antwort für unzureichend und brach die Beziehungen ab.'},
+ {date:'28. Juli 1914',short:'Krieg gegen Serbien',title:'Wie reagiert Wien auf die serbische Antwort?',context:'Europäische Diplomaten diskutieren Vermittlung. Österreich-Ungarn befürchtet, dass Verzögerungen den politischen und militärischen Vorteil zunichtemachen.',options:['Die Antwort als Verhandlungsgrundlage akzeptieren.','Begrenzte Besetzung als Druckmittel mit anschließender Konferenz verbinden.','Serbien den Krieg erklären.'],history:'Österreich-Ungarn erklärte Serbien am 28. Juli den Krieg. Am folgenden Tag wurde Belgrad beschossen. Damit wurde aus der diplomatischen Krise ein Krieg.'},
+ {date:'29.–31. Juli 1914',short:'Mobilmachungen',title:'Wie reagiert Russland auf den Krieg gegen Serbien?',context:'Russland will Serbien nicht preisgeben. Militärische Planungen erschweren eine begrenzte Mobilmachung; zugleich wird jede Mobilmachung von Deutschland als gefährliches Signal gelesen.',options:['Nur diplomatisch protestieren und weiterverhandeln.','Militärische Vorbereitungen begrenzen und ausdrücklich mit Verhandlungen koppeln.','Schließlich die Generalmobilmachung anordnen.'],history:'Nach wechselnden Anordnungen verfügte Russland am 30./31. Juli die Generalmobilmachung. Dies erhöhte in Berlin den Zeitdruck und wurde zum Anlass für Ultimaten und eigene Mobilmachung.'},
+ {date:'1.–4. August 1914',short:'Europäischer Krieg',title:'Wie reagiert das Deutsche Reich auf die russische Mobilmachung?',context:'Die deutsche Planung sieht im Zweifrontenkrieg einen schnellen Angriff gegen Frankreich vor. Dafür soll das neutrale Belgien durchquert werden. Großbritanniens Haltung ist noch nicht vollständig geklärt.',options:['Weiterverhandeln und die eigene Mobilmachung von einem Angriff trennen.','Russland und Frankreich den Krieg erklären und den Westaufmarsch durch Belgien beginnen.','Nur Russland den Krieg erklären und im Westen defensiv bleiben.'],history:'Deutschland erklärte Russland am 1. August und Frankreich am 3. August den Krieg. Der Einmarsch in Belgien führte am 4. August zum britischen Kriegseintritt.'}
+];
+let timelineIndex=0,timelineUnlocked=0;
+function buildTimeline(){const list=$('#timelineList');list.innerHTML='';timeline.forEach((e,i)=>{const b=document.createElement('button');b.className='time-item'+(i===timelineIndex?' active':'')+(i>timelineUnlocked?' locked':'');b.innerHTML=`<strong>${e.date}</strong><small>${e.short}</small>`;b.disabled=i>timelineUnlocked;b.addEventListener('click',()=>{if(i<=timelineUnlocked){timelineIndex=i;renderTimeline()}});list.appendChild(b)});renderTimeline()}
+function renderTimeline(){const e=timeline[timelineIndex];$('#timelineNumber').textContent=timelineIndex+1;$('#decisionDate').textContent=e.date;$('#decisionTitle').textContent=e.title;$('#decisionContext').textContent=e.context;$('#decisionOptions').innerHTML='';const saved=state.timelineChoices[timelineIndex];e.options.forEach((o,i)=>{const b=document.createElement('button');b.className='decision-option'+(saved===i?' chosen':'');b.textContent=o;b.addEventListener('click',()=>chooseTimeline(i));$('#decisionOptions').appendChild(b)});$('#historyText').textContent=e.history;$('#historyReveal').classList.toggle('show',saved!==undefined);$('#timelineNext').disabled=saved===undefined;$('#timelineNext').textContent=timelineIndex===timeline.length-1?'Rekonstruktion abschließen':'Weiter →';$('#timelineBack').disabled=timelineIndex===0;$$('.time-item').forEach((b,i)=>{b.classList.toggle('active',i===timelineIndex);b.classList.toggle('locked',i>timelineUnlocked);b.disabled=i>timelineUnlocked})}
+function chooseTimeline(i){state.timelineChoices[timelineIndex]=i;timelineUnlocked=Math.max(timelineUnlocked,timelineIndex+1);saveState();renderTimeline()}
+$('#timelineBack').addEventListener('click',()=>{if(timelineIndex>0){timelineIndex--;renderTimeline()}});
+$('#timelineNext').addEventListener('click',()=>{if(state.timelineChoices[timelineIndex]===undefined)return;if(timelineIndex<timeline.length-1){timelineIndex++;timelineUnlocked=Math.max(timelineUnlocked,timelineIndex);renderTimeline()}else{state.timeline=true;saveState();showToast('Krisenrekonstruktion abgeschlossen');$('#modell').scrollIntoView({behavior:'smooth'})}});
+const savedTimelineKeys=Object.keys(state.timelineChoices||{}).map(Number);if(savedTimelineKeys.length)timelineUnlocked=Math.min(timeline.length-1,Math.max(...savedTimelineKeys)+1);buildTimeline();
+
+const pressureIds=['alliancePressure','militaryPressure','prestigePressure','diplomacyPressure'];
+function updateModel(){const a=Number($('#alliancePressure').value),m=Number($('#militaryPressure').value),p=Number($('#prestigePressure').value),d=Number($('#diplomacyPressure').value);$('#allianceOut').textContent=a;$('#militaryOut').textContent=m;$('#prestigeOut').textContent=p;$('#diplomacyOut').textContent=d;const value=Math.max(0,Math.min(100,Math.round(.3*a+.32*m+.23*p+.15*(100-d))));$('#pressureValue').textContent=value;$('#pressureFill').style.width=value+'%';const box=$('#pressureBox');box.className='totalbox '+(value<40?'good':value>70?'bad':'');const items=[];if(a>60)items.push(['1','Bündnistreue wird zum Risiko','Unterstützung soll abschrecken, kann den Partner aber auch zu härterem Vorgehen ermutigen.']);if(m>60)items.push(['2','Militärische Pläne erzeugen Zeitdruck','Vorbereitungen des Gegners erscheinen als Grund, selbst sofort zu handeln.']);if(p>60)items.push(['3','Nachgeben wird als Schwäche interpretiert','Prestige ersetzt teilweise die nüchterne Abwägung begrenzter politischer Ziele.']);if(d<45)items.push(['4','Absichten bleiben unklar','Mehrdeutige Signale und verzögerte Nachrichten fördern gefährliche Fehleinschätzungen.']);if(!items.length)items.push(['✓','Spielraum bleibt sichtbar','Geringerer Druck garantiert keinen Frieden, erleichtert aber abgestufte und überprüfbare Entscheidungen.']);$('#chainText').innerHTML=items.map(x=>`<div class="chain-step"><div class="chain-icon">${x[0]}</div><div><h4>${x[1]}</h4><p>${x[2]}</p></div></div>`).join('')}
+pressureIds.forEach(id=>$('#'+id).addEventListener('input',updateModel));updateModel();
+$('#modelComplete').addEventListener('click',()=>{state.model=true;saveState();showToast('Modellversuch abgeschlossen')});
+
+function updateAllocation(){let total=0;$$('.alloc').forEach(input=>{const v=Number(input.value);total+=v;input.nextElementSibling.textContent=v});$('#allocValue').textContent=total;const box=$('#allocTotal');box.className='totalbox '+(total===100?'good':'bad')}
+$$('.alloc').forEach(i=>i.addEventListener('input',updateAllocation));updateAllocation();
+$('#saveJudgement').addEventListener('click',()=>{const total=$$('.alloc').reduce((s,i)=>s+Number(i.value),0),text=$('#judgementText').value.trim(),r=$('#judgementResult');if(total!==100){r.className='resultline no';r.textContent='Die Verantwortungspunkte müssen zusammen genau 100 ergeben.';return}if(text.length<120){r.className='resultline no';r.textContent='Begründe dein Urteil ausführlicher und nenne konkrete Entscheidungen oder Quellen.';return}state.judgement=text;saveState();r.className='resultline ok';r.textContent='Urteil gespeichert. Prüfe nun, ob dein Schlussurteil von deinem Ausgangsurteil abweicht.';showToast('Historisches Urteil gespeichert')});if(state.judgement)$('#judgementText').value=state.judgement;
+
+const quizCorrect={};
+$$('.quizcheck').forEach(btn=>btn.addEventListener('click',()=>{const name=btn.dataset.q,answer=btn.dataset.answer,sel=$(`input[name="${name}"]:checked`),r=btn.nextElementSibling;if(!sel){r.className='resultline no';r.textContent='Wähle zunächst eine Antwort.';return}if(sel.value===answer){r.className='resultline ok';r.textContent='Richtig.';quizCorrect[name]=true}else{r.className='resultline no';r.textContent='Noch nicht. Prüfe Chronologie und Begriffe erneut.';quizCorrect[name]=false}if(Object.keys(quizCorrect).length===4&&Object.values(quizCorrect).every(Boolean)){state.transfer=true;saveState();showToast('Selbsttest abgeschlossen')}}));
+
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});$$('.reveal,.stage').forEach(el=>io.observe(el));
+const navIO=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('.stage').forEach(s=>navIO.observe(s));
+$('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+function applyDark(){document.body.classList.toggle('dark',state.dark)}$('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();
+$('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});
+updateProgress();
+
+/* ===== injiziert: interaktive Europakarte ===== */
+/* ============ Interaktive Europakarte 1914 ============ */
+const emapData=[
+ // Kontext (kein Label, nicht interaktiv)
+ {id:'scandinavia',bloc:'context',d:'M470,150 C490,120 520,110 540,130 C545,160 535,200 515,225 C500,210 485,185 475,170 C468,162 466,156 470,150 Z'},
+ {id:'spain',bloc:'context',d:'M120,470 C150,460 190,465 205,485 C200,515 175,535 145,532 C120,528 108,505 112,488 C110,480 114,474 120,470 Z'},
+ {id:'denmark',bloc:'context',d:'M470,205 C482,200 492,208 490,220 C484,230 472,230 466,222 C462,214 464,208 470,205 Z'},
+ {id:'ottoman',bloc:'context',d:'M745,575 C780,565 830,568 870,580 C900,590 912,610 900,628 C875,642 835,644 800,638 C772,642 748,632 740,614 C736,598 735,582 745,575 Z',label:'Osmanisches Reich',lx:820,ly:612,ls:12},
+ // Neutrale (1914)
+ {id:'netherlands',bloc:'neutral',d:'M348,292 C360,288 372,294 372,306 C368,316 356,318 348,312 C342,306 342,296 348,292 Z'},
+ {id:'switzerland',bloc:'neutral',d:'M362,405 C374,400 388,405 388,416 C384,426 370,428 362,422 C356,416 356,410 362,405 Z'},
+ {id:'belgium',bloc:'neutral',d:'M330,332 C342,328 356,332 360,342 C358,354 346,360 335,356 C326,352 322,340 330,332 Z',label:'Belgien',lx:344,ly:322,ls:11,cx:344,cy:344},
+ {id:'italy',bloc:'neutral',d:'M430,505 C445,500 462,505 470,518 C478,535 480,558 476,578 C486,590 495,608 498,628 C500,648 492,662 480,660 C472,650 470,632 466,616 C458,600 448,588 440,572 C432,552 428,528 430,505 Z',label:'Italien',lx:451,ly:548,ls:13,note:'neutral 1914',nx:451,ny:566},
+ {id:'italy2',bloc:'neutral',d:'M470,672 C480,668 490,674 488,684 C482,692 470,690 466,682 C464,676 466,674 470,672 Z'},
+ // Interaktive Akteure
+ {id:'ireland',bloc:'entente',d:'M150,235 C138,228 135,212 145,205 C160,200 172,208 172,222 C170,236 160,244 150,235 Z'},
+ {id:'britain',actor:true,bloc:'entente',d:'M205,300 C185,280 180,250 195,235 C185,215 195,195 210,190 C205,170 220,150 235,140 C248,150 250,170 242,185 C255,195 255,215 245,228 C258,245 255,272 238,285 C228,298 215,305 205,300 Z',label:'Groß-|britannien',lx:213,ly:214,ls:14,cx:213,cy:222},
+ {id:'france',actor:true,bloc:'entente',d:'M245,360 C275,358 305,362 325,372 C342,388 342,412 335,432 C328,462 312,490 292,505 C270,512 240,510 222,498 C205,485 195,462 195,440 C182,432 175,420 182,408 C176,398 182,386 195,384 C210,372 228,362 245,360 Z',label:'Frankreich',lx:258,ly:438,ls:16,cx:258,cy:438},
+ {id:'germany',actor:true,bloc:'central',d:'M388,300 C395,275 405,252 425,242 C455,232 495,235 525,244 C560,240 592,246 605,262 C612,280 606,300 595,312 C602,330 596,352 580,362 C560,380 528,388 500,384 C470,392 438,388 418,374 C400,364 392,346 396,330 C384,322 380,310 388,300 Z',label:'Deutsches|Reich',lx:492,ly:308,ls:16,cx:492,cy:320},
+ {id:'austria',actor:true,bloc:'central',d:'M430,432 C455,418 490,415 520,420 C560,415 605,418 645,428 C685,435 712,448 715,468 C712,488 690,500 662,502 C625,512 585,512 548,506 C512,510 478,504 456,490 C438,480 428,462 432,448 C425,442 425,436 430,432 Z',label:'Österreich-|Ungarn',lx:558,ly:455,ls:15,cx:560,cy:460},
+ {id:'russia',actor:true,bloc:'entente',d:'M648,300 C642,262 652,220 675,190 C705,160 750,145 800,142 C860,140 925,152 960,180 C982,205 980,245 968,285 C975,325 968,372 945,405 C915,440 865,458 815,458 C765,462 715,452 685,428 C660,408 648,378 652,352 C640,336 638,316 648,300 Z',label:'Russland',lx:812,ly:300,ls:17,cx:812,cy:300},
+ {id:'serbia',actor:true,bloc:'serbia',d:'M608,502 C622,498 640,502 648,514 C652,528 646,542 632,546 C618,548 606,540 604,528 C602,516 600,508 608,502 Z',label:'Serbien',lx:626,ly:489,ls:13,cx:626,cy:524}
+];
+const emapCentroid={};emapData.forEach(c=>{if(c.cx!=null)emapCentroid[c.id]=[c.cx,c.cy]});
+const emapTies=[['germany','austria'],['france','russia'],['france','britain'],['britain','russia'],['russia','serbia']];
+const emapSteps=[
+ {date:'28. Juni 1914',short:'Attentat',text:'In <b>Sarajevo</b> werden Thronfolger Franz Ferdinand und seine Frau erschossen. Zunächst ist es eine Krise zwischen <b>Österreich-Ungarn</b> und <b>Serbien</b>.',states:{austria:'krise',serbia:'krise'},arrows:[],marker:true},
+ {date:'5./6. Juli 1914',short:'Blankoscheck',text:'Das <b>Deutsche Reich</b> sagt Wien weitreichende Rückendeckung zu – der spätere „Blankoscheck“.',states:{austria:'krise',serbia:'krise',germany:'krise'},arrows:[['germany','austria','support']]},
+ {date:'23. Juli 1914',short:'Ultimatum',text:'Österreich-Ungarn stellt Serbien ein scharfes <b>Ultimatum</b> mit 48-Stunden-Frist.',states:{austria:'krise',serbia:'krise',germany:'krise'},arrows:[['germany','austria','support'],['austria','serbia','ultimatum']]},
+ {date:'28. Juli 1914',short:'Kriegserklärung',text:'Österreich-Ungarn <b>erklärt Serbien den Krieg</b> und beschießt Belgrad.',states:{austria:'krieg',serbia:'krieg',germany:'krise'},arrows:[['germany','austria','support'],['austria','serbia','war']]},
+ {date:'30./31. Juli 1914',short:'Mobilmachung',text:'Als Schutzmacht Serbiens ordnet <b>Russland</b> die Generalmobilmachung an. Der militärische Zeitdruck steigt.',states:{austria:'krieg',serbia:'krieg',germany:'krise',russia:'mobil'},arrows:[['austria','serbia','war'],['russia','serbia','support']]},
+ {date:'1. August 1914',short:'Deutschland ↔ Russland',text:'Das Deutsche Reich <b>erklärt Russland den Krieg</b>. Frankreich mobilisiert als Bündnispartner Russlands.',states:{austria:'krieg',serbia:'krieg',germany:'krieg',russia:'krieg',france:'mobil'},arrows:[['austria','serbia','war'],['germany','russia','war']]},
+ {date:'3. August 1914',short:'Deutschland ↔ Frankreich',text:'Deutschland <b>erklärt auch Frankreich den Krieg</b> und beginnt den Westaufmarsch.',states:{austria:'krieg',serbia:'krieg',germany:'krieg',russia:'krieg',france:'krieg'},arrows:[['germany','russia','war'],['germany','france','war']]},
+ {date:'4. August 1914',short:'Belgien · Großbritannien',text:'Der deutsche Einmarsch ins neutrale <b>Belgien</b> führt zum Kriegseintritt <b>Großbritanniens</b>. Aus der Balkankrise ist ein europäischer Krieg geworden.',states:{austria:'krieg',serbia:'krieg',germany:'krieg',russia:'krieg',france:'krieg',britain:'krieg',belgium:'krieg'},arrows:[['germany','russia','war'],['germany','france','war'],['germany','belgium','invasion'],['britain','germany','war']]}
+];
+const emapActorIds=['britain','france','germany','austria','russia','serbia','belgium'];
+
+function emapLabel(c){
+ if(!c.label)return '';
+ const parts=c.label.split('|');const size=c.ls||14;
+ const lines=parts.map((t,i)=>`<tspan x="${c.lx}" dy="${i===0?0:size+2}">${t}</tspan>`).join('');
+ let out=`<text class="emap-label" x="${c.lx}" y="${c.ly}" text-anchor="middle" font-size="${size}" style="dominant-baseline:middle">${lines}</text>`;
+ if(c.note)out+=`<text class="emap-note" x="${c.nx}" y="${c.ny}" text-anchor="middle">${c.note}</text>`;
+ return out;
+}
+function emapArrowPath(a,b,shorten){
+ const p=emapCentroid[a],q=emapCentroid[b];if(!p||!q)return '';
+ let[x1,y1]=p,[x2,y2]=q;const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+ const s=shorten||26;x1+=ux*s;y1+=uy*s;x2-=ux*(s+6);y2-=uy*(s+6);
+ const mx=(x1+x2)/2,my=(y1+y2)/2,curve=len*0.14;
+ const cxp=mx-uy*curve,cyp=my+ux*curve;
+ return `M${x1.toFixed(1)},${y1.toFixed(1)} Q${cxp.toFixed(1)},${cyp.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+}
+function emapMarkerDefs(){
+ const mk=(id)=>`<marker id="mk-${id}" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,9 L8,4.5 z"/></marker>`;
+ return mk('support')+mk('ultimatum')+mk('war')+mk('invasion');
+}
+function buildEuropeSVG(interactive){
+ let paths='';
+ emapData.forEach(c=>{
+  const cls='emap-country b-'+c.bloc;
+  if(interactive&&c.actor){
+   paths+=`<g class="emap-actor actor-node" data-actor="${c.id}" tabindex="0" role="button" aria-label="${(c.label||c.id).replace('|',' ')} auswählen">`
+        +`<path id="c-${c.id}" class="${cls}" d="${c.d}"/>${emapLabel(c)}</g>`;
+  }else{
+   paths+=`<path id="c-${c.id}" class="${cls}" d="${c.d}"/>${emapLabel(c)}`;
+  }
+ });
+ // Sarajevo-Marker (Attentatsort, an der Grenze A-H / Serbien)
+ const marker=`<g class="emap-marker" id="emapMarker" style="opacity:0">`
+  +`<path class="star" transform="translate(600,500)" d="M0,-11 L3.2,-3.4 L11,-3.4 L4.8,1.6 L7,9 L0,4.4 L-7,9 L-4.8,1.6 L-11,-3.4 L-3.2,-3.4 Z"/>`
+  +`<text x="600" y="484" text-anchor="middle">Sarajevo</text></g>`;
+ const ties=interactive?`<g id="emapTies">`+emapTies.map(t=>`<path class="tie" data-a="${t[0]}" data-b="${t[1]}" d="${emapArrowPath(t[0],t[1],20)}"/>`).join('')+`</g>`:'';
+ const flows=interactive?`<g id="emapFlows"></g>`:'';
+ return `<svg viewBox="0 0 1000 720" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Schematische Übersichtskarte Europas 1914">`
+  +`<defs>${emapMarkerDefs()}</defs>`
+  +`<rect class="emap-sea" width="1000" height="720" rx="16"/>`
+  +ties+paths+flows+marker+`</svg>`;
+}
+function legendHTML(){
+ return `<div class="emap-legend">`
+  +`<span><i class="lg-central"></i>Mittelmächte</span>`
+  +`<span><i class="lg-entente"></i>Triple Entente</span>`
+  +`<span><i class="lg-serbia"></i>Serbien</span>`
+  +`<span><i class="lg-neutral"></i>neutral 1914</span>`
+  +`</div>`;
+}
+
+/* ---- Orientierungskarte (Ausgangsfrage) ---- */
+(function initIntroMap(){
+ const host=document.getElementById('mapIntro');if(!host)return;
+ host.innerHTML=buildEuropeSVG(false)+legendHTML();
+ const m=host.querySelector('#emapMarker');if(m)m.style.opacity='1';
+})();
+
+/* ---- Interaktive Akteurskarte + Eskalation ---- */
+(function initActorMap(){
+ const host=document.getElementById('mapActors');if(!host)return;
+ host.innerHTML=buildEuropeSVG(true);
+ const svg=host.querySelector('svg');
+ const partnersOf=id=>{const set=new Set();emapTies.forEach(([a,b])=>{if(a===id)set.add(b);if(b===id)set.add(a)});return set};
+ // Hover: Bündnispartner hervorheben
+ host.querySelectorAll('.emap-actor').forEach(g=>{
+  const id=g.dataset.actor;
+  const enter=()=>{if(svg.classList.contains('playing'))return;const keep=partnersOf(id);keep.add(id);
+   host.querySelectorAll('.emap-actor').forEach(o=>o.classList.toggle('emap-dim',!keep.has(o.dataset.actor)));
+   host.querySelectorAll('.tie').forEach(t=>t.classList.toggle('show',t.dataset.a===id||t.dataset.b===id))};
+  const leave=()=>{host.querySelectorAll('.emap-actor').forEach(o=>o.classList.remove('emap-dim'));host.querySelectorAll('.tie').forEach(t=>t.classList.remove('show'))};
+  g.addEventListener('mouseenter',enter);g.addEventListener('mouseleave',leave);
+  g.addEventListener('focus',enter);g.addEventListener('blur',leave);
+  const pick=()=>{if(typeof selectActor==='function')selectActor(id)};
+  g.addEventListener('click',pick);
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
+ });
+
+ // Eskalations-Player
+ const bar=document.createElement('div');bar.className='escala';
+ bar.innerHTML=`
+  <div class="escala-head">
+    <div><div class="escala-title">Eskalation abspielen</div><div class="escala-date" id="escalaDate">Von Sarajevo zum europäischen Krieg</div></div>
+    <div class="escala-controls">
+      <button class="escala-btn" id="escalaPrev" aria-label="Schritt zurück">◀</button>
+      <button class="escala-btn primary" id="escalaPlay" aria-label="Abspielen">▶</button>
+      <button class="escala-btn" id="escalaNext" aria-label="Schritt vor">▶▮</button>
+      <button class="escala-btn" id="escalaReset" aria-label="Bündnisse zeigen">↺</button>
+    </div>
+  </div>
+  <div class="escala-track" id="escalaTrack"></div>
+  <div class="escala-text" id="escalaText">Klicke auf ▶ und beobachte, wie sich die Krise über das Bündnissystem zum europäischen Krieg ausweitet. Mit ↺ kehrst du zur Bündnisübersicht zurück.</div>
+  <div class="escala-hint">Die Karte ist schematisch und nicht maßstabsgetreu.</div>`;
+ host.appendChild(bar);
+ host.insertAdjacentHTML('beforeend',legendHTML());
+
+ const track=bar.querySelector('#escalaTrack');
+ emapSteps.forEach((s,i)=>{const b=document.createElement('button');b.title=s.date+' · '+s.short;b.addEventListener('click',()=>{stop();setStep(i)});track.appendChild(b)});
+ const flows=svg.querySelector('#emapFlows'),marker=svg.querySelector('#emapMarker');
+ let cur=-1,timer=null;
+
+ function clearStates(){svg.classList.remove('playing');host.querySelectorAll('.emap-country').forEach(p=>p.classList.remove('s-neutral','s-krise','s-mobil','s-krieg'))}
+ function setStep(i){
+  cur=i;svg.classList.add('playing');
+  host.querySelectorAll('.emap-actor').forEach(o=>o.classList.remove('emap-dim'));
+  host.querySelectorAll('.tie').forEach(t=>t.classList.remove('show'));
+  const step=emapSteps[i];
+  emapActorIds.forEach(id=>{const p=document.getElementById('c-'+id);if(!p)return;p.classList.remove('s-neutral','s-krise','s-mobil','s-krieg');p.classList.add('s-'+(step.states[id]||'neutral'))});
+  flows.innerHTML=step.arrows.map(a=>`<path class="warflow wf-${a[2]}" d="${emapArrowPath(a[0],a[1],28)}" marker-end="url(#mk-${a[2]})"/>`).join('');
+  requestAnimationFrame(()=>flows.querySelectorAll('.warflow').forEach(f=>f.classList.add('show')));
+  marker.style.opacity=step.marker?'1':'0';
+  bar.querySelector('#escalaDate').textContent=step.date;
+  bar.querySelector('#escalaText').innerHTML=step.text;
+  [...track.children].forEach((b,k)=>{b.classList.toggle('done',k<i);b.classList.toggle('cur',k===i)});
+  bar.querySelector('#escalaPrev').disabled=i===0;bar.querySelector('#escalaNext').disabled=i===emapSteps.length-1;
+ }
+ function play(){bar.querySelector('#escalaPlay').textContent='⏸';if(cur>=emapSteps.length-1)setStep(0);else if(cur<0)setStep(0);
+  timer=setInterval(()=>{if(cur>=emapSteps.length-1){stop()}else{setStep(cur+1)}},2600)}
+ function stop(){if(timer){clearInterval(timer);timer=null}bar.querySelector('#escalaPlay').textContent='▶'}
+ function reset(){stop();cur=-1;clearStates();flows.innerHTML='';marker.style.opacity='0';
+  [...track.children].forEach(b=>b.classList.remove('done','cur'));
+  bar.querySelector('#escalaDate').textContent='Von Sarajevo zum europäischen Krieg';
+  bar.querySelector('#escalaText').innerHTML='Fahre mit der Maus über einen Staat, um seine Bündnispartner zu sehen. Mit ▶ spielst du die Eskalation ab.';
+  bar.querySelector('#escalaPrev').disabled=true;bar.querySelector('#escalaNext').disabled=false;
+  if(typeof state==='object'){state.escalation=true;try{saveState()}catch(e){}}}
+ bar.querySelector('#escalaPlay').addEventListener('click',()=>{if(timer)stop();else play()});
+ bar.querySelector('#escalaNext').addEventListener('click',()=>{stop();if(cur<emapSteps.length-1)setStep(cur+1)});
+ bar.querySelector('#escalaPrev').addEventListener('click',()=>{stop();if(cur>0)setStep(cur-1)});
+ bar.querySelector('#escalaReset').addEventListener('click',reset);
+ bar.querySelector('#escalaNext').disabled=false;bar.querySelector('#escalaPrev').disabled=true;
+})();
+
+</script>
+</body>
+</html>
