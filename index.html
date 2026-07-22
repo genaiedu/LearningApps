@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Übersicht interaktiver Lernanwendungen für Physik, Chemie und Mathematik">
+<meta name="description" content="Übersicht interaktiver Lernanwendungen für Physik, Chemie, Mathematik und Geschichte">
 <title>LearningApps · Dr. Claus Unterberg</title>
 
 <style>
@@ -68,6 +68,7 @@
   --physik:         #1a6fb5;
   --chemie:         #16a34a;
   --sonstiges:      #7c3aed;
+  --geschichte:     #b45309;
 }
 
 body.dark {
@@ -84,6 +85,7 @@ body.dark {
   --physik:         #38bdf8;
   --chemie:         #4ade80;
   --sonstiges:      #a78bfa;
+  --geschichte:     #fbbf24;
 }
 
 * { box-sizing: border-box; }
@@ -337,6 +339,7 @@ body {
 .section__icon--physik { background: var(--physik); }
 .section__icon--chemie { background: var(--chemie); }
 .section__icon--sonstiges { background: var(--sonstiges); }
+.section__icon--geschichte { background: var(--geschichte); }
 
 .section__title {
   font-family: 'Poppins', sans-serif;
@@ -438,6 +441,7 @@ body {
 .app-card--physik { --card-accent: var(--physik); }
 .app-card--chemie { --card-accent: var(--chemie); }
 .app-card--sonstiges { --card-accent: var(--sonstiges); }
+.app-card--geschichte { --card-accent: var(--geschichte); }
 
 .app-card--placeholder {
   border: 2px dashed var(--glass-border);
@@ -537,6 +541,9 @@ body {
     <a href="#mathematik" class="nav__link">
       <i data-lucide="sigma"></i> Mathematik
     </a>
+    <a href="#geschichte" class="nav__link">
+      <i data-lucide="landmark"></i> Geschichte
+    </a>
 
     <div class="nav__heading">Info</div>
     <a href="#impressum" class="nav__link">
@@ -559,7 +566,7 @@ body {
 
   <section class="hero reveal">
     <div class="hero__eyebrow">Interaktiv lernen</div>
-    <h1 class="hero__title">Lernanwendungen für <span>Physik, Chemie und Mathematik</span></h1>
+    <h1 class="hero__title">Lernanwendungen für <span>Physik, Chemie, Mathematik und Geschichte</span></h1>
     <p class="hero__lead">
       Eine wachsende Sammlung kleiner Web-Anwendungen, die im Unterricht und zu Hause
       genutzt werden können. Jede Anwendung steht für sich und läuft direkt im Browser.
@@ -784,6 +791,33 @@ body {
         <p class="app-card__desc">
           Interaktives Arbeitsblatt zu künstlichen Neuronen, Gewichten, Bias, Entscheidungsgrenzen,
           Perzeptron-Training, dem XOR-Problem und Überanpassung. Mit Simulationen und Selbsttest.
+        </p>
+        <span class="app-card__tag"><i data-lucide="arrow-right"></i> öffnen</span>
+      </a>
+
+      <div class="app-card app-card--placeholder">
+        <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
+        weitere Anwendungen folgen
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="geschichte">
+    <div class="section__head">
+      <div class="section__icon section__icon--geschichte">
+        <i data-lucide="landmark"></i>
+      </div>
+      <h2 class="section__title">Geschichte</h2>
+      <span class="section__count">1 Anwendung</span>
+    </div>
+
+    <div class="app-grid">
+      <a href="Julikrise_1914_Interaktives_Arbeitsblatt.html" class="app-card app-card--geschichte">
+        <div class="app-card__icon"><i data-lucide="scroll-text"></i></div>
+        <h3 class="app-card__title">Die Julikrise 1914</h3>
+        <p class="app-card__desc">
+          Interaktives Arbeitsblatt zu den Ereignissen, Entscheidungen und Bündnissen der Julikrise 1914
+          sowie ihrem Weg in den Ersten Weltkrieg.
         </p>
         <span class="app-card__tag"><i data-lucide="arrow-right"></i> öffnen</span>
       </a>
