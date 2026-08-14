@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktives Arbeitsblatt: Mit ChatGPT Work, Codex und GitHub eine eigene LearningApp planen, erstellen, prüfen und veröffentlichen">
+<title>LearningApps mit ChatGPT Work, Codex & GitHub erstellen</title>
+<style>
+@font-face{font-family:Poppins;src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:Poppins;src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Poppins;src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:Inter;src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{--p:#6d28d9;--p2:#2563eb;--soft:#f0eafe;--accent:#f59e0b;--green:#15803d;--red:#b91c1c;--text:#1e293b;--muted:#64748b;--bg:#f4f6fb;--surface:rgba(255,255,255,.84);--solid:#fff;--line:rgba(100,116,139,.24);--code:#111827;--codeText:#e5e7eb;--shadow:0 12px 38px rgba(15,23,42,.11);--side:310px}
+body.dark{--p:#c4b5fd;--p2:#60a5fa;--soft:#241c3d;--accent:#fbbf24;--green:#4ade80;--red:#f87171;--text:#e2e8f0;--muted:#94a3b8;--bg:#0b1220;--surface:rgba(15,23,42,.86);--solid:#111c2e;--line:rgba(148,163,184,.23);--code:#050913;--codeText:#e2e8f0;--shadow:0 12px 38px rgba(0,0,0,.4)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.58;background-image:radial-gradient(circle at 12% 7%,rgba(109,40,217,.16),transparent 29%),radial-gradient(circle at 92% 31%,rgba(37,99,235,.14),transparent 27%)}button,input,select,textarea{font:inherit}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);padding:28px 24px;background:var(--surface);backdrop-filter:blur(22px);border-right:1px solid var(--line);box-shadow:var(--shadow);z-index:50;display:flex;flex-direction:column;overflow:auto}.brand{display:flex;align-items:center;gap:13px}.mark{width:50px;height:50px;border-radius:15px;background:linear-gradient(135deg,var(--p),var(--p2));color:white;display:grid;place-items:center}.brand h2{font-family:Poppins;font-weight:900;font-size:1.15rem;line-height:1.16;margin:0}.sub{font-size:.8rem;color:var(--muted);margin:9px 0 24px 63px}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;font-size:.89rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--soft);color:var(--p)}.dot{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:rgba(100,116,139,.13);font-size:.75rem;font-weight:800}.tools{display:grid;gap:7px;margin-top:auto;padding-top:22px}.tool{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:9px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;font-weight:600;text-decoration:none}.school{font-size:.71rem;color:var(--muted);margin-top:14px}.main{margin-left:var(--side);padding:64px 5.5vw 90px;max-width:1500px}.hero{max-width:1080px}.eyebrow,.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:var(--soft);color:var(--p);font-size:.78rem;font-weight:800}.hero h1{font-family:Poppins;font-weight:900;font-size:clamp(2.55rem,5.4vw,5.25rem);line-height:1.01;letter-spacing:-.048em;margin:18px 0}.hero h1 span{color:var(--p)}.hero p{font-size:1.13rem;line-height:1.75;color:var(--muted);max-width:900px}.notice{margin-top:20px;padding:16px 18px;border-left:5px solid var(--accent);border-radius:12px;background:rgba(245,158,11,.11);max-width:920px}.intro{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin:25px 0 56px}.glass{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}.intro>div,.card{padding:24px}.intro h2,.intro h3,.card h3{font-family:Poppins;margin-top:0}.progress .num{font-family:Poppins;font-size:2rem;font-weight:900;color:var(--p)}.bar{height:9px;background:rgba(100,116,139,.16);border-radius:999px;overflow:hidden;margin:8px 0}.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--accent));transition:.3s}.stage{margin:58px 0;scroll-margin-top:28px}.stagehead{display:flex;gap:16px;align-items:flex-start;margin-bottom:17px}.stageid{width:47px;height:47px;flex:0 0 47px;border-radius:15px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;display:grid;place-items:center;font-family:Poppins;font-weight:900;font-size:1.2rem}.stagehead h2{font-family:Poppins;font-size:clamp(1.45rem,3vw,2.15rem);line-height:1.15;margin:2px 0 5px}.stagehead p{margin:0;color:var(--muted)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.req{padding:21px;border-top:5px solid var(--p)}.req:nth-child(2){border-color:var(--p2)}.req:nth-child(3){border-color:var(--accent)}.req h3{font-family:Poppins;margin:0 0 7px}.req p{margin:0;color:var(--muted)}.checkline{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.checkline input{margin-top:5px;accent-color:var(--p);width:18px;height:18px}.explain{border-left:5px solid var(--p);padding:16px 18px;background:var(--soft);border-radius:12px;margin:16px 0}.warning{border-left-color:var(--accent);background:rgba(245,158,11,.1)}.success{border-left-color:var(--green);background:rgba(21,128,61,.09)}.glossary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.term{border:1px solid var(--line);border-radius:14px;background:var(--solid);color:var(--text);padding:16px;text-align:left;cursor:pointer;min-height:128px}.term strong{font-family:Poppins;display:block;color:var(--p)}.term span{display:block;color:var(--muted);margin-top:7px}.term em{display:none;font-style:normal;margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}.term.open em{display:block}.flow{display:flex;align-items:stretch;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:18px}.flowstep{border:1px solid var(--line);background:var(--solid);border-radius:13px;padding:13px 8px;text-align:center;min-width:105px}.flowstep b{display:block;color:var(--p);margin-top:5px}.arrow{align-self:center;color:var(--muted);font-size:1.3rem}.tabs{display:flex;gap:10px;margin:18px 0}.tab{flex:1;min-height:65px;border:2px solid var(--line);border-radius:14px;background:var(--solid);color:var(--text);cursor:pointer;font-weight:900}.tab.active{border-color:var(--p);background:var(--soft);color:var(--p)}.ospanel{display:none}.ospanel.show{display:block}.step{display:grid;grid-template-columns:42px 1fr;gap:13px;margin:19px 0}.stepno{width:38px;height:38px;border-radius:11px;background:var(--soft);color:var(--p);display:grid;place-items:center;font-weight:900}.step h4{font-family:Poppins;margin:2px 0 5px}.step p{margin:0 0 10px;color:var(--muted)}.command{position:relative;background:var(--code);color:var(--codeText);border-radius:13px;padding:17px 110px 17px 17px;margin:9px 0;overflow:auto}.command code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;white-space:pre-wrap;overflow-wrap:anywhere}.copybtn{position:absolute;top:9px;right:9px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:rgba(255,255,255,.1);color:white;padding:7px 9px;cursor:pointer;font-size:.76rem;font-weight:800;display:flex;gap:5px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field label{display:block;font-weight:800;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--solid);color:var(--text);padding:11px 12px}.field textarea{min-height:96px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{outline:0;border-color:var(--p);box-shadow:0 0 0 3px var(--soft)}.generated{margin-top:18px;border:2px solid var(--p);border-radius:15px;overflow:hidden}.generatedhead{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 15px;background:var(--soft)}.generatedhead strong{color:var(--p)}.prompt{margin:0;padding:18px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88rem;background:var(--solid);min-height:260px}.actionrow{display:grid;grid-template-columns:140px 1fr;gap:13px;align-items:start;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--solid);margin:12px 0}.label{font-weight:900;color:var(--p)}.actionrow p{margin:0 0 8px;color:var(--muted)}.btn{border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--text);padding:10px 14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-weight:800}.btn.primary{background:var(--p);border-color:var(--p);color:#fff}.btn.green{background:var(--green);border-color:var(--green);color:#fff}.btn.small{padding:7px 10px;font-size:.78rem}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.trouble{border:1px solid var(--line);border-radius:14px;background:var(--solid);overflow:hidden;margin:10px 0}.trouble>button{width:100%;border:0;background:transparent;color:var(--text);padding:15px 17px;text-align:left;font-weight:900;cursor:pointer;display:flex;justify-content:space-between}.answer{display:none;padding:0 17px 16px}.trouble.open .answer{display:block}.quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:18px}.quizcard{padding:20px}.quizcard h3{font-size:1rem}.options{display:grid;gap:7px}.option{display:flex;gap:8px;align-items:flex-start;padding:9px;border:1px solid var(--line);border-radius:9px;cursor:pointer}.option:hover{background:var(--soft)}.option input{margin-top:5px;accent-color:var(--p)}.feedback{display:none;margin-top:11px;padding:11px 13px;border-radius:10px;border:1px solid var(--line)}.feedback.show{display:block}.feedback.good{color:var(--green);background:rgba(21,128,61,.08)}.feedback.bad{color:var(--red);background:rgba(185,28,28,.07)}.sources a{color:var(--p);font-weight:700}.sources li{margin:7px 0}footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:50px}.hamb{display:none;position:fixed;top:14px;left:14px;z-index:60;border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--text);width:43px;height:43px}.ico{width:18px;height:18px;display:inline-block;vertical-align:-3px}#scrollbar{position:fixed;left:var(--side);right:0;top:0;height:4px;background:rgba(100,116,139,.12);z-index:80}#scrollbar div{height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--accent))}.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 16px;border-radius:11px;opacity:0;transform:translateY(12px);transition:.23s;z-index:100}.toast.show{opacity:1;transform:none}
+@media(max-width:1000px){.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none}.hamb{display:grid;place-items:center}.main{margin-left:0;padding:75px 4.5vw 80px}#scrollbar{left:0}.intro{grid-template-columns:1fr}.glossary{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.main{padding-left:15px;padding-right:15px}.hero h1{font-size:2.5rem}.grid2,.grid3,.formgrid,.quizgrid,.glossary{grid-template-columns:1fr}.card{padding:17px}.tabs{flex-direction:column}.command{padding:52px 13px 15px}.actionrow{grid-template-columns:1fr}.generatedhead{align-items:flex-start;flex-direction:column}.flow{flex-direction:column}.arrow{transform:rotate(90deg)}}
+@media print{.sidebar,.hamb,#scrollbar,.tools,.copybtn,.actions,.tabs,.toast{display:none!important}.main{margin:0;padding:10mm}.glass{box-shadow:none;background:#fff}.stage{break-before:page}.ospanel{display:block}.command{background:#eee;color:#111}}
+</style>
+<script src="fonts/lucide.min.js"></script>
+</head>
+<body>
+<div id="scrollbar"><div></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen"><i class="ico" data-lucide="menu"></i></button>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark"><i class="ico" data-lucide="book-open"></i></div><h2>LearningApps<br>mit KI erstellen</h2></div>
+  <div class="sub">ChatGPT Work · Codex · GitHub</div>
+  <nav>
+    <a href="#start"><span class="dot">1</span>Was du brauchst</a>
+    <a href="#github"><span class="dot">2</span>GitHub verstehen</a>
+    <a href="#einrichten"><span class="dot">3</span>Mac oder Windows</a>
+    <a href="#projekt"><span class="dot">4</span>Projekt verbinden</a>
+    <a href="#auftrag"><span class="dot">5</span>Guten Auftrag bauen</a>
+    <a href="#pruefen"><span class="dot">6</span>Prüfen & hochladen</a>
+    <a href="#hilfe"><span class="dot">7</span>Hilfe & Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark"><i class="ico" data-lucide="moon-star"></i>Darstellung wechseln</button>
+    <button class="tool" id="restart"><i class="ico" data-lucide="rotate-ccw"></i>Arbeitsblatt zurücksetzen</button>
+    <button class="tool" onclick="window.print()"><i class="ico" data-lucide="printer"></i>Drucken</button>
+    <a class="tool" href="index.html"><i class="ico" data-lucide="layout-grid"></i>Zur Übersicht</a>
+  </div>
+  <div class="school">Einsteiger-Arbeitsblatt · Informatik<br>Fortschritt bleibt nur im Browser.<br>Keine Passwörter oder Codes eintragen.</div>
+</aside>
+
+<main class="main">
+<header class="hero">
+  <span class="eyebrow"><i class="ico" data-lucide="git-branch"></i>Von der Idee zur veröffentlichten LearningApp</span>
+  <h1>Mit ChatGPT Work, Codex & GitHub <span>selbst Lernapps bauen</span></h1>
+  <p>Du brauchst keine Programmiererfahrung. Dieses Arbeitsblatt erklärt jeden Begriff, richtet deinen Mac oder Windows-PC ein und führt dich mit kopierbaren Befehlen von der Idee über den Test bis zur Veröffentlichung.</p>
+  <div class="notice"><strong>Voraussetzung für diesen Kurs:</strong> Wir setzen ein <strong>kostenpflichtiges ChatGPT-Abo mit Codex-Zugang</strong> und ein <strong>GitHub-Konto</strong> voraus. Funktionen und Nutzungslimits können sich je nach Tarif und Arbeitsbereich ändern. Prüfe vor dem Start, ob du in ChatGPT den Bereich „Codex“ öffnen kannst.</div>
+</header>
+<div class="intro">
+  <div class="glass"><h2>Was machen Work und Codex?</h2><p><strong>ChatGPT Work</strong> hilft dir, Unterrichtsidee, Zielgruppe, Inhalt und Auftrag zu klären. <strong>Codex</strong> ist der Programmier-Agent: Er liest das vorhandene Projekt, erstellt Dateien, prüft die LearningApp und bereitet sie für GitHub vor. Du kontrollierst das Ergebnis vor der Veröffentlichung.</p></div>
+  <div class="glass progress"><h3>Dein Fortschritt</h3><div class="num"><span id="donecount">0</span>/6</div><div class="bar"><div id="minibar"></div></div><small>Start · GitHub · Einrichtung · Projekt · Auftrag · Test</small></div>
+</div>
+
+<section class="stage" id="start">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Was du brauchst</h2><p>Hake erst weiter, wenn alle drei Voraussetzungen erfüllt sind.</p></div></div>
+  <div class="grid3">
+    <article class="glass req"><h3>ChatGPT-Abo</h3><p>Ein kostenpflichtiges Abo mit sichtbarem Codex-Bereich. Die offizielle App gibt es auf <a href="https://chatgpt.com/download" target="_blank" rel="noopener">chatgpt.com/download</a>.</p><label class="checkline"><input type="checkbox" class="progresscheck" data-key="account"><span>Ich bin angemeldet und kann Codex öffnen.</span></label></article>
+    <article class="glass req"><h3>GitHub-Konto</h3><p>GitHub speichert das Projekt, seine Geschichte und die veröffentlichte Version. Anmeldung: <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</p><label class="checkline"><input type="checkbox" class="progresscheck" data-key="github"><span>Mein Konto auf github.com funktioniert.</span></label></article>
+    <article class="glass req"><h3>Eigener Computer</h3><p>Mac oder Windows-PC, Internet und die Erlaubnis, Git sowie GitHub CLI zu installieren.</p><label class="checkline"><input type="checkbox" class="progresscheck" data-key="computer"><span>Ich darf Programme installieren.</span></label></article>
+  </div>
+  <div class="explain warning"><strong>Sicherheitsregel:</strong> Passwörter, persönliche Zugriffsschlüssel und Einmalcodes gehören niemals in einen Chat, ein Arbeitsblatt oder eine Projektdatei. Die Anmeldung findet im offiziellen GitHub-Browserfenster statt.</div>
+</section>
+
+<section class="stage" id="github">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>GitHub für Laien: ein Projektordner mit Zeitmaschine</h2><p>GitHub ist ein Internetdienst, auf dem Softwareprojekte gespeichert, gemeinsam bearbeitet und veröffentlicht werden.</p></div></div>
+  <div class="glass card">
+    <p>Stell dir einen gemeinsamen Ordner vor, der jede gespeicherte Version kennt. Du kannst eine Idee in einer eigenen Spur ausprobieren. Andere sehen die Änderung, und erst nach der Kontrolle wird sie in die Hauptversion übernommen. Das Versionssystem heißt <strong>Git</strong>; die Website und Zusammenarbeit darum herum heißt <strong>GitHub</strong>.</p>
+    <div class="glossary">
+      <button class="term"><strong>Repository</strong><span>Der Projektordner auf GitHub.</span><em>Darin liegen HTML-Dateien, Bilder, Schriften und die Übersicht <code>index.html</code>. Kurz: „Repo“.</em></button>
+      <button class="term"><strong>Commit</strong><span>Ein beschrifteter Speicherpunkt.</span><em>Er hält fest, welche Dateien sich geändert haben und warum.</em></button>
+      <button class="term"><strong>Branch</strong><span>Eine sichere Arbeitsspur.</span><em>Du arbeitest dort, ohne die Hauptversion <code>main</code> zu verändern.</em></button>
+      <button class="term"><strong>Pull Request</strong><span>Ein Vorschlag zur Übernahme.</span><em>Der PR zeigt alle Änderungen und lädt zur Prüfung ein.</em></button>
+      <button class="term"><strong>Merge</strong><span>Geprüfte Änderung übernehmen.</span><em>Beim Zusammenführen landet dein Branch in <code>main</code>.</em></button>
+      <button class="term"><strong>GitHub Pages</strong><span>HTML-Dateien als Webseite zeigen.</span><em>Pages kann Dateien aus <code>main</code> öffentlich bereitstellen.</em></button>
+    </div>
+    <div class="flow"><div class="flowstep">💡<b>Idee</b></div><div class="arrow">→</div><div class="flowstep">📝<b>Auftrag</b></div><div class="arrow">→</div><div class="flowstep">🌿<b>Branch</b></div><div class="arrow">→</div><div class="flowstep">🤖<b>Codex baut</b></div><div class="arrow">→</div><div class="flowstep">🔎<b>Prüfen</b></div><div class="arrow">→</div><div class="flowstep">🔁<b>Pull Request</b></div><div class="arrow">→</div><div class="flowstep">🚀<b>Online</b></div></div>
+    <div class="actions"><button class="btn primary" id="githubDone"><i class="ico" data-lucide="check-circle-2"></i>Begriffe verstanden</button></div>
+  </div>
+</section>
+
+<section class="stage" id="einrichten">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Deinen Computer einrichten</h2><p>Wähle dein Betriebssystem. Danach siehst du nur die passende Anleitung.</p></div></div>
+  <div class="glass card">
+    <div class="tabs"><button class="tab active" data-os="mac">🍎 Ich nutze einen Mac</button><button class="tab" data-os="windows">🪟 Ich nutze Windows</button></div>
+    <div class="ospanel show" id="panelMac">
+      <div class="explain"><strong>Terminal öffnen:</strong> Drücke <kbd>⌘</kbd> + <kbd>Leertaste</kbd>, tippe <strong>Terminal</strong> und drücke Enter. Kopiere nur einen Block auf einmal.</div>
+      <div class="step"><div class="stepno">1</div><div><h4>Apple-Werkzeuge bereitstellen</h4><p>Öffnet Apples Installationsfenster. Sind die Werkzeuge vorhanden, meldet der Mac das.</p><div class="command"><code>xcode-select --install</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+      <div class="step"><div class="stepno">2</div><div><h4>Homebrew installieren</h4><p>Homebrew ist ein Paketmanager für Terminal-Werkzeuge.</p><div class="command"><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><div class="explain warning"><strong>Wichtig:</strong> Am Ende zeigt Homebrew unter „Next steps“ zwei Befehle. Führe genau diese aus, sonst kennt das Terminal <code>brew</code> noch nicht.</div></div></div>
+      <div class="step"><div class="stepno">3</div><div><h4>Homebrew auf aktuellen Macs aktivieren</h4><p>Für Apple-Chips (M1, M2, M3, M4 …) sind dies meist die „Next steps“:</p><div class="command"><code>echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' &gt;&gt; ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><p>Auf älteren Intel-Macs steht meist <code>/usr/local</code> statt <code>/opt/homebrew</code>. Nimm den Text aus deiner Homebrew-Ausgabe.</p></div></div>
+      <div class="step"><div class="stepno">4</div><div><h4>Git und GitHub CLI installieren</h4><p><code>git</code> verwaltet Versionen; <code>gh</code> verbindet das Terminal mit GitHub.</p><div class="command"><code>brew install git gh</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+      <div class="step"><div class="stepno">5</div><div><h4>Bei GitHub anmelden</h4><p>Drücke Enter, melde dich im Browser an und genehmige „GitHub CLI“.</p><div class="command"><code>gh auth login --web --git-protocol https</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><div class="command"><code>gh auth status</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    </div>
+    <div class="ospanel" id="panelWindows">
+      <div class="explain"><strong>PowerShell öffnen:</strong> Öffne Start, tippe <strong>PowerShell</strong> und starte Windows PowerShell. Kopiere nur einen Block auf einmal.</div>
+      <div class="step"><div class="stepno">1</div><div><h4>WinGet prüfen</h4><p>WinGet ist der Paketmanager moderner Windows-Versionen.</p><div class="command"><code>winget --version</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><p>Fehlt WinGet, aktualisiere im Microsoft Store den <strong>App-Installer</strong>.</p></div></div>
+      <div class="step"><div class="stepno">2</div><div><h4>Git installieren</h4><div class="command"><code>winget install --id Git.Git -e --source winget</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+      <div class="step"><div class="stepno">3</div><div><h4>GitHub CLI installieren</h4><div class="command"><code>winget install --id GitHub.cli --source winget</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><div class="explain warning"><strong>Danach:</strong> Schließe das gesamte PowerShell-Fenster und öffne ein neues.</div></div></div>
+      <div class="step"><div class="stepno">4</div><div><h4>Bei GitHub anmelden</h4><p>Der Befehl zeigt einen Einmalcode und öffnet GitHub. Genehmige dort „GitHub CLI“.</p><div class="command"><code>gh auth login --web --git-protocol https</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div><div class="command"><code>gh auth status</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="setupDone"><i class="ico" data-lucide="check-circle-2"></i>Einrichtung abgeschlossen</button></div>
+  </div>
+</section>
+
+<section class="stage" id="projekt">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Das GitHub-Projekt auf den Computer holen</h2><p>„Klonen“ bedeutet: eine Arbeitskopie herunterladen und mit GitHub verbinden.</p></div></div>
+  <div class="glass card">
+    <div class="formgrid"><div class="field"><label for="owner">GitHub-Benutzer oder Organisation</label><input id="owner" value="genaiedu" spellcheck="false"></div><div class="field"><label for="repo">Repository</label><input id="repo" value="LearningApps" spellcheck="false"></div></div>
+    <div class="grid2" style="margin-top:18px">
+      <div><h3>Mac</h3><div class="command" id="cloneMac"><code>cd ~/Documents
+gh repo clone genaiedu/LearningApps
+cd LearningApps</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div>
+      <div><h3>Windows PowerShell</h3><div class="command" id="cloneWin"><code>cd $HOME\Documents
+gh repo clone genaiedu/LearningApps
+cd LearningApps</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div>
+    </div>
+    <h3>Einmalig den Namen für Speicherpunkte festlegen</h3>
+    <p>Git schreibt Name und E-Mail an jeden Commit. Nutze eine bei GitHub bestätigte Adresse. Wenn deine Adresse nicht öffentlich werden soll, kopiere zuerst deine private <code>noreply</code>-Adresse aus GitHub → <strong>Settings → Emails</strong>.</p>
+    <div class="formgrid"><div class="field"><label for="gitName">Angezeigter Name</label><input id="gitName" value="Vorname Nachname"></div><div class="field"><label for="gitEmail">GitHub-E-Mail oder noreply-Adresse</label><input id="gitEmail" value="deine-adresse@example.de" spellcheck="false"></div></div>
+    <div class="command" id="identityCmd"><code>git config --global user.name "Vorname Nachname"
+git config --global user.email "deine-adresse@example.de"</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div>
+    <div class="explain warning"><strong>Zugriffsrecht:</strong> Für ein fremdes Repository brauchst du Schreibzugriff. Wenn <code>git push</code> später abgelehnt wird, muss die Eigentümerin dich einladen oder du arbeitest über einen eigenen Fork.</div>
+    <div class="explain"><strong>Dann in ChatGPT:</strong> Öffne die Desktop-App, wechsle zu <strong>Codex</strong> und wähle den geklonten Ordner <code>LearningApps</code> als Arbeitsordner. Codex darf die Dateien nun lesen und nach deiner Beauftragung verändern.</div>
+    <div class="explain warning"><strong>Vor Änderungen:</strong> Lass Codex zuerst Struktur, typische Apps, Schriftarten, Icons und <code>index.html</code> erklären. So passt die neue Seite zum Projekt.</div>
+    <div class="actions"><button class="btn primary" id="projectDone"><i class="ico" data-lucide="check-circle-2"></i>Projekt geöffnet</button></div>
+  </div>
+</section>
+
+<section class="stage" id="auftrag">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Einen guten Codex-Auftrag bauen</h2><p>Fülle die Felder aus. Der kopierbare Auftrag entsteht automatisch.</p></div></div>
+  <div class="glass card">
+    <div class="formgrid">
+      <div class="field"><label for="topic">Thema</label><input id="topic" value="Fotosynthese"></div>
+      <div class="field"><label for="grade">Klassenstufe</label><input id="grade" value="Klasse 7–8"></div>
+      <div class="field"><label for="subject">Fach</label><select id="subject"><option>Biologie</option><option>Physik</option><option>Chemie</option><option>Mathematik</option><option>Informatik</option><option>Geschichte</option><option>Geografie</option><option>Deutsch</option></select></div>
+      <div class="field"><label for="filename">Dateiname ohne Leerzeichen</label><input id="filename" value="fotosynthese_arbeitsblatt.html" spellcheck="false"></div>
+      <div class="field" style="grid-column:1/-1"><label for="learninggoal">Lernziel</label><textarea id="learninggoal">Die Schülerinnen und Schüler erklären Ausgangsstoffe, Produkte und Bedeutung der Fotosynthese und überprüfen ihr Verständnis selbstständig.</textarea></div>
+      <div class="field" style="grid-column:1/-1"><label for="features">Interaktionen</label><textarea id="features">Schrittweise Erklärung, beschriftbare Grafik, Zuordnungsübung, einfache Simulation, sofortiges Feedback und Selbsttest</textarea></div>
+    </div>
+    <div class="generated"><div class="generatedhead"><strong>Dein Auftrag für Codex</strong><button class="btn primary small" id="copyPrompt"><i class="ico" data-lucide="clipboard-copy"></i>Auftrag kopieren</button></div><pre class="prompt" id="prompt"></pre></div>
+    <div class="explain success"><strong>Tipp:</strong> Gib Codex zuerst den Gesamtauftrag. Prüfe die Vorschau und formuliere danach kleine Änderungswünsche. So bleibt der Prozess kontrollierbar.</div>
+    <div class="actions"><button class="btn primary" id="promptDone"><i class="ico" data-lucide="check-circle-2"></i>Auftrag verwendet</button></div>
+  </div>
+</section>
+
+<section class="stage" id="pruefen">
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Prüfen, hochladen und veröffentlichen</h2><p>Die Hauptversion wird erst verändert, wenn du die LearningApp geprüft hast.</p></div></div>
+  <div class="glass card">
+    <h3>A. Lokal im Browser prüfen</h3><p>Öffne die Übersicht. Die neue Karte muss funktionieren.</p>
+    <div class="grid2"><div><strong>Mac</strong><div class="command"><code>open index.html</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div><div><strong>Windows</strong><div class="command"><code>start index.html</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="grid3"><label class="checkline"><input type="checkbox"><span>Fachlich richtig und verständlich</span></label><label class="checkline"><input type="checkbox"><span>Buttons, Lösungen und Links funktionieren</span></label><label class="checkline"><input type="checkbox"><span>Auf schmalem Fenster bedienbar</span></label><label class="checkline"><input type="checkbox"><span>Keine persönlichen Daten</span></label><label class="checkline"><input type="checkbox"><span>Karte sinnvoll in <code>index.html</code></span></label><label class="checkline"><input type="checkbox"><span>Lokale Schriften und Icons funktionieren</span></label></div>
+    <h3 style="margin-top:28px">B. Als sicheren Vorschlag hochladen</h3>
+    <div class="formgrid"><div class="field"><label for="branch">Branch</label><input id="branch" value="agent/fotosynthese-arbeitsblatt" spellcheck="false"></div><div class="field"><label for="commitmsg">Beschreibung</label><input id="commitmsg" value="Interaktives Fotosynthese-Arbeitsblatt ergänzen"></div></div>
+    <div class="actionrow"><div class="label">1 · Status</div><div><p>Zeigt die veränderten Dateien.</p><div class="command"><code>git status</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="actionrow"><div class="label">2 · Branch</div><div><p>Erzeugt eine eigene Arbeitsspur.</p><div class="command" id="branchCmd"><code>git switch -c agent/fotosynthese-arbeitsblatt</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="actionrow"><div class="label">3 · Auswählen</div><div><p>Wählt Übersicht und neue App aus.</p><div class="command" id="addCmd"><code>git add index.html fotosynthese_arbeitsblatt.html</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="actionrow"><div class="label">4 · Commit</div><div><p>Erstellt den Speicherpunkt.</p><div class="command" id="commitCmd"><code>git commit -m "Interaktives Fotosynthese-Arbeitsblatt ergänzen"</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="actionrow"><div class="label">5 · Push</div><div><p>Lädt den Branch zu GitHub.</p><div class="command" id="pushCmd"><code>git push -u origin agent/fotosynthese-arbeitsblatt</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="actionrow"><div class="label">6 · Pull Request</div><div><p>Öffnet einen Entwurf zur Prüfung.</p><div class="command"><code>gh pr create --draft --fill --base main</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <h3 style="margin-top:28px">C. Nach Prüfung veröffentlichen</h3>
+    <div class="explain warning"><strong>Nicht sofort zusammenführen:</strong> Öffne den PR-Link, lies „Files changed“, teste die Vorschau und bitte möglichst eine zweite Person um Kontrolle.</div>
+    <div class="grid2"><div><strong>Entwurf bereit markieren</strong><div class="command"><code>gh pr ready</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div><div><strong>Nach Freigabe übernehmen</strong><div class="command"><code>gh pr merge --squash --delete-branch</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <p>Danach die lokale Hauptversion aktualisieren:</p><div class="command"><code>git switch main
+git pull</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div>
+    <div class="explain success"><strong>GitHub ist noch nicht automatisch die Webseite:</strong> Bei einem verbundenen Hoster wie Vercel wird <code>main</code> oft automatisch veröffentlicht. Für GitHub Pages: Repository → <strong>Settings</strong> → <strong>Pages</strong> → <strong>Deploy from a branch</strong> → <strong>main</strong> → <strong>/(root)</strong> → <strong>Save</strong>. GitHub zeigt danach die Webadresse.</div>
+    <div class="actions"><button class="btn green" id="testDone"><i class="ico" data-lucide="check-check"></i>Ablauf verstanden und geprüft</button></div>
+  </div>
+</section>
+
+<section class="stage" id="hilfe">
+  <div class="stagehead"><div class="stageid">7</div><div><h2>Wenn etwas nicht funktioniert</h2><p>Öffne die passende Fehlermeldung.</p></div></div>
+  <div class="glass card">
+    <div class="trouble"><button>Mac: „command not found: brew“ <span>＋</span></button><div class="answer"><p>Homebrew ist installiert, aber noch nicht im Suchpfad. Führe die „Next steps“ des Installers aus. Auf Apple-Chip-Macs meist:</p><div class="command"><code>echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' &gt;&gt; ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="trouble"><button>„command not found: gh“ <span>＋</span></button><div class="answer"><p>Schließe das gesamte Terminal- oder PowerShell-Fenster und öffne ein neues. Bleibt der Fehler, installiere <code>gh</code> erneut.</p></div></div>
+    <div class="trouble"><button>GitHub lehnt den Einmalcode ab <span>＋</span></button><div class="answer"><p>Codes laufen ab. Brich mit <kbd>Ctrl</kbd> + <kbd>C</kbd> ab und beginne neu:</p><div class="command"><code>gh auth login --web --git-protocol https</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="trouble"><button>„Repository not found“ <span>＋</span></button><div class="answer"><p>Prüfe Schreibweise und Zugriff. Dieser Befehl zeigt das angemeldete Konto:</p><div class="command"><code>gh auth status</code><button class="copybtn" data-copy><i class="ico" data-lucide="copy"></i>kopieren</button></div></div></div>
+    <div class="trouble"><button>Auf GitHub, aber nicht online <span>＋</span></button><div class="answer"><p>Prüfe, ob der PR zusammengeführt wurde. Öffne danach auf GitHub <strong>Actions</strong> oder <strong>Settings → Pages</strong>.</p></div></div>
+    <div class="trouble"><button>Lucide-Symbol bleibt leer <span>＋</span></button><div class="answer"><p>Bitte Codex, ein Symbol zu verwenden, das in einer vorhandenen funktionierenden Seite vorkommt, und das erzeugte SVG zu prüfen.</p></div></div>
+  </div>
+  <div class="quizgrid">
+    <article class="glass quizcard" data-answer="b"><h3>1. Was ist ein Branch?</h3><div class="options"><label class="option"><input type="radio" name="q1" value="a">Webadresse</label><label class="option"><input type="radio" name="q1" value="b">Getrennte Arbeitsspur</label><label class="option"><input type="radio" name="q1" value="c">Passwort</label></div><div class="feedback"></div></article>
+    <article class="glass quizcard" data-answer="c"><h3>2. Was bewirkt <code>git push</code>?</h3><div class="options"><label class="option"><input type="radio" name="q2" value="a">Seite sofort live</label><label class="option"><input type="radio" name="q2" value="b">Screenshot speichern</label><label class="option"><input type="radio" name="q2" value="c">Branch zu GitHub laden</label></div><div class="feedback"></div></article>
+    <article class="glass quizcard" data-answer="a"><h3>3. Wann wird zusammengeführt?</h3><div class="options"><label class="option"><input type="radio" name="q3" value="a">Nach Test und Freigabe</label><label class="option"><input type="radio" name="q3" value="b">Vor dem Test</label><label class="option"><input type="radio" name="q3" value="c">Bei <code>git status</code></label></div><div class="feedback"></div></article>
+    <article class="glass quizcard" data-answer="b"><h3>4. Was gehört nie in den Chat?</h3><div class="options"><label class="option"><input type="radio" name="q4" value="a">Lernziel</label><label class="option"><input type="radio" name="q4" value="b">Passwort oder Zugriffsschlüssel</label><label class="option"><input type="radio" name="q4" value="c">Klassenstufe</label></div><div class="feedback"></div></article>
+  </div>
+  <div class="actions"><button class="btn primary" id="checkQuiz"><i class="ico" data-lucide="list-checks"></i>Selbsttest auswerten</button></div>
+  <div class="glass card sources" style="margin-top:22px"><h3>Offizielle Anleitungen</h3><ul>
+    <li><a href="https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" target="_blank" rel="noopener">OpenAI: Codex mit dem ChatGPT-Konto</a></li>
+    <li><a href="https://developers.openai.com/" target="_blank" rel="noopener">OpenAI: ChatGPT Work und Codex</a></li>
+    <li><a href="https://docs.github.com/en/get-started/learning-to-code/getting-started-with-git" target="_blank" rel="noopener">GitHub: Repository, Commit, Branch und Pull Request</a></li>
+    <li><a href="https://github.com/cli/cli/blob/trunk/docs/install_windows.md" target="_blank" rel="noopener">GitHub CLI unter Windows</a></li>
+    <li><a href="https://docs.brew.sh/Installation" target="_blank" rel="noopener">Homebrew-Installation</a></li>
+    <li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site" target="_blank" rel="noopener">GitHub Pages einrichten</a></li>
+  </ul><p style="color:var(--muted)">Stand: August 2026. Oberflächen, Tarife und Befehle können sich ändern; bei Abweichungen gilt die verlinkte offizielle Dokumentation.</p></div>
+</section>
+<footer>LearningApps · Interaktives Arbeitsblatt · ChatGPT Work, Codex, Git und GitHub · Keine Zugangsdaten werden gespeichert</footer>
+</main>
+<div class="toast" id="toast" role="status">Kopiert</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
+try{lucide.createIcons()}catch(e){}
+const key='learningapps-github-work-v1';let state={checks:{},done:{},os:'mac',dark:false};
+try{state=Object.assign(state,JSON.parse(localStorage.getItem(key)||'{}'))}catch(e){}
+const save=()=>localStorage.setItem(key,JSON.stringify(state));
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),1700)}
+function updateProgress(){const ready=['account','github','computer'].every(k=>state.checks[k]);const n=[ready,state.done.github,state.done.setup,state.done.project,state.done.prompt,state.done.test].filter(Boolean).length;$('#donecount').textContent=n;$('#minibar').style.width=(n/6*100)+'%'}
+$$('.progresscheck').forEach(b=>{b.checked=!!state.checks[b.dataset.key];b.addEventListener('change',()=>{state.checks[b.dataset.key]=b.checked;save();updateProgress()})});
+[['#githubDone','github'],['#setupDone','setup'],['#projectDone','project'],['#promptDone','prompt'],['#testDone','test']].forEach(x=>$(x[0]).addEventListener('click',()=>{state.done[x[1]]=true;save();updateProgress();toast('Fortschritt gespeichert')}));
+function setOs(os){state.os=os;save();$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.os===os));$$('.ospanel').forEach(p=>p.classList.toggle('show',p.id===(os==='mac'?'panelMac':'panelWindows')))}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>setOs(t.dataset.os)));setOs(state.os);
+function fallbackCopy(text){const a=document.createElement('textarea');a.value=text;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('Kopiert')}
+function copyText(text){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>toast('Kopiert')).catch(()=>fallbackCopy(text))}else fallbackCopy(text)}
+$$('[data-copy]').forEach(b=>b.addEventListener('click',()=>copyText(b.closest('.command').querySelector('code').textContent.trim())));
+$$('.term').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('open')));
+$$('.trouble>button').forEach(b=>b.addEventListener('click',()=>{b.parentElement.classList.toggle('open');b.querySelector('span').textContent=b.parentElement.classList.contains('open')?'−':'＋'}));
+function clean(v,f){return (v.trim()||f).replace(/[^a-zA-Z0-9._\/-]/g,'')}
+function val(id,f){return $(id).value.trim()||f}
+function updateProject(){const owner=clean(val('#owner','DEIN-NAME'),'DEIN-NAME'),repo=clean(val('#repo','LearningApps'),'LearningApps'),name=val('#gitName','Vorname Nachname').replace(/["\n\r]/g,' '),email=val('#gitEmail','deine-adresse@example.de').replace(/["\n\r]/g,'');$('#cloneMac code').textContent=['cd ~/Documents','gh repo clone '+owner+'/'+repo,'cd '+repo].join('\n');$('#cloneWin code').textContent=['cd $HOME\\Documents','gh repo clone '+owner+'/'+repo,'cd '+repo].join('\n');$('#identityCmd code').textContent=['git config --global user.name "'+name+'"','git config --global user.email "'+email+'"'].join('\n');updatePrompt()}
+function updatePrompt(){
+  const owner=clean(val('#owner','DEIN-NAME'),'DEIN-NAME'),repo=clean(val('#repo','LearningApps'),'LearningApps'),topic=val('#topic','mein Thema'),grade=val('#grade','meine Lerngruppe'),subject=$('#subject').value,file=clean(val('#filename','mein_arbeitsblatt.html'),'mein_arbeitsblatt.html'),goal=val('#learninggoal','Die Lernenden verstehen das Thema.'),features=val('#features','Erklärung, Interaktionen und Selbsttest');
+  $('#prompt').textContent=[
+    'Arbeite im Repository '+owner+'/'+repo+'. Erstelle ein neues interaktives Arbeitsblatt zum Thema „'+topic+'“ für '+grade+' im Fach '+subject+'.',
+    '',
+    'Lernziel:',''+goal,'','Gewünschte Interaktionen:',''+features,'',
+    'Vorgehen und Qualitätsanforderungen:',
+    '1. Inspiziere zuerst index.html und zwei bestehende, typische Arbeitsblätter. Fasse Stil, Struktur, lokale Schriftarten und vorhandene Lucide-Symbole kurz zusammen.',
+    '2. Erstelle danach die eigenständige Datei '+file+' im typischen Design. Verwende nur lokale Ressourcen; keine externen CDNs.',
+    '3. Das Blatt muss ohne Anmeldung funktionieren, fachlich korrekt, verständlich, responsiv und allein bearbeitbar sein. Jede Interaktion braucht eine klare Aufgabe und verständliches Feedback.',
+    '4. Nutze ein passendes Lucide-Symbol, das in der lokalen Version nachweislich vorhanden ist.',
+    '5. Ergänze in index.html an sinnvoller Stelle eine Karte und aktualisiere die angezeigte Anzahl.',
+    '6. Bewahre bestehende Änderungen. Prüfe HTML, JavaScript, Links, mobile Darstellung und Browser-Konsole.',
+    '7. Zeige mir danach geänderte Dateien, Tests und offene Grenzen. Committe oder veröffentliche noch nichts ohne meine Kontrolle.'
+  ].join('\n');updateGit()
+}
+function updateGit(){const file=clean(val('#filename','mein_arbeitsblatt.html'),'mein_arbeitsblatt.html'),branch=clean(val('#branch','agent/mein-arbeitsblatt'),'agent/mein-arbeitsblatt'),msg=val('#commitmsg','Interaktives Arbeitsblatt ergänzen').replace(/["\n\r]/g,' ');$('#branchCmd code').textContent='git switch -c '+branch;$('#addCmd code').textContent='git add index.html '+file;$('#commitCmd code').textContent='git commit -m "'+msg+'"';$('#pushCmd code').textContent='git push -u origin '+branch}
+['#owner','#repo','#gitName','#gitEmail'].forEach(id=>$(id).addEventListener('input',updateProject));['#topic','#grade','#subject','#filename','#learninggoal','#features'].forEach(id=>$(id).addEventListener('input',updatePrompt));['#branch','#commitmsg'].forEach(id=>$(id).addEventListener('input',updateGit));$('#copyPrompt').addEventListener('click',()=>copyText($('#prompt').textContent));updateProject();
+$('#checkQuiz').addEventListener('click',()=>{let score=0;$$('.quizcard').forEach(c=>{const x=c.querySelector('input:checked'),f=c.querySelector('.feedback'),ok=x&&x.value===c.dataset.answer;if(ok)score++;f.className='feedback show '+(ok?'good':'bad');f.textContent=ok?'Richtig.':x?'Noch nicht – lies oben nach.':'Bitte wähle eine Antwort.'});toast(score+' von 4 richtig')});
+$('#dark').addEventListener('click',()=>{state.dark=!document.body.classList.contains('dark');document.body.classList.toggle('dark',state.dark);save()});document.body.classList.toggle('dark',!!state.dark);
+$('#restart').addEventListener('click',()=>{if(confirm('Fortschritt wirklich zurücksetzen?')){localStorage.removeItem(key);location.reload()}});
+$('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));$$('.sidebar nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+window.addEventListener('scroll',()=>{const h=document.documentElement,max=h.scrollHeight-h.clientHeight;$('#scrollbar div').style.width=(max?100*h.scrollTop/max:0)+'%';let current='start';$$('.stage').forEach(s=>{if(s.getBoundingClientRect().top<180)current=s.id});$$('.sidebar nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current))});
+updateProgress();
+</script>
+</body>
+</html>
