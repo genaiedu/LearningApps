@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktives Arbeitsblatt zu TLS, Diffie-Hellman-Schlüsselaustausch, Modulo-Rechnung und symmetrischer Verschlüsselung">
+<title>SSL/TLS verstehen · Geheime Zahlen öffentlich austauschen</title>
+<style>
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{
+  --primary:#1a6fb5;--primary2:#0e7490;--primary-light:#e8f1fb;--accent:#f59e0b;
+  --green:#15803d;--red:#b91c1c;--purple:#7c3aed;--text:#1e293b;--muted:#64748b;
+  --bg:#f1f5fb;--surface:rgba(255,255,255,.78);--solid:#fff;--line:rgba(100,116,139,.24);
+  --canvas:#f8fafc;--shadow:0 10px 35px rgba(15,23,42,.11);--sidebar:310px
+}
+body.dark{
+  --primary:#38bdf8;--primary2:#22d3ee;--primary-light:#10243b;--accent:#fbbf24;
+  --green:#4ade80;--red:#f87171;--purple:#c4b5fd;--text:#e2e8f0;--muted:#94a3b8;
+  --bg:#0b1220;--surface:rgba(15,23,42,.84);--solid:#111c2e;--line:rgba(148,163,184,.22);
+  --canvas:#0c1729;--shadow:0 12px 38px rgba(0,0,0,.4)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.55;transition:.3s;background-image:radial-gradient(circle at 10% 8%,rgba(26,111,181,.17),transparent 28%),radial-gradient(circle at 91% 28%,rgba(124,58,237,.12),transparent 24%),radial-gradient(circle at 54% 93%,rgba(14,116,144,.13),transparent 25%)}button,input{font:inherit}.layout{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 24px;background:var(--surface);backdrop-filter:blur(22px);border-right:1px solid var(--line);box-shadow:var(--shadow);z-index:50;display:flex;flex-direction:column;overflow:auto}.brand{display:flex;align-items:center;gap:13px}.mark{width:49px;height:49px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--purple));color:white;display:grid;place-items:center;box-shadow:0 8px 22px rgba(26,111,181,.25)}.brand h2{font-family:'Poppins';font-weight:900;font-size:1.23rem;line-height:1.14;margin:0}.sub{font-size:.82rem;color:var(--muted);margin:9px 0 24px 62px}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}.dot{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:rgba(100,116,139,.12);font-size:.75rem;font-weight:800}.tools{display:grid;gap:7px;margin-top:auto;padding-top:22px}.tool{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:9px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;font-weight:600}.school{font-size:.73rem;color:var(--muted);margin-top:14px}.main{margin-left:var(--sidebar);padding:64px 5.5vw 90px;max-width:1500px}.hero{max-width:1050px;margin-bottom:34px}.eyebrow,.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:var(--primary-light);color:var(--primary);font-size:.78rem;font-weight:800}.hero h1{font-family:'Poppins';font-weight:900;font-size:clamp(2.45rem,5.3vw,5.1rem);line-height:1.02;letter-spacing:-.045em;margin:18px 0}.hero h1 span{color:var(--primary)}.hero p{font-size:1.12rem;line-height:1.75;color:var(--muted);max-width:870px}.hero-note{margin-top:18px;padding:14px 16px;border-left:5px solid var(--accent);border-radius:10px;background:rgba(245,158,11,.11);max-width:850px}.intro{display:grid;grid-template-columns:1.4fr .6fr;gap:18px;margin:25px 0 56px}.glass{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}.introcard,.progress{padding:23px}.intro h2,.intro h3{font-family:'Poppins';margin:0 0 8px}.progress .num{font-family:'Poppins';font-size:2rem;font-weight:900;color:var(--primary)}.minibar{height:9px;background:rgba(100,116,139,.16);border-radius:999px;overflow:hidden;margin:8px 0}.minibar div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.35s}.stage{margin:54px 0;scroll-margin-top:28px}.stagehead{display:flex;gap:16px;align-items:flex-start;margin-bottom:17px}.stageid{width:47px;height:47px;flex:0 0 47px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-family:'Poppins';font-weight:900;font-size:1.2rem}.stagehead h2{font-family:'Poppins';font-size:clamp(1.45rem,3vw,2.15rem);line-height:1.15;margin:2px 0 5px}.stagehead p{margin:0;color:var(--muted)}.card{padding:24px}.card h3{font-family:'Poppins';margin-top:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.concept{padding:21px}.concept h3{font-family:'Poppins';margin:0 0 8px}.concept p{margin:0;color:var(--muted)}.concept .big{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--primary);font-size:1.08rem;font-weight:800;margin-top:12px}.key{border-top:5px solid var(--primary)}.public{border-top:5px solid var(--primary2)}.secret{border-top:5px solid var(--accent)}.equation{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:13px 15px;overflow:auto;font-weight:700}.explain{border-left:5px solid var(--primary);padding:16px 18px;background:var(--primary-light);border-radius:12px;margin:16px 0}.warning{border-left-color:var(--accent);background:rgba(245,158,11,.10)}.success{border-left-color:var(--green);background:rgba(21,128,61,.09)}.scenario{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}.person{padding:22px;text-align:center}.avatar{width:74px;height:74px;margin:auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff}.person h3{margin:11px 0 2px}.channel{text-align:center;color:var(--muted);min-width:170px}.channel .wire{height:4px;background:repeating-linear-gradient(90deg,var(--primary2) 0 14px,transparent 14px 22px);margin:12px 0;position:relative}.channel .wire:after{content:'›';position:absolute;right:-3px;top:-18px;font-size:2rem;color:var(--primary2)}.eve{margin-top:16px;text-align:center;padding:15px;border:1px dashed var(--accent);border-radius:13px;background:rgba(245,158,11,.08)}.modlab{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(320px,1.1fr);gap:22px}.controls{display:grid;gap:15px}.control label{display:flex;justify-content:space-between;gap:10px;font-weight:700}.control input[type=range]{width:100%;accent-color:var(--primary)}.remainder-machine{padding:24px;background:var(--canvas);border:1px solid var(--line);border-radius:15px}.remainder-result{font-family:'Poppins';font-size:clamp(1.65rem,4vw,3.2rem);font-weight:900;color:var(--primary);line-height:1.1}.groups{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}.group{display:flex;gap:3px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.unit{width:11px;height:11px;border-radius:50%;background:var(--primary)}.group.rest{border-color:var(--accent);background:rgba(245,158,11,.1)}.group.rest .unit{background:var(--accent)}.steps{display:grid;gap:12px}.step{border:1px solid var(--line);border-radius:15px;background:var(--surface);overflow:hidden}.stephead{display:flex;gap:12px;padding:15px 17px;align-items:center;border-bottom:1px solid var(--line)}.stepno{width:30px;height:30px;border-radius:9px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-weight:900}.stepbody{padding:16px 17px}.answerline{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}.numinput{width:130px;border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--text);padding:10px 11px;font-weight:700}.numinput.wide{width:190px}.numinput:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}.btn{border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--text);padding:10px 14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-weight:800}.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,23,42,.1)}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.accent{background:var(--accent);border-color:var(--accent);color:#172033}.btn.green{background:var(--green);border-color:var(--green);color:#fff}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.feedback{display:none;margin-top:11px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);line-height:1.55}.feedback.show{display:block}.feedback.good{color:var(--green);background:rgba(21,128,61,.08);border-color:rgba(21,128,61,.35)}.feedback.bad{color:var(--red);background:rgba(185,28,28,.07);border-color:rgba(185,28,28,.3)}.feedback.info{color:var(--text);background:var(--primary-light);border-color:var(--primary)}.trace{display:none;margin-top:10px}.trace.show{display:block}.trace table{width:100%;border-collapse:collapse;font-size:.88rem}.trace th,.trace td{text-align:left;padding:7px;border-bottom:1px solid var(--line)}.trace th{color:var(--muted)}.presetbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}.values{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.valuebox{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}.valuebox span{display:block;color:var(--muted);font-size:.78rem}.valuebox b{font-family:ui-monospace,SFMono-Regular,monospace;color:var(--primary);font-size:1.15rem}.partner-layout{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(340px,1.05fr);gap:18px}.rolebox{padding:22px}.roles{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}.role{border:2px solid var(--line);border-radius:14px;padding:15px;background:var(--solid);color:var(--text);cursor:pointer;text-align:left}.role.active{border-color:var(--primary);background:var(--primary-light)}.role b{display:block;color:var(--primary);font-size:1rem}.privatebox{border:1px solid var(--accent);border-radius:14px;background:rgba(245,158,11,.08);padding:16px;margin:14px 0}.sealed{font-family:ui-monospace,SFMono-Regular,monospace;font-size:1.2rem;font-weight:900;letter-spacing:.08em}.board{padding:22px;border:2px solid var(--primary2);position:relative}.board:before{content:'ÖFFENTLICHE TAFEL';position:absolute;right:15px;top:13px;color:var(--primary2);font-size:.68rem;font-weight:900;letter-spacing:.1em}.board h3{padding-right:110px}.publicline{display:grid;grid-template-columns:125px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.publicline span{color:var(--muted)}.publicline b{font-family:ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere}.publicline.private{background:rgba(245,158,11,.08);padding-left:9px;padding-right:9px;border-radius:8px}.publicline.private b{color:var(--accent)}.protocol{margin-top:17px;background:var(--canvas);border:1px solid var(--line);border-radius:13px;padding:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.84rem;min-height:90px}.modearea{display:none}.modearea.show{display:block}.quizgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.quizcard{padding:20px}.quizcard h3{font-size:1rem}.options{display:grid;gap:7px}.option{display:flex;gap:8px;align-items:flex-start;padding:9px;border:1px solid var(--line);border-radius:9px;cursor:pointer}.option:hover{background:var(--primary-light)}.summary{padding:23px}.summary ul{padding-left:20px}.summary li{margin:8px 0}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.compare{width:100%;border-collapse:collapse}.compare th,.compare td{padding:12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.compare th{color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:50px}.hamb{display:none;position:fixed;top:14px;left:14px;z-index:60;border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--text);width:43px;height:43px}.ico{width:18px;height:18px;display:inline-block;vertical-align:-3px}.muted{color:var(--muted)}#scrollbar{position:fixed;left:var(--sidebar);right:0;top:0;height:4px;background:rgba(100,116,139,.12);z-index:80}#scrollbar div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent))}.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 16px;border-radius:11px;opacity:0;transform:translateY(12px);transition:.23s;z-index:100}.toast.show{opacity:1;transform:none}
+@media(max-width:1000px){.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none}.hamb{display:grid;place-items:center}.main{margin-left:0;padding:75px 4.5vw 80px}#scrollbar{left:0}.intro,.modlab,.partner-layout{grid-template-columns:1fr}.scenario{grid-template-columns:1fr}.channel{transform:rotate(90deg);margin:28px auto;width:170px}.channel span{display:none}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.main{padding-left:15px;padding-right:15px}.hero h1{font-size:2.45rem}.grid2,.grid3,.quizgrid,.values{grid-template-columns:1fr}.card,.concept,.rolebox,.board{padding:17px}.publicline{grid-template-columns:1fr}.compare{font-size:.86rem}.compare th,.compare td{padding:8px}.roles{grid-template-columns:1fr}.answerline{align-items:stretch}.answerline .numinput{width:100%}.answerline .btn{width:100%}}
+@media print{.sidebar,.hamb,#scrollbar,.tools,.btn,.actions,.toast{display:none!important}.main{margin:0;padding:10mm;max-width:none}.glass{box-shadow:none;background:#fff}.stage{break-before:page}.stage:first-of-type{break-before:auto}.trace{display:block}.modearea{display:block}.hero h1{font-size:36pt}}
+</style>
+<script src="fonts/lucide.min.js"></script>
+</head>
+<body>
+<div id="scrollbar"><div></div></div>
+<button class="hamb" id="hamb" aria-label="Navigation öffnen"><i class="ico" data-lucide="menu"></i></button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="mark"><i class="ico" data-lucide="shield-check"></i></div><h2>SSL/TLS<br>verstehen</h2></div>
+  <div class="sub">Schlüssel tauschen · geheim senden</div>
+  <nav>
+    <a href="#auftrag"><span class="dot">1</span>Das Problem</a>
+    <a href="#modulo"><span class="dot">2</span>Modulo verstehen</a>
+    <a href="#solo"><span class="dot">3</span>Alleine nachrechnen</a>
+    <a href="#partner"><span class="dot">4</span>Partnerexperiment</a>
+    <a href="#tls"><span class="dot">5</span>Vom Modell zu TLS</a>
+    <a href="#test"><span class="dot">6</span>Selbsttest</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="dark"><i class="ico" data-lucide="moon-star"></i>Darstellung wechseln</button>
+    <button class="tool" id="restart"><i class="ico" data-lucide="rotate-ccw"></i>Arbeitsblatt zurücksetzen</button>
+    <button class="tool" onclick="window.print()"><i class="ico" data-lucide="printer"></i>Arbeitsblatt drucken</button>
+    <a class="tool" href="index.html"><i class="ico" data-lucide="layout-grid"></i>Zur Übersicht</a>
+  </div>
+  <div class="school">Interaktives Informatik-Arbeitsblatt<br>Diffie-Hellman · Modulo · TLS<br>Fortschritt wird nur lokal gespeichert.</div>
+</aside>
+
+<main class="main">
+<header class="hero">
+  <span class="eyebrow"><i class="ico" data-lucide="shield-check"></i>Informatik · Kryptografie · Internet</span>
+  <h1>Eine Geheimzahl senden – <span>obwohl alle zuhören</span></h1>
+  <p>Alice und Bob dürfen ausschließlich über einen öffentlichen Kanal sprechen. Eve und die ganze Klasse hören jede Nachricht. Trotzdem sollen am Ende nur Alice und Bob dieselbe geheime Zahl kennen.</p>
+  <div class="hero-note"><strong>Genau genommen:</strong> Heute schützt <strong>TLS</strong> Webseiten. „SSL“ ist der bekannte ältere Name. Dieses Arbeitsblatt zeigt die Grundidee mit bewusst kleinen, verständlichen Zahlen – nicht die vollständige Technik eines Browsers.</div>
+</header>
+
+<div class="intro">
+  <div class="glass introcard">
+    <h2>So arbeitest du</h2>
+    <p><strong>Alleine:</strong> Rechne das kleine Beispiel vollständig nach. <strong>Zu zweit:</strong> Öffnet die Seite auf zwei Geräten, wählt unterschiedliche Rollen und ruft euch nur die Werte von der öffentlichen Tafel zu. Private Zahlen bleiben verdeckt.</p>
+  </div>
+  <div class="glass progress">
+    <h3>Fortschritt</h3>
+    <div class="num"><span id="donecount">0</span>/5</div>
+    <div class="minibar"><div id="minibar"></div></div>
+    <small>Modulo · Schlüssel · Nachricht · Partnerexperiment · Test</small>
+  </div>
+</div>
+
+<section class="stage" id="auftrag">
+  <div class="stagehead"><div class="stageid">1</div><div><h2>Das Problem: Ein Schloss ohne gemeinsamen Schlüssel</h2><p>Die Leitung ist öffentlich. Ein geheimes Treffen vorher ist nicht möglich.</p></div></div>
+  <div class="glass card">
+    <div class="scenario">
+      <article class="person"><div class="avatar"><i class="ico" data-lucide="user-round"></i></div><h3>Alice</h3><span class="muted">möchte eine Geheimzahl senden</span></article>
+      <div class="channel"><strong>öffentlicher Kanal</strong><div class="wire"></div><span>Alle Nachrichten sind sichtbar.</span></div>
+      <article class="person"><div class="avatar"><i class="ico" data-lucide="user-round"></i></div><h3>Bob</h3><span class="muted">soll die Zahl entschlüsseln</span></article>
+    </div>
+    <div class="eve"><strong>👀 Eve und die Klasse sehen:</strong> die Rechenvorschrift, die öffentlichen Zahlen und den verschlüsselten Text. Sie sehen <strong>nicht</strong> die privaten Zahlen von Alice und Bob.</div>
+  </div>
+  <div class="grid3" style="margin-top:16px">
+    <article class="glass concept public"><h3>① Schlüssel vereinbaren</h3><p>Alice und Bob erzeugen über den öffentlichen Kanal unabhängig voneinander denselben geheimen Schlüssel.</p></article>
+    <article class="glass concept secret"><h3>② Nachricht verschlüsseln</h3><p>Alice verbindet ihre Geheimzahl mit dem gemeinsamen Schlüssel.</p></article>
+    <article class="glass concept key"><h3>③ Nachricht öffnen</h3><p>Bob macht die Verschlüsselung mit demselben Schlüssel wieder rückgängig.</p></article>
+  </div>
+</section>
+
+<section class="stage" id="modulo">
+  <div class="stagehead"><div class="stageid">2</div><div><h2>Modulo: Rechnen mit dem Rest</h2><p>Das Zeichen „mod“ ist kein Geheimtrick. Es bedeutet: Teile und behalte nur den Rest.</p></div></div>
+  <div class="glass card modlab">
+    <div>
+      <h3>Die Uhr als Bild</h3>
+      <p>Eine Uhr springt nach 12 wieder auf 0. Deshalb gilt auf einer 12er-Uhr:</p>
+      <div class="equation">29 mod 12 = 5</div>
+      <p>Denn <strong>29 = 2 · 12 + 5</strong>. Zwei volle Gruppen werden entfernt; fünf bleiben übrig.</p>
+      <div class="explain"><strong>Allgemein:</strong> Wenn <em>n = q · m + r</em> mit <em>0 ≤ r &lt; m</em>, dann ist <strong>n mod m = r</strong>.</div>
+      <div class="controls">
+        <div class="control"><label for="modN">Zahl n <output id="modNOut">47</output></label><input id="modN" type="range" min="0" max="120" value="47"></div>
+        <div class="control"><label for="modM">Modul m <output id="modMOut">23</output></label><input id="modM" type="range" min="2" max="25" value="23"></div>
+      </div>
+    </div>
+    <div class="remainder-machine">
+      <span class="pill">Restemaschine</span>
+      <p id="divisionText">47 = 2 · 23 + 1</p>
+      <div class="remainder-result" id="remainderResult">47 mod 23 = 1</div>
+      <div class="groups" id="modGroups" aria-label="Darstellung in vollständigen Gruppen und Rest"></div>
+      <div class="actions"><button class="btn primary" id="modDone"><i class="ico" data-lucide="check-circle-2"></i>Modulo verstanden</button></div>
+    </div>
+  </div>
+  <div class="glass card" style="margin-top:16px">
+    <h3>Warum braucht man Modulo beim Schlüsselaustausch?</h3>
+    <p>Potenzen werden sehr schnell riesig. „mod p“ faltet jedes Zwischenergebnis wieder in den Bereich <strong>0 bis p − 1</strong> zurück. Vorwärts ist das leicht. Aus dem Rest wieder auf den geheimen Exponenten zu schließen, ist bei wirklich großen Zahlen extrem schwierig.</p>
+    <div class="equation">5⁶ mod 23: &nbsp; 1 → 5 → 2 → 10 → 4 → 20 → 8</div>
+    <p class="muted">Nach jeder Multiplikation mit 5 wird nur der Rest bei Division durch 23 behalten.</p>
+  </div>
+</section>
+
+<section class="stage" id="solo">
+  <div class="stagehead"><div class="stageid">3</div><div><h2>Alleine: Diffie-Hellman Schritt für Schritt</h2><p>Du kontrollierst Alice und Bob und rechnest jeden veröffentlichten Wert selbst aus.</p></div></div>
+  <div class="glass card">
+    <div class="presetbar"><span class="pill">Öffentlich: p = 23 und g = 5</span><button class="btn" id="soloReset"><i class="ico" data-lucide="rotate-ccw"></i>Standardbeispiel</button><button class="btn" id="soloRandom"><i class="ico" data-lucide="shuffle"></i>Neue Übung</button></div>
+    <div class="values">
+      <div class="valuebox"><span>Alices private Zahl a</span><b id="soloASecret">6</b></div>
+      <div class="valuebox"><span>Bobs private Zahl b</span><b id="soloBSecret">15</b></div>
+      <div class="valuebox"><span>Alices Geheimzahl m</span><b id="soloMessage">13</b></div>
+    </div>
+    <div class="explain warning"><strong>Privat oder öffentlich?</strong> Die Zahlen <strong>p, g, A und B</strong> dürfen alle sehen. Die kleinen Buchstaben <strong>a und b</strong> sowie der daraus entstehende Schlüssel <strong>K</strong> bleiben geheim.</div>
+    <div class="steps">
+      <article class="step">
+        <div class="stephead"><div class="stepno">1</div><strong>Alice erzeugt ihren öffentlichen Wert A</strong></div>
+        <div class="stepbody"><div class="equation" id="eqA">A = gᵃ mod p = 5⁶ mod 23 = ?</div><div class="answerline"><label for="answerA">A =</label><input class="numinput" id="answerA" type="number"><button class="btn primary check" data-check="A">prüfen</button><button class="btn" data-trace="A">Rechenweg</button></div><div class="feedback" id="feedbackA"></div><div class="trace" id="traceA"></div></div>
+      </article>
+      <article class="step">
+        <div class="stephead"><div class="stepno">2</div><strong>Bob erzeugt seinen öffentlichen Wert B</strong></div>
+        <div class="stepbody"><div class="equation" id="eqB">B = gᵇ mod p = 5¹⁵ mod 23 = ?</div><div class="answerline"><label for="answerB">B =</label><input class="numinput" id="answerB" type="number"><button class="btn primary check" data-check="B">prüfen</button><button class="btn" data-trace="B">Rechenweg</button></div><div class="feedback" id="feedbackB"></div><div class="trace" id="traceB"></div></div>
+      </article>
+      <article class="step">
+        <div class="stephead"><div class="stepno">3</div><strong>Beide berechnen getrennt denselben geheimen Schlüssel K</strong></div>
+        <div class="stepbody"><div class="grid2"><div><p>Alice nimmt Bobs öffentlichen Wert B und ihre private Zahl a:</p><div class="equation" id="eqKA">K<sub>A</sub> = Bᵃ mod p = ?</div><div class="answerline"><label for="answerKA">K<sub>A</sub> =</label><input class="numinput" id="answerKA" type="number"><button class="btn primary check" data-check="KA">prüfen</button></div><div class="feedback" id="feedbackKA"></div></div><div><p>Bob nimmt Alices öffentlichen Wert A und seine private Zahl b:</p><div class="equation" id="eqKB">K<sub>B</sub> = Aᵇ mod p = ?</div><div class="answerline"><label for="answerKB">K<sub>B</sub> =</label><input class="numinput" id="answerKB" type="number"><button class="btn primary check" data-check="KB">prüfen</button></div><div class="feedback" id="feedbackKB"></div></div></div><div class="explain success" id="keyWhy"><strong>Warum sind beide Schlüssel gleich?</strong><br>Bᵃ = (gᵇ)ᵃ = gᵇᵃ und Aᵇ = (gᵃ)ᵇ = gᵃᵇ. Weil a · b = b · a, kommt derselbe Rest heraus.</div></div>
+      </article>
+      <article class="step">
+        <div class="stephead"><div class="stepno">4</div><strong>Alice verschlüsselt die Geheimzahl m</strong></div>
+        <div class="stepbody"><p>Im Lernmodell addieren wir den gemeinsamen Schlüssel und bilden wieder den Rest.</p><div class="equation" id="eqC">C = (m + K) mod p = ?</div><div class="answerline"><label for="answerC">Öffentliches C =</label><input class="numinput" id="answerC" type="number"><button class="btn primary check" data-check="C">prüfen</button></div><div class="feedback" id="feedbackC"></div></div>
+      </article>
+      <article class="step">
+        <div class="stephead"><div class="stepno">5</div><strong>Bob entschlüsselt</strong></div>
+        <div class="stepbody"><p>Bob subtrahiert K. Das zusätzliche „+ p“ verhindert ein negatives Zwischenergebnis.</p><div class="equation" id="eqM">m = (C − K + p) mod p = ?</div><div class="answerline"><label for="answerM">Geheimzahl m =</label><input class="numinput" id="answerM" type="number"><button class="btn primary check" data-check="M">prüfen</button></div><div class="feedback" id="feedbackM"></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="partner">
+  <div class="stagehead"><div class="stageid">4</div><div><h2>Zu zweit: Das Klassenexperiment</h2><p>Öffnet diese Seite auf zwei Geräten. Eine Person ist Alice, die andere Bob. Die Klasse darf alle laut vorgelesenen Werte mitschreiben.</p></div></div>
+  <div class="explain warning"><strong>Versuchsregel:</strong> Zeigt und nennt niemals eure private Zahl oder den gemeinsamen Schlüssel. Teilt ausschließlich Werte, die auf der <strong>öffentlichen Tafel</strong> stehen. Für das Experiment verwenden wir größere Zahlen als im Rechenbeispiel.</div>
+  <div class="partner-layout">
+    <div class="glass rolebox">
+      <h3>1. Rolle und privater Schlüssel</h3>
+      <div class="roles"><button class="role active" data-role="alice"><b>Alice · Senderin</b>verschlüsselt eine Geheimzahl</button><button class="role" data-role="bob"><b>Bob · Empfänger</b>entschlüsselt die Nachricht</button></div>
+      <div class="privatebox"><small>PRIVATE ZAHL – NICHT VORLESEN</small><div class="sealed" id="privateDisplay">•••••••••</div><div class="actions"><button class="btn" id="revealPrivate"><i class="ico" data-lucide="eye"></i>kurz zeigen</button><button class="btn" id="newPrivate"><i class="ico" data-lucide="refresh-cw"></i>neu erzeugen</button></div></div>
+      <p>Die App berechnet deinen öffentlichen Wert:</p><div class="equation" id="partnerPublicEq">A = 5ᵃ mod 2 147 483 647</div>
+      <div class="actions"><button class="btn primary" id="makePublic"><i class="ico" data-lucide="megaphone"></i>öffentlichen Wert erzeugen</button></div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+      <h3>2. Wert des Partners eingeben</h3>
+      <p id="partnerPrompt">Trage B ein, den Bob laut vorliest.</p>
+      <div class="answerline"><input class="numinput wide" id="otherPublic" type="text" inputmode="numeric" placeholder="öffentlicher Wert"><button class="btn green" id="makeShared">gemeinsamen Schlüssel berechnen</button></div>
+      <div class="feedback" id="sharedFeedback"></div>
+    </div>
+
+    <div class="glass board">
+      <h3>Was die Klasse sehen darf</h3>
+      <div class="publicline"><span>Primzahl p</span><b>2 147 483 647</b></div>
+      <div class="publicline"><span>Basis g</span><b>5</b></div>
+      <div class="publicline"><span>Deine Rolle</span><b id="boardRole">Alice</b></div>
+      <div class="publicline"><span id="ownPublicLabel">A = 5ᵃ mod p</span><b id="ownPublicBoard">noch nicht erzeugt</b></div>
+      <div class="publicline"><span id="otherPublicLabel">B von Bob</span><b id="otherPublicBoard">noch nicht eingetragen</b></div>
+      <div class="publicline private"><span>gemeinsames K</span><b id="sharedBoard">🔒 bleibt geheim</b></div>
+      <div class="protocol" id="protocol">Öffentliches Protokoll erscheint hier …</div>
+      <div class="actions"><button class="btn" id="copyProtocol"><i class="ico" data-lucide="copy"></i>öffentliche Werte kopieren</button></div>
+    </div>
+  </div>
+
+  <div class="glass card" style="margin-top:18px">
+    <h3>3. Eine vierstellige Geheimzahl senden</h3>
+    <p>Aus K wird im Lernmodell eine vierstellige Maske: <strong>S = K mod 10 000</strong>. Auch S bleibt geheim. Alice veröffentlicht nur den Geheimtext C.</p>
+    <div class="equation">Verschlüsseln: C = (m + S) mod 10 000 &nbsp;&nbsp;|&nbsp;&nbsp; Entschlüsseln: m = (C − S + 10 000) mod 10 000</div>
+    <div id="aliceArea" class="modearea show">
+      <h3 style="margin-top:20px">Alice: verschlüsseln</h3><div class="answerline"><label for="secretMessage">Geheimzahl 0000–9999</label><input class="numinput" id="secretMessage" type="number" min="0" max="9999"><button class="btn accent" id="encryptPartner">verschlüsseln</button></div><div class="feedback" id="encryptFeedback"></div>
+    </div>
+    <div id="bobArea" class="modearea">
+      <h3 style="margin-top:20px">Bob: entschlüsseln</h3><div class="answerline"><label for="cipherInput">Öffentliches C von Alice</label><input class="numinput" id="cipherInput" type="number" min="0" max="9999"><button class="btn accent" id="decryptPartner">entschlüsseln</button></div><div class="feedback" id="decryptFeedback"></div>
+    </div>
+    <div class="explain success"><strong>Beobachtung für die Klasse:</strong> Vergleicht am Ende eure Mitschriften. Alle kennen p, g, A, B und C. Nur Bob kann C wieder zur Geheimzahl m machen, weil nur er denselben Schlüssel wie Alice berechnet hat.</div>
+    <div class="actions"><button class="btn primary" id="partnerDone"><i class="ico" data-lucide="check-circle-2"></i>Partnerexperiment abgeschlossen</button></div>
+  </div>
+</section>
+
+<section class="stage" id="tls">
+  <div class="stagehead"><div class="stageid">5</div><div><h2>Vom Zahlenmodell zum echten TLS</h2><p>Die Grundidee stimmt. Echte Browser ergänzen jedoch entscheidende Sicherheitsbausteine.</p></div></div>
+  <div class="glass card">
+    <table class="compare">
+      <thead><tr><th>In diesem Arbeitsblatt</th><th>Im heutigen TLS</th><th>Warum?</th></tr></thead>
+      <tbody>
+        <tr><td>Kleine Potenzen modulo p</td><td>Meist elliptische Kurven (ECDHE) mit riesigem Zahlenraum</td><td>Damit niemand den privaten Schlüssel durch Ausprobieren findet.</td></tr>
+        <tr><td>Öffentliche Werte ohne Ausweis</td><td>Digitales Zertifikat und Signatur des Servers</td><td>Damit Alice wirklich mit der gewünschten Website spricht und nicht mit einem Angreifer.</td></tr>
+        <tr><td>C = (m + S) mod 10 000</td><td>Moderne symmetrische Verfahren wie AES-GCM oder ChaCha20-Poly1305</td><td>Sie verschlüsseln große Datenmengen schnell und erkennen Manipulationen.</td></tr>
+        <tr><td>Ein Schlüsselwert K</td><td>Mehrere Sitzungsschlüssel werden mit einer Schlüsselableitung erzeugt</td><td>Unterschiedliche Aufgaben erhalten getrennte Schlüssel.</td></tr>
+      </tbody>
+    </table>
+    <div class="explain warning"><strong>Wichtig:</strong> Unsere Verschlüsselung durch Addition ist nur ein Lernmodell und darf nicht zum Schutz echter Daten verwendet werden. Auch p = 2 147 483 647 ist für echte Kryptografie viel zu klein.</div>
+    <h3>Was ein Zertifikat verhindert</h3>
+    <p>Ohne Identitätsprüfung könnte Mallory zwei getrennte Schlüsselaustausche durchführen: einen mit Alice und einen mit Bob. Mallory könnte dann jede Nachricht lesen und neu verschlüsseln. TLS verbindet den Schlüsselaustausch deshalb mit einem überprüfbaren Zertifikat.</p>
+  </div>
+</section>
+
+<section class="stage" id="test">
+  <div class="stagehead"><div class="stageid">6</div><div><h2>Selbsttest</h2><p>Prüfe, ob du öffentliche Werte, private Werte und die Modulo-Rechnung sicher unterscheiden kannst.</p></div></div>
+  <div class="quizgrid" id="quiz">
+    <article class="glass quizcard"><h3>1. Was bedeutet 38 mod 12?</h3><div class="options"><label class="option"><input type="radio" name="q1" value="a">38 durch 12</label><label class="option"><input type="radio" name="q1" value="b">Der Rest 2 bei Division durch 12</label><label class="option"><input type="radio" name="q1" value="c">12 minus 38</label></div></article>
+    <article class="glass quizcard"><h3>2. Welche Zahlen bleiben privat?</h3><div class="options"><label class="option"><input type="radio" name="q2" value="a">p und g</label><label class="option"><input type="radio" name="q2" value="b">A und B</label><label class="option"><input type="radio" name="q2" value="c">a, b und K</label></div></article>
+    <article class="glass quizcard"><h3>3. Warum erhalten Alice und Bob dasselbe K?</h3><div class="options"><label class="option"><input type="radio" name="q3" value="a">Weil gᵃᵇ = gᵇᵃ gilt</label><label class="option"><input type="radio" name="q3" value="b">Weil sie a und b veröffentlichen</label><label class="option"><input type="radio" name="q3" value="c">Weil K immer gleich p ist</label></div></article>
+    <article class="glass quizcard"><h3>4. Was sieht eine mithörende Person?</h3><div class="options"><label class="option"><input type="radio" name="q4" value="a">Nur den Geheimtext C</label><label class="option"><input type="radio" name="q4" value="b">p, g, A, B und C</label><label class="option"><input type="radio" name="q4" value="c">Auch beide privaten Zahlen</label></div></article>
+    <article class="glass quizcard"><h3>5. Warum braucht TLS Zertifikate?</h3><div class="options"><label class="option"><input type="radio" name="q5" value="a">Zur Identitätsprüfung und gegen Man-in-the-Middle-Angriffe</label><label class="option"><input type="radio" name="q5" value="b">Damit Modulo ohne Rest funktioniert</label><label class="option"><input type="radio" name="q5" value="c">Nur zur Gestaltung des Schloss-Symbols</label></div></article>
+    <article class="glass quizcard"><h3>6. Ist die Addition aus diesem Arbeitsblatt echte TLS-Verschlüsselung?</h3><div class="options"><label class="option"><input type="radio" name="q6" value="a">Ja, genau so arbeitet jeder Browser</label><label class="option"><input type="radio" name="q6" value="b">Nein, sie ist nur ein verständliches Lernmodell</label><label class="option"><input type="radio" name="q6" value="c">Nur bei Webseiten ohne Bilder</label></div></article>
+  </div>
+  <div class="glass summary" style="margin-top:17px">
+    <div class="actions"><button class="btn primary" id="quizCheck"><i class="ico" data-lucide="list-checks"></i>Antworten auswerten</button></div>
+    <div class="feedback" id="quizFeedback"></div>
+    <h3 style="margin-top:22px">Das solltest du erklären können</h3>
+    <ul><li>„mod“ liefert den Rest einer Division.</li><li>Diffie-Hellman erzeugt einen gemeinsamen Schlüssel, ohne ihn zu übertragen.</li><li>Öffentliche Werte dürfen mitgelesen werden; private Exponenten und Sitzungsschlüssel nicht.</li><li>Schlüsselaustausch und Datenverschlüsselung sind zwei verschiedene Schritte.</li><li>Echtes TLS verwendet große Zahlen, Zertifikate, Schlüsselableitung und sichere authentifizierte Verschlüsselung.</li></ul>
+  </div>
+</section>
+<footer>Interaktives Arbeitsblatt · Alle Berechnungen laufen lokal im Browser · Keine Datenübertragung</footer>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const P=23n,G=5n,PARTNER_P=2147483647n,PARTNER_G=5n,PARTNER_MOD=10000n;
+const STORE='ssl-tls-arbeitsblatt-v1';
+let saved={done:{},dark:false};try{saved={...saved,...JSON.parse(localStorage.getItem(STORE)||'{}')}}catch(e){}
+let solo={a:6n,b:15n,m:13n};
+let partner={role:'alice',privateKey:randomPrivate(),ownPublic:null,otherPublic:null,shared:null,cipher:null,revealed:false};
+function save(){try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}updateProgress()}
+function mark(key){saved.done[key]=true;save()}
+function updateProgress(){const keys=['mod','key','message','partner','quiz'];const n=keys.filter(k=>saved.done[k]).length;$('#donecount').textContent=n;$('#minibar').style.width=(n/keys.length*100)+'%'}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2200)}
+function mod(n,m){return ((n%m)+m)%m}
+function modPow(base,exp,m){base=mod(base,m);let result=1n;while(exp>0n){if(exp&1n)result=result*base%m;base=base*base%m;exp>>=1n}return result}
+function randomPrivate(){const a=new Uint32Array(1);crypto.getRandomValues(a);return BigInt(100000+(a[0]%1900000000))}
+function spaced(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')}
+function superscript(n){const map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return n.toString().split('').map(x=>map[x]).join('')}
+function showFeedback(id,good,html){const el=$(id);el.className='feedback show '+(good?'good':'bad');el.innerHTML=html}
+
+function renderModulo(){const n=Number($('#modN').value),m=Number($('#modM').value),q=Math.floor(n/m),r=n%m;$('#modNOut').textContent=n;$('#modMOut').textContent=m;$('#divisionText').innerHTML=`${n} = <strong>${q}</strong> · ${m} + <strong>${r}</strong>`;$('#remainderResult').textContent=`${n} mod ${m} = ${r}`;const wrap=$('#modGroups');wrap.innerHTML='';const shown=Math.min(q,7);for(let j=0;j<shown;j++){const g=document.createElement('div');g.className='group';for(let i=0;i<m;i++){const u=document.createElement('i');u.className='unit';g.appendChild(u)}wrap.appendChild(g)}if(q>shown){const more=document.createElement('span');more.className='muted';more.textContent=`+ ${q-shown} weitere Gruppen`;wrap.appendChild(more)}if(r){const g=document.createElement('div');g.className='group rest';g.title='Rest';for(let i=0;i<r;i++){const u=document.createElement('i');u.className='unit';g.appendChild(u)}wrap.appendChild(g)}}
+$('#modN').addEventListener('input',renderModulo);$('#modM').addEventListener('input',renderModulo);$('#modDone').onclick=()=>{mark('mod');toast('Modulo-Etappe abgeschlossen')};renderModulo();
+
+function soloAnswers(){const A=modPow(G,solo.a,P),B=modPow(G,solo.b,P),K=modPow(B,solo.a,P),KB=modPow(A,solo.b,P),C=mod(solo.m+K,P),M=mod(C-K,P);return{A,B,KA:K,KB,C,M}}
+function renderSolo(){const s=soloAnswers();$('#soloASecret').textContent=solo.a;$('#soloBSecret').textContent=solo.b;$('#soloMessage').textContent=solo.m;$('#eqA').textContent=`A = gᵃ mod p = 5${superscript(solo.a)} mod 23 = ?`;$('#eqB').textContent=`B = gᵇ mod p = 5${superscript(solo.b)} mod 23 = ?`;$('#eqKA').innerHTML=`K<sub>A</sub> = Bᵃ mod p = ${s.B}${superscript(solo.a)} mod 23 = ?`;$('#eqKB').innerHTML=`K<sub>B</sub> = Aᵇ mod p = ${s.A}${superscript(solo.b)} mod 23 = ?`;$('#eqC').textContent=`C = (m + K) mod p = (${solo.m} + ${s.KA}) mod 23 = ?`;$('#eqM').textContent=`m = (C − K + p) mod p = (${s.C} − ${s.KA} + 23) mod 23 = ?`;$$('[id^=answer]').forEach(el=>{if(['answerA','answerB','answerKA','answerKB','answerC','answerM'].includes(el.id))el.value='' });$$('#solo .feedback,#solo .trace').forEach(el=>{el.className=el.classList.contains('trace')?'trace':'feedback';el.innerHTML=''})}
+function traceHTML(base,exp,m){let r=1n,rows='';for(let i=1n;i<=exp;i++){const before=r;r=r*base%m;rows+=`<tr><td>${i}</td><td>(${before} · ${base}) mod ${m}</td><td>${r}</td></tr>`}return `<table><thead><tr><th>Potenz</th><th>gerechnet wird</th><th>Rest</th></tr></thead><tbody>${rows}</tbody></table>`}
+$$('.check').forEach(btn=>btn.onclick=()=>{const key=btn.dataset.check,ans=soloAnswers()[key],input=$('#answer'+key),ok=input.value!==''&&BigInt(input.value)===ans;let why='';if(key==='A')why=`5${superscript(solo.a)} mod 23 = ${ans}. Diesen Wert darf Alice veröffentlichen.`;if(key==='B')why=`5${superscript(solo.b)} mod 23 = ${ans}. Diesen Wert darf Bob veröffentlichen.`;if(key==='KA'||key==='KB')why=`Der gemeinsame geheime Schlüssel ist K = ${ans}. Er wird nicht übertragen.`;if(key==='C')why=`(${solo.m} + ${soloAnswers().KA}) mod 23 = ${ans}. Nur C wird gesendet.`;if(key==='M')why=`(${soloAnswers().C} − ${soloAnswers().KA} + 23) mod 23 = ${ans}. Bob erhält wieder m = ${solo.m}.`;showFeedback('#feedback'+key,ok,ok?`<strong>Richtig.</strong> ${why}`:`<strong>Noch nicht.</strong> Prüfe Potenz, Rest und Vorzeichen. Die Rechenvorschrift steht direkt darüber.`);if(ok&&(key==='KA'||key==='KB'))mark('key');if(ok&&(key==='C'||key==='M'))mark('message')});
+$$('[data-trace]').forEach(btn=>btn.onclick=()=>{const key=btn.dataset.trace,el=$('#trace'+key),base=G,exp=key==='A'?solo.a:solo.b;el.innerHTML=traceHTML(base,exp,P);el.classList.toggle('show')});
+$('#soloReset').onclick=()=>{solo={a:6n,b:15n,m:13n};renderSolo()};
+$('#soloRandom').onclick=()=>{solo={a:BigInt(3+Math.floor(Math.random()*8)),b:BigInt(3+Math.floor(Math.random()*14)),m:BigInt(1+Math.floor(Math.random()*21))};renderSolo();toast('Neue Übungszahlen erzeugt')};renderSolo();
+
+function setRole(role){partner.role=role;partner.ownPublic=null;partner.otherPublic=null;partner.shared=null;partner.cipher=null;partner.privateKey=randomPrivate();partner.revealed=false;$$('.role').forEach(b=>b.classList.toggle('active',b.dataset.role===role));const alice=role==='alice';$('#boardRole').textContent=alice?'Alice · Senderin':'Bob · Empfänger';$('#ownPublicLabel').textContent=alice?'A = 5ᵃ mod p':'B = 5ᵇ mod p';$('#otherPublicLabel').textContent=alice?'B von Bob':'A von Alice';$('#partnerPublicEq').textContent=alice?'A = 5ᵃ mod 2 147 483 647':'B = 5ᵇ mod 2 147 483 647';$('#partnerPrompt').textContent=alice?'Trage B ein, den Bob laut vorliest.':'Trage A ein, den Alice laut vorliest.';$('#aliceArea').classList.toggle('show',alice);$('#bobArea').classList.toggle('show',!alice);$('#ownPublicBoard').textContent='noch nicht erzeugt';$('#otherPublicBoard').textContent='noch nicht eingetragen';$('#otherPublic').value='';$('#sharedFeedback').className='feedback';renderPrivate();renderProtocol()}
+function renderPrivate(){$('#privateDisplay').textContent=partner.revealed?spaced(partner.privateKey):'•••••••••';$('#revealPrivate').innerHTML=partner.revealed?'<i class="ico" data-lucide="eye-off"></i>wieder verdecken':'<i class="ico" data-lucide="eye"></i>kurz zeigen';if(window.lucide)lucide.createIcons()}
+function renderProtocol(){const name=partner.role==='alice'?'Alice':'Bob',symbol=partner.role==='alice'?'A':'B';let lines=`p = ${PARTNER_P}\ng = ${PARTNER_G}\n${name}: ${symbol} = ${partner.ownPublic===null?'…':partner.ownPublic}`;if(partner.cipher!==null)lines+=`\nAlice: C = ${partner.cipher}`;$('#protocol').textContent=lines}
+$$('.role').forEach(b=>b.onclick=()=>setRole(b.dataset.role));
+$('#revealPrivate').onclick=()=>{partner.revealed=!partner.revealed;renderPrivate()};
+$('#newPrivate').onclick=()=>{partner.privateKey=randomPrivate();partner.ownPublic=null;partner.shared=null;partner.cipher=null;$('#ownPublicBoard').textContent='noch nicht erzeugt';$('#sharedFeedback').className='feedback';renderPrivate();renderProtocol();toast('Neue private Zahl erzeugt')};
+$('#makePublic').onclick=()=>{partner.ownPublic=modPow(PARTNER_G,partner.privateKey,PARTNER_P);$('#ownPublicBoard').textContent=partner.ownPublic;renderProtocol();toast('Dieser Wert darf vorgelesen werden')};
+$('#makeShared').onclick=()=>{if(partner.ownPublic===null){showFeedback('#sharedFeedback',false,'Erzeuge zuerst deinen eigenen öffentlichen Wert.');return}let value;try{value=BigInt($('#otherPublic').value.replace(/\s/g,''))}catch(e){showFeedback('#sharedFeedback',false,'Bitte gib eine ganze öffentliche Zahl ein.');return}if(value<=0n||value>=PARTNER_P){showFeedback('#sharedFeedback',false,'Der öffentliche Wert muss zwischen 1 und p − 1 liegen.');return}partner.otherPublic=value;partner.shared=modPow(value,partner.privateKey,PARTNER_P);$('#otherPublicBoard').textContent=value;showFeedback('#sharedFeedback',true,`<strong>Gemeinsamer Schlüssel berechnet.</strong> Das Gerät kennt jetzt K. K und S = K mod 10 000 bleiben verdeckt.`);renderProtocol()};
+$('#encryptPartner').onclick=()=>{if(partner.role!=='alice'||partner.shared===null){showFeedback('#encryptFeedback',false,'Wähle Alice und berechne zuerst den gemeinsamen Schlüssel.');return}const raw=$('#secretMessage').value,m=Number(raw);if(raw===''||!Number.isInteger(m)||m<0||m>9999){showFeedback('#encryptFeedback',false,'Gib eine ganze Zahl von 0000 bis 9999 ein.');return}const mask=partner.shared%PARTNER_MOD,c=(BigInt(m)+mask)%PARTNER_MOD;partner.cipher=c;showFeedback('#encryptFeedback',true,`<strong>Öffentlich vorlesen: C = ${c.toString().padStart(4,'0')}</strong><br>Privat hat die App gerechnet: (${m.toString().padStart(4,'0')} + S) mod 10 000. Die Maske S wird absichtlich nicht angezeigt.`);renderProtocol();mark('partner')};
+$('#decryptPartner').onclick=()=>{if(partner.role!=='bob'||partner.shared===null){showFeedback('#decryptFeedback',false,'Wähle Bob und berechne zuerst den gemeinsamen Schlüssel.');return}const raw=$('#cipherInput').value,c=Number(raw);if(raw===''||!Number.isInteger(c)||c<0||c>9999){showFeedback('#decryptFeedback',false,'Gib Alices öffentliches C zwischen 0000 und 9999 ein.');return}const mask=partner.shared%PARTNER_MOD,m=mod(BigInt(c)-mask,PARTNER_MOD);showFeedback('#decryptFeedback',true,`<strong>Entschlüsselte Geheimzahl: ${m.toString().padStart(4,'0')}</strong><br>Das Gerät hat gerechnet: (C − S + 10 000) mod 10 000.`);mark('partner')};
+$('#partnerDone').onclick=()=>{mark('partner');toast('Partnerexperiment abgeschlossen')};
+$('#copyProtocol').onclick=async()=>{try{await navigator.clipboard.writeText($('#protocol').textContent);toast('Öffentliches Protokoll kopiert')}catch(e){toast('Kopieren ist in diesem Browser nicht verfügbar')}};
+setRole('alice');
+
+$('#quizCheck').onclick=()=>{const right={q1:'b',q2:'c',q3:'a',q4:'b',q5:'a',q6:'b'};let score=0,missing=0;Object.entries(right).forEach(([q,a])=>{const x=$(`input[name="${q}"]:checked`);if(!x)missing++;else if(x.value===a)score++});const good=score===6;if(missing)showFeedback('#quizFeedback',false,`Beantworte noch ${missing} Frage${missing===1?'':'n'}.`);else{showFeedback('#quizFeedback',good,`<strong>${score} von 6 richtig.</strong> ${good?'Du kannst den vereinfachten Schlüsselaustausch erklären.':'Lies die Gegenüberstellung noch einmal und verbessere deine Antworten.'}`);if(good)mark('quiz')}};
+
+$('#dark').onclick=()=>{saved.dark=!saved.dark;document.body.classList.toggle('dark',saved.dark);save()};if(saved.dark)document.body.classList.add('dark');
+$('#restart').onclick=()=>{if(confirm('Alle gespeicherten Fortschritte und Eingaben zurücksetzen?')){localStorage.removeItem(STORE);location.reload()}};
+$('#hamb').onclick=()=>$('#sidebar').classList.toggle('open');$$('.sidebar nav a').forEach(a=>a.onclick=()=>$('#sidebar').classList.remove('open'));
+window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;$('#scrollbar div').style.width=(max>0?scrollY/max*100:0)+'%'});
+updateProgress();if(window.lucide)lucide.createIcons();
+</script>
+</body>
+</html>
