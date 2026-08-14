@@ -90,6 +90,7 @@ footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:40px}
 @media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.concept-grid{grid-template-columns:1fr}}
 .reveal{opacity:0;transform:translateY(18px);transition:.5s}.reveal.visible{opacity:1;transform:none}
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
@@ -735,5 +736,10 @@ $('#restart').addEventListener('click',()=>{if(confirm('Fortschritt zurücksetze
 window.addEventListener('resize', ()=>{resizeIntro();resizeCanvas();resizeSpooky();});
 setTimeout(()=>{resizeIntro();resizeCanvas();resizeSpooky(); requestAnimationFrame(globalLoop);}, 100);
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

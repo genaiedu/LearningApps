@@ -170,6 +170,7 @@
       .status-card { display: none; }
     }
   </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body class="select-none"> 
   <div class="progress-bar"></div>
@@ -957,9 +958,9 @@
               </button>
 
               <div className="flex items-center justify-center gap-4 text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-semibold">
-                <button onClick={() => setShowLegal(true)} className="hover:text-[var(--text-main)] transition-colors">Impressum</button>
+                <a href="impressum.html" className="hover:text-[var(--text-main)] transition-colors">Impressum</a>
                 <span>&bull;</span>
-                <button onClick={() => setShowLegal(true)} className="hover:text-[var(--text-main)] transition-colors">Datenschutz</button>
+                <a href="datenschutz.html" className="hover:text-[var(--text-main)] transition-colors">Datenschutz</a>
               </div>
             </div>
           </aside>
@@ -1074,17 +1075,17 @@
                     <div className="space-y-4">
                       <h3 className="text-xl font-semibold font-display text-white">Impressum</h3>
                       <div className="text-sm text-[var(--text-dim)] leading-relaxed space-y-4">
-                        <p><strong className="text-[var(--text-main)]">Angaben gemäß § 5 TMG</strong><br/>Dr. Claus Unterberg<br/>Gymnasium Thomaeum<br/>Am Gymnasium 4<br/>47906 Kempen</p>
-                        <p><strong className="text-[var(--text-main)]">Kontakt</strong><br/>E-Mail: <a href="mailto:claus.unterberg@thomaeum.de" className="text-[var(--accent)] hover:underline">claus.unterberg@thomaeum.de</a></p>
-                        <p><strong className="text-[var(--text-main)]">Hinweis</strong><br/>Diese Webseite ist ein privates, nicht-kommerzielles Angebot zur Unterstützung von Lehrkräften im Umgang mit KI-Werkzeugen. Sie steht in keinem offiziellen Zusammenhang mit dem Gymnasium Thomaeum oder dem Land Nordrhein-Westfalen.</p>
+                        <p><strong className="text-[var(--text-main)]">Zentrale Anbieterangaben</strong><br/><a href="impressum.html" className="text-[var(--accent)] hover:underline">Impressum öffnen</a></p>
+                        <p><strong className="text-[var(--text-main)]">Kontakt</strong><br/>E-Mail: unterberg [at] thomaeum.de</p>
+                        <p><strong className="text-[var(--text-main)]">Hinweis</strong><br/>Das vollständige Impressum gilt einheitlich für alle LearningApps.</p>
                       </div>
                     </div>
                     <div className="space-y-4">
                       <h3 className="text-xl font-semibold font-display text-white">Datenschutzerklärung</h3>
                       <div className="text-sm text-[var(--text-dim)] leading-relaxed space-y-4">
-                        <p><strong className="text-[var(--text-main)]">Verantwortlicher</strong><br/>Dr. Claus Unterberg (siehe Impressum)</p>
-                        <p><strong className="text-[var(--text-main)]">Hosting</strong><br/>Diese Seite wird über GitHub Pages gehostet. GitHub kann beim Aufruf technische Daten verarbeiten. Weitere Infos: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline">GitHub Privacy Statement</a>.</p>
-                        <p><strong className="text-[var(--text-main)]">Keine Cookies, kein Tracking</strong><br/>Diese Seite setzt selbst keine Cookies und verwendet keine Analyse-Tools. Da das Projekt rein lokal im Browser läuft, werden keine Schaltungs-Daten der Matrix an externe Server übermittelt.</p>
+                        <p><strong className="text-[var(--text-main)]">Zentrale Datenschutzhinweise</strong><br/><a href="datenschutz.html" className="text-[var(--accent)] hover:underline">Datenschutzerklärung öffnen</a></p>
+                        <p><strong className="text-[var(--text-main)]">Hosting und externe Bibliotheken</strong><br/>Angaben zu Vercel sowie den auf dieser Seite geladenen Programmbibliotheken stehen in der zentralen Datenschutzerklärung.</p>
+                        <p><strong className="text-[var(--text-main)]">Schaltungsdaten</strong><br/>Die eingezeichnete Schaltung wird nur im geöffneten Browser verarbeitet und nicht an den Betreiber übertragen.</p>
                       </div>
                     </div>
                   </div>
@@ -1099,5 +1100,10 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

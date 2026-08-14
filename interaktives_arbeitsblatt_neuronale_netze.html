@@ -48,6 +48,7 @@ button{touch-action:manipulation}.blob{position:fixed;border-radius:50%;filter:b
 @media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.training-side .actions,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.glass{box-shadow:none;border:1px solid #bbb}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody,.training-panel{display:block}.canvaswrap,.training-canvas{border:1px solid #bbb}.canvaswrap canvas,.training-canvas canvas{min-height:470px}.feedback{display:block!important}}
 </style>
 <script src="fonts/lucide.min.js"></script>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
@@ -455,5 +456,10 @@ $('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 function applyDark(){document.body.classList.toggle('dark',state.dark);setTimeout(resizeAll,30)}$('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();applyDark()});if(state.dark)applyDark();$('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});window.addEventListener('resize',resizeAll);
 updateProgress();initIcons();setTimeout(resizeAll,120);
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

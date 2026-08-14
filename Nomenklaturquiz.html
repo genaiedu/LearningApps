@@ -739,6 +739,7 @@ code {
   padding: 1px 5px;
 }
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 
 <body>
@@ -780,10 +781,10 @@ code {
         <i data-lucide="check"></i>
         Einverstanden, Quiz starten
       </button>
-      <button class="btn" onclick="openModal('datenschutz')">
+      <a class="btn" href="datenschutz.html">
         <i data-lucide="shield-check"></i>
         Datenschutzhinweise anzeigen
-      </button>
+      </a>
       <a class="btn" href="index.html">
         <i data-lucide="arrow-left"></i>
         Zurück zur Übersicht
@@ -930,87 +931,12 @@ code {
   <footer class="legal-bar card">
     <div>© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
     <div class="legal-links">
-      <a onclick="openModal('impressum')">Impressum</a>
-      <a onclick="openModal('datenschutz')">Datenschutz</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
       <a onclick="openModal('nomenhilfe')">Nomenklaturhilfe</a>
       <a href="index.html">Übersicht</a>
     </div>
   </footer>
-</div>
-
-<div id="modal-impressum" class="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()" aria-label="Schließen"><i data-lucide="x"></i></button>
-    <h2>Impressum</h2>
-
-    <h3>Verantwortlich für den Inhalt</h3>
-    <p>
-      Dr. Claus Unterberg<br>
-      Gymnasium Thomaeum Kempen<br>
-      Am Gymnasium 4<br>
-      47906 Kempen
-    </p>
-
-    <h3>Kontakt</h3>
-    <p>E-Mail: unterberg [at] thomaeum.de</p>
-
-    <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
-    <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
-
-    <h3>Haftung für Inhalte und Links</h3>
-    <p>
-      Die Inhalte dieser Seite wurden mit Sorgfalt zusammengestellt. Für die Inhalte
-      der angebundenen externen chemischen Datenbanken sind die jeweiligen Anbieter verantwortlich.
-    </p>
-  </div>
-</div>
-
-<div id="modal-datenschutz" class="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()" aria-label="Schließen"><i data-lucide="x"></i></button>
-    <h2>Datenschutzerklärung</h2>
-
-    <h3>Allgemeines</h3>
-    <p>
-      Diese Seite ist datensparsam aufgebaut. Schriftarten und lokale Skripte werden aus dem
-      Verzeichnis <code>fonts/</code> geladen. Die Seite verwendet keine Cookies, kein Tracking
-      und keine Anmeldung.
-    </p>
-
-    <h3>Externe chemische Datenbanken</h3>
-    <p>
-      Die eigentliche Quizfunktion nutzt nach ausdrücklicher Bestätigung externe Datenbanken,
-      insbesondere PubChem und gegebenenfalls den NCI/Cactus Chemical Identifier Resolver.
-      Die Abfragen dienen dazu, Molekülstrukturen, Moleküldaten und IUPAC-Namen zu prüfen
-      beziehungsweise Strukturbilder abzurufen.
-    </p>
-    <p>
-      Beim Abruf dieser externen Daten können technisch notwendige Zugriffsdaten an die jeweiligen
-      Anbieter übermittelt werden, insbesondere die IP-Adresse, Datum und Uhrzeit des Zugriffs,
-      Browserinformationen sowie die konkret abgerufene Molekülanfrage. Diese Übermittlung erfolgt
-      erst nach Bestätigung des vorgeschalteten Warnhinweises.
-    </p>
-
-    <h3>Lokale Verarbeitung</h3>
-    <p>
-      Der Punktestand, die Serie, die adaptive Schwierigkeitsstufe und der Aufgabenverlauf werden nur
-      im aktuell geöffneten Browserfenster verarbeitet und nicht dauerhaft gespeichert. Es werden keine
-      personenbezogenen Eingaben an den Betreiber dieser Seite übertragen.
-    </p>
-
-    <h3>Hosting</h3>
-    <p>
-      Wird diese Seite über GitHub Pages bereitgestellt, verarbeitet GitHub beim Aufruf der Seite
-      technisch notwendige Zugriffsdaten zur Auslieferung der Webseite. Eine Verknüpfung dieser
-      Daten mit Quizdaten durch den Seitenbetreiber findet nicht statt.
-    </p>
-
-    <h3>Hinweis</h3>
-    <p>
-      Diese Erklärung ersetzt keine rechtliche Prüfung. Für den produktiven schulischen Einsatz
-      sollte die endgültige Fassung mit den schulischen Datenschutzvorgaben abgeglichen werden.
-    </p>
-  </div>
 </div>
 
 <div id="modal-nomenhilfe" class="modal" onclick="if(event.target===this)closeModal()">
@@ -1882,5 +1808,10 @@ document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(input
 updateStats();
 safeLucide();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

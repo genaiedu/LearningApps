@@ -24,6 +24,7 @@ body.dark{--primary:#38bdf8;--primary2:#22d3ee;--primary-light:rgba(56,189,248,.
 @media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.intro{grid-template-columns:1fr}.top{flex-wrap:wrap}.done{margin-left:57px}}@media(max-width:560px){.body,.top{padding-left:17px;padding-right:17px}.actions{display:grid}.act{width:100%}.done{margin-left:0}.copyrow{display:grid}.copy{width:100%}}
 @media print{.blob,.sidebar,.hamb,#progresswrap,.actions,.panel,.progress,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:15mm}.card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}}
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
@@ -85,4 +86,9 @@ function progress(){const c=Object.values(state.done).filter(Boolean).length;con
 function reveal(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(x=>io.observe(x))}
 hamb.onclick=()=>sidebar.classList.toggle('open');dark.onclick=()=>{state.dark=!state.dark;document.body.classList.toggle('dark',state.dark);save()};random.onclick=()=>{const t=TASKS[Math.floor(Math.random()*TASKS.length)];document.getElementById(`aufgabe-${t.id}`).scrollIntoView({behavior:'smooth',block:'center'});sidebar.classList.remove('open')};close.onclick=()=>{document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open'));document.querySelectorAll('[data-toggle]').forEach(b=>b.textContent=b.dataset.toggle.startsWith('hint')?'💡 Hinweis anzeigen':'◈ Tutor öffnen')};reset.onclick=()=>{if(confirm('Alle Markierungen zurücksetzen?')){state.done={};save();render()}};document.addEventListener('click',e=>{if(innerWidth<930&&!e.target.closest('#sidebar')&&!e.target.closest('#hamb'))sidebar.classList.remove('open')});if(state.dark)document.body.classList.add('dark');render();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body></html>

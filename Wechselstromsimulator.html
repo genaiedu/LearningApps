@@ -112,6 +112,7 @@ input[type=number].dragging{
   footer{max-height:46vh}
 }
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <header>
@@ -527,5 +528,10 @@ function loop(){
 updateUI();
 requestAnimationFrame(loop);
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

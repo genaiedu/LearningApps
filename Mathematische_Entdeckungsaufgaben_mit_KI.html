@@ -65,6 +65,7 @@ footer{text-align:center;color:var(--text-muted);font-size:.83rem;padding:25px 0
 @media(max-width:560px){.main{padding-left:4vw;padding-right:4vw}.task-top,.task-body{padding-left:17px;padding-right:17px}.task-title{font-size:1.08rem}.problem{padding:15px}.done-toggle{margin-left:0}.actions{display:grid;grid-template-columns:1fr}.action-btn{width:100%}.copy-row{align-items:stretch}.copy-btn{width:100%}}
 @media print{body{background:#fff!important;color:#111}.blob,.sidebar,.hamburger,#progress-wrap,.actions,.panel,.progress-card,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:15mm}.hero h1{font-size:24pt}.intro-grid{display:block}.intro-card{box-shadow:none;border:1px solid #ccc;margin-bottom:10mm}.task-card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.task-list{gap:8mm}.stage{break-before:page}.stage:first-of-type{break-before:auto}.done-toggle{display:none}.problem{background:#fff;border:1px solid #ddd}.reveal{opacity:1!important;transform:none!important}}
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div class="blob one"></div><div class="blob two"></div><div class="blob three"></div>
@@ -201,5 +202,10 @@ document.addEventListener('click',e=>{if(window.innerWidth<930 && !e.target.clos
 if(state.dark)document.body.classList.add('dark');
 render();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

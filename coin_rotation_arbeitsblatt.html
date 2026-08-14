@@ -46,6 +46,7 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
 @media(max-width:620px){.card{padding:17px}.solar-overlay{position:static;padding:10px;background:var(--canvas)}#solarCanvas{min-height:440px}.solar-readout{grid-template-columns:1fr}.choices{grid-template-columns:repeat(2,1fr)}.custom-answer{grid-template-columns:1fr}.labtop{align-items:flex-start}.canvasbadge{position:static;padding:10px;background:var(--canvas)}#simCanvas{min-height:430px}.predictrow{grid-template-columns:1fr}.simbuttons{grid-template-columns:1fr}.stagehead h2{font-size:1.28rem}.hero h1{font-size:2.25rem}.main{padding-left:15px;padding-right:15px}}
 @media print{.blob,.sidebar,.hamb,#barwrap,.actions,.labtop,.controls,.toast,.sourcebox,footer{display:none!important}.main{margin:0;max-width:none;padding:12mm}.hidden-stage{display:block!important}.card,.concept,.missioncard,.quizcard{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}.reveal{opacity:1!important;transform:none!important}.labbody{display:block}.canvaswrap{border:1px solid #bbb}#simCanvas,#solarCanvas{min-height:470px}.feedback{display:block!important}}
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
@@ -531,5 +532,10 @@ $('#dark').addEventListener('click',()=>{state.dark=!state.dark;saveState();appl
 $('#restart').addEventListener('click',()=>{if(confirm('Alle Antworten und der gespeicherte Fortschritt werden zurückgesetzt.')){try{localStorage.removeItem(STORAGE_KEY)}catch(e){}location.reload()}});
 updateProgress();setTimeout(()=>{resizeCanvas();draw();resizeSolarCanvas();drawSolar()},100);
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>
