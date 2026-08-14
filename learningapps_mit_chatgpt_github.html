@@ -19,6 +19,7 @@ body.dark{--p:#c4b5fd;--p2:#60a5fa;--soft:#241c3d;--accent:#fbbf24;--green:#4ade
 @media print{.sidebar,.hamb,#scrollbar,.tools,.copybtn,.actions,.tabs,.toast{display:none!important}.main{margin:0;padding:10mm}.glass{box-shadow:none;background:#fff}.stage{break-before:page}.ospanel{display:block}.command{background:#eee;color:#111}}
 </style>
 <script src="fonts/lucide.min.js"></script>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div id="scrollbar"><div></div></div>
@@ -285,7 +286,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"</code><button class="copybtn" data-cop
     <li><a href="https://www.gesetze-im-internet.de/ttdsg/__25.html" target="_blank" rel="noopener">§ 25 TDDDG: Cookies und Browser-Speicher</a></li>
     <li><a href="https://www.gesetze-bayern.de/Content/Document/Y-300-Z-GRURRS-B-2022-N-612?view=Print" target="_blank" rel="noopener">LG München I: externe Google-Fonts-Einbindung</a></li>
     <li><a href="https://www.bfdi.bund.de/DE/Buerger/Inhalte/Telemedien/LogFile_Analyse.html" target="_blank" rel="noopener">BfDI: Datenschutz bei Server-Logfiles</a></li>
-    <li><a href="https://www.datenschutzkonferenz-online.de/media/oh/20211220_oh_telemedien.pdf" target="_blank" rel="noopener">Datenschutzkonferenz: Orientierungshilfe für Telemedien</a></li>
+    <li><a href="https://www.datenschutzkonferenz-online.de/media/oh/OH_Digitale_Dienste.pdf" target="_blank" rel="noopener">Datenschutzkonferenz: Orientierungshilfe für digitale Dienste</a></li>
   </ul><p style="color:var(--muted)">Stand: August 2026. Oberflächen, Tarife und Befehle können sich ändern; bei Abweichungen gilt die verlinkte offizielle Dokumentation.</p></div>
 </section>
 <footer>LearningApps · Interaktives Arbeitsblatt · ChatGPT, Git und GitHub · Keine Zugangsdaten werden gespeichert</footer>
@@ -338,5 +339,10 @@ $('#hamb').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 window.addEventListener('scroll',()=>{const h=document.documentElement,max=h.scrollHeight-h.clientHeight;$('#scrollbar div').style.width=(max?100*h.scrollTop/max:0)+'%';let current='start';$$('.stage').forEach(s=>{if(s.getBoundingClientRect().top<180)current=s.id});$$('.sidebar nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current))});
 updateProgress();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

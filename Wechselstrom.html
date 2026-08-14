@@ -673,7 +673,8 @@ input[type="number"]:focus {
 }
 .legal-modal__close:hover { background: var(--panel); }
 .legal-modal__close i { width: 18px; height: 18px; }
-</style></head>
+</style><link rel="stylesheet" href="legal-links.css">
+</head>
 <body><div class="blob"></div>
 <div class="blob"></div>
 <div class="blob"></div><header class="app-header">
@@ -831,37 +832,9 @@ input[type="number"]:focus {
 </footer><div class="legal-bar">
   <div>© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
   <div class="legal-bar__links">
-    <a onclick="openLegal('impressum')">Impressum</a>
-    <a onclick="openLegal('datenschutz')">Datenschutz</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
     <a href="index.html">Übersicht</a>
-  </div>
-</div><div class="legal-modal" id="modal-impressum" onclick="if(event.target===this)closeLegal()">
-  <div class="legal-modal__box">
-    <button class="legal-modal__close" onclick="closeLegal()" aria-label="Schließen"><i data-lucide="x"></i></button>
-    <h2>Impressum</h2>
-    <h3>Verantwortlich für den Inhalt</h3>
-    <p>Dr. Claus Unterberg<br>Gymnasium Thomaeum Kempen<br>Am Gymnasium 4<br>47906 Kempen</p>
-    <h3>Kontakt</h3>
-    <p>E-Mail: unterberg [at] thomaeum.de</p>
-    <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
-    <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
-    <h3>Urheberrecht</h3>
-    <p>Die auf dieser Seite veröffentlichten Anwendungen sind urheberrechtlich geschützt. Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht; eine darüber hinausgehende Verwendung bedarf der vorherigen Zustimmung.</p>
-    <h3>Haftung für Inhalte und Links</h3>
-    <p>Die Inhalte dieser Seite wurden mit Sorgfalt zusammengestellt. Für ihre Richtigkeit, Vollständigkeit und Aktualität kann jedoch keine Gewähr übernommen werden. Für die Inhalte verlinkter externer Seiten ist deren Betreiber verantwortlich.</p>
-  </div>
-</div><div class="legal-modal" id="modal-datenschutz" onclick="if(event.target===this)closeLegal()">
-  <div class="legal-modal__box">
-    <button class="legal-modal__close" onclick="closeLegal()" aria-label="Schließen"><i data-lucide="x"></i></button>
-    <h2>Datenschutzerklärung</h2>
-    <h3>Allgemeines</h3>
-    <p>Diese Seite ist bewusst datensparsam aufgebaut. Sie verwendet keine Cookies, kein Tracking, keine externen Schriftdienste, keine externen Content-Delivery-Netzwerke und keine eingebetteten Inhalte von Drittanbietern. Alle Schriftarten und Skripte werden direkt vom Hostserver ausgeliefert.</p>
-    <h3>Zugriffsdaten und Hosting</h3>
-    <p>Diese Seite wird über GitHub Pages bereitgestellt. Beim Aufruf der Seite werden durch den Hosting-Anbieter technisch notwendige Zugriffsdaten verarbeitet. Eine Verknüpfung mit anderen Datenquellen durch den Betreiber dieser Seite findet nicht statt.</p>
-    <h3>Lokale Verarbeitung in der Anwendung</h3>
-    <p>Diese Anwendung verarbeitet alle Eingaben ausschließlich lokal im Browser. Es werden keine Daten an einen Server übertragen. Beim Schließen der Seite werden die Eingaben nicht gespeichert.</p>
-    <h3>Rechte der betroffenen Personen</h3>
-    <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch gemäß Art. 15 ff. DSGVO.</p>
   </div>
 </div><script src="fonts/lucide.min.js"></script><script>
 function safeLucide() {
@@ -876,16 +849,6 @@ function toggleTheme() {
   icon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
   safeLucide();
 }
-
-function openLegal(which) {
-  document.getElementById('modal-' + which).classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeLegal() {
-  document.querySelectorAll('.legal-modal').forEach(m => m.classList.remove('show'));
-  document.body.style.overflow = '';
-}
-window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLegal(); });
 
 const canvasScope = document.getElementById('canvas-scope');
 const ctxScope = canvasScope.getContext('2d');
@@ -1699,5 +1662,11 @@ safeLucide();
 setMode('ohm');
 resizeCanvases();
 requestAnimationFrame(draw);
-</script></body>
+</script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
+</body>
 </html>

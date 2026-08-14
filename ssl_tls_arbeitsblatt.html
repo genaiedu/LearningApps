@@ -30,6 +30,7 @@ body.dark{
 @media print{.sidebar,.hamb,#scrollbar,.tools,.btn,.actions,.toast{display:none!important}.main{margin:0;padding:10mm;max-width:none}.glass{box-shadow:none;background:#fff}.stage{break-before:page}.stage:first-of-type{break-before:auto}.trace{display:block}.modearea{display:block}.hero h1{font-size:36pt}}
 </style>
 <script src="fonts/lucide.min.js"></script>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div id="scrollbar"><div></div></div>
@@ -294,5 +295,10 @@ $('#hamb').onclick=()=>$('#sidebar').classList.toggle('open');$$('.sidebar nav a
 window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;$('#scrollbar div').style.width=(max>0?scrollY/max*100:0)+'%'});
 updateProgress();if(window.lucide)lucide.createIcons();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

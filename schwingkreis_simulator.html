@@ -98,6 +98,7 @@ body.light .scope{background:rgba(255,255,255,.55)}
 .circuit-window__body .grid{position:absolute}
 @media(max-width:860px){.app{flex-direction:column}.sidebar{width:100%;height:45%;border-right:0;border-bottom:1px solid var(--border)}.brand{display:none}.topbar{height:56px;padding:0 12px}.hud{width:calc(100% - 20px);max-width:calc(100% - 20px)}.float{right:12px;bottom:12px}}
 </style>
+<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <div id="app"></div>
@@ -768,5 +769,10 @@ buildFixedSchwingkreis();
 render();
 })();
 </script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
 </body>
 </html>

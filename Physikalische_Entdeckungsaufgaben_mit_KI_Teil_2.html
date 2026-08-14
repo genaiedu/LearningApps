@@ -22,7 +22,8 @@ body.dark{--p:#38bdf8;--p2:#22d3ee;--pl:rgba(56,189,248,.12);--a:#fbbf24;--t:#e2
 .stage{margin-bottom:58px;scroll-margin-top:24px}.stagehead{display:flex;gap:14px;margin-bottom:18px}.stageid{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;display:grid;place-items:center;font-weight:900}.stagehead h2{margin:0;font-size:1.55rem}.stagehead p{color:var(--m);margin:3px 0 0;line-height:1.55}.list{display:grid;gap:18px}.card{overflow:hidden}.top{display:flex;gap:15px;align-items:flex-start;padding:23px 25px 15px}.id{width:42px;height:42px;border-radius:13px;background:var(--pl);color:var(--p);display:grid;place-items:center;font-weight:900}.titlewrap{flex:1}.title{margin:0 0 8px;font-size:1.2rem}.tags{display:flex;gap:7px;flex-wrap:wrap}.tag{font-size:.73rem;color:var(--m);font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(100,116,139,.1);border:1px solid rgba(100,116,139,.18)}.done{display:flex;gap:7px;align-items:center;border:1px solid var(--b);border-radius:999px;padding:7px 10px;font-size:.8rem;font-weight:700}.body{padding:0 25px 23px}.problem{white-space:pre-line;line-height:1.75;background:linear-gradient(135deg,rgba(26,111,181,.07),rgba(245,158,11,.06));border:1px solid var(--b);border-radius:15px;padding:18px 20px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.act{border:1px solid var(--b);background:var(--s);color:var(--t);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.panel{display:none;margin-top:14px;border-radius:14px;border:1px solid var(--b);overflow:hidden}.panel.open{display:block}.inner{padding:17px 18px}.hint{background:rgba(245,158,11,.10)}.prompt{background:rgba(124,58,237,.10)}.paneltitle{font-weight:800;margin-bottom:8px}.panel p{line-height:1.65}.promptarea{width:100%;min-height:300px;border:1px solid rgba(124,58,237,.25);border-radius:11px;background:var(--s);color:var(--t);padding:14px;line-height:1.5}.copyrow{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px}.copy{background:#6d28d9;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:700}.completed{border-color:rgba(21,128,61,.5)}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);transition:.25s}.toast.show{opacity:1;transform:none}footer{text-align:center;color:var(--m);font-size:.83rem}
 @media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.hamb{display:block}.main{margin-left:0;padding:74px 5vw 80px}.intro{grid-template-columns:1fr}.top{flex-wrap:wrap}.done{margin-left:57px}}@media(max-width:560px){.body,.top{padding-left:17px;padding-right:17px}.actions{display:grid}.act{width:100%}.done{margin-left:0}.copyrow{display:grid}.copy{width:100%}}
 @media print{.blob,.sidebar,.hamb,#progresswrap,.actions,.panel,.progress,.toast,footer{display:none!important}.main{margin:0;max-width:none;padding:15mm}.card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.stage{break-before:page}.stage:first-of-type{break-before:auto}}
-</style></head>
+</style><link rel="stylesheet" href="legal-links.css">
+</head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 <div id="progresswrap"><div id="progressbar"></div></div><button class="hamb" id="hamb">☰</button>
@@ -63,4 +64,10 @@ document.getElementById('dark').onclick=()=>document.body.classList.toggle('dark
 document.getElementById('reset').onclick=()=>{if(confirm('Alle Fortschrittsmarkierungen zurücksetzen?')){localStorage.removeItem(KEY);location.reload()}};
 document.getElementById('hamb').onclick=()=>document.getElementById('sidebar').classList.toggle('open');
 render();
-</script></body></html>
+</script>
+<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
+  <a href="impressum.html">Impressum</a>
+  <span aria-hidden="true">·</span>
+  <a href="datenschutz.html">Datenschutz</a>
+</nav>
+</body></html>
