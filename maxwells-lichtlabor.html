@@ -45,20 +45,23 @@ h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}bu
 .glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius);box-shadow:var(--shadow)}.card{padding:25px}.card p{line-height:1.72}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
 .concept{padding:21px}.concept h3{margin:0 0 8px;font-size:1.05rem}.concept p{margin:0;color:var(--muted);line-height:1.65}.electric-border{border-left:5px solid var(--electric)}.magnetic-border{border-left:5px solid var(--magnetic)}
 .lab{overflow:hidden}.labbar{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.labbar h3{font-size:1rem;margin:0}.labbody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(285px,.72fr);min-height:500px}.canvasbox{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}canvas{display:block;width:100%;height:100%;min-height:500px}.canvas-labels{position:absolute;left:14px;top:14px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}.badge{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:.76rem;font-weight:800;backdrop-filter:blur(12px)}.badge.e{color:var(--electric)}.badge.b{color:var(--magnetic)}
-.controls{padding:20px;min-width:0}.control{margin-bottom:20px}.control:last-child{margin-bottom:0}.control h4{font-size:.95rem;margin:0 0 7px}.control p{font-size:.84rem;color:var(--muted);line-height:1.52;margin:5px 0 10px}.range-row{display:grid;grid-template-columns:1fr 66px;gap:9px;align-items:center}.range-row input{width:100%;accent-color:var(--primary)}.out{padding:7px 5px;text-align:center;border:1px solid var(--line);background:var(--surface-solid);border-radius:9px;font-size:.82rem;font-weight:800}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(15,23,42,.1)}.btn.primary{border:0;color:#fff;background:linear-gradient(135deg,#4f46e5,#0891b2)}.btn.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.btn:focus-visible,.formula-part:focus-visible,.option:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls{padding:20px;min-width:0}.control{margin-bottom:20px}.control:last-child{margin-bottom:0}.control h4{font-size:.95rem;margin:0 0 7px}.control p{font-size:.84rem;color:var(--muted);line-height:1.52;margin:5px 0 10px}.range-row{display:grid;grid-template-columns:1fr 66px;gap:9px;align-items:center}.range-row input{width:100%;accent-color:var(--primary)}.out{padding:7px 5px;text-align:center;border:1px solid var(--line);background:var(--surface-solid);border-radius:9px;font-size:.82rem;font-weight:800}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(15,23,42,.1)}.btn.primary{border:0;color:#fff;background:linear-gradient(135deg,#4f46e5,#0891b2)}.btn.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.btn:focus-visible,.formula-part:focus-visible,.option:focus-visible,.law:focus-visible,.checkpoint-option:focus-visible,.derive-option:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .readouts{display:grid;gap:8px}.readout{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 11px;background:rgba(100,116,139,.08);border:1px solid var(--line);border-radius:10px;font-size:.83rem}.readout strong{color:var(--primary);text-align:right}.readout .evalue{color:var(--electric)}.readout .bvalue{color:var(--magnetic)}
 .formula{font-family:'Apple Symbols','STIX Two Math','Cambria Math',Georgia,serif;font-size:clamp(1.08rem,2.1vw,1.34rem);text-align:center;background:var(--canvas);border:1px solid var(--line);border-radius:14px;padding:17px 12px;margin:17px 0;overflow:auto;white-space:nowrap}.formula.big{font-size:clamp(1.18rem,2.5vw,1.62rem)}.vec{position:relative;display:inline-block;padding-top:.08em}.vec::after{content:'→';position:absolute;font-family:Arial,sans-serif;font-size:.7em;line-height:1;left:50%;top:-.58em;transform:translateX(-50%)}.oint,.oiint{position:relative;display:inline-block;height:1.26em;vertical-align:-.35em;color:inherit}.oint{width:.7em}.oiint{width:1em}.oint::before,.oiint::before{position:absolute;font-family:Georgia,'Times New Roman',serif;font-size:1.38em;line-height:1;top:-.08em;left:.03em}.oint::before{content:'∫'}.oiint::before{content:'∫∫';letter-spacing:-.34em}.oint::after,.oiint::after{content:'';position:absolute;width:.28em;height:.17em;border:1.5px solid currentColor;border-radius:50%;top:.52em;left:.18em}.oiint::after{left:.36em}.frac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.1;margin:0 .1em}.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 .18em .08em}.frac>span:last-child{padding:.08em .18em 0}.formula-parts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.formula-part{border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:700}.formula-part .oint{font-size:1.12em}.formula-part.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.explain{min-height:66px;background:var(--primary-light);border-radius:12px;padding:13px 15px;line-height:1.55}.explain strong{color:var(--primary)}
 .steps{display:grid;gap:12px}.step{display:grid;grid-template-columns:42px 1fr;gap:12px;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--surface-solid)}.stepnum{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900}.step h3{font-size:1rem;margin:2px 0 4px}.step p{margin:0;color:var(--muted);line-height:1.58}
 .insight{margin-top:18px;padding:16px 18px;border-left:5px solid var(--success);background:rgba(22,128,58,.08);border-radius:0 13px 13px 0;line-height:1.62}.warning{border-left-color:var(--accent);background:rgba(245,158,11,.09)}
-.law-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.law{padding:20px;cursor:pointer;transition:.2s;text-align:left;color:inherit}.law:hover,.law.selected{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 15px 36px rgba(79,70,229,.16)}.law h3{font-size:1.02rem;margin:0 0 8px}.law .mini-formula{font-family:Cambria,'Times New Roman',serif;font-size:1.08rem;color:var(--primary);margin:9px 0}.law p{color:var(--muted);font-size:.9rem;margin:0;line-height:1.55}.law-detail{margin-top:16px;padding:19px;min-height:102px}.law-detail h3{margin:0 0 6px;font-size:1.05rem}.law-detail p{margin:0;line-height:1.62;color:var(--muted)}
+.law-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.law{padding:20px;cursor:pointer;transition:.2s;text-align:left;color:inherit}.law:hover,.law.selected{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 15px 36px rgba(79,70,229,.16)}.law h3{font-size:1.02rem;margin:0 0 8px}.law .mini-formula{font-family:'Apple Symbols','STIX Two Math','Cambria Math',Georgia,serif;font-size:1.08rem;color:var(--primary);margin:9px 0}.law p{color:var(--muted);font-size:.9rem;margin:0;line-height:1.55}.law-detail{margin-top:16px;padding:24px;min-height:260px}.law-detail h3{margin:0 0 6px;font-size:1.22rem}.law-detail>p{margin:0;line-height:1.62;color:var(--muted)}.law-kicker{display:block;color:var(--primary);font-size:.76rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.law-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.law-lens{padding:15px;background:var(--canvas);border:1px solid var(--line);border-radius:14px}.law-lens span{display:block;color:var(--primary);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}.law-lens h4{font-size:.93rem;margin:0 0 6px}.law-lens p{font-size:.86rem;margin:0;color:var(--muted);line-height:1.55}.law-wording{margin-top:14px;padding:14px 16px;border-left:4px solid var(--primary);background:var(--primary-light);border-radius:0 12px 12px 0;line-height:1.58}.checkpoint{margin-top:18px;padding:22px}.checkpoint h3{font-size:1rem;margin:0 0 5px}.checkpoint>p{margin:0 0 13px;color:var(--muted);line-height:1.55}.checkpoint-options,.derive-options{display:grid;gap:8px}.checkpoint-option,.derive-option{border:1px solid var(--line);background:var(--surface-solid);border-radius:11px;padding:11px 13px;text-align:left;cursor:pointer;line-height:1.45}.checkpoint-option:hover,.derive-option:hover{background:var(--primary-light)}.checkpoint-option.correct,.derive-option.correct{border-color:var(--success);background:rgba(22,128,58,.1)}.checkpoint-option.wrong,.derive-option.wrong{border-color:var(--danger);background:rgba(180,35,24,.08)}.checkpoint-feedback,.derive-feedback{min-height:24px;margin-top:10px;font-weight:650;font-size:.9rem;line-height:1.5}.checkpoint-feedback.ok,.derive-feedback.ok{color:var(--success)}.checkpoint-feedback.no,.derive-feedback.no{color:var(--danger)}
+.wave-bridge{margin-bottom:18px;padding:22px}.wave-bridge h3{margin:0 0 9px}.wave-bridge p{margin:0;color:var(--muted);line-height:1.65}.coupling{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-top:16px}.coupling-box{padding:15px;text-align:center;border:1px solid var(--line);background:var(--canvas);border-radius:14px}.coupling-box strong{display:block;margin-bottom:4px}.coupling-arrow{color:var(--primary);font-size:1.6rem;font-weight:900}
+.derivation{overflow:hidden}.derive-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:center}.derive-head h3{margin:0;font-size:1.08rem}.derive-progress{font-weight:900;color:var(--primary);white-space:nowrap}.derive-track{height:7px;background:rgba(100,116,139,.13)}.derive-track span{display:block;height:100%;width:25%;background:linear-gradient(90deg,var(--electric),var(--primary2));transition:.35s}.derive-step{padding:24px}.derive-step[hidden]{display:none}.derive-step h3{margin:0 0 8px;font-size:1.18rem}.derive-step>p{color:var(--muted);line-height:1.65;margin:0 0 15px}.derive-note{padding:13px 15px;background:var(--primary-light);border-radius:12px;line-height:1.58;margin:13px 0}.derive-equations,.derive-chain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}.derive-chain{grid-template-columns:repeat(3,minmax(0,1fr))}.derive-equation{padding:13px;text-align:center;background:var(--canvas);border:1px solid var(--line);border-radius:12px;font-family:'Apple Symbols','STIX Two Math','Cambria Math',Georgia,serif;overflow:auto;white-space:nowrap}.derive-equation strong{display:block;font-family:'Inter',system-ui,sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.04em;white-space:normal;line-height:1.35}.derive-question{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.derive-question h4{margin:0 0 10px;font-size:.95rem}.derive-option:disabled{cursor:default}.derive-next{margin-top:12px}.calculation{margin-top:18px;padding:24px}.calculation h3{margin:0 0 7px}.calculation>p{margin:0;color:var(--muted);line-height:1.6}.calc-ladder{display:grid;gap:10px;margin:17px 0}.calc-step{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:13px;background:var(--canvas);opacity:.38;filter:grayscale(.7);transition:.3s}.calc-step.revealed{opacity:1;filter:none;border-color:var(--primary)}.calc-step .stepnum{width:42px;height:42px}.calc-step strong{display:block;margin-bottom:3px}.calc-step span{color:var(--muted);line-height:1.45}.calculation .result{margin-top:16px}.calculation .result[hidden]{display:none}
+.calculation[hidden]{display:none}
 .cbox{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}.constant{padding:18px;text-align:center}.constant span{display:block;color:var(--muted);font-size:.82rem;margin-bottom:6px}.constant strong{font-family:Cambria,'Times New Roman',serif;font-size:1.17rem;color:var(--primary)}.result{padding:24px;text-align:center;background:linear-gradient(135deg,var(--electric-light),var(--magnetic-light));border:1px solid var(--line);border-radius:17px}.result .number{font-family:'Poppins';font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;color:var(--primary);margin:8px 0}.comparison{height:12px;background:rgba(100,116,139,.13);border-radius:999px;overflow:hidden;margin:15px 0}.comparison span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--electric),var(--primary),var(--magnetic));transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
 .quiz{display:grid;gap:14px}.question{padding:21px}.question h3{font-size:1rem;margin:0 0 12px;line-height:1.5}.options{display:grid;gap:8px}.option{border:1px solid var(--line);background:var(--surface-solid);border-radius:11px;padding:11px 13px;text-align:left;cursor:pointer;line-height:1.45}.option:hover{background:var(--primary-light)}.option.correct{border-color:var(--success);background:rgba(22,128,58,.1)}.option.wrong{border-color:var(--danger);background:rgba(180,35,24,.08)}.feedback{min-height:24px;margin-top:10px;font-weight:600;font-size:.9rem;line-height:1.5}.feedback.ok{color:var(--success)}.feedback.no{color:var(--danger)}
 .mastery{margin-top:18px;padding:21px}.mastery-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.mastery h3{margin:0}.score{font-family:'Poppins';font-weight:900;color:var(--primary)}.meter{height:11px;background:rgba(100,116,139,.13);border-radius:999px;overflow:hidden;margin-top:13px}.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--electric),var(--primary2));transition:.35s}
 footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;margin-top:50px}footer a{color:var(--primary);font-weight:700;text-decoration:none}.backlink{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;color:var(--primary);font-weight:700;text-decoration:none}
 .reveal{opacity:0;transform:translateY(17px);transition:.5s}.reveal.visible{opacity:1;transform:none}
 @media(max-width:1100px){.labbody{grid-template-columns:1fr}.canvasbox{border-right:0;border-bottom:1px solid var(--line)}canvas{min-height:440px}.grid3{grid-template-columns:1fr 1fr}}
-@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.menu{display:grid;place-items:center}.main{margin-left:0;padding:76px 5vw 80px}.grid2,.law-grid{grid-template-columns:1fr}}
-@media(max-width:620px){.main{padding-left:16px;padding-right:16px}.hero h1{font-size:2.35rem}.card{padding:19px}.grid3,.cbox{grid-template-columns:1fr}.labbar{align-items:flex-start}.canvasbox canvas,canvas{min-height:390px}.formula{font-size:1.02rem}.stage-head{gap:11px}.stage-id{width:43px;height:43px;flex-basis:43px}.mastery-head{align-items:flex-start;flex-direction:column}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.menu{display:grid;place-items:center}.main{margin-left:0;padding:76px 5vw 80px}.grid2,.law-grid{grid-template-columns:1fr}.law-detail-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.main{padding-left:16px;padding-right:16px}.hero h1{font-size:2.35rem}.card{padding:19px}.grid3,.cbox,.derive-equations,.derive-chain{grid-template-columns:1fr}.labbar{align-items:flex-start}.canvasbox canvas,canvas{min-height:390px}.formula{font-size:1.02rem}.stage-head{gap:11px}.stage-id{width:43px;height:43px;flex-basis:43px}.mastery-head,.derive-head{align-items:flex-start;flex-direction:column}.coupling{grid-template-columns:1fr}.coupling-arrow{transform:rotate(90deg);justify-self:center}.law-detail,.derive-step,.calculation{padding:19px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ambient{animation:none}.reveal{opacity:1;transform:none;transition:none}}
 </style>
 <link rel="stylesheet" href="legal-links.css">
@@ -76,9 +79,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <a href="#kreisintegral"><span class="navnum">1</span>Der Umlaufwert</a>
     <a href="#faraday"><span class="navnum">2</span>Faradays Gesetz</a>
     <a href="#maxwell"><span class="navnum">3</span>Maxwells Ergänzung</a>
-    <a href="#welle"><span class="navnum">4</span>Die Feldwelle</a>
-    <a href="#licht"><span class="navnum">5</span>Die Lichtgeschwindigkeit</a>
-    <a href="#gleichungen"><span class="navnum">6</span>Vier Gleichungen</a>
+    <a href="#gleichungen"><span class="navnum">4</span>Vier Gleichungen</a>
+    <a href="#welle"><span class="navnum">5</span>Die Feldwelle</a>
+    <a href="#licht"><span class="navnum">6</span>Die Lichtgeschwindigkeit</a>
     <a href="#check"><span class="navnum">✓</span>Abschlusscheck</a>
   </nav>
   <div class="tools">
@@ -173,8 +176,44 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   </div>
 </section>
 
+<section class="stage reveal" id="gleichungen">
+  <div class="stage-head"><div class="stage-id">4</div><div><h2>Vier Gleichungen – vier Aussagen über Felder</h2><p>Die Formeln sind keine plötzliche Sammlung neuer Regeln. Öffne nacheinander jede Gleichung und kläre: Was wird betrachtet, was sagt sie aus und welche Rolle spielt sie für eine Welle im Vakuum?</p></div></div>
+  <div class="law-grid" id="lawGrid">
+    <button class="glass law selected" data-law="gaussE"><h3>1 · Gauß für das E-Feld</h3><div class="mini-formula" aria-label="Geschlossenes Flächenintegral E Vektor mal d A Vektor gleich eingeschlossene Ladung durch epsilon null"><span class="oiint" aria-hidden="true"></span><sub>A</sub> <span class="vec">E</span> · d<span class="vec">A</span> = Q<sub>innen</sub>/ε<sub>0</sub></div><p>Wo beginnen und enden elektrische Feldlinien?</p></button>
+    <button class="glass law" data-law="gaussB"><h3>2 · Gauß für das B-Feld</h3><div class="mini-formula" aria-label="Geschlossenes Flächenintegral B Vektor mal d A Vektor gleich null"><span class="oiint" aria-hidden="true"></span><sub>A</sub> <span class="vec">B</span> · d<span class="vec">A</span> = 0</div><p>Warum gibt es keine magnetischen Quellen?</p></button>
+    <button class="glass law" data-law="faraday"><h3>3 · Faradays Gesetz</h3><div class="mini-formula" aria-label="Geschlossenes Linienintegral E Vektor mal d s Vektor gleich minus Änderung des magnetischen Flusses"><span class="oint" aria-hidden="true"></span> <span class="vec">E</span> · d<span class="vec">s</span> = −dΦ<sub>B</sub>/dt</div><p>Wie ist eine B-Änderung mit einem E-Wirbel verknüpft?</p></button>
+    <button class="glass law" data-law="ampere"><h3>4 · Ampère–Maxwell</h3><div class="mini-formula" aria-label="Geschlossenes Linienintegral B Vektor mal d s Vektor gleich Stromterm plus Änderung des elektrischen Flusses"><span class="oint" aria-hidden="true"></span> <span class="vec">B</span> · d<span class="vec">s</span> = μ<sub>0</sub>I + μ<sub>0</sub>ε<sub>0</sub>dΦ<sub>E</sub>/dt</div><p>Wie sind Strom oder E-Änderung mit einem B-Wirbel verknüpft?</p></button>
+  </div>
+  <div class="glass law-detail" id="lawDetail">
+    <span class="law-kicker">Gleichung 1 · Quellen des elektrischen Feldes</span>
+    <h3>Gaußsches Gesetz für das elektrische Feld</h3>
+    <p>Stelle dir eine beliebige geschlossene Hülle wie einen Luftballon vor. Die linke Seite zählt den elektrischen Fluss durch die gesamte Hülle; die rechte Seite fragt nur nach der insgesamt eingeschlossenen Ladung.</p>
+    <div class="law-detail-grid">
+      <article class="law-lens"><span>Was wird betrachtet?</span><h4>Eine geschlossene Fläche</h4><p>Jedes kleine Flächenstück zählt den senkrechten Anteil des E-Feldes. Nach außen gerichteter Fluss zählt positiv, nach innen gerichteter negativ.</p></article>
+      <article class="law-lens"><span>Kernaussage</span><h4>Ladung ist Quelle oder Senke</h4><p>Positive Ladung liefert netto nach außen gerichteten Fluss, negative Ladung netto nach innen. Ladungen außerhalb der Hülle ändern die Bilanz nicht.</p></article>
+      <article class="law-lens"><span>Für die Lichtwelle</span><h4>Im Vakuum keine Quellen</h4><p>Wo keine Ladung liegt, ist der Nettofluss durch jede geschlossene Hülle null. Das bedeutet nicht E = 0: Ein Feld kann die Hülle betreten und wieder verlassen.</p></article>
+    </div>
+    <div class="law-wording"><strong>In Worten:</strong> Der gesamte elektrische Fluss aus einer geschlossenen Fläche wird allein durch die Ladung im Inneren bestimmt.</div>
+  </div>
+  <article class="glass checkpoint" id="vacuumCheckpoint">
+    <h3>Zwischencheck · Was bleibt im leeren Raum?</h3>
+    <p>Eine Lichtwelle bewegt sich weit entfernt von Ladungen und Leitern. Welche Aussage ist dann richtig?</p>
+    <div class="checkpoint-options">
+      <button class="checkpoint-option" data-check-answer="0">Ohne Ladungen und Ströme müssen E und B überall null sein.</button>
+      <button class="checkpoint-option" data-check-answer="1">Die Gauß-Bilanzen haben keine Quellen; Faraday und Ampère–Maxwell können veränderliche E- und B-Felder trotzdem miteinander verknüpfen.</button>
+      <button class="checkpoint-option" data-check-answer="2">Nur das elektrische Feld kann sich im Vakuum ändern, das magnetische Feld nicht.</button>
+    </div>
+    <div class="checkpoint-feedback" aria-live="polite"></div>
+  </article>
+</section>
+
 <section class="stage reveal" id="welle">
-  <div class="stage-head"><div class="stage-id">4</div><div><h2>Eine elektromagnetische Welle löst sich vom Sender</h2><p>Faraday und Ampère–Maxwell erlauben gemeinsam eine sich durch den Raum ausbreitende Feldstruktur.</p></div></div>
+  <div class="stage-head"><div class="stage-id">5</div><div><h2>Aus den Gleichungen wird eine Feldwelle</h2><p>Nun nutzen wir die beiden Gleichungen, die Veränderungen verknüpfen: Faraday und Ampère–Maxwell.</p></div></div>
+  <div class="glass wave-bridge">
+    <h3>Die entscheidende Kopplung im Vakuum</h3>
+    <p>Ohne Ladung und Leiterstrom verschwinden die Felder nicht. Eine zeitliche Änderung von B gehört zu einem räumlichen Umlauf von E; eine zeitliche Änderung von E gehört zu einem räumlichen Umlauf von B. Beide Aussagen gelten gleichzeitig für dieselbe Feldstruktur.</p>
+    <div class="coupling"><div class="coupling-box"><strong>Faraday</strong>Änderung von B ↔ räumliche Änderung von E</div><div class="coupling-arrow">⇄</div><div class="coupling-box"><strong>Ampère–Maxwell</strong>Änderung von E ↔ räumliche Änderung von B</div></div>
+  </div>
   <div class="glass lab">
     <div class="labbar"><h3>Labor 4 · Beobachte E, B und die Ausbreitungsrichtung</h3><div class="btnrow"><button class="btn primary" id="wavePlay">⏸ Pause</button><button class="btn active" data-wave="both">beide Felder</button><button class="btn" data-wave="electric">nur E</button><button class="btn" data-wave="magnetic">nur B</button></div></div>
     <div class="labbody">
@@ -196,25 +235,72 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
 </section>
 
 <section class="stage reveal" id="licht">
-  <div class="stage-head"><div class="stage-id">5</div><div><h2>Maxwell berechnet die Geschwindigkeit – und findet Licht</h2><p>Aus den Konstanten der Elektrizitäts- und Magnetismuslehre folgt eine Wellengeschwindigkeit.</p></div></div>
-  <div class="glass card">
-    <div class="cbox"><div class="constant"><span>elektrische Feldkonstante</span><strong>ε<sub>0</sub> = 8,854 · 10<sup>−12</sup> F/m</strong></div><div class="constant"><span>magnetische Feldkonstante</span><strong>μ<sub>0</sub> = 1,257 · 10<sup>−6</sup> N/A²</strong></div></div>
-    <div class="formula big" aria-label="c ist eins durch die Wurzel aus mü null mal epsilon null">c = <span class="frac"><span>1</span><span>√(μ<sub>0</sub>ε<sub>0</sub>)</span></span></div>
-    <div class="result"><button class="btn primary" id="calculateC">Vorhersage berechnen</button><div class="number" id="cResult">? m/s</div><div id="cText">Welche Geschwindigkeit sagen die Feldgleichungen voraus?</div><div class="comparison"><span id="cBar"></span></div><div id="cCompare" style="color:var(--muted)">experimentelle Lichtgeschwindigkeit: 299 792 458 m/s</div></div>
-    <div class="insight" id="lightInsight" hidden><strong>Die große Entdeckung:</strong> Die vorhergesagte elektromagnetische Wellengeschwindigkeit stimmt mit der bekannten Lichtgeschwindigkeit überein. Licht ist eine elektromagnetische Welle.</div>
-  </div>
-</section>
+  <div class="stage-head"><div class="stage-id">6</div><div><h2>Die Geschwindigkeit entsteht Schritt für Schritt</h2><p>Die Formel für c wird nicht vorausgesetzt. Wir entwickeln sie aus Faraday und Ampère–Maxwell – mit kleinen Entscheidungen statt einer offenen Formeleingabe.</p></div></div>
+  <div class="glass derivation" id="derivation">
+    <div class="derive-head"><h3>Von den Integralgleichungen zur Wellengeschwindigkeit</h3><div class="derive-progress" id="deriveProgress">Schritt 1 von 4</div></div>
+    <div class="derive-track"><span id="deriveBar"></span></div>
 
-<section class="stage reveal" id="gleichungen">
-  <div class="stage-head"><div class="stage-id">6</div><div><h2>Vier Gleichungen – ein Gesamtbild</h2><p>Wähle eine Gleichung aus. Entscheidend ist nicht nur die Formel, sondern was sie über Felder aussagt.</p></div></div>
-  <div class="law-grid" id="lawGrid">
-    <button class="glass law selected" data-law="gaussE"><h3>1 · Gauß für das E-Feld</h3><div class="mini-formula" aria-label="Geschlossenes Flächenintegral E Vektor mal d A Vektor gleich eingeschlossene Ladung durch epsilon null"><span class="oiint" aria-hidden="true"></span><sub>A</sub> <span class="vec">E</span> · d<span class="vec">A</span> = Q<sub>innen</sub>/ε<sub>0</sub></div><p>Ladungen sind Quellen und Senken elektrischer Felder.</p></button>
-    <button class="glass law" data-law="gaussB"><h3>2 · Gauß für das B-Feld</h3><div class="mini-formula" aria-label="Geschlossenes Flächenintegral B Vektor mal d A Vektor gleich null"><span class="oiint" aria-hidden="true"></span><sub>A</sub> <span class="vec">B</span> · d<span class="vec">A</span> = 0</div><p>Magnetische Feldlinien haben keine Quellen oder Senken.</p></button>
-    <button class="glass law" data-law="faraday"><h3>3 · Faraday</h3><div class="mini-formula" aria-label="Geschlossenes Linienintegral E Vektor mal d s Vektor gleich minus Änderung des magnetischen Flusses"><span class="oint" aria-hidden="true"></span> <span class="vec">E</span> · d<span class="vec">s</span> = −dΦ<sub>B</sub>/dt</div><p>Veränderlicher magnetischer Fluss ist mit einem E-Wirbelfeld verknüpft.</p></button>
-    <button class="glass law" data-law="ampere"><h3>4 · Ampère–Maxwell</h3><div class="mini-formula" aria-label="Geschlossenes Linienintegral B Vektor mal d s Vektor gleich Stromterm plus Änderung des elektrischen Flusses"><span class="oint" aria-hidden="true"></span> <span class="vec">B</span> · d<span class="vec">s</span> = μ<sub>0</sub>I + μ<sub>0</sub>ε<sub>0</sub>dΦ<sub>E</sub>/dt</div><p>Strom und veränderlicher elektrischer Fluss sind mit einem B-Wirbelfeld verknüpft.</p></button>
+    <article class="derive-step" data-derive-step="0" data-correct="1">
+      <span class="law-kicker">Schritt 1 · Der betrachtete Raum</span>
+      <h3>Wir gehen weit weg vom Sender</h3>
+      <p>Für eine frei laufende Lichtwelle betrachten wir ein Gebiet ohne eingeschlossene Ladung und ohne Leiterstrom. Die beiden Gauß-Gleichungen verlangen dort Quellenfreiheit. Faraday und Ampère–Maxwell behalten aber ihre Änderungsterme.</p>
+      <div class="derive-equations">
+        <div class="derive-equation"><strong>Faraday bleibt</strong><span class="oint" aria-hidden="true"></span> <span class="vec">E</span> · d<span class="vec">s</span> = − dΦ<sub>B</sub>/dt</div>
+        <div class="derive-equation"><strong>Ampère–Maxwell ohne I</strong><span class="oint" aria-hidden="true"></span> <span class="vec">B</span> · d<span class="vec">s</span> = μ<sub>0</sub>ε<sub>0</sub> dΦ<sub>E</sub>/dt</div>
+      </div>
+      <div class="derive-question"><h4>Welche Größen setzen wir in diesem leeren Gebiet gleich null?</h4><div class="derive-options"><button class="derive-option" data-choice="0">Die Felder E und B</button><button class="derive-option" data-choice="1">Eingeschlossene Ladung Q<sub>innen</sub> und Leiterstrom I</button><button class="derive-option" data-choice="2">Die Feldkonstanten ε<sub>0</sub> und μ<sub>0</sub></button></div><div class="derive-feedback" aria-live="polite"></div><button class="btn primary derive-next" hidden>Weiter zu Schritt 2</button></div>
+    </article>
+
+    <article class="derive-step" data-derive-step="1" data-correct="2" hidden>
+      <span class="law-kicker">Schritt 2 · Vom Umlauf zur Ortsänderung</span>
+      <h3>Eine sehr kleine rechteckige Schleife vergleicht Nachbarorte</h3>
+      <p>Bei einem schmalen Rechteck heben sich zwei Seiten fast auf. Übrig bleibt im Wesentlichen der Unterschied des Feldes zwischen x und x + Δx. So wird aus dem Umlauf eine räumliche Änderung – ohne dass wir hier einen Differentialquotienten berechnen müssen.</p>
+      <div class="derive-equations">
+        <div class="derive-equation"><strong>Aus Faraday</strong>ΔE/Δx ≈ − ΔB/Δt</div>
+        <div class="derive-equation"><strong>Aus Ampère–Maxwell</strong>ΔB/Δx ≈ − μ<sub>0</sub>ε<sub>0</sub> · ΔE/Δt</div>
+      </div>
+      <div class="derive-note"><strong>Δ bedeutet hier:</strong> Wir vergleichen zwei nahe Orte oder zwei nahe Zeitpunkte. Die Vorzeichen folgen aus den gewählten Richtungen; für die Geschwindigkeit wird später ihr Betrag entscheidend.</div>
+      <div class="derive-question"><h4>Was misst die kleine Schleife im Kern?</h4><div class="derive-options"><button class="derive-option" data-choice="0">Nur den Feldwert genau im Mittelpunkt</button><button class="derive-option" data-choice="1">Die gesamte Energie der Welle</button><button class="derive-option" data-choice="2">Den Unterschied des Feldes an benachbarten Orten</button></div><div class="derive-feedback" aria-live="polite"></div><button class="btn primary derive-next" hidden>Weiter zu Schritt 3</button></div>
+    </article>
+
+    <article class="derive-step" data-derive-step="2" data-correct="0" hidden>
+      <span class="law-kicker">Schritt 3 · Beide Beziehungen verbinden</span>
+      <h3>Das B-Feld lässt sich aus der E-Gleichung entfernen</h3>
+      <p>Wir betrachten noch einmal, wie sich die erste Beziehung von Ort zu Ort ändert, und setzen dafür die zweite Beziehung ein. Dadurch steht E auf beiden Seiten. Dasselbe Vorgehen funktioniert umgekehrt auch für B.</p>
+      <div class="derive-chain">
+        <div class="derive-equation"><strong>1 · Faraday nochmals räumlich vergleichen</strong>Δ²E/Δx² ≈ − Δ/Δt (ΔB/Δx)</div>
+        <div class="derive-equation"><strong>2 · Ampère–Maxwell einsetzen</strong>≈ − Δ/Δt (−μ<sub>0</sub>ε<sub>0</sub> · ΔE/Δt)</div>
+        <div class="derive-equation"><strong>3 · Minus mal Minus</strong>= μ<sub>0</sub>ε<sub>0</sub> · Δ²E/Δt²</div>
+      </div>
+      <div class="derive-equations">
+        <div class="derive-equation"><strong>Ergebnis aus Maxwell</strong>Δ²E/Δx² ≈ μ<sub>0</sub>ε<sub>0</sub> · Δ²E/Δt²</div>
+        <div class="derive-equation"><strong>Allgemeine Welle</strong>Δ²E/Δx² ≈ 1/v² · Δ²E/Δt²</div>
+      </div>
+      <div class="derive-note">Die zweiten Änderungen beschreiben die Krümmung des Feldverlaufs im Raum und in der Zeit. Eine Wellengleichung sagt: Diese beiden Krümmungen passen mit einem festen Faktor zusammen.</div>
+      <div class="derive-question"><h4>Welche Koeffizienten müssen beim Vergleich gleich sein?</h4><div class="derive-options"><button class="derive-option" data-choice="0">1/v² = μ<sub>0</sub>ε<sub>0</sub></button><button class="derive-option" data-choice="1">v² = μ<sub>0</sub> + ε<sub>0</sub></button><button class="derive-option" data-choice="2">v = μ<sub>0</sub>ε<sub>0</sub></button></div><div class="derive-feedback" aria-live="polite"></div><button class="btn primary derive-next" hidden>Weiter zu Schritt 4</button></div>
+    </article>
+
+    <article class="derive-step" data-derive-step="3" data-correct="2" hidden>
+      <span class="law-kicker">Schritt 4 · Nach der Geschwindigkeit auflösen</span>
+      <h3>Aus dem Koeffizienten wird die Vorhersage</h3>
+      <p>Aus 1/v² = μ<sub>0</sub>ε<sub>0</sub> suchen wir v. Zuerst wird die Wurzel gezogen, anschließend der Kehrwert gebildet.</p>
+      <div class="derive-question"><h4>Welche Formel folgt daraus?</h4><div class="derive-options"><button class="derive-option" data-choice="0">v = μ<sub>0</sub>ε<sub>0</sub></button><button class="derive-option" data-choice="1">v = √(μ<sub>0</sub>ε<sub>0</sub>)</button><button class="derive-option" data-choice="2">v = <span class="frac"><span>1</span><span>√(μ<sub>0</sub>ε<sub>0</sub>)</span></span></button></div><div class="derive-feedback" aria-live="polite"></div><button class="btn primary derive-next" hidden>Konstanten einsetzen</button></div>
+    </article>
   </div>
-  <div class="glass law-detail" id="lawDetail"><h3>Gauß für das elektrische Feld</h3><p>Eine geschlossene Fläche registriert netto elektrischen Fluss, wenn sie elektrische Ladung einschließt. Die Gleichung beschreibt damit, wo elektrische Feldlinien beginnen oder enden.</p></div>
-  <div class="insight"><strong>Für die Welle zentral:</strong> Faradays Gesetz und die Maxwell-Ergänzung verbinden zeitliche Änderungen mit räumlichen Umläufen. Die beiden Gauß-Gesetze legen zusätzlich die Quellenstruktur der Felder fest.</div>
+
+  <div class="glass calculation" id="calculationPanel" hidden>
+    <h3>Jetzt rechnen wir die Vorhersage aus</h3>
+    <p>Die Feldkonstanten beschreiben die elektrische und magnetische Kopplung des Vakuums. Setze ihre Werte ein und öffne die Rechnung bewusst Schritt für Schritt.</p>
+    <div class="cbox"><div class="constant"><span>elektrische Feldkonstante</span><strong>ε<sub>0</sub> = 8,854 187 8128 · 10<sup>−12</sup> F/m</strong></div><div class="constant"><span>magnetische Feldkonstante</span><strong>μ<sub>0</sub> = 1,256 637 06212 · 10<sup>−6</sup> N/A²</strong></div></div>
+    <div class="calc-ladder">
+      <div class="calc-step" data-calc-step="0"><div class="stepnum">×</div><div><strong>Konstanten multiplizieren</strong><span>μ<sub>0</sub>ε<sub>0</sub> = 1,112 650 056 · 10<sup>−17</sup> s²/m²</span></div></div>
+      <div class="calc-step" data-calc-step="1"><div class="stepnum">√</div><div><strong>Wurzel ziehen</strong><span>√(μ<sub>0</sub>ε<sub>0</sub>) = 3,335 640 952 · 10<sup>−9</sup> s/m</span></div></div>
+      <div class="calc-step" data-calc-step="2"><div class="stepnum">1/x</div><div><strong>Kehrwert bilden</strong><span>v = 2,997 924 58 · 10<sup>8</sup> m/s</span></div></div>
+    </div>
+    <button class="btn primary" id="calculateC">Ersten Rechenschritt zeigen</button>
+    <div class="result" id="predictionResult" hidden><div class="number" id="cResult">299 792 458 m/s</div><div id="cText">Vorhersage der Maxwell-Gleichungen</div><div class="comparison"><span id="cBar"></span></div><div id="cCompare" style="color:var(--muted)">gemessene Lichtgeschwindigkeit: 299 792 458 m/s</div></div>
+    <div class="insight" id="lightInsight" hidden><strong>Maxwells Schluss:</strong> Die aus rein elektrischen und magnetischen Konstanten vorhergesagte Feldwellengeschwindigkeit ist die Lichtgeschwindigkeit. Licht ist eine elektromagnetische Welle.</div>
+  </div>
 </section>
 
 <section class="stage reveal" id="check">
@@ -356,17 +442,62 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   $$('[data-wave]').forEach(btn=>btn.addEventListener('click',()=>{$$('[data-wave]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');waveState.mode=btn.dataset.wave;drawWave()}));
   ['waveFrequency','waveAmplitude','probe'].forEach(id=>$('#'+id).addEventListener('input',e=>{$('#'+id+'Out').textContent=e.target.value+(id==='waveAmplitude'?' %':id==='probe'?' %':'');drawWave()}));
 
-  // c calculation
-  $('#calculateC').addEventListener('click',()=>{const eps=8.8541878128e-12,mu=1.25663706212e-6,c=1/Math.sqrt(eps*mu);$('#cResult').textContent=Math.round(c).toLocaleString('de-DE')+' m/s';$('#cText').textContent='Vorhersage aus μ₀ und ε₀';$('#cBar').style.width='99.93%';$('#lightInsight').hidden=false;$('#calculateC').textContent='✓ berechnet'});
-
   // Laws
   const lawInfo={
-    gaussE:['Gauß für das elektrische Feld','Eine geschlossene Fläche registriert netto elektrischen Fluss, wenn sie elektrische Ladung einschließt. Die Gleichung beschreibt damit, wo elektrische Feldlinien beginnen oder enden.'],
-    gaussB:['Gauß für das magnetische Feld','Durch jede geschlossene Fläche ist der gesamte magnetische Fluss null. Magnetische Feldlinien sind geschlossen; isolierte magnetische Pole wurden nicht beobachtet.'],
-    faraday:['Faradays Induktionsgesetz','Die Änderung des magnetischen Flusses durch eine Fläche ist mit einem elektrischen Wirbelfeld entlang ihres Randes verknüpft. Das Minuszeichen enthält die Lenzsche Regel.'],
-    ampere:['Ampère–Maxwell-Gesetz','Leiterstrom und die Änderung des elektrischen Flusses sind mit einem magnetischen Wirbelfeld verknüpft. Maxwells Ergänzung macht elektromagnetische Wellen möglich.']
+    gaussE:`<span class="law-kicker">Gleichung 1 · Quellen des elektrischen Feldes</span><h3>Gaußsches Gesetz für das elektrische Feld</h3><p>Stelle dir eine beliebige geschlossene Hülle wie einen Luftballon vor. Die linke Seite zählt den elektrischen Fluss durch die gesamte Hülle; die rechte Seite fragt nur nach der insgesamt eingeschlossenen Ladung.</p><div class="law-detail-grid"><article class="law-lens"><span>Was wird betrachtet?</span><h4>Eine geschlossene Fläche</h4><p>Jedes kleine Flächenstück zählt den senkrechten Anteil des E-Feldes. Nach außen gerichteter Fluss zählt positiv, nach innen gerichteter negativ.</p></article><article class="law-lens"><span>Kernaussage</span><h4>Ladung ist Quelle oder Senke</h4><p>Positive Ladung liefert netto nach außen gerichteten Fluss, negative Ladung netto nach innen. Ladungen außerhalb der Hülle ändern die Bilanz nicht.</p></article><article class="law-lens"><span>Für die Lichtwelle</span><h4>Im Vakuum keine Quellen</h4><p>Wo keine Ladung liegt, ist der Nettofluss durch jede geschlossene Hülle null. Das bedeutet nicht E = 0: Ein Feld kann die Hülle betreten und wieder verlassen.</p></article></div><div class="law-wording"><strong>In Worten:</strong> Der gesamte elektrische Fluss aus einer geschlossenen Fläche wird allein durch die Ladung im Inneren bestimmt.</div>`,
+    gaussB:`<span class="law-kicker">Gleichung 2 · Quellenfreiheit des magnetischen Feldes</span><h3>Gaußsches Gesetz für das magnetische Feld</h3><p>Auch hier betrachten wir eine geschlossene Hülle. Nun zählen wir aber den magnetischen Fluss. Unabhängig von Form und Größe der Hülle ist die Summe immer null.</p><div class="law-detail-grid"><article class="law-lens"><span>Was wird betrachtet?</span><h4>Magnetischer Fluss durch eine Hülle</h4><p>Wo B-Feldlinien die Fläche verlassen, zählen sie positiv; wo sie wieder eintreten, negativ. Beide Beiträge gleichen sich aus.</p></article><article class="law-lens"><span>Kernaussage</span><h4>Keine magnetischen Monopole</h4><p>Magnetische Feldlinien beginnen oder enden nicht an einzelnen Nord- oder Südpolen, sondern bilden geschlossene Linien.</p></article><article class="law-lens"><span>Für die Lichtwelle</span><h4>B bleibt quellenfrei</h4><p>Das B-Feld einer freien Welle besitzt keine Quellen oder Senken. Seine Feldlinienstruktur passt deshalb zu einem transversalen Feld.</p></article></div><div class="law-wording"><strong>In Worten:</strong> Aus jeder geschlossenen Fläche tritt ebenso viel magnetischer Fluss aus, wie an anderer Stelle wieder eintritt.</div>`,
+    faraday:`<span class="law-kicker">Gleichung 3 · Magnetische Änderung und E-Umlauf</span><h3>Faradays Induktionsgesetz</h3><p>Eine geschlossene Kurve bildet den Rand einer Fläche. Ändert sich der magnetische Fluss durch diese Fläche, ist entlang des Randes ein elektrischer Umlaufwert vorhanden.</p><div class="law-detail-grid"><article class="law-lens"><span>Was wird betrachtet?</span><h4>Rand und aufgespannte Fläche</h4><p>Links summieren wir E entlang der geschlossenen Randkurve. Rechts beobachten wir, wie schnell sich der B-Fluss durch die Fläche ändert.</p></article><article class="law-lens"><span>Kernaussage</span><h4>Ein veränderliches B gehört zu einem E-Wirbel</h4><p>Nicht ein großes konstantes B-Feld, sondern dΦ<sub>B</sub>/dt ist entscheidend. Das Minuszeichen beschreibt die Lenzsche Gegenwirkung.</p></article><article class="law-lens"><span>Für die Lichtwelle</span><h4>B-Änderung verknüpft E räumlich</h4><p>Auch ohne Draht kann ein zeitlich veränderliches B-Feld mit einer räumlichen Wirbelstruktur des E-Feldes verbunden sein.</p></article></div><div class="law-wording"><strong>In Worten:</strong> Je schneller sich der magnetische Fluss ändert, desto größer ist der elektrische Umlaufwert entlang des Randes.</div>`,
+    ampere:`<span class="law-kicker">Gleichung 4 · Strom oder E-Änderung und B-Umlauf</span><h3>Ampère–Maxwell-Gesetz</h3><p>Der Umlauf des Magnetfeldes kann zwei Ursachenbeiträge haben: einen Leiterstrom durch die Fläche und die zeitliche Änderung des elektrischen Flusses.</p><div class="law-detail-grid"><article class="law-lens"><span>Was wird betrachtet?</span><h4>B entlang einer Randkurve</h4><p>Links summieren wir B entlang des geschlossenen Randes. Rechts stehen der Leiterstrom I und Maxwells zusätzlicher Flussänderungsterm.</p></article><article class="law-lens"><span>Kernaussage</span><h4>Maxwell schließt die Lücke</h4><p>Im Kondensatorspalt ist I = 0. Dort sorgt ε<sub>0</sub>dΦ<sub>E</sub>/dt dafür, dass dieselbe Randkurve weiterhin denselben B-Umlauf besitzt.</p></article><article class="law-lens"><span>Für die Lichtwelle</span><h4>Der Maxwell-Term bleibt im Vakuum</h4><p>Fern vom Leiter verschwindet I, aber ein veränderliches E-Feld bleibt mit einer räumlichen Wirbelstruktur des B-Feldes verknüpft.</p></article></div><div class="law-wording"><strong>In Worten:</strong> Leiterstrom und die zeitliche Änderung des elektrischen Flusses tragen beide zum magnetischen Umlaufwert bei.</div>`
   };
-  $$('.law').forEach(btn=>btn.addEventListener('click',()=>{$$('.law').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');const [h,p]=lawInfo[btn.dataset.law];$('#lawDetail').innerHTML=`<h3>${h}</h3><p>${p}</p>`}));
+  $$('.law').forEach(btn=>btn.addEventListener('click',()=>{$$('.law').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');$('#lawDetail').innerHTML=lawInfo[btn.dataset.law]}));
+
+  // Checkpoint after the four equations
+  $$('.checkpoint-option').forEach(btn=>btn.addEventListener('click',()=>{
+    const feedback=$('.checkpoint-feedback',$('#vacuumCheckpoint'));
+    if(btn.dataset.checkAnswer==='1'){
+      $$('.checkpoint-option').forEach(b=>{b.disabled=true;b.classList.toggle('correct',b===btn)});
+      feedback.textContent='Richtig. Quellenfreiheit bedeutet nicht Feldfreiheit: Die beiden Änderungsgesetze erlauben eine freie elektromagnetische Welle.';
+      feedback.className='checkpoint-feedback ok';
+    }else{
+      btn.disabled=true;btn.classList.add('wrong');
+      feedback.textContent='Noch nicht. Ohne Quellen können Felder vorhanden sein, solange ihre räumlichen und zeitlichen Änderungen die Maxwell-Gleichungen erfüllen.';
+      feedback.className='checkpoint-feedback no';
+    }
+  }));
+
+  // Guided derivation with multiple-choice gates
+  const deriveMessages=[
+    'Genau. Im betrachteten Vakuumgebiet sind Q und I null; E und B dürfen trotzdem räumlich und zeitlich veränderlich sein.',
+    'Richtig. Der Umlauf um eine kleine Schleife vergleicht Feldwerte an benachbarten Orten.',
+    'Genau. Beide Gleichungen haben dann denselben Aufbau; deshalb gilt 1/v² = μ₀ε₀.',
+    'Richtig. Wurzelziehen und Kehrwertbilden liefern v = 1/√(μ₀ε₀).'
+  ];
+  const updateDeriveProgress=step=>{$('#deriveProgress').textContent=`Schritt ${step+1} von 4`;$('#deriveBar').style.width=(step+1)/4*100+'%'};
+  $$('.derive-step').forEach((step,index)=>{
+    const options=$$('.derive-option',step),feedback=$('.derive-feedback',step),next=$('.derive-next',step);
+    options.forEach(btn=>btn.addEventListener('click',()=>{
+      if(+btn.dataset.choice===+step.dataset.correct){
+        options.forEach(b=>{b.disabled=true;b.classList.toggle('correct',b===btn)});
+        feedback.textContent=deriveMessages[index];feedback.className='derive-feedback ok';next.hidden=false;
+      }else{
+        btn.disabled=true;btn.classList.add('wrong');feedback.textContent='Diese Antwort passt noch nicht zu den beiden Gleichungen. Nutze den Hinweis über der Frage und versuche es erneut.';feedback.className='derive-feedback no';
+      }
+    }));
+    next.addEventListener('click',()=>{
+      if(index<3){step.hidden=true;const following=$(`.derive-step[data-derive-step="${index+1}"]`);following.hidden=false;updateDeriveProgress(index+1);following.scrollIntoView({behavior:'smooth',block:'center'})}
+      else{next.hidden=true;$('#deriveProgress').textContent='4 von 4 Schritten gelöst';$('#calculationPanel').hidden=false;$('#calculationPanel').scrollIntoView({behavior:'smooth',block:'start'})}
+    });
+  });
+
+  // Numerical calculation, revealed one operation at a time
+  let calcStep=0;
+  $('#calculateC').addEventListener('click',()=>{
+    const steps=$$('.calc-step');
+    if(calcStep<steps.length){steps[calcStep].classList.add('revealed');calcStep++}
+    if(calcStep===1)$('#calculateC').textContent='Wurzel zeigen';
+    if(calcStep===2)$('#calculateC').textContent='Kehrwert und Ergebnis zeigen';
+    if(calcStep===steps.length){$('#predictionResult').hidden=false;requestAnimationFrame(()=>$('#cBar').style.width='100%');$('#lightInsight').hidden=false;$('#calculateC').textContent='✓ Rechnung vollständig';$('#calculateC').disabled=true}
+  });
 
   // Quiz
   const correct=[1,2,0,2,0];let answers=JSON.parse(localStorage.getItem('maxwell-answers')||'{}');
