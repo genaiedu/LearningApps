@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktives Auslegungslabor zur Finsternis bei Amos und in den Passionserzählungen">
+<title>Von der sechsten bis zur neunten Stunde · Auslegungslabor</title>
+<style>
+@font-face{font-family:Poppins;src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:Poppins;src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Inter;src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{
+  --primary:#6d3a7d;--primary2:#9b5c8f;--primary-soft:#f3e9f5;--gold:#b7791f;--gold-soft:#fff5d9;
+  --text:#1d2430;--muted:#647084;--bg:#f6f2f0;--surface:rgba(255,255,255,.86);--surface-solid:#fff;
+  --line:rgba(79,48,83,.16);--shadow:0 16px 44px rgba(57,35,62,.11);--success:#177245;--danger:#b42318;
+  --sky:#cfe8f6;--hill:#78596f;--darkness:#111827;--sidebar:300px
+}
+body.dark{
+  --primary:#e5b9ec;--primary2:#d98bcc;--primary-soft:#2b2030;--gold:#f4c66b;--gold-soft:#352b18;
+  --text:#edf0f6;--muted:#a9b2c2;--bg:#111018;--surface:rgba(29,26,38,.9);--surface-solid:#211e2a;
+  --line:rgba(233,210,238,.15);--shadow:0 16px 44px rgba(0,0,0,.35);--success:#68d391;--danger:#ff9b8f;
+  --sky:#34465d;--hill:#604c62;--darkness:#05060a
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;transition:.25s;background-image:radial-gradient(circle at 85% 5%,rgba(155,92,143,.16),transparent 30%),radial-gradient(circle at 55% 90%,rgba(183,121,31,.12),transparent 30%)}
+button,input,select,textarea{font:inherit}.layout{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;background:var(--surface);backdrop-filter:blur(18px);border-right:1px solid var(--line);z-index:20;display:flex;flex-direction:column;overflow:auto}.brand{display:flex;gap:12px;align-items:center;margin-bottom:8px}.brandmark{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--gold));color:#fff;display:grid;place-items:center;font-family:Poppins;font-weight:700;font-size:1.08rem}.brand h2{font-size:1.08rem;line-height:1.18;margin:0}.brand-sub{color:var(--muted);font-size:.82rem;margin:0 0 22px 60px}.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;gap:10px;align-items:center;color:var(--muted);text-decoration:none;padding:9px 10px;border-radius:10px;font-size:.87rem;font-weight:600}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-soft);color:var(--primary)}.navnum{width:25px;height:25px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;font-size:.72rem;flex:0 0 auto}.sidebar nav a.done .navnum{background:var(--success);border-color:var(--success);color:#fff}.sidebar-tools{display:grid;gap:8px;margin-top:22px}.tool,.btn,.option,.filter-btn,.select-chip{border:1px solid var(--line);background:var(--surface-solid);color:var(--text);border-radius:11px;padding:10px 13px;cursor:pointer;font-weight:600;text-align:left;transition:.18s}.tool:hover,.btn:hover,.option:hover,.filter-btn:hover,.select-chip:hover{border-color:var(--primary);background:var(--primary-soft)}.tool{width:100%}.sidebar-note{margin-top:auto;padding-top:22px;color:var(--muted);font-size:.77rem}.progressbox{margin-top:18px}.progressmeta{display:flex;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--muted);margin-bottom:7px}.progressbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.progressbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--gold));transition:.3s}.main{margin-left:var(--sidebar);padding:64px clamp(22px,6vw,86px) 70px;max-width:1500px}.menu{display:none;position:fixed;left:14px;top:14px;z-index:30;width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-solid);color:var(--text);font-size:1.2rem}.hero{padding:clamp(24px,5vw,64px);border:1px solid var(--line);border-radius:28px;background:linear-gradient(135deg,var(--surface),rgba(255,245,217,.55));box-shadow:var(--shadow);margin-bottom:64px}.dark .hero{background:linear-gradient(135deg,var(--surface),rgba(53,43,24,.65))}.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--primary);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-family:Poppins;margin:14px 0 14px;font-size:clamp(2.15rem,5vw,4.4rem);line-height:1.02;letter-spacing:-.045em;max-width:1000px}.hero h1 span{color:var(--primary)}.hero>p{color:var(--muted);font-size:1.08rem;max-width:850px}.lead-question{margin-top:22px;padding:17px 19px;border-left:5px solid var(--gold);background:var(--gold-soft);border-radius:0 14px 14px 0;font-weight:600;max-width:900px}.apparatus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}.apparatus div{padding:14px;border:1px solid var(--line);border-radius:13px;background:var(--surface-solid)}.apparatus strong{display:block;color:var(--primary);margin-bottom:3px}.apparatus span{font-size:.86rem;color:var(--muted)}.stage{margin:0 0 76px;scroll-margin-top:32px}.stage-head{display:flex;align-items:flex-start;gap:15px;margin-bottom:22px}.stage-id{width:50px;height:50px;flex:0 0 50px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-family:Poppins;font-size:1.1rem}.stage-head h2{font-family:Poppins;margin:2px 0 4px;font-size:clamp(1.45rem,3vw,2rem)}.stage-head p{margin:0;color:var(--muted)}.grid2,.grid3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px}.card h3{font-family:Poppins;margin:0 0 8px}.card p{margin:0;color:var(--muted)}.reading{position:relative;padding-top:54px}.reference{position:absolute;left:18px;top:16px;display:inline-flex;gap:7px;align-items:center;background:var(--primary-soft);color:var(--primary);border-radius:999px;padding:5px 10px;font-weight:700;font-size:.83rem}.reading ul{margin:12px 0 0;padding-left:20px;color:var(--muted)}.reading li+li{margin-top:6px}.instruction{padding:16px 18px;border-left:4px solid var(--primary);background:var(--primary-soft);border-radius:0 13px 13px 0;margin:16px 0;line-height:1.6}.instruction strong{color:var(--primary)}.question{margin-top:16px}.question h3{font-family:Inter;font-size:1rem;margin:0 0 12px}.options{display:grid;gap:8px}.option{width:100%;font-weight:400;line-height:1.45}.option.correct{border-color:var(--success);background:color-mix(in srgb,var(--success) 11%,var(--surface-solid))}.option.wrong{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 9%,var(--surface-solid))}.option[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft);font-weight:600}.feedback{min-height:25px;margin-top:10px;font-weight:600;font-size:.9rem}.feedback.ok{color:var(--success)}.feedback.no{color:var(--danger)}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-align:center}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn:disabled,.option:disabled{opacity:.45;cursor:not-allowed}.checkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.lookup-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.lookup{border:1px solid var(--line);border-radius:15px;background:var(--surface-solid);padding:16px}.lookup strong{display:block;color:var(--primary);font-size:.9rem;margin-bottom:6px}.lookup p{margin:0;color:var(--muted);font-size:.86rem}.comparison{display:grid;gap:14px}.comparison-item{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--surface-solid)}.comparison-item h3{margin:0 0 10px;font-size:1rem}.select-chips{display:flex;gap:8px;flex-wrap:wrap}.select-chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}.scene{padding:0;overflow:hidden}.scene svg{display:block;width:100%;height:auto;min-height:250px}.sky{fill:var(--sky)}.sun{fill:var(--gold)}.darkness{fill:var(--darkness);opacity:0;transition:opacity .15s}.hill{fill:var(--hill)}.cross{fill:var(--text)}.time-controls{padding:18px}.time-label{display:flex;justify-content:space-between;gap:10px;font-weight:600;margin-bottom:8px}.time-controls input{width:100%;accent-color:var(--primary)}.scene-note{color:var(--muted);font-size:.84rem;margin:8px 0 0}.orbit{padding:18px}.orbit svg{display:block;width:100%;height:auto;min-height:220px}.orbit-line{stroke:var(--line);stroke-width:2}.orbit-sun{fill:var(--gold)}.orbit-earth{fill:var(--primary2)}.orbit-moon{fill:var(--text);transition:cx .45s ease}.orbit-label{fill:var(--text);font:600 13px Inter,system-ui}.orbit-note{fill:var(--muted);font:400 12px Inter,system-ui}.voice-layout{display:grid;grid-template-columns:minmax(210px,.7fr) minmax(0,1.5fr);gap:16px}.voice-list{display:grid;gap:8px;align-content:start}.filter-btn{width:100%}.filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}.voice-detail{min-height:330px}.voice-meta{color:var(--primary);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.voice-detail h3{font-family:Poppins;font-size:1.45rem;margin:6px 0 12px}.lens-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:16px}.lens{padding:14px;border:1px solid var(--line);border-radius:13px;background:var(--surface-solid)}.lens span{display:block;color:var(--primary);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}.lens p{font-size:.88rem}.visited{margin-top:12px;color:var(--muted);font-size:.84rem}.warning{border-left:5px solid var(--danger)}.warning h3{color:var(--danger)}.builder{display:grid;gap:14px}.builder label{font-weight:600}.builder select,.builder textarea{width:100%;margin-top:6px;border:1px solid var(--line);background:var(--surface-solid);color:var(--text);border-radius:11px;padding:11px}.builder textarea{min-height:150px;resize:vertical}.result{padding:20px;border:1px solid var(--success);background:color-mix(in srgb,var(--success) 8%,var(--surface-solid));border-radius:15px;margin-top:16px}.result[hidden]{display:none}.result h3{color:var(--success)}.scorecard{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}.scorecircle{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--primary) var(--score,0%),var(--line) 0);position:relative}.scorecircle::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--surface-solid)}.scorecircle strong{position:relative;z-index:1;font-family:Poppins}.scorecard h3{margin:0}.scorecard p{margin:4px 0 0}.foot{margin-top:40px;text-align:center;color:var(--muted);font-size:.82rem}.foot a{color:var(--primary);font-weight:600;text-decoration:none}.reveal{opacity:0;transform:translateY(14px);transition:.45s}.reveal.visible{opacity:1;transform:none}
+@media(max-width:980px){.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none}.main{margin-left:0;padding-top:78px}.menu{display:block}.apparatus,.grid3,.lookup-grid{grid-template-columns:1fr}.voice-layout{grid-template-columns:1fr}.voice-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.main{padding-left:15px;padding-right:15px}.hero{padding:24px 20px;border-radius:20px}.grid2,.lens-grid{grid-template-columns:1fr}.stage-id{width:44px;height:44px;flex-basis:44px}.card{padding:18px}.voice-list{grid-template-columns:1fr}.scorecard{grid-template-columns:1fr}.scorecircle{margin:auto}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.darkness,.orbit-moon{transition:none}}
+@media print{.sidebar,.menu,.tool,.btn,#theme,#reset{display:none!important}.main{margin:0;padding:20px}.hero,.card{box-shadow:none}.stage{break-inside:avoid}}
+</style>
+<link rel="stylesheet" href="legal-links.css">
+</head>
+<body>
+<button class="menu" id="menu" aria-label="Navigation öffnen">☰</button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brandmark">VI–IX</div><h2>Finsternis<br>Auslegungslabor</h2></div>
+  <div class="brand-sub">Religion · Sekundarstufe II</div>
+  <nav id="nav">
+    <a href="#start" data-section="start"><span class="navnum">0</span>Auftrag</a>
+    <a href="#bibel" data-section="bibel"><span class="navnum">1</span>Dunkel lesen</a>
+    <a href="#amos" data-section="amos"><span class="navnum">2</span>Amos verstehen</a>
+    <a href="#evangelien" data-section="evangelien"><span class="navnum">3</span>Evangelien vergleichen</a>
+    <a href="#ereignis" data-section="ereignis"><span class="navnum">4</span>Zeit und Natur</a>
+    <a href="#auslegung" data-section="auslegung"><span class="navnum">5</span>Auslegungen prüfen</a>
+    <a href="#wirkung" data-section="wirkung"><span class="navnum">6</span>Wirkung verantworten</a>
+    <a href="#urteil" data-section="urteil"><span class="navnum">✓</span>Urteil bilden</a>
+  </nav>
+  <div class="progressbox">
+    <div class="progressmeta"><span>Dein Fortschritt</span><strong id="progressText">0 / 13</strong></div>
+    <div class="progressbar" role="progressbar" aria-label="Lernfortschritt" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0"><span id="progressFill"></span></div>
+  </div>
+  <div class="sidebar-tools">
+    <button class="tool" id="theme">◐ Darstellung wechseln</button>
+    <button class="tool" id="reset">↺ Fortschritt zurücksetzen</button>
+  </div>
+  <div class="sidebar-note">Du brauchst eine Bibel. Die App nennt bewusst nur die Stellen. Alle Eingaben bleiben auf diesem Gerät.</div>
+</aside>
+
+<main class="main">
+<header class="hero reveal" id="start">
+  <span class="eyebrow">Biblische Hermeneutik · Passion · Wirkungsgeschichte</span>
+  <h1>Von der sechsten bis zur <span>neunten Stunde</span></h1>
+  <p>Ein Prophetenwort, drei Passionserzählungen und viele Auslegungen: Du untersuchst, was die Texte tatsächlich sagen, was spätere Lesende eintragen und welche Verantwortung daraus entsteht.</p>
+  <div class="lead-question">Leitfrage: Was bedeutet die Finsternis bei der Kreuzigung – Naturereignis, biblisches Zeichen oder theologische Deutung?</div>
+  <div class="apparatus">
+    <div><strong>Handapparat</strong><span>Bibel in einer im Kurs verwendeten Übersetzung</span></div>
+    <div><strong>Arbeitsweise</strong><span>Erst nachschlagen, dann in der App entscheiden</span></div>
+    <div><strong>Zeitbedarf</strong><span>etwa 75–100 Minuten, Vertiefungen zusätzlich</span></div>
+  </div>
+</header>
+
+<section class="stage reveal" id="bibel">
+  <div class="stage-head"><div class="stage-id">1</div><div><h2>Dunkel ist nicht immer dasselbe</h2><p>Prüfe zuerst, welche Bedeutungen Finsternis innerhalb der Bibel annehmen kann.</p></div></div>
+  <div class="lookup-grid">
+    <article class="lookup"><strong>Genesis 1,1–5</strong><p>Welche Rolle spielt die Finsternis vor und nach dem ersten Schöpfungswort?</p></article>
+    <article class="lookup"><strong>Exodus 10,21–23</strong><p>Was bewirkt die Finsternis in der Erzählung von der neunten Plage?</p></article>
+    <article class="lookup"><strong>Exodus 20,18–21</strong><p>Wo befindet sich Mose – und wie wird Gottes Gegenwart beschrieben?</p></article>
+  </div>
+  <div class="instruction"><strong>Nachschlageauftrag:</strong> Halte für jede Stelle in einem Stichwort fest, ob Dunkel hier Chaos, Gericht, Grenze oder Gottesnähe bezeichnet. Mehrere Bedeutungen können nebeneinander bestehen.</div>
+  <article class="card question" data-key="bible-meaning" data-section-key="bibel">
+    <h3>Welche Folgerung trägt der Vergleich der drei Stellen?</h3>
+    <div class="options">
+      <button class="option" data-correct="false">Finsternis ist in der Bibel immer ein Zeichen göttlicher Abwesenheit.</button>
+      <button class="option" data-correct="true">Finsternis kann sowohl Bedrohung als auch Ort der Gottesbegegnung bezeichnen.</button>
+      <button class="option" data-correct="false">Finsternis besitzt in biblischen Texten nur eine meteorologische Bedeutung.</button>
+    </div><div class="feedback" aria-live="polite"></div>
+  </article>
+</section>
+
+<section class="stage reveal" id="amos">
+  <div class="stage-head"><div class="stage-id">2</div><div><h2>Amos: Wenn der helle Tag dunkel wird</h2><p>Das Finsterniswort steht nicht allein. Sein sozialer und religiöser Kontext entscheidet mit.</p></div></div>
+  <div class="grid2">
+    <article class="card reading"><span class="reference">Amos 8,4–12</span><h3>Vom Geschäftsinteresse zum Schweigen</h3><ul><li>Wer wird angesprochen?</li><li>Welche Praktiken werden verurteilt?</li><li>Was geschieht nach dem Finsterniswort?</li></ul></article>
+    <article class="card reading"><span class="reference">Amos 5,18–24</span><h3>Tag des Herrn und Gottesdienst</h3><ul><li>Welche Erwartung wird umgekehrt?</li><li>Warum werden Feste und Lieder abgewiesen?</li><li>Was soll stattdessen „strömen“?</li></ul></article>
+  </div>
+  <article class="card question" data-key="amos-context" data-section-key="amos">
+    <h3>Welche Aussage berücksichtigt den Zusammenhang von Amos 8 am besten?</h3>
+    <div class="options">
+      <button class="option" data-correct="false">Amos will hauptsächlich ein außergewöhnliches Himmelsereignis vorhersagen.</button>
+      <button class="option" data-correct="true">Das kosmische Dunkel verschärft ein Gerichtswort gegen Ausbeutung und betrügerischen Handel.</button>
+      <button class="option" data-correct="false">Das Gericht richtet sich gegen Menschen, weil sie zu wenige religiöse Feste feiern.</button>
+    </div><div class="feedback" aria-live="polite"></div>
+  </article>
+  <article class="card question" data-key="amos-hunger" data-section-key="amos">
+    <h3>Worin besteht nach Amos 8,11–12 die letzte Steigerung des Gerichts?</h3>
+    <div class="options">
+      <button class="option" data-correct="false">In einer dauerhaft ausbleibenden Getreideernte</button>
+      <button class="option" data-correct="false">In einer dreistündigen Sonnenfinsternis</button>
+      <button class="option" data-correct="true">Im Entzug des göttlichen Wortes, das gesucht und nicht gefunden wird</button>
+    </div><div class="feedback" aria-live="polite"></div>
+  </article>
+</section>
+
+<section class="stage reveal" id="evangelien">
+  <div class="stage-head"><div class="stage-id">3</div><div><h2>Drei Evangelien – nicht ein Bericht</h2><p>Schlage die Stellen parallel auf. Die App verrät die Unterschiede erst nach deiner Auswahl.</p></div></div>
+  <div class="lookup-grid">
+    <article class="lookup"><strong>Markus 15,33–34</strong><p>Beachte Zeitangabe, räumliche Ausdehnung und Jesu Worte.</p></article>
+    <article class="lookup"><strong>Matthäus 27,45–46</strong><p>Vergleiche die Formulierung sorgfältig mit Markus.</p></article>
+    <article class="lookup"><strong>Lukas 23,44–46</strong><p>Achte besonders auf Ursache, Tempelvorhang und Jesu Worte.</p></article>
+  </div>
+  <div class="card comparison" id="gospelComparison">
+    <article class="comparison-item" data-key="gospel-sun" data-correct="lukas" data-section-key="evangelien">
+      <h3>Wer nennt ausdrücklich die Sonne?</h3>
+      <div class="select-chips"><button class="select-chip" data-value="markus" aria-pressed="false">Markus</button><button class="select-chip" data-value="matthaeus" aria-pressed="false">Matthäus</button><button class="select-chip" data-value="lukas" aria-pressed="false">Lukas</button></div>
+      <div class="checkrow"><button class="btn check-multi">Auswahl prüfen</button></div><div class="feedback" aria-live="polite"></div>
+    </article>
+    <article class="comparison-item" data-key="gospel-cry" data-correct="markus,matthaeus" data-section-key="evangelien">
+      <h3>Bei wem folgt der Verlassenheitsruf?</h3>
+      <div class="select-chips"><button class="select-chip" data-value="markus" aria-pressed="false">Markus</button><button class="select-chip" data-value="matthaeus" aria-pressed="false">Matthäus</button><button class="select-chip" data-value="lukas" aria-pressed="false">Lukas</button></div>
+      <div class="checkrow"><button class="btn check-multi">Auswahl prüfen</button><span class="scene-note">Mehrfachauswahl möglich</span></div><div class="feedback" aria-live="polite"></div>
+    </article>
+    <article class="comparison-item" data-key="gospel-trust" data-correct="lukas" data-section-key="evangelien">
+      <h3>Wer ersetzt den Verlassenheitsruf durch ein Vertrauenswort?</h3>
+      <div class="select-chips"><button class="select-chip" data-value="markus" aria-pressed="false">Markus</button><button class="select-chip" data-value="matthaeus" aria-pressed="false">Matthäus</button><button class="select-chip" data-value="lukas" aria-pressed="false">Lukas</button></div>
+      <div class="checkrow"><button class="btn check-multi">Auswahl prüfen</button></div><div class="feedback" aria-live="polite"></div>
+    </article>
+  </div>
+</section>
+
+<section class="stage reveal" id="ereignis">
+  <div class="stage-head"><div class="stage-id">4</div><div><h2>Was zeigt die Animation – und was nicht?</h2><p>Trenne erzählte Zeit, astronomische Möglichkeit und theologische Bedeutung.</p></div></div>
+  <div class="grid2">
+    <div class="card scene">
+      <svg viewBox="0 0 720 300" role="img" aria-labelledby="sceneTitle sceneDesc">
+        <title id="sceneTitle">Zeitdarstellung der Finsternis</title><desc id="sceneDesc">Der Zeitregler verändert die Helligkeit zwischen 11 Uhr 50 und 15 Uhr 10.</desc>
+        <rect class="sky" width="720" height="300"></rect><circle class="sun" id="sceneSun" cx="570" cy="72" r="38"></circle><rect class="darkness" id="sceneDarkness" width="720" height="300"></rect>
+        <path class="hill" d="M0 232 C120 198 225 242 350 212 C465 186 565 242 720 202 L720 300 L0 300 Z"></path><rect class="cross" x="346" y="100" width="18" height="148"></rect><rect class="cross" x="300" y="136" width="110" height="16"></rect>
+      </svg>
+      <div class="time-controls"><div class="time-label"><label for="timeRange">Erzählte Zeit</label><output id="timeOutput">11:50 Uhr</output></div><input id="timeRange" type="range" min="-10" max="190" value="-10" step="1"><p class="scene-note">Die Darstellung setzt keine physikalische Ursache voraus.</p></div>
+    </div>
+    <article class="card question" data-key="time-meaning" data-section-key="ereignis" id="timeQuestion">
+      <h3>Was kann diese Darstellung leisten?</h3>
+      <div class="options">
+        <button class="option" data-correct="false" disabled>Sie beweist eine weltweite Sonnenfinsternis.</button>
+        <button class="option" data-correct="true" disabled>Sie macht den von den Synoptikern erzählten Zeitraum anschaulich.</button>
+        <button class="option" data-correct="false" disabled>Sie zeigt, dass alle drei Evangelisten dasselbe berichten.</button>
+      </div><div class="feedback" aria-live="polite">Bewege zuerst den Regler.</div>
+    </article>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card orbit">
+      <h3>Passa und die astronomische Frage</h3>
+      <p>Passa liegt in der Vollmondzeit. Wähle die dazu passende Stellung.</p>
+      <svg viewBox="0 0 720 250" role="img" aria-labelledby="orbitTitle orbitDesc"><title id="orbitTitle">Sonne, Erde und Mond</title><desc id="orbitDesc">Der Mond kann zwischen Sonne und Erde oder auf der gegenüberliegenden Seite positioniert werden.</desc><line class="orbit-line" x1="105" y1="125" x2="615" y2="125"></line><circle class="orbit-sun" cx="105" cy="125" r="55"></circle><circle class="orbit-earth" cx="420" cy="125" r="35"></circle><circle class="orbit-moon" id="orbitMoon" cx="615" cy="125" r="17"></circle><text class="orbit-label" x="105" y="205" text-anchor="middle">Sonne</text><text class="orbit-label" x="420" y="205" text-anchor="middle">Erde</text><text class="orbit-label" id="moonLabel" x="615" y="205" text-anchor="middle">Mond</text></svg>
+      <div class="checkrow"><button class="btn moon-choice" data-mode="new">Neumondstellung</button><button class="btn moon-choice" data-mode="full">Vollmondstellung</button></div>
+      <div class="feedback" id="moonFeedback" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <h3>Warum das bedeutsam ist</h3>
+      <p>Eine gewöhnliche Sonnenfinsternis setzt Neumond voraus: Der Mond steht zwischen Sonne und Erde. Zur Passazeit steht er bei Vollmond auf der gegenüberliegenden Seite. Julius Africanus und Origenes kannten dieses Argument, zogen daraus aber unterschiedliche Schlüsse.</p>
+      <div class="instruction"><strong>Grenze des Befunds:</strong> Die astronomische Unmöglichkeit einer gewöhnlichen Sonnenfinsternis entscheidet noch nicht, ob der Evangelientext ein lokales Wetterereignis, ein Wunder oder ein theologisches Bild beschreibt.</div>
+    </div>
+  </div>
+</section>
+
+<section class="stage reveal" id="auslegung">
+  <div class="stage-head"><div class="stage-id">5</div><div><h2>Auslegungslabor</h2><p>Dasselbe Dunkel erhält in unterschiedlichen Zeiten verschiedene Bedeutungen.</p></div></div>
+  <div class="voice-layout">
+    <div class="voice-list" id="voiceList"></div>
+    <article class="card voice-detail" id="voiceDetail" aria-live="polite">
+      <div class="voice-meta">Wähle eine Perspektive</div><h3>Was wird aus der Finsternis?</h3><p>Öffne mindestens vier Deutungen und unterscheide jeweils Ausgangspunkt, Deutung und hinzugebrachte Voraussetzung.</p>
+    </article>
+  </div>
+  <div class="visited" id="visitedText">0 von 7 Perspektiven untersucht</div>
+  <article class="card question" data-key="voices-plural" data-section-key="auslegung">
+    <h3>Was zeigt der Vergleich der Auslegungen am deutlichsten?</h3>
+    <div class="options">
+      <button class="option" data-correct="false">Alle Ausleger rekonstruieren unabhängig voneinander dasselbe historische Ereignis.</button>
+      <button class="option" data-correct="true">Der Text wird in neue Situationen übertragen; dabei entstehen unterschiedliche Bedeutungen.</button>
+      <button class="option" data-correct="false">Nur moderne Ausleger bringen eigene Voraussetzungen an den Text heran.</button>
+    </div><div class="feedback" aria-live="polite"></div>
+  </article>
+</section>
+
+<section class="stage reveal" id="wirkung">
+  <div class="stage-head"><div class="stage-id">6</div><div><h2>Wirkung verantworten</h2><p>Auslegung ist nicht folgenlos. Besonders christliche Deutungen gegen das Judentum verlangen Kritik.</p></div></div>
+  <div class="grid2">
+    <article class="card warning"><h3>Problematische Umkehrung</h3><p>Origenes deutet die Finsternis als Bild einer Verfinsterung des jüdischen Volkes und stellt ihr das Licht der Kirche gegenüber. Er begrenzt diese Verfinsterung zwar später mit Römer 11,25–26 – die kollektive Gegenüberstellung bleibt dennoch problematisch.</p></article>
+    <article class="card"><h3>Eigenständige jüdische Lesarten</h3><p>Talmud, Raschi und Maimonides benötigen Golgota nicht, um Amos 8,9 zu verstehen. Sie lesen den Vers als Trauersprache, politischen Zusammenbruch oder prophetisches Kosmosbild. Diese Traditionen sind keine bloßen Vorstufen christlicher Auslegung.</p></article>
+  </div>
+  <article class="card comparison-item" data-key="anti-signals" data-correct="collective,context" data-section-key="wirkung" style="margin-top:16px">
+    <h3>Welche beiden Warnsignale erkennst du in der beschriebenen Deutung des Origenes?</h3>
+    <div class="select-chips"><button class="select-chip" data-value="collective" aria-pressed="false">Ein ganzes Volk wird kollektiv mit Dunkel identifiziert.</button><button class="select-chip" data-value="context" aria-pressed="false">Der soziale Kontext des Amoswortes tritt zurück.</button><button class="select-chip" data-value="language" aria-pressed="false">Der Text wurde aus dem Griechischen übersetzt.</button><button class="select-chip" data-value="old" aria-pressed="false">Die Auslegung stammt aus der Antike.</button></div>
+    <div class="checkrow"><button class="btn check-multi">Auswahl prüfen</button><span class="scene-note">Genau zwei auswählen</span></div><div class="feedback" aria-live="polite"></div>
+  </article>
+  <article class="card question" data-key="anti-framing" data-section-key="wirkung">
+    <h3>Welche Formulierung wäre für die App fachlich und ethisch verantwortbar?</h3>
+    <div class="options">
+      <button class="option" data-correct="false">Die Finsternis beweist, dass das Judentum vom Licht ausgeschlossen wurde.</button>
+      <button class="option" data-correct="true">Origenes hat die Finsternis antijudaistisch gedeutet; diese spätere Lesart ist vom Evangelientext zu unterscheiden und kritisch zu beurteilen.</button>
+      <button class="option" data-correct="false">Weil die Aussage aus der Antike stammt, darf sie ohne weitere Einordnung wiedergegeben werden.</button>
+    </div><div class="feedback" aria-live="polite"></div>
+  </article>
+</section>
+
+<section class="stage reveal" id="urteil">
+  <div class="stage-head"><div class="stage-id">✓</div><div><h2>Ein begründetes Urteil bilden</h2><p>Setze Textbefund, Kontext und Deutung so zusammen, dass ihre Grenzen sichtbar bleiben.</p></div></div>
+  <div class="grid2">
+    <div class="card builder">
+      <label>1. Textbefund
+        <select id="judgmentText"><option value="">Bitte auswählen</option><option value="wrong">Alle Evangelisten beschreiben ausdrücklich dieselbe Sonnenfinsternis.</option><option value="right">Die Synoptiker erzählen Finsternis von der sechsten bis zur neunten Stunde; ihre Einzelheiten unterscheiden sich.</option><option value="wrong2">Nur Amos kennt das Motiv der Finsternis.</option></select>
+      </label>
+      <label>2. Kontext
+        <select id="judgmentContext"><option value="">Bitte auswählen</option><option value="wrong">Bei Amos ist die Finsternis von sozialer Kritik unabhängig.</option><option value="right">Bei Amos steht das Dunkel im Zusammenhang von Unrecht, verfehltem Gottesdienst und dem Entzug des Wortes.</option><option value="wrong2">Amos erklärt den astronomischen Ablauf einer Eklipse.</option></select>
+      </label>
+      <label>3. Deutungsgrenze
+        <select id="judgmentLimit"><option value="">Bitte auswählen</option><option value="wrong">Eine physikalisch unmögliche Eklipse beweist automatisch ein Wunder.</option><option value="wrong2">Jede spätere Deutung ist gleich überzeugend.</option><option value="right">Ob Naturereignis, Wunder oder Symbol: Diese Bestimmung entsteht erst durch Interpretation und muss begründet werden.</option></select>
+      </label>
+      <button class="btn primary" id="checkJudgment">Urteil prüfen</button><div class="feedback" id="judgmentFeedback" aria-live="polite"></div>
+    </div>
+    <div>
+      <article class="card scorecard"><div class="scorecircle" id="scoreCircle"><strong id="scoreValue">0 / 13</strong></div><div><h3>Dein Arbeitsstand</h3><p id="scoreMessage">Bearbeite die Stationen und begründe danach deine eigene Position.</p></div></article>
+      <div class="result" id="judgmentResult" hidden><h3>Tragfähiges Zwischenurteil</h3><p>Die Synoptiker gestalten die Finsternis als bedeutungsvolles Geschehen der Passion, erzählen sie aber nicht völlig gleich. Amos liefert einen wichtigen Resonanzraum, dessen ursprünglicher Zusammenhang soziale Ungerechtigkeit, verfehlten Gottesdienst und den Entzug des göttlichen Wortes umfasst. Eine astronomische, wunderhafte oder symbolische Bestimmung folgt nicht automatisch aus dem Text, sondern ist eine begründungspflichtige Deutung.</p></div>
+    </div>
+  </div>
+  <div class="card builder" style="margin-top:16px">
+    <label for="ownJudgment">Dein eigenes Urteil in vier bis sechs Sätzen</label>
+    <textarea id="ownJudgment" placeholder="Unterscheide ausdrücklich: Was steht im Text? Was erschließt du aus dem Kontext? Was bleibt deine begründete Deutung?"></textarea>
+    <div class="checkrow"><button class="btn" id="saveJudgment">Antwort lokal speichern</button><button class="btn" onclick="window.print()">Arbeitsstand drucken</button></div><div class="feedback" id="saveFeedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<footer class="foot">Von der sechsten bis zur neunten Stunde · Interaktives Auslegungslabor<br><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></footer>
+</main>
+</div>
+<script src="fonts/lucide.min.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const storageKey='finsternis-auslegungslabor-v1';
+  const required=['bible-meaning','amos-context','amos-hunger','gospel-sun','gospel-cry','gospel-trust','time-meaning','moon-full','voices-four','voices-plural','anti-signals','anti-framing','judgment'];
+  let state={done:{},visited:[],judgment:'',theme:'light'};
+  try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved)state={...state,...saved,done:saved.done||{},visited:saved.visited||[]}}catch(e){}
+  const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
+  const mark=key=>{state.done[key]=true;save();updateProgress();};
+  const isDone=key=>Boolean(state.done[key]);
+  if(state.visited.length>=4){state.done['voices-four']=true;save()}
+
+  if(state.theme==='dark')document.body.classList.add('dark');
+  $('#theme').addEventListener('click',()=>{document.body.classList.toggle('dark');state.theme=document.body.classList.contains('dark')?'dark':'light';save()});
+  $('#menu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
+  $$('#nav a').forEach(a=>a.addEventListener('click',()=>$('#sidebar').classList.remove('open')));
+  $('#reset').addEventListener('click',()=>{if(confirm('Fortschritt und gespeicherte Antwort dieser App wirklich löschen?')){localStorage.removeItem(storageKey);location.reload()}});
+
+  const sectionRequirements={bibel:['bible-meaning'],amos:['amos-context','amos-hunger'],evangelien:['gospel-sun','gospel-cry','gospel-trust'],ereignis:['time-meaning','moon-full'],auslegung:['voices-four','voices-plural'],wirkung:['anti-signals','anti-framing'],urteil:['judgment']};
+  function updateProgress(){
+    const count=required.filter(isDone).length,pct=count/required.length*100;
+    $('#progressText').textContent=`${count} / ${required.length}`;$('#progressFill').style.width=pct+'%';
+    $('.progressbar').setAttribute('aria-valuenow',String(count));$('#scoreValue').textContent=`${count} / ${required.length}`;$('#scoreCircle').style.setProperty('--score',pct+'%');
+    $('#scoreMessage').textContent=count===required.length?'Alle geführten Aufgaben sind bearbeitet. Formuliere nun dein eigenes Urteil.':`${required.length-count} Lernschritte sind noch offen.`;
+    Object.entries(sectionRequirements).forEach(([section,keys])=>{$(`#nav a[data-section="${section}"]`)?.classList.toggle('done',keys.every(isDone))});
+  }
+
+  $$('.question[data-key]').forEach(question=>{
+    const key=question.dataset.key,feedback=$('.feedback',question),options=$$('.option',question);
+    if(isDone(key)){question.classList.add('completed');feedback.textContent='Bereits richtig bearbeitet.';feedback.className='feedback ok'}
+    options.forEach(option=>option.addEventListener('click',()=>{
+      options.forEach(o=>o.classList.remove('correct','wrong'));
+      if(option.dataset.correct==='true'){option.classList.add('correct');feedback.textContent='Richtig. Diese Antwort trennt Textbefund und zusätzliche Erklärung sauber.';feedback.className='feedback ok';mark(key)}
+      else{option.classList.add('wrong');feedback.textContent='Noch nicht. Prüfe die angegebene Bibelstelle und achte darauf, ob die Antwort mehr behauptet als der Text.';feedback.className='feedback no'}
+    }));
+  });
+
+  $$('.comparison-item[data-key]').forEach(block=>{
+    const key=block.dataset.key,feedback=$('.feedback',block),chips=$$('.select-chip',block),check=$('.check-multi',block);
+    chips.forEach(chip=>chip.addEventListener('click',()=>chip.setAttribute('aria-pressed',chip.getAttribute('aria-pressed')==='true'?'false':'true')));
+    check.addEventListener('click',()=>{
+      const selected=chips.filter(c=>c.getAttribute('aria-pressed')==='true').map(c=>c.dataset.value).sort();
+      const correct=block.dataset.correct.split(',').sort();
+      const ok=selected.length===correct.length&&selected.every((value,index)=>value===correct[index]);
+      if(ok){feedback.textContent=key==='anti-signals'?'Richtig. Kollektivierung und Verlust des Amos-Kontexts sind entscheidende Warnsignale.':'Richtig. Der synoptische Vergleich zeigt zugleich Gemeinsamkeiten und redaktionelle Unterschiede.';feedback.className='feedback ok';mark(key)}
+      else{feedback.textContent='Die Auswahl passt noch nicht vollständig. Schlage die Stellen erneut parallel auf.';feedback.className='feedback no'}
+    });
+    if(isDone(key)){feedback.textContent='Bereits richtig bearbeitet.';feedback.className='feedback ok'}
+  });
+
+  const timeRange=$('#timeRange'),darkness=$('#sceneDarkness'),sceneSun=$('#sceneSun'),timeOptions=$$('#timeQuestion .option');
+  const formatTime=offset=>{const total=720+offset,h=Math.floor(total/60),m=((total%60)+60)%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+' Uhr'};
+  timeRange.addEventListener('input',()=>{const offset=Number(timeRange.value),enter=Math.max(0,Math.min(1,(offset+10)/10)),leave=Math.max(0,Math.min(1,(190-offset)/10)),intensity=.78*Math.min(enter,leave);$('#timeOutput').textContent=formatTime(offset);darkness.style.opacity=String(intensity);sceneSun.style.opacity=String(1-intensity*.82);timeOptions.forEach(o=>o.disabled=false)});
+  if(isDone('time-meaning'))timeOptions.forEach(o=>o.disabled=false);
+
+  $$('.moon-choice').forEach(button=>button.addEventListener('click',()=>{
+    const full=button.dataset.mode==='full',moon=$('#orbitMoon');moon.setAttribute('cx',full?'615':'280');$('#moonLabel').setAttribute('x',full?'615':'280');
+    $$('.moon-choice').forEach(b=>b.classList.toggle('primary',b===button));
+    if(full){$('#moonFeedback').textContent='Richtig. Bei Vollmond steht die Erde zwischen Sonne und Mond. Eine gewöhnliche Sonnenfinsternis ist so nicht möglich.';$('#moonFeedback').className='feedback ok';mark('moon-full')}
+    else{$('#moonFeedback').textContent='Das ist die Stellung für Neumond und damit für eine mögliche Sonnenfinsternis – nicht die Vollmondstellung der Passazeit.';$('#moonFeedback').className='feedback no'}
+  }));
+  if(isDone('moon-full')){$('#moonFeedback').textContent='Vollmondstellung bereits richtig bestimmt.';$('#moonFeedback').className='feedback ok'}
+
+  const voices=[
+    {id:'talmud',name:'Talmudische Trauerrede',time:'Spätantike',basis:'Amos 8,9 im Gedenken an Joschija und Rabbi Jochanan',meaning:'Die sinkende Sonne bezeichnet den Tod eines Menschen, dessen Licht ein Gemeinwesen ordnet.',addition:'Der Vers wird auf einen neuen Verlust übertragen; Golgota spielt keine Rolle.'},
+    {id:'raschi',name:'Raschi',time:'11. Jahrhundert',basis:'Amos 8,9 und 8,11',meaning:'Der Untergang am Mittag wird zum plötzlichen Sturz in einer Stunde großer Sicherheit; der Hunger bezeichnet den Entzug prophetischer Inspiration.',addition:'Sonne, Königtum und Offenbarungsgeschichte werden miteinander verbunden.'},
+    {id:'maimonides',name:'Maimonides',time:'12. Jahrhundert',basis:'Amos 8,9 als prophetisches Kosmosbild',meaning:'Verdunkelte Gestirne bezeichnen den Zusammenbruch politischer Ordnungen.',addition:'Die kosmische Sprache wird als wahrer Ausdruck geschichtlicher Erschütterung gelesen, nicht als Astronomie.'},
+    {id:'origenes',name:'Origenes',time:'3. Jahrhundert',basis:'Matthäus 27,45 und die Vollmondfrage',meaning:'Er erwägt dunkle Wolken als natürliche Ursache und stellt daneben eine geistliche Deutung.',addition:'Seine Gegenüberstellung von Licht der Kirche und Dunkel des jüdischen Volkes ist antijudaistisch und kritisch einzuordnen.'},
+    {id:'chrysostomus',name:'Johannes Chrysostomus',time:'4. Jahrhundert',basis:'Dauer und angenommene weltweite Ausdehnung',meaning:'Die Finsternis gilt als übernatürliches Zeichen und letzter Ruf zur Umkehr.',addition:'Die Abweichung von einer gewöhnlichen Eklipse wird als Beweis des Wunders verstanden.'},
+    {id:'bultmann',name:'Rudolf Bultmann',time:'20. Jahrhundert',basis:'Formgeschichte und Entmythologisierung',meaning:'Die Zeichen der Passion werden als Bekenntnis in apokalyptischer Bildsprache gelesen, nicht als neutrales Protokoll.',addition:'Die Finsternis wird auf die menschliche Existenz und ihr Selbstverständnis bezogen.'},
+    {id:'balthasar',name:'Hans Urs von Balthasar',time:'20. Jahrhundert',basis:'Karsamstag und Gottverlassenheit',meaning:'Der Entzug wird dogmatisch als Zustand verstanden, in den Christus selbst hineingeht.',addition:'Diese Anwendung auf Amos ist eine theologische Weiterführung, keine direkte Exegese des Propheten.'}
+  ];
+  const voiceList=$('#voiceList'),voiceDetail=$('#voiceDetail');
+  voices.forEach(voice=>{const b=document.createElement('button');b.className='filter-btn';b.textContent=voice.name;b.dataset.voice=voice.id;voiceList.appendChild(b);b.addEventListener('click',()=>showVoice(voice,b))});
+  function showVoice(voice,button){
+    $$('.filter-btn',voiceList).forEach(b=>b.classList.toggle('active',b===button));
+    voiceDetail.innerHTML=`<div class="voice-meta">${voice.time}</div><h3>${voice.name}</h3><div class="lens-grid"><div class="lens"><span>Ausgangspunkt</span><p>${voice.basis}</p></div><div class="lens"><span>Deutung</span><p>${voice.meaning}</p></div><div class="lens" style="grid-column:1/-1"><span>Hinzugebrachte Voraussetzung</span><p>${voice.addition}</p></div></div>`;
+    if(!state.visited.includes(voice.id)){state.visited.push(voice.id);if(state.visited.length>=4)state.done['voices-four']=true;save();updateProgress();updateVisited()}
+  }
+  function updateVisited(){$('#visitedText').textContent=`${state.visited.length} von ${voices.length} Perspektiven untersucht${state.visited.length>=4?' · Mindestzahl erreicht':''}`;$$('.filter-btn',voiceList).forEach(b=>b.classList.toggle('visited-voice',state.visited.includes(b.dataset.voice)))}
+
+  $('#checkJudgment').addEventListener('click',()=>{const selects=[$('#judgmentText'),$('#judgmentContext'),$('#judgmentLimit')],ok=selects.every(s=>s.value==='right');if(ok){$('#judgmentFeedback').textContent='Richtig verbunden: Textbefund, ursprünglicher Kontext und spätere Deutung bleiben unterscheidbar.';$('#judgmentFeedback').className='feedback ok';$('#judgmentResult').hidden=false;mark('judgment')}else{$('#judgmentFeedback').textContent='Mindestens ein Baustein vermischt Textbefund und Deutung. Prüfe die drei Ebenen erneut.';$('#judgmentFeedback').className='feedback no';$('#judgmentResult').hidden=true}});
+  if(isDone('judgment')){$('#judgmentResult').hidden=false;$('#judgmentFeedback').textContent='Das Zwischenurteil wurde bereits richtig zusammengesetzt.';$('#judgmentFeedback').className='feedback ok'}
+  $('#ownJudgment').value=state.judgment||'';$('#saveJudgment').addEventListener('click',()=>{state.judgment=$('#ownJudgment').value.trim();save();$('#saveFeedback').textContent=state.judgment?'Antwort wurde nur auf diesem Gerät gespeichert.':'Das Textfeld ist noch leer.';$('#saveFeedback').className=state.judgment?'feedback ok':'feedback no'});
+
+  const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('visible')}),{threshold:.05});$$('.reveal').forEach(el=>revealObserver.observe(el));
+  const navObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+entry.target.id))}}),{rootMargin:'-25% 0px -65% 0px'});$$('header[id],section[id]').forEach(el=>navObserver.observe(el));
+  updateVisited();updateProgress();
+})();
+</script>
+</body>
+</html>

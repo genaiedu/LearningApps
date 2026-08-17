@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Übersicht interaktiver Lernanwendungen für Physik, Chemie, Mathematik, Künstliche Intelligenz und Geschichte">
+<meta name="description" content="Übersicht interaktiver Lernanwendungen für Physik, Chemie, Mathematik, Künstliche Intelligenz, Geschichte und Religion">
 <title>LearningApps · Dr. Claus Unterberg</title>
 
 <style>
@@ -70,6 +70,7 @@
   --sonstiges:      #7c3aed;
   --ki:              #db2777;
   --geschichte:     #b45309;
+  --religion:       #6d3a7d;
 }
 
 body.dark {
@@ -88,6 +89,7 @@ body.dark {
   --sonstiges:      #a78bfa;
   --ki:              #f472b6;
   --geschichte:     #fbbf24;
+  --religion:       #a855f7;
 }
 
 * { box-sizing: border-box; }
@@ -343,6 +345,7 @@ body {
 .section__icon--sonstiges { background: var(--sonstiges); }
 .section__icon--ki { background: var(--ki); }
 .section__icon--geschichte { background: var(--geschichte); }
+.section__icon--religion { background: var(--religion); }
 
 .section__title {
   font-family: 'Poppins', sans-serif;
@@ -446,6 +449,7 @@ body {
 .app-card--sonstiges { --card-accent: var(--sonstiges); }
 .app-card--ki { --card-accent: var(--ki); }
 .app-card--geschichte { --card-accent: var(--geschichte); }
+.app-card--religion { --card-accent: var(--religion); }
 
 .app-card--placeholder {
   border: 2px dashed var(--glass-border);
@@ -552,6 +556,9 @@ body {
     <a href="#geschichte" class="nav__link">
       <i data-lucide="landmark"></i> Geschichte
     </a>
+    <a href="#religion" class="nav__link">
+      <i data-lucide="book-open-text"></i> Religion
+    </a>
 
     <div class="nav__heading">Info</div>
     <a href="impressum.html" class="nav__link">
@@ -574,7 +581,7 @@ body {
 
   <section class="hero reveal">
     <div class="hero__eyebrow">Interaktiv lernen</div>
-    <h1 class="hero__title">Lernanwendungen für <span>Physik, Chemie, Mathematik, Künstliche Intelligenz und Geschichte</span></h1>
+    <h1 class="hero__title">Lernanwendungen für <span>Physik, Chemie, Mathematik, Künstliche Intelligenz, Geschichte und Religion</span></h1>
     <p class="hero__lead">
       Eine wachsende Sammlung kleiner Web-Anwendungen, die im Unterricht und zu Hause
       genutzt werden können. Jede Anwendung steht für sich und läuft direkt im Browser.
@@ -873,6 +880,33 @@ body {
         <p class="app-card__desc">
           Interaktives Arbeitsblatt zu den Ereignissen, Entscheidungen und Bündnissen der Julikrise 1914
           sowie ihrem Weg in den Ersten Weltkrieg.
+        </p>
+        <span class="app-card__tag"><i data-lucide="arrow-right"></i> öffnen</span>
+      </a>
+
+      <div class="app-card app-card--placeholder">
+        <i data-lucide="plus" style="width:24px;height:24px;margin-bottom:8px;"></i>
+        weitere Anwendungen folgen
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="religion">
+    <div class="section__head">
+      <div class="section__icon section__icon--religion">
+        <i data-lucide="book-open-text"></i>
+      </div>
+      <h2 class="section__title">Religion</h2>
+      <span class="section__count">1 Anwendung</span>
+    </div>
+
+    <div class="app-grid">
+      <a href="finsternis-auslegungslabor.html" class="app-card app-card--religion">
+        <div class="app-card__icon"><i data-lucide="sunset"></i></div>
+        <h3 class="app-card__title">Von der sechsten bis zur neunten Stunde</h3>
+        <p class="app-card__desc">
+          Interaktives Auslegungslabor zur Finsternis bei Amos und in den Passionserzählungen:
+          Bibelstellen nachschlagen, Evangelien vergleichen, Deutungen prüfen und ein eigenes Urteil bilden.
         </p>
         <span class="app-card__tag"><i data-lucide="arrow-right"></i> öffnen</span>
       </a>
