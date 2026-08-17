@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interaktives Lernlabor: von Faradays Induktionsgesetz über Maxwells Gleichungen zur elektromagnetischen Natur des Lichts">
+<title>Maxwells Lichtlabor</title>
+<style>
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Poppins';src:url('fonts/poppins-v24-latin-900.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-v20-latin-600.woff2') format('woff2');font-weight:600;font-display:swap}
+
+:root{
+  --electric:#1570ef;--magnetic:#e4572e;--primary:#4f46e5;--primary2:#0891b2;--accent:#f59e0b;
+  --text:#172033;--muted:#607086;--surface:rgba(255,255,255,.88);--surface-solid:#fff;
+  --canvas:#f7faff;--line:rgba(71,85,105,.22);--border:rgba(255,255,255,.52);
+  --primary-light:#eef2ff;--electric-light:#eaf2ff;--magnetic-light:#fff0eb;
+  --success:#16803a;--danger:#b42318;--warning:#9a5b00;--shadow:0 14px 44px rgba(30,41,59,.12);
+  --radius:20px;--sidebar:310px;
+}
+body.dark{
+  --electric:#60a5fa;--magnetic:#fb8a64;--primary:#a5b4fc;--primary2:#67e8f9;--accent:#fbbf24;
+  --text:#e5edf7;--muted:#a6b4c6;--surface:rgba(15,23,42,.88);--surface-solid:#0f172a;
+  --canvas:#091322;--line:rgba(148,163,184,.24);--border:rgba(255,255,255,.13);
+  --primary-light:rgba(129,140,248,.14);--electric-light:rgba(96,165,250,.13);--magnetic-light:rgba(251,138,100,.13);
+  --success:#4ade80;--danger:#fda4af;--warning:#fcd34d;--shadow:0 14px 44px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);background:linear-gradient(135deg,#edf7ff 0%,#f1efff 48%,#fff8e8 100%);min-height:100vh;transition:.3s;overflow-x:hidden}
+body.dark{background:linear-gradient(135deg,#061526 0%,#111329 50%,#21170a 100%)}
+h1,h2,h3,h4{font-family:'Poppins',system-ui,sans-serif;letter-spacing:-.025em}button,input,select{font:inherit;color:inherit}
+.ambient{position:fixed;border-radius:50%;filter:blur(90px);opacity:.2;z-index:-1;pointer-events:none;animation:drift 20s ease-in-out infinite alternate}
+.ambient.a{width:480px;height:480px;background:#38bdf8;left:-10%;top:-14%}.ambient.b{width:420px;height:420px;background:#7c3aed;right:-8%;top:30%;animation-duration:25s}.ambient.c{width:380px;height:380px;background:#f59e0b;left:35%;bottom:-14%;animation-duration:22s}@keyframes drift{to{transform:translate(38px,-24px) scale(1.06)}}
+#progress-wrap{position:fixed;inset:0 0 auto;height:5px;background:rgba(100,116,139,.13);z-index:900}#progress{height:100%;width:0;background:linear-gradient(90deg,var(--electric),var(--primary),var(--magnetic));transition:.15s}
+.layout{display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);padding:28px 22px;overflow:auto;background:rgba(255,255,255,.13);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-right:1px solid var(--border);z-index:500;transition:.3s}
+.brand{display:flex;gap:12px;align-items:center}.brandmark{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#1570ef,#7c3aed 52%,#e4572e);font-weight:900;font-size:1.2rem}.brand h2{font-size:1.05rem;margin:0;color:var(--primary)}.brand-sub{margin:5px 0 22px 60px;color:var(--muted);font-size:.8rem}
+.sidebar nav{display:grid;gap:5px}.sidebar nav a{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;color:var(--text);text-decoration:none;font-weight:600;font-size:.87rem}.sidebar nav a:hover,.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}.navnum{width:25px;height:25px;display:grid;place-items:center;flex:0 0 25px;border-radius:8px;background:var(--primary-light);color:var(--primary);font-size:.72rem;font-weight:800}
+.tools{display:grid;gap:8px;margin-top:22px;padding-top:17px;border-top:1px solid var(--line)}.tool{border:1px solid var(--line);background:var(--surface);border-radius:11px;padding:10px 12px;text-align:left;cursor:pointer;font-weight:600}.tool:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.09)}.sidebar-note{margin-top:19px;color:var(--muted);font-size:.73rem;line-height:1.55}
+.menu{display:none;position:fixed;right:14px;top:14px;width:46px;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--surface);z-index:600;cursor:pointer}
+.main{margin-left:var(--sidebar);max-width:1320px;padding:50px 5vw 110px;flex:1;min-width:0}.hero{margin-bottom:52px}.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--primary-light);color:var(--primary);padding:7px 14px;border-radius:999px;font-weight:700;font-size:.8rem}.hero h1{font-size:clamp(2.45rem,5vw,4.25rem);line-height:1.02;margin:17px 0 15px;max-width:980px}.gradient-text{background:linear-gradient(90deg,var(--electric),var(--primary),var(--magnetic));-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{font-size:1.08rem;line-height:1.72;color:var(--muted);max-width:900px}.lead-question{margin-top:24px;max-width:900px;padding:19px 22px;border-left:5px solid var(--accent);background:var(--surface);border-radius:0 15px 15px 0;box-shadow:var(--shadow);font-weight:600;line-height:1.65}
+.stage{margin-bottom:68px;scroll-margin-top:25px}.stage-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}.stage-id{width:49px;height:49px;flex:0 0 49px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-family:'Poppins';font-weight:900}.stage-head h2{font-size:clamp(1.45rem,3vw,1.85rem);margin:0}.stage-head p{margin:4px 0 0;color:var(--muted);line-height:1.55}
+.glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius);box-shadow:var(--shadow)}.card{padding:25px}.card p{line-height:1.72}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.concept{padding:21px}.concept h3{margin:0 0 8px;font-size:1.05rem}.concept p{margin:0;color:var(--muted);line-height:1.65}.electric-border{border-left:5px solid var(--electric)}.magnetic-border{border-left:5px solid var(--magnetic)}
+.lab{overflow:hidden}.labbar{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.labbar h3{font-size:1rem;margin:0}.labbody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(285px,.72fr);min-height:500px}.canvasbox{position:relative;min-width:0;background:var(--canvas);border-right:1px solid var(--line)}canvas{display:block;width:100%;height:100%;min-height:500px}.canvas-labels{position:absolute;left:14px;top:14px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}.badge{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:.76rem;font-weight:800;backdrop-filter:blur(12px)}.badge.e{color:var(--electric)}.badge.b{color:var(--magnetic)}
+.controls{padding:20px;min-width:0}.control{margin-bottom:20px}.control:last-child{margin-bottom:0}.control h4{font-size:.95rem;margin:0 0 7px}.control p{font-size:.84rem;color:var(--muted);line-height:1.52;margin:5px 0 10px}.range-row{display:grid;grid-template-columns:1fr 66px;gap:9px;align-items:center}.range-row input{width:100%;accent-color:var(--primary)}.out{padding:7px 5px;text-align:center;border:1px solid var(--line);background:var(--surface-solid);border-radius:9px;font-size:.82rem;font-weight:800}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(15,23,42,.1)}.btn.primary{border:0;color:#fff;background:linear-gradient(135deg,#4f46e5,#0891b2)}.btn.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.btn:focus-visible,.formula-part:focus-visible,.option:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.readouts{display:grid;gap:8px}.readout{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 11px;background:rgba(100,116,139,.08);border:1px solid var(--line);border-radius:10px;font-size:.83rem}.readout strong{color:var(--primary);text-align:right}.readout .evalue{color:var(--electric)}.readout .bvalue{color:var(--magnetic)}
+.formula{font-family:Cambria,'Times New Roman',serif;font-size:clamp(1.08rem,2.1vw,1.34rem);text-align:center;background:var(--canvas);border:1px solid var(--line);border-radius:14px;padding:17px 12px;margin:17px 0;overflow:auto;white-space:nowrap}.formula.big{font-size:clamp(1.18rem,2.5vw,1.62rem)}.vec{position:relative;display:inline-block}.vec::after{content:'→';position:absolute;font-size:.72em;left:50%;top:-.78em;transform:translateX(-50%)}.frac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.1;margin:0 .1em}.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 .18em .08em}.frac>span:last-child{padding:.08em .18em 0}.formula-parts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.formula-part{border:1px solid var(--line);background:var(--surface-solid);border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:700}.formula-part.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.explain{min-height:66px;background:var(--primary-light);border-radius:12px;padding:13px 15px;line-height:1.55}.explain strong{color:var(--primary)}
+.steps{display:grid;gap:12px}.step{display:grid;grid-template-columns:42px 1fr;gap:12px;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--surface-solid)}.stepnum{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900}.step h3{font-size:1rem;margin:2px 0 4px}.step p{margin:0;color:var(--muted);line-height:1.58}
+.insight{margin-top:18px;padding:16px 18px;border-left:5px solid var(--success);background:rgba(22,128,58,.08);border-radius:0 13px 13px 0;line-height:1.62}.warning{border-left-color:var(--accent);background:rgba(245,158,11,.09)}
+.law-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.law{padding:20px;cursor:pointer;transition:.2s;text-align:left;color:inherit}.law:hover,.law.selected{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 15px 36px rgba(79,70,229,.16)}.law h3{font-size:1.02rem;margin:0 0 8px}.law .mini-formula{font-family:Cambria,'Times New Roman',serif;font-size:1.08rem;color:var(--primary);margin:9px 0}.law p{color:var(--muted);font-size:.9rem;margin:0;line-height:1.55}.law-detail{margin-top:16px;padding:19px;min-height:102px}.law-detail h3{margin:0 0 6px;font-size:1.05rem}.law-detail p{margin:0;line-height:1.62;color:var(--muted)}
+.cbox{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}.constant{padding:18px;text-align:center}.constant span{display:block;color:var(--muted);font-size:.82rem;margin-bottom:6px}.constant strong{font-family:Cambria,'Times New Roman',serif;font-size:1.17rem;color:var(--primary)}.result{padding:24px;text-align:center;background:linear-gradient(135deg,var(--electric-light),var(--magnetic-light));border:1px solid var(--line);border-radius:17px}.result .number{font-family:'Poppins';font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;color:var(--primary);margin:8px 0}.comparison{height:12px;background:rgba(100,116,139,.13);border-radius:999px;overflow:hidden;margin:15px 0}.comparison span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--electric),var(--primary),var(--magnetic));transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.quiz{display:grid;gap:14px}.question{padding:21px}.question h3{font-size:1rem;margin:0 0 12px;line-height:1.5}.options{display:grid;gap:8px}.option{border:1px solid var(--line);background:var(--surface-solid);border-radius:11px;padding:11px 13px;text-align:left;cursor:pointer;line-height:1.45}.option:hover{background:var(--primary-light)}.option.correct{border-color:var(--success);background:rgba(22,128,58,.1)}.option.wrong{border-color:var(--danger);background:rgba(180,35,24,.08)}.feedback{min-height:24px;margin-top:10px;font-weight:600;font-size:.9rem;line-height:1.5}.feedback.ok{color:var(--success)}.feedback.no{color:var(--danger)}
+.mastery{margin-top:18px;padding:21px}.mastery-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.mastery h3{margin:0}.score{font-family:'Poppins';font-weight:900;color:var(--primary)}.meter{height:11px;background:rgba(100,116,139,.13);border-radius:999px;overflow:hidden;margin-top:13px}.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--electric),var(--primary2));transition:.35s}
+footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;margin-top:50px}footer a{color:var(--primary);font-weight:700;text-decoration:none}.backlink{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;color:var(--primary);font-weight:700;text-decoration:none}
+.reveal{opacity:0;transform:translateY(17px);transition:.5s}.reveal.visible{opacity:1;transform:none}
+@media(max-width:1100px){.labbody{grid-template-columns:1fr}.canvasbox{border-right:0;border-bottom:1px solid var(--line)}canvas{min-height:440px}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:930px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.menu{display:grid;place-items:center}.main{margin-left:0;padding:76px 5vw 80px}.grid2,.law-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.main{padding-left:16px;padding-right:16px}.hero h1{font-size:2.35rem}.card{padding:19px}.grid3,.cbox{grid-template-columns:1fr}.labbar{align-items:flex-start}.canvasbox canvas,canvas{min-height:390px}.formula{font-size:1.02rem}.stage-head{gap:11px}.stage-id{width:43px;height:43px;flex-basis:43px}.mastery-head{align-items:flex-start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ambient{animation:none}.reveal{opacity:1;transform:none;transition:none}}
+</style>
+<link rel="stylesheet" href="legal-links.css">
+</head>
+<body>
+<div class="ambient a"></div><div class="ambient b"></div><div class="ambient c"></div>
+<div id="progress-wrap"><div id="progress"></div></div>
+<button class="menu" id="menu" aria-label="Navigation öffnen">☰</button>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brandmark">E↯B</div><h2>Maxwells<br>Lichtlabor</h2></div>
+  <div class="brand-sub">Vom Wechselstrom zum Licht</div>
+  <nav id="nav">
+    <a href="#start"><span class="navnum">0</span>Die Leitfrage</a>
+    <a href="#kreisintegral"><span class="navnum">1</span>Der Umlaufwert</a>
+    <a href="#faraday"><span class="navnum">2</span>Faradays Gesetz</a>
+    <a href="#maxwell"><span class="navnum">3</span>Maxwells Ergänzung</a>
+    <a href="#welle"><span class="navnum">4</span>Die Feldwelle</a>
+    <a href="#licht"><span class="navnum">5</span>Die Lichtgeschwindigkeit</a>
+    <a href="#gleichungen"><span class="navnum">6</span>Vier Gleichungen</a>
+    <a href="#check"><span class="navnum">✓</span>Abschlusscheck</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="theme">◐ Darstellung wechseln</button>
+    <button class="tool" id="reset">↺ Fortschritt zurücksetzen</button>
+  </div>
+  <div class="sidebar-note">Alle Simulationen laufen lokal im Browser. Dein Quizfortschritt wird nur auf diesem Gerät gespeichert.</div>
+</aside>
+
+<main class="main">
+<a class="backlink" href="index.html">← Zur Übersicht</a>
+<header class="hero reveal" id="start">
+  <span class="eyebrow">Elektrodynamik · Q2 · interaktiver Abschluss</span>
+  <h1>Wie werden Felder zu <span class="gradient-text">Licht?</span></h1>
+  <p>Du kennst Wechselstrom und Induktion. Nun verfolgst du einen Gedanken, der die Physik verändert hat: Elektrische und magnetische Felder können gemeinsam eine Welle bilden, die sich sogar durch das Vakuum bewegt.</p>
+  <div class="lead-question">Leitfrage: Wie kann sich eine elektromagnetische Störung ohne Kabel und ohne Materie durch den Raum bewegen – und warum ist genau das Licht?</div>
+</header>
+
+<section class="stage reveal" id="kreisintegral">
+  <div class="stage-head"><div class="stage-id">1</div><div><h2>Einmal rundherum: der Umlaufwert</h2><p>Bevor wir Faradays Gleichung lesen, bauen wir das Kreisintegral aus einer gewöhnlichen Summe auf.</p></div></div>
+  <div class="grid2" style="margin-bottom:18px">
+    <article class="glass concept electric-border"><h3>Ein einzelnes Wegstück</h3><p>Auf jedem kleinen Wegstück zählt nur der Anteil des elektrischen Feldes, der in Laufrichtung zeigt: <strong>E<sub>∥</sub> · Δs</strong>. Gleichgerichtet ist der Beitrag positiv, entgegengesetzt negativ, senkrecht null.</p></article>
+    <article class="glass concept magnetic-border"><h3>Der geschlossene Weg</h3><p>Wir addieren die Beiträge aller Wegstücke. Kehren wir zum Startpunkt zurück, erhalten wir den <strong>Umlaufwert</strong> des Feldes entlang dieser geschlossenen Kurve.</p></article>
+  </div>
+  <div class="glass lab">
+    <div class="labbar"><h3>Labor 1 · Viele kleine Beiträge ergeben einen Umlauf</h3><div class="btnrow"><button class="btn active" data-field="uniform">gleichförmiges Feld</button><button class="btn" data-field="vortex">Wirbelfeld</button></div></div>
+    <div class="labbody">
+      <div class="canvasbox"><div class="canvas-labels"><span class="badge e">blaue Pfeile: elektrisches Feld</span><span class="badge">weißer Pfeil: Laufrichtung</span></div><canvas id="loopCanvas" aria-label="Elektrisches Feld entlang eines geschlossenen Weges"></canvas></div>
+      <aside class="controls">
+        <div class="control"><h4>Anzahl der Wegstücke</h4><p>Unterteile den Weg immer feiner. Die Summe nähert sich dem Integral.</p><div class="range-row"><input id="segments" type="range" min="4" max="64" step="4" value="8"><output class="out" id="segmentsOut">8</output></div></div>
+        <div class="control"><h4>Laufrichtung</h4><div class="btnrow"><button class="btn active" id="ccw">↺ gegen Uhrzeigersinn</button><button class="btn" id="cw">↻ im Uhrzeigersinn</button></div></div>
+        <div class="control"><h4>Auswertung</h4><div class="readouts"><div class="readout"><span>positive Beiträge</span><strong class="evalue" id="positive">0</strong></div><div class="readout"><span>negative Beiträge</span><strong id="negative">0</strong></div><div class="readout"><span>Summe / Umlaufwert</span><strong id="circulation">0</strong></div></div></div>
+      </aside>
+    </div>
+  </div>
+  <div class="glass card" style="margin-top:18px">
+    <h3>Von der Summe zur Kurzschreibweise</h3>
+    <div class="formula big" aria-label="Summe E Vektor mal Delta s Vektor wird zum geschlossenen Linienintegral E Vektor mal d s Vektor">Σ <span class="vec">E</span><sub>i</sub> · Δ<span class="vec">s</span><sub>i</sub> &nbsp;⟶&nbsp; ∮<sub>∂A</sub> <span class="vec">E</span> · d<span class="vec">s</span></div>
+    <div class="formula-parts"><button class="formula-part active" data-explain="sum">Σ</button><button class="formula-part" data-explain="closed">∮</button><button class="formula-part" data-explain="boundary">∂A</button><button class="formula-part" data-explain="field">E⃗</button><button class="formula-part" data-explain="path">d s⃗</button><button class="formula-part" data-explain="dot">·</button></div>
+    <div class="explain" id="formulaExplain"><strong>Σ:</strong> Wir addieren die Beiträge endlich vieler Wegstücke. Je feiner die Unterteilung, desto genauer wird die Summe.</div>
+    <div class="insight"><strong>Merksatz:</strong> Ein Kreisintegral ist hier eine sehr genaue Summe vieler kleiner Beiträge entlang eines geschlossenen Weges.</div>
+  </div>
+</section>
+
+<section class="stage reveal" id="faraday">
+  <div class="stage-head"><div class="stage-id">2</div><div><h2>Faradays Induktionsgesetz</h2><p>Nicht die Größe des Magnetfeldes entscheidet, sondern wie schnell sich der magnetische Fluss ändert.</p></div></div>
+  <div class="glass card" style="margin-bottom:18px">
+    <div class="steps">
+      <div class="step"><div class="stepnum">A</div><div><h3>Die Fläche</h3><p>Die geschlossene Kurve ∂A ist der Rand einer gedachten Fläche A – wie der Drahtrand eines Seifenfilms.</p></div></div>
+      <div class="step"><div class="stepnum">Φ</div><div><h3>Der magnetische Fluss</h3><p>Φ<sub>B</sub> misst, wie stark das Magnetfeld diese Fläche durchsetzt. Für ein homogenes, senkrechtes Feld gilt einfach Φ<sub>B</sub> = B · A.</p></div></div>
+      <div class="step"><div class="stepnum">Δt</div><div><h3>Die Änderung</h3><p>Aus ΔΦ<sub>B</sub>/Δt wird bei sehr kurzen Zeitabschnitten dΦ<sub>B</sub>/dt. Ein konstantes Feld kann groß sein und trotzdem nichts induzieren.</p></div></div>
+    </div>
+    <div class="formula big" aria-label="Geschlossenes Linienintegral des elektrischen Feldes ist gleich minus zeitliche Änderung des magnetischen Flusses">∮<sub>∂A</sub> <span class="vec">E</span> · d<span class="vec">s</span> = − <span class="frac"><span>dΦ<sub>B</sub></span><span>dt</span></span> = − <span class="frac"><span>d</span><span>dt</span></span> ∫<sub>A</sub> <span class="vec">B</span> · d<span class="vec">A</span></div>
+    <p style="text-align:center;color:var(--muted);margin-bottom:0"><strong>In Worten:</strong> Der Umlaufwert des elektrischen Feldes am Rand ist gleich der negativen Änderung des magnetischen Flusses durch die Fläche.</p>
+  </div>
+  <div class="glass lab">
+    <div class="labbar"><h3>Labor 2 · Verändere Fluss, Frequenz und Schleifengröße</h3><button class="btn primary" id="faradayPlay">⏸ Pause</button></div>
+    <div class="labbody">
+      <div class="canvasbox"><div class="canvas-labels"><span class="badge b">× hinein · • heraus</span><span class="badge e">E-Wirbelfeld</span></div><canvas id="faradayCanvas" aria-label="Veränderliches Magnetfeld und induziertes elektrisches Wirbelfeld"></canvas></div>
+      <aside class="controls">
+        <div class="control"><h4>Amplitude des Magnetfeldes</h4><div class="range-row"><input id="bAmplitude" type="range" min="20" max="100" value="65"><output class="out" id="bAmplitudeOut">65 %</output></div></div>
+        <div class="control"><h4>Änderungsgeschwindigkeit</h4><div class="range-row"><input id="bFrequency" type="range" min="1" max="6" value="3"><output class="out" id="bFrequencyOut">3</output></div></div>
+        <div class="control"><h4>Radius der Fläche A</h4><div class="range-row"><input id="loopRadius" type="range" min="35" max="95" value="68"><output class="out" id="loopRadiusOut">68</output></div></div>
+        <div class="control"><div class="readouts"><div class="readout"><span>Magnetfeld B</span><strong class="bvalue" id="bNow">0</strong></div><div class="readout"><span>Fluss Φ<sub>B</sub></span><strong class="bvalue" id="fluxNow">0</strong></div><div class="readout"><span>Umlaufwert ∮E⃗·ds⃗</span><strong class="evalue" id="eNow">0</strong></div></div></div>
+      </aside>
+    </div>
+  </div>
+  <div class="insight warning"><strong>Beobachte:</strong> Der Umlaufwert ist besonders groß, wenn der magnetische Fluss gerade am schnellsten durch null läuft. An den Maxima von Φ<sub>B</sub> ist seine momentane Änderung dagegen null.</div>
+</section>
+
+<section class="stage reveal" id="maxwell">
+  <div class="stage-head"><div class="stage-id">3</div><div><h2>Maxwells entscheidende Ergänzung</h2><p>Im Spalt eines Kondensators fließen keine Ladungsträger – und doch setzt sich das Magnetfeld fort.</p></div></div>
+  <div class="grid2" style="margin-bottom:18px">
+    <article class="glass concept electric-border"><h3>Das Problem</h3><p>Eine geschlossene Kurve um den Leiter kann mit unterschiedlichen Flächen bespannt werden. Eine schneidet den Leiterstrom I, die andere wölbt sich durch den Kondensatorspalt und schneidet keinen Leiterstrom.</p></article>
+    <article class="glass concept magnetic-border"><h3>Maxwells Idee</h3><p>Zwischen den Platten ändert sich der elektrische Fluss. Diese Änderung trägt ebenso zum magnetischen Wirbelfeld bei wie der Strom im Draht.</p></article>
+  </div>
+  <div class="glass lab">
+    <div class="labbar"><h3>Labor 3 · Zwei Flächen, derselbe Rand</h3><div class="btnrow"><button class="btn active" data-surface="wire">Fläche durch den Draht</button><button class="btn" data-surface="gap">Fläche durch den Spalt</button></div></div>
+    <div class="labbody">
+      <div class="canvasbox"><div class="canvas-labels"><span class="badge">grün: gewählte Fläche</span><span class="badge b">Magnetfeld um den Rand</span></div><canvas id="capacitorCanvas" aria-label="Wechselstromkreis mit Kondensator und zwei möglichen Integrationsflächen"></canvas></div>
+      <aside class="controls">
+        <div class="control"><h4>Wechselstromfrequenz</h4><div class="range-row"><input id="capFrequency" type="range" min="1" max="6" value="3"><output class="out" id="capFrequencyOut">3</output></div></div>
+        <div class="control"><h4>Vergleiche die Bilanz</h4><div class="readouts"><div class="readout"><span>Leiterstrom I durch Fläche</span><strong id="wireCurrent">vorhanden</strong></div><div class="readout"><span>Änderung des elektrischen Flusses</span><strong class="evalue" id="displacement">0</strong></div><div class="readout"><span>magnetischer Umlaufwert</span><strong class="bvalue" id="magCirculation">0</strong></div></div></div>
+        <div class="control"><p id="surfaceExplanation">Diese Fläche schneidet den Leiter. Das ursprüngliche Ampèresche Gesetz liefert einen magnetischen Umlaufwert.</p></div>
+      </aside>
+    </div>
+  </div>
+  <div class="glass card" style="margin-top:18px">
+    <h3>Ampère wird zu Ampère–Maxwell</h3>
+    <div class="formula big" aria-label="Geschlossenes Linienintegral des Magnetfeldes gleich mü null mal Strom plus mü null epsilon null mal zeitliche Änderung des elektrischen Flusses">∮<sub>∂A</sub> <span class="vec">B</span> · d<span class="vec">s</span> = μ<sub>0</sub>I + μ<sub>0</sub>ε<sub>0</sub> <span class="frac"><span>dΦ<sub>E</sub></span><span>dt</span></span></div>
+    <div class="insight"><strong>Der Maxwell-Moment:</strong> Eine Änderung des elektrischen Flusses ist mit einem magnetischen Wirbelfeld verbunden – auch dort, wo kein Leiterstrom durch die Fläche fließt.</div>
+  </div>
+</section>
+
+<section class="stage reveal" id="welle">
+  <div class="stage-head"><div class="stage-id">4</div><div><h2>Eine elektromagnetische Welle löst sich vom Sender</h2><p>Faraday und Ampère–Maxwell erlauben gemeinsam eine sich durch den Raum ausbreitende Feldstruktur.</p></div></div>
+  <div class="glass lab">
+    <div class="labbar"><h3>Labor 4 · Beobachte E, B und die Ausbreitungsrichtung</h3><div class="btnrow"><button class="btn primary" id="wavePlay">⏸ Pause</button><button class="btn active" data-wave="both">beide Felder</button><button class="btn" data-wave="electric">nur E</button><button class="btn" data-wave="magnetic">nur B</button></div></div>
+    <div class="labbody">
+      <div class="canvasbox"><div class="canvas-labels"><span class="badge e">E-Feld: blau</span><span class="badge b">B-Feld: orange</span><span class="badge">Ausbreitung →</span></div><canvas id="waveCanvas" aria-label="Räumliche Darstellung einer elektromagnetischen Welle"></canvas></div>
+      <aside class="controls">
+        <div class="control"><h4>Frequenz</h4><div class="range-row"><input id="waveFrequency" type="range" min="1" max="6" value="3"><output class="out" id="waveFrequencyOut">3</output></div></div>
+        <div class="control"><h4>Amplitude</h4><div class="range-row"><input id="waveAmplitude" type="range" min="25" max="100" value="70"><output class="out" id="waveAmplitudeOut">70 %</output></div></div>
+        <div class="control"><h4>Messsonde</h4><p>Verschiebe die Sonde entlang der Ausbreitungsrichtung.</p><div class="range-row"><input id="probe" type="range" min="8" max="92" value="62"><output class="out" id="probeOut">62 %</output></div></div>
+        <div class="control"><div class="readouts"><div class="readout"><span>E an der Sonde</span><strong class="evalue" id="probeE">0</strong></div><div class="readout"><span>B an der Sonde</span><strong class="bvalue" id="probeB">0</strong></div><div class="readout"><span>Orientierung</span><strong>E ⟂ B ⟂ c</strong></div></div></div>
+      </aside>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <article class="glass concept"><h3>E und B</h3><p>Beide Felder schwingen mit gleicher Frequenz und Phase.</p></article>
+    <article class="glass concept"><h3>Transversal</h3><p>E, B und Ausbreitungsrichtung stehen jeweils senkrecht aufeinander.</p></article>
+    <article class="glass concept"><h3>Gemeinsame Lösung</h3><p>Die räumlich und zeitlich veränderlichen Felder bilden zusammen eine Lösung der Maxwell-Gleichungen.</p></article>
+  </div>
+  <div class="insight warning"><strong>Sprachliche Präzision:</strong> E und B wechseln sich nicht wie zwei getrennte Dominosteine beim „Erzeugen“ ab. Die elektromagnetische Welle ist eine zusammenhängende Feldstruktur, deren räumliche und zeitliche Änderungen durch Maxwells Gleichungen verknüpft sind.</div>
+</section>
+
+<section class="stage reveal" id="licht">
+  <div class="stage-head"><div class="stage-id">5</div><div><h2>Maxwell berechnet die Geschwindigkeit – und findet Licht</h2><p>Aus den Konstanten der Elektrizitäts- und Magnetismuslehre folgt eine Wellengeschwindigkeit.</p></div></div>
+  <div class="glass card">
+    <div class="cbox"><div class="constant"><span>elektrische Feldkonstante</span><strong>ε<sub>0</sub> = 8,854 · 10<sup>−12</sup> F/m</strong></div><div class="constant"><span>magnetische Feldkonstante</span><strong>μ<sub>0</sub> = 1,257 · 10<sup>−6</sup> N/A²</strong></div></div>
+    <div class="formula big" aria-label="c ist eins durch die Wurzel aus mü null mal epsilon null">c = <span class="frac"><span>1</span><span>√(μ<sub>0</sub>ε<sub>0</sub>)</span></span></div>
+    <div class="result"><button class="btn primary" id="calculateC">Vorhersage berechnen</button><div class="number" id="cResult">? m/s</div><div id="cText">Welche Geschwindigkeit sagen die Feldgleichungen voraus?</div><div class="comparison"><span id="cBar"></span></div><div id="cCompare" style="color:var(--muted)">experimentelle Lichtgeschwindigkeit: 299 792 458 m/s</div></div>
+    <div class="insight" id="lightInsight" hidden><strong>Die große Entdeckung:</strong> Die vorhergesagte elektromagnetische Wellengeschwindigkeit stimmt mit der bekannten Lichtgeschwindigkeit überein. Licht ist eine elektromagnetische Welle.</div>
+  </div>
+</section>
+
+<section class="stage reveal" id="gleichungen">
+  <div class="stage-head"><div class="stage-id">6</div><div><h2>Vier Gleichungen – ein Gesamtbild</h2><p>Wähle eine Gleichung aus. Entscheidend ist nicht nur die Formel, sondern was sie über Felder aussagt.</p></div></div>
+  <div class="law-grid" id="lawGrid">
+    <button class="glass law selected" data-law="gaussE"><h3>1 · Gauß für das E-Feld</h3><div class="mini-formula">∯<sub>A</sub> E⃗ · dA⃗ = Q<sub>innen</sub>/ε<sub>0</sub></div><p>Ladungen sind Quellen und Senken elektrischer Felder.</p></button>
+    <button class="glass law" data-law="gaussB"><h3>2 · Gauß für das B-Feld</h3><div class="mini-formula">∯<sub>A</sub> B⃗ · dA⃗ = 0</div><p>Magnetische Feldlinien haben keine Quellen oder Senken.</p></button>
+    <button class="glass law" data-law="faraday"><h3>3 · Faraday</h3><div class="mini-formula">∮ E⃗ · ds⃗ = −dΦ<sub>B</sub>/dt</div><p>Veränderlicher magnetischer Fluss ist mit einem E-Wirbelfeld verknüpft.</p></button>
+    <button class="glass law" data-law="ampere"><h3>4 · Ampère–Maxwell</h3><div class="mini-formula">∮ B⃗ · ds⃗ = μ<sub>0</sub>I + μ<sub>0</sub>ε<sub>0</sub>dΦ<sub>E</sub>/dt</div><p>Strom und veränderlicher elektrischer Fluss sind mit einem B-Wirbelfeld verknüpft.</p></button>
+  </div>
+  <div class="glass law-detail" id="lawDetail"><h3>Gauß für das elektrische Feld</h3><p>Eine geschlossene Fläche registriert netto elektrischen Fluss, wenn sie elektrische Ladung einschließt. Die Gleichung beschreibt damit, wo elektrische Feldlinien beginnen oder enden.</p></div>
+  <div class="insight"><strong>Für die Welle zentral:</strong> Faradays Gesetz und die Maxwell-Ergänzung verbinden zeitliche Änderungen mit räumlichen Umläufen. Die beiden Gauß-Gesetze legen zusätzlich die Quellenstruktur der Felder fest.</div>
+</section>
+
+<section class="stage reveal" id="check">
+  <div class="stage-head"><div class="stage-id">✓</div><div><h2>Abschlusscheck</h2><p>Prüfe, ob du die Leitfrage nun mit den vier entscheidenden Gedanken beantworten kannst.</p></div></div>
+  <div class="quiz" id="quiz">
+    <article class="glass question" data-q="0"><h3>1. Was bedeutet das Kreisintegral ∮ E⃗ · ds⃗ am treffendsten?</h3><div class="options"><button class="option" data-a="0">Die Fläche unter einem E-t-Diagramm</button><button class="option" data-a="1">Die Summe der Feldanteile entlang vieler kleiner Wegstücke eines geschlossenen Weges</button><button class="option" data-a="2">Die elektrische Feldstärke im Mittelpunkt einer Schleife</button></div><div class="feedback"></div></article>
+    <article class="glass question" data-q="1"><h3>2. Wann ist das induzierte elektrische Wirbelfeld besonders stark?</h3><div class="options"><button class="option" data-a="0">Wenn der magnetische Fluss besonders groß und konstant ist</button><button class="option" data-a="1">Wenn der magnetische Fluss null ist, unabhängig von seiner Änderung</button><button class="option" data-a="2">Wenn sich der magnetische Fluss besonders schnell ändert</button></div><div class="feedback"></div></article>
+    <article class="glass question" data-q="2"><h3>3. Warum ergänzte Maxwell das Ampèresche Gesetz?</h3><div class="options"><button class="option" data-a="0">Damit eine Flussänderung im Kondensatorspalt dieselbe magnetische Wirkung wie der Leiterstrom berücksichtigt</button><button class="option" data-a="1">Weil zwischen Kondensatorplatten ständig Elektronen durch das Vakuum fließen</button><button class="option" data-a="2">Damit konstante Magnetfelder verschwinden</button></div><div class="feedback"></div></article>
+    <article class="glass question" data-q="3"><h3>4. Welche räumliche Beziehung gilt für eine elektromagnetische Welle?</h3><div class="options"><button class="option" data-a="0">E und B zeigen beide in Ausbreitungsrichtung</button><button class="option" data-a="1">E und B sind parallel, aber senkrecht zur Ausbreitung</button><button class="option" data-a="2">E, B und Ausbreitungsrichtung stehen paarweise senkrecht aufeinander</button></div><div class="feedback"></div></article>
+    <article class="glass question" data-q="4"><h3>5. Was war Maxwells entscheidender Hinweis darauf, dass Licht elektromagnetisch ist?</h3><div class="options"><button class="option" data-a="0">Die berechnete Feldwellengeschwindigkeit stimmte mit der gemessenen Lichtgeschwindigkeit überein</button><button class="option" data-a="1">Licht konnte einen Kondensator dauerhaft aufladen</button><button class="option" data-a="2">Elektrische Felder waren immer sichtbar</button></div><div class="feedback"></div></article>
+  </div>
+  <div class="glass mastery"><div class="mastery-head"><div><h3>Dein Verständnis</h3><div style="color:var(--muted);margin-top:4px" id="scoreText">Beantworte die fünf Fragen.</div></div><div class="score" id="score">0 / 5</div></div><div class="meter"><span id="scoreBar"></span></div></div>
+  <div class="glass card" style="margin-top:18px"><h3 style="margin-top:0">Deine Antwort auf die Leitfrage</h3><p>Eine tragfähige Erklärung enthält diese Begriffe: <strong>elektrisches Feld</strong>, <strong>magnetisches Feld</strong>, <strong>zeitliche und räumliche Änderung</strong>, <strong>transversale Welle</strong>, <strong>Vakuum</strong> und <strong>Lichtgeschwindigkeit</strong>.</p><div class="insight">Licht ist eine sich durch den Raum ausbreitende elektromagnetische Feldstruktur. Elektrisches Feld, magnetisches Feld und Ausbreitungsrichtung stehen senkrecht aufeinander. Ihre räumlichen und zeitlichen Änderungen erfüllen die Maxwell-Gleichungen; im Vakuum ergibt sich daraus die Geschwindigkeit c = 1/√(μ<sub>0</sub>ε<sub>0</sub>).</div></div>
+</section>
+
+<footer>Maxwells Lichtlabor · Interaktive Lernanwendung<br><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></footer>
+</main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const css = name => getComputedStyle(document.body).getPropertyValue(name).trim();
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
+  const setupCanvas = canvas => {
+    const rect = canvas.getBoundingClientRect();
+    const ratio = dpr();
+    const w = Math.max(320, rect.width);
+    const h = Math.max(360, rect.height);
+    if (canvas.width !== Math.round(w * ratio) || canvas.height !== Math.round(h * ratio)) {
+      canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    return {ctx, w, h};
+  };
+  const arrow = (ctx, x1, y1, x2, y2, color, width = 2, head = 7) => {
+    const a = Math.atan2(y2-y1, x2-x1);
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x2-head*Math.cos(a-.55),y2-head*Math.sin(a-.55)); ctx.lineTo(x2-head*Math.cos(a+.55),y2-head*Math.sin(a+.55)); ctx.closePath(); ctx.fill();
+  };
+  const text = (ctx, value, x, y, color = css('--text'), align = 'center', size = 13, weight = 600) => {ctx.fillStyle=color;ctx.font=`${weight} ${size}px Inter, system-ui`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(value,x,y)};
+
+  // Shell and progress
+  const body = document.body;
+  if (localStorage.getItem('maxwell-theme') === 'dark') body.classList.add('dark');
+  $('#theme').addEventListener('click', () => {body.classList.toggle('dark');localStorage.setItem('maxwell-theme',body.classList.contains('dark')?'dark':'light');drawAll();});
+  $('#menu').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+  $$('#nav a').forEach(a => a.addEventListener('click', () => $('#sidebar').classList.remove('open')));
+  addEventListener('scroll', () => {const max=document.documentElement.scrollHeight-innerHeight;$('#progress').style.width=(max?scrollY/max*100:0)+'%';});
+  const observer = new IntersectionObserver(entries => entries.forEach(e => {if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.06});
+  $$('.reveal').forEach(el => observer.observe(el));
+  const sections = $$('section[id], header[id]');
+  const navObserver = new IntersectionObserver(entries => entries.forEach(e => {if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));}}),{rootMargin:'-25% 0px -65% 0px'});
+  sections.forEach(s=>navObserver.observe(s));
+
+  // Formula explainer
+  const formulaInfo = {
+    sum:['Σ','Wir addieren die Beiträge endlich vieler Wegstücke. Je feiner die Unterteilung, desto genauer wird die Summe.'],
+    closed:['∮','Das kleine Kreissymbol bedeutet: Der Integrationsweg ist geschlossen. Wir kehren zum Ausgangspunkt zurück.'],
+    boundary:['∂A','Die Schreibweise bezeichnet den Rand der Fläche A. Kurve und aufgespannte Fläche gehören zusammen.'],
+    field:['E⃗','Das elektrische Feld wird an jedem Ort des Weges betrachtet. Stärke und Richtung können sich dabei ändern.'],
+    path:['d s⃗','Ein gedanklich sehr kleines Wegstück. Der Pfeil zeigt die gewählte Laufrichtung.'],
+    dot:['Skalarprodukt ·','Nur der Feldanteil in Richtung des Wegstücks zählt: parallel positiv, antiparallel negativ, senkrecht null.']
+  };
+  $$('.formula-part').forEach(btn=>btn.addEventListener('click',()=>{$$('.formula-part').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const [term,desc]=formulaInfo[btn.dataset.explain];$('#formulaExplain').innerHTML=`<strong>${term}:</strong> ${desc}`;}));
+
+  // Lab 1: circulation
+  const loopCanvas=$('#loopCanvas');
+  const loopState={mode:'uniform',n:8,dir:1};
+  const fieldAt=(x,y)=>loopState.mode==='uniform'?{x:1,y:0}:{x:-y/140,y:x/140};
+  function drawLoop(){
+    const {ctx,w,h}=setupCanvas(loopCanvas);ctx.clearRect(0,0,w,h);const cx=w*.5,cy=h*.52,R=Math.min(w,h)*.29;
+    ctx.strokeStyle=css('--line');ctx.lineWidth=1;
+    for(let gx=40;gx<w;gx+=58)for(let gy=70;gy<h;gy+=58){const rx=gx-cx,ry=gy-cy;const f=fieldAt(rx,ry);const m=Math.hypot(f.x,f.y)||1;arrow(ctx,gx-f.x/m*10,gy-f.y/m*10,gx+f.x/m*10,gy+f.y/m*10,css('--electric'),1.4,5)}
+    const pts=[];for(let i=0;i<loopState.n;i++){const a=-Math.PI/2+loopState.dir*i*2*Math.PI/loopState.n;pts.push({x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),a})}
+    ctx.strokeStyle=css('--text');ctx.lineWidth=3;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.stroke();
+    let pos=0,neg=0,sum=0;
+    pts.forEach((p,i)=>{const q=pts[(i+1)%pts.length];const dx=q.x-p.x,dy=q.y-p.y;const mx=(p.x+q.x)/2,my=(p.y+q.y)/2;const f=fieldAt(mx-cx,my-cy);const contribution=(f.x*dx+f.y*dy)/R;sum+=contribution;if(contribution>=0)pos+=contribution;else neg+=contribution;ctx.fillStyle=contribution>=0?'rgba(21,112,239,.18)':'rgba(180,35,24,.16)';ctx.beginPath();ctx.arc(mx,my,5,0,Math.PI*2);ctx.fill();if(i===0)arrow(ctx,mx-dx*.1,my-dy*.1,mx+dx*.14,my+dy*.14,css('--text'),3,8)});
+    text(ctx,loopState.mode==='uniform'?'gleichförmiges E-Feld':'elektrisches Wirbelfeld',cx,35,css('--text'),'center',15,700);
+    text(ctx,'∂A',cx,cy,css('--muted'),'center',18,700);
+    $('#positive').textContent=pos.toFixed(2);$('#negative').textContent=neg.toFixed(2);$('#circulation').textContent=sum.toFixed(2);
+    $('#circulation').style.color=Math.abs(sum)<.05?css('--muted'):css('--electric');
+  }
+  $$('[data-field]').forEach(btn=>btn.addEventListener('click',()=>{$$('[data-field]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loopState.mode=btn.dataset.field;drawLoop()}));
+  $('#segments').addEventListener('input',e=>{loopState.n=+e.target.value;$('#segmentsOut').textContent=loopState.n;drawLoop()});
+  $('#ccw').addEventListener('click',()=>{loopState.dir=1;$('#ccw').classList.add('active');$('#cw').classList.remove('active');drawLoop()});
+  $('#cw').addEventListener('click',()=>{loopState.dir=-1;$('#cw').classList.add('active');$('#ccw').classList.remove('active');drawLoop()});
+
+  // Lab 2: Faraday
+  const faradayCanvas=$('#faradayCanvas');let faradayRunning=true;let phase=0;let lastTime=performance.now();
+  function drawFaraday(){
+    const {ctx,w,h}=setupCanvas(faradayCanvas);ctx.clearRect(0,0,w,h);const cx=w*.5,cy=h*.46;const R=Math.min(+$('#loopRadius').value,Math.min(w,h)*.27);const amp=+$('#bAmplitude').value/100;const freq=+$('#bFrequency').value;const phi=phase*freq/3;const B=amp*Math.sin(phi);const dB=amp*(freq/3)*Math.cos(phi);const flux=B*Math.PI*(R/70)**2;const circ=-dB*Math.PI*(R/70)**2;
+    ctx.fillStyle=B>=0?'rgba(228,87,46,.09)':'rgba(79,70,229,.08)';ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle=css('--text');ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+    const spacing=35;for(let x=cx-R+18;x<cx+R-10;x+=spacing)for(let y=cy-R+18;y<cy+R-10;y+=spacing){if(Math.hypot(x-cx,y-cy)>R-14)continue;ctx.strokeStyle=css('--magnetic');ctx.fillStyle=css('--magnetic');ctx.lineWidth=1.8;if(B>=0){ctx.beginPath();ctx.moveTo(x-4,y-4);ctx.lineTo(x+4,y+4);ctx.moveTo(x+4,y-4);ctx.lineTo(x-4,y+4);ctx.stroke()}else{ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}}
+    const edir=Math.sign(circ)||1;const estrength=clamp(Math.abs(circ)*8,5,28);for(let i=0;i<10;i++){const a=i*2*Math.PI/10;const x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);const tx=-Math.sin(a)*edir,ty=Math.cos(a)*edir;arrow(ctx,x-tx*estrength*.45,y-ty*estrength*.45,x+tx*estrength*.55,y+ty*estrength*.55,css('--electric'),2.2,7)}
+    const graphY=h*.84,graphW=w*.72,startX=(w-graphW)/2;ctx.strokeStyle=css('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(startX,graphY);ctx.lineTo(startX+graphW,graphY);ctx.stroke();
+    const points=100;ctx.strokeStyle=css('--magnetic');ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<=points;i++){const t=i/points*2*Math.PI;const x=startX+i/points*graphW,y=graphY-33*amp*Math.sin(t);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+    ctx.strokeStyle=css('--electric');ctx.beginPath();for(let i=0;i<=points;i++){const t=i/points*2*Math.PI;const x=startX+i/points*graphW,y=graphY+28*amp*Math.cos(t);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+    const markerX=startX+(phi%(2*Math.PI))/(2*Math.PI)*graphW;ctx.strokeStyle=css('--text');ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(markerX,graphY-55);ctx.lineTo(markerX,graphY+55);ctx.stroke();ctx.setLineDash([]);text(ctx,'ΦB',startX-8,graphY-31,css('--magnetic'),'right',12,700);text(ctx,'∮E·ds',startX-8,graphY+31,css('--electric'),'right',12,700);
+    $('#bNow').textContent=B.toFixed(2);$('#fluxNow').textContent=flux.toFixed(2);$('#eNow').textContent=circ.toFixed(2);
+  }
+  $('#faradayPlay').addEventListener('click',()=>{faradayRunning=!faradayRunning;$('#faradayPlay').textContent=faradayRunning?'⏸ Pause':'▶ Start'});
+  ['bAmplitude','bFrequency','loopRadius'].forEach(id=>$('#'+id).addEventListener('input',e=>{$('#'+id+'Out').textContent=e.target.value+(id==='bAmplitude'?' %':'');drawFaraday()}));
+
+  // Lab 3: capacitor
+  const capacitorCanvas=$('#capacitorCanvas');const capState={surface:'wire'};
+  function drawCapacitor(){
+    const {ctx,w,h}=setupCanvas(capacitorCanvas);ctx.clearRect(0,0,w,h);const cx=w*.5,top=h*.18,bottom=h*.74;const freq=+$('#capFrequency').value;const I=Math.sin(phase*freq/3);const plateGap=34,plateW=Math.min(210,w*.38),py=h*.45;
+    ctx.strokeStyle=css('--text');ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx,top);ctx.lineTo(cx,py-plateGap);ctx.moveTo(cx,py+plateGap);ctx.lineTo(cx,bottom);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-plateW/2,py-plateGap);ctx.lineTo(cx+plateW/2,py-plateGap);ctx.moveTo(cx-plateW/2,py+plateGap);ctx.lineTo(cx+plateW/2,py+plateGap);ctx.stroke();
+    arrow(ctx,cx,top+60,cx,top+60+Math.sign(I||1)*35,css('--text'),3,9);text(ctx,'I(t)',cx+20,top+75,css('--text'),'left',14,700);
+    const fieldLen=clamp(Math.abs(I)*45,8,45);for(let x=cx-plateW*.36;x<=cx+plateW*.36;x+=35){const dir=I>=0?1:-1;arrow(ctx,x,py-dir*fieldLen*.45,x,py+dir*fieldLen*.45,css('--electric'),2,7)}
+    const loopR=Math.min(112,w*.24);ctx.strokeStyle=css('--magnetic');ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.beginPath();ctx.ellipse(cx,py,loopR,loopR*.48,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);text(ctx,'∂A',cx+loopR+7,py,css('--magnetic'),'left',14,700);
+    ctx.fillStyle='rgba(22,128,58,.14)';ctx.strokeStyle=css('--success');ctx.lineWidth=2;
+    if(capState.surface==='wire'){ctx.beginPath();ctx.ellipse(cx,py-105,loopR*.68,72,0,0,Math.PI*2);ctx.fill();ctx.stroke();text(ctx,'A schneidet I',cx,py-105,css('--success'),'center',13,700)}
+    else{ctx.beginPath();ctx.ellipse(cx,py,loopR*.78,48,0,0,Math.PI*2);ctx.fill();ctx.stroke();text(ctx,'A liegt im Spalt',cx,py,css('--success'),'center',13,700)}
+    const displacement=I;
+    $('#wireCurrent').textContent=capState.surface==='wire'?I.toFixed(2):'0';$('#displacement').textContent=capState.surface==='gap'?displacement.toFixed(2):'—';$('#magCirculation').textContent=I.toFixed(2);
+    $('#surfaceExplanation').textContent=capState.surface==='wire'?'Diese Fläche schneidet den Leiterstrom. Das ursprüngliche Ampèresche Gesetz liefert einen magnetischen Umlaufwert.':'Diese Fläche schneidet keinen Leiterstrom. Erst die Änderung des elektrischen Flusses im Spalt liefert denselben magnetischen Umlaufwert.';
+  }
+  $$('[data-surface]').forEach(btn=>btn.addEventListener('click',()=>{$$('[data-surface]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');capState.surface=btn.dataset.surface;drawCapacitor()}));
+  $('#capFrequency').addEventListener('input',e=>{$('#capFrequencyOut').textContent=e.target.value;drawCapacitor()});
+
+  // Lab 4: electromagnetic wave
+  const waveCanvas=$('#waveCanvas');let waveRunning=true;const waveState={mode:'both'};
+  function drawWave(){
+    const {ctx,w,h}=setupCanvas(waveCanvas);ctx.clearRect(0,0,w,h);const left=55,right=w-35,cy=h*.52,amp=+$('#waveAmplitude').value/100*Math.min(105,h*.22),freq=+$('#waveFrequency').value;const cycles=freq*.55+.85;const lambda=(right-left)/cycles;const k=2*Math.PI/lambda;const omegaPhase=phase*cycles*.9;
+    ctx.strokeStyle=css('--line');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,cy);ctx.lineTo(right,cy);ctx.stroke();arrow(ctx,right-42,cy,right,cy,css('--text'),2,8);text(ctx,'Ausbreitung c',right-4,cy-20,css('--text'),'right',13,700);
+    // depth axis for B
+    ctx.strokeStyle=css('--line');ctx.beginPath();ctx.moveTo(left,cy+80);ctx.lineTo(left+95,cy-80);ctx.stroke();text(ctx,'B-Richtung',left+94,cy-91,css('--magnetic'),'center',12,700);text(ctx,'E-Richtung',left-9,cy-amp-17,css('--electric'),'left',12,700);
+    if(waveState.mode!=='magnetic'){ctx.strokeStyle=css('--electric');ctx.lineWidth=3;ctx.beginPath();for(let x=left;x<=right;x+=3){const y=cy-amp*Math.sin(k*(x-left)-omegaPhase);x===left?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.stroke()}
+    if(waveState.mode!=='electric'){ctx.strokeStyle=css('--magnetic');ctx.lineWidth=3;ctx.beginPath();for(let x=left;x<=right;x+=3){const z=amp*.56*Math.sin(k*(x-left)-omegaPhase);const px=x+z*.55,py=cy-z*.45;x===left?ctx.moveTo(px,py):ctx.lineTo(px,py)}ctx.stroke()}
+    const probeFrac=+$('#probe').value/100,px=left+probeFrac*(right-left),val=Math.sin(k*(px-left)-omegaPhase),py=cy-amp*val;ctx.strokeStyle=css('--text');ctx.lineWidth=1;ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(px,60);ctx.lineTo(px,h-55);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=css('--electric');ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();text(ctx,'Sonde',px,40,css('--text'),'center',12,700);$('#probeE').textContent=(val*(+$('#waveAmplitude').value/100)).toFixed(2);$('#probeB').textContent=(val*(+$('#waveAmplitude').value/100)).toFixed(2);
+  }
+  $('#wavePlay').addEventListener('click',()=>{waveRunning=!waveRunning;$('#wavePlay').textContent=waveRunning?'⏸ Pause':'▶ Start'});
+  $$('[data-wave]').forEach(btn=>btn.addEventListener('click',()=>{$$('[data-wave]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');waveState.mode=btn.dataset.wave;drawWave()}));
+  ['waveFrequency','waveAmplitude','probe'].forEach(id=>$('#'+id).addEventListener('input',e=>{$('#'+id+'Out').textContent=e.target.value+(id==='waveAmplitude'?' %':id==='probe'?' %':'');drawWave()}));
+
+  // c calculation
+  $('#calculateC').addEventListener('click',()=>{const eps=8.8541878128e-12,mu=1.25663706212e-6,c=1/Math.sqrt(eps*mu);$('#cResult').textContent=Math.round(c).toLocaleString('de-DE')+' m/s';$('#cText').textContent='Vorhersage aus μ₀ und ε₀';$('#cBar').style.width='99.93%';$('#lightInsight').hidden=false;$('#calculateC').textContent='✓ berechnet'});
+
+  // Laws
+  const lawInfo={
+    gaussE:['Gauß für das elektrische Feld','Eine geschlossene Fläche registriert netto elektrischen Fluss, wenn sie elektrische Ladung einschließt. Die Gleichung beschreibt damit, wo elektrische Feldlinien beginnen oder enden.'],
+    gaussB:['Gauß für das magnetische Feld','Durch jede geschlossene Fläche ist der gesamte magnetische Fluss null. Magnetische Feldlinien sind geschlossen; isolierte magnetische Pole wurden nicht beobachtet.'],
+    faraday:['Faradays Induktionsgesetz','Die Änderung des magnetischen Flusses durch eine Fläche ist mit einem elektrischen Wirbelfeld entlang ihres Randes verknüpft. Das Minuszeichen enthält die Lenzsche Regel.'],
+    ampere:['Ampère–Maxwell-Gesetz','Leiterstrom und die Änderung des elektrischen Flusses sind mit einem magnetischen Wirbelfeld verknüpft. Maxwells Ergänzung macht elektromagnetische Wellen möglich.']
+  };
+  $$('.law').forEach(btn=>btn.addEventListener('click',()=>{$$('.law').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');const [h,p]=lawInfo[btn.dataset.law];$('#lawDetail').innerHTML=`<h3>${h}</h3><p>${p}</p>`}));
+
+  // Quiz
+  const correct=[1,2,0,2,0];let answers=JSON.parse(localStorage.getItem('maxwell-answers')||'{}');
+  const quizFeedback=[
+    ['Genau: Das Integral ist der Grenzfall einer immer feineren Summe entlang eines geschlossenen Weges.','Nicht ganz. Entscheidend sind die Feldanteile entlang aller kleinen Wegstücke des geschlossenen Weges.'],
+    ['Richtig: Faradays Gesetz reagiert auf die Änderungsrate des magnetischen Flusses.','Nicht die Größe allein, sondern dΦB/dt ist entscheidend.'],
+    ['Richtig: Die Änderung des elektrischen Flusses schließt die Bilanz im Kondensatorspalt.','Achte auf die zwei verschiedenen Flächen mit demselben Rand.'],
+    ['Richtig: Die Welle ist transversal; E, B und c stehen paarweise senkrecht.','Prüfe die drei Richtungen noch einmal in Labor 4.'],
+    ['Richtig: 1/√(μ₀ε₀) ergab praktisch die bekannte Lichtgeschwindigkeit.','Der entscheidende Hinweis war eine quantitative Übereinstimmung der Geschwindigkeiten.']
+  ];
+  function paintQuiz(){
+    let score=0;
+    $$('.question').forEach((q,qi)=>{
+      const chosen=answers[qi];
+      if(chosen===undefined)return;
+      const ok=chosen===correct[qi];
+      if(ok)score++;
+      $$('.option',q).forEach((b,ai)=>{
+        b.disabled=true;
+        b.classList.toggle('correct',ai===correct[qi]);
+        b.classList.toggle('wrong',ai===chosen&&!ok);
+      });
+      const fb=$('.feedback',q);
+      fb.textContent=quizFeedback[qi][ok?0:1];
+      fb.className='feedback '+(ok?'ok':'no');
+    });
+    $('#score').textContent=`${score} / 5`;
+    $('#scoreBar').style.width=score/5*100+'%';
+    $('#scoreText').textContent=score===5
+      ?'Sehr gut – du kannst die Leitfrage physikalisch beantworten.'
+      :Object.keys(answers).length===5
+        ?'Sieh dir die markierten Stationen noch einmal an.'
+        :`${Object.keys(answers).length} von 5 Fragen beantwortet.`;
+  }
+  $$('.question').forEach((q,qi)=>$$('.option',q).forEach((btn,ai)=>btn.addEventListener('click',()=>{if(answers[qi]!==undefined)return;answers[qi]=ai;localStorage.setItem('maxwell-answers',JSON.stringify(answers));paintQuiz()})));
+  $('#reset').addEventListener('click',()=>{if(confirm('Quizfortschritt und Einstellungen dieser App zurücksetzen?')){localStorage.removeItem('maxwell-answers');localStorage.removeItem('maxwell-theme');location.reload()}});
+  paintQuiz();
+
+  function drawAll(){drawLoop();drawFaraday();drawCapacitor();drawWave()}
+  addEventListener('resize',drawAll);
+  function animate(now){const dt=Math.min(.05,(now-lastTime)/1000);lastTime=now;if(faradayRunning||waveRunning){phase=(phase+dt*1.7)%(Math.PI*2);if(faradayRunning)drawFaraday();drawCapacitor();if(waveRunning)drawWave()}requestAnimationFrame(animate)}
+  drawAll();requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
