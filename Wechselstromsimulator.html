@@ -102,7 +102,8 @@ input[type=number].dragging{
 .action{display:flex;gap:8px}
 .primary{flex:1;border:0}
 .secondary{width:44px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text)}
-.legal{flex:0 0 auto;padding:10px 24px;color:var(--muted);font-size:.8rem;background:rgba(15,23,42,.72);border-top:1px solid var(--border)}
+.legal{flex:0 0 auto;padding:10px 24px;color:var(--muted);font-size:.8rem;background:rgba(15,23,42,.72);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:.65rem;flex-wrap:wrap}
+.legal a{color:var(--text);text-decoration:none;text-underline-offset:.2em}.legal a:hover,.legal a:focus-visible{color:#fff;text-decoration:underline}.legal a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
 @media(max-width:1000px){
   .row{flex-direction:column;min-height:auto}
   #phasorPanel{width:100%;min-height:360px}
@@ -112,7 +113,6 @@ input[type=number].dragging{
   footer{max-height:46vh}
 }
 </style>
-<link rel="stylesheet" href="legal-links.css">
 </head>
 <body>
 <header>
@@ -220,7 +220,7 @@ input[type=number].dragging{
     </div>
   </div>
 </footer>
-<div class="legal">© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</div>
+<div class="legal"><span>© Dr. Claus Unterberg · Gymnasium Thomaeum Kempen</span><span aria-hidden="true">·</span><a href="impressum.html">Impressum</a><span aria-hidden="true">·</span><a href="datenschutz.html">Datenschutz</a></div>
 
 <script>
 const scope=document.getElementById('scope'), phasor=document.getElementById('phasor'), impedance=document.getElementById('impedance');
@@ -528,10 +528,5 @@ function loop(){
 updateUI();
 requestAnimationFrame(loop);
 </script>
-<nav class="site-legal-links" aria-label="Rechtliche Hinweise">
-  <a href="impressum.html">Impressum</a>
-  <span aria-hidden="true">·</span>
-  <a href="datenschutz.html">Datenschutz</a>
-</nav>
 </body>
 </html>
