@@ -236,9 +236,12 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
         </div>
         <div class="control">
           <h4>Sichtbare Ebenen</h4>
+          <p>Die ruhige Startansicht zeigt die nach außen laufende Fernfeldphase. Die quellennahen Linien lassen sich zum Vergleich zuschalten. Die Schalter trennen nur die Darstellung – physikalisch bleibt es ein zusammenhängendes Gesamtfeld.</p>
           <div class="layer-grid">
-            <button class="btn active" data-dipole-layer="electric" aria-pressed="true">E-Gesamtfeld</button>
-            <button class="btn active" data-dipole-layer="magnetic" aria-pressed="true">B-Gesamtfeld</button>
+            <button class="btn" data-dipole-layer="electricNear" aria-pressed="false">E-Nahfeld</button>
+            <button class="btn" data-dipole-layer="magneticNear" aria-pressed="false">B-Nahfeld</button>
+            <button class="btn active" data-dipole-layer="electricFar" aria-pressed="true">E-Fernfeld</button>
+            <button class="btn active" data-dipole-layer="magneticFar" aria-pressed="true">B-Fernfeld</button>
             <button class="btn active" data-dipole-layer="fronts" aria-pressed="true">Phasenfronten</button>
             <button class="btn active" data-dipole-layer="energy" aria-pressed="true">Energiefluss</button>
           </div>

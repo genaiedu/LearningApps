@@ -74,12 +74,25 @@
   const sourceGroup = new T.Group();
   const electricGroup = new T.Group();
   const magneticGroup = new T.Group();
+  const electricNearGroup = new T.Group();
+  const electricFarGroup = new T.Group();
+  const magneticNearGroup = new T.Group();
+  const magneticFarGroup = new T.Group();
   const frontGroup = new T.Group();
   const energyGroup = new T.Group();
   const vectorGroup = new T.Group();
+  electricGroup.add(electricNearGroup, electricFarGroup);
+  magneticGroup.add(magneticNearGroup, magneticFarGroup);
   scene.add(sourceGroup, electricGroup, magneticGroup, frontGroup, energyGroup, vectorGroup);
 
-  const layers = {electric: true, magnetic: true, fronts: true, energy: true};
+  const layers = {
+    electricNear: false,
+    magneticNear: false,
+    electricFar: true,
+    magneticFar: true,
+    fronts: true,
+    energy: true
+  };
   let running = true;
   let vectorsForced = false;
   let speed = 0.7;
@@ -246,7 +259,7 @@
     geometry.setDrawRange(0, 0);
     const line = new T.Line(geometry, electricMaterial);
     line.frustumCulled = false;
-    electricGroup.add(line);
+    electricNearGroup.add(line);
     electricLines.push({line, array});
   });
 
@@ -339,7 +352,7 @@
       }
     });
     group.visible = false;
-    electricGroup.add(group);
+    electricFarGroup.add(group);
     return {group, arcs, arrows};
   };
   for (let i = 0; i < 4; i++) electricWaveShells.push(createElectricWaveShell());
@@ -385,9 +398,9 @@
     });
     const line = new T.Line(new T.BufferGeometry().setFromPoints(points), material);
     line.frustumCulled = false;
-    magneticGroup.add(line);
+    magneticNearGroup.add(line);
     const arrow = new T.ArrowHelper(new T.Vector3(0, 0, -1), new T.Vector3(config.rho, config.y, 0), 0.28, MAGNETIC_COLOR, 0.085, 0.05);
-    magneticGroup.add(arrow);
+    magneticNearGroup.add(arrow);
     magneticRings.push({config, line, arrow});
   });
 
@@ -445,7 +458,7 @@
       rings.push({theta, line, arrows});
     });
     group.visible = false;
-    magneticGroup.add(group);
+    magneticFarGroup.add(group);
     return {group, rings};
   };
   for (let i = 0; i < 4; i++) magneticWaveShells.push(createMagneticWaveShell());
@@ -533,8 +546,8 @@
   const crestEArrow = new T.ArrowHelper(AXIS, new T.Vector3(), 0.66, ELECTRIC_COLOR, 0.13, 0.075);
   const crestBArrow = new T.ArrowHelper(new T.Vector3(0, 0, -1), new T.Vector3(), 0.66, MAGNETIC_COLOR, 0.13, 0.075);
   const crestArrow = new T.ArrowHelper(new T.Vector3(1, 0, 0), new T.Vector3(), 0.66, ENERGY_COLOR, 0.14, 0.085);
-  electricGroup.add(crestEArrow);
-  magneticGroup.add(crestBArrow);
+  electricFarGroup.add(crestEArrow);
+  magneticFarGroup.add(crestBArrow);
   energyGroup.add(crestArrow);
   const retardationPositions = new Float32Array(6);
   const retardationGeometry = new T.BufferGeometry();
@@ -692,8 +705,10 @@
   };
 
   const updateLayerVisibility = () => {
-    electricGroup.visible = layers.electric;
-    magneticGroup.visible = layers.magnetic;
+    electricNearGroup.visible = layers.electricNear;
+    electricFarGroup.visible = layers.electricFar;
+    magneticNearGroup.visible = layers.magneticNear;
+    magneticFarGroup.visible = layers.magneticFar;
     frontGroup.visible = layers.fronts;
     energyGroup.visible = layers.energy;
     vectorGroup.visible = !running || vectorsForced;
