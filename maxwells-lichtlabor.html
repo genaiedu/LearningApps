@@ -82,8 +82,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <a href="#faraday"><span class="navnum">2</span>Faradays Gesetz</a>
     <a href="#maxwell"><span class="navnum">3</span>Maxwells Ergänzung</a>
     <a href="#gleichungen"><span class="navnum">4</span>Vier Gleichungen</a>
-    <a href="#welle"><span class="navnum">5</span>Die Feldwelle</a>
-    <a href="#dipol"><span class="navnum">6</span>Der Hertzsche Dipol</a>
+    <a href="#dipol"><span class="navnum">5</span>Der Hertzsche Dipol</a>
+    <a href="#welle"><span class="navnum">6</span>Die Feldwelle</a>
     <a href="#licht"><span class="navnum">7</span>Die Lichtgeschwindigkeit</a>
     <a href="#check"><span class="navnum">✓</span>Abschlusscheck</a>
   </nav>
@@ -209,42 +209,15 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   </article>
 </section>
 
-<section class="stage reveal" id="welle">
-  <div class="stage-head"><div class="stage-id">5</div><div><h2>Aus den Gleichungen wird eine Feldwelle</h2><p>Nun nutzen wir die beiden Gleichungen, die Veränderungen verknüpfen: Faraday und Ampère–Maxwell.</p></div></div>
-  <div class="glass wave-bridge">
-    <h3>Die entscheidende Kopplung im Vakuum</h3>
-    <p>Ohne Ladung und Leiterstrom verschwinden die Felder nicht. Eine zeitliche Änderung von B gehört zu einem räumlichen Umlauf von E; eine zeitliche Änderung von E gehört zu einem räumlichen Umlauf von B. Beide Aussagen gelten gleichzeitig für dieselbe Feldstruktur.</p>
-    <div class="coupling"><div class="coupling-box"><strong>Faraday</strong>Änderung von B ↔ räumliche Änderung von E</div><div class="coupling-arrow">⇄</div><div class="coupling-box"><strong>Ampère–Maxwell</strong>Änderung von E ↔ räumliche Änderung von B</div></div>
-  </div>
-  <div class="glass lab">
-    <div class="labbar"><h3>Labor 4 · Beobachte E, B und die Ausbreitungsrichtung</h3><div class="btnrow"><button class="btn primary" id="wavePlay">⏸ Pause</button><button class="btn active" data-wave="both">beide Felder</button><button class="btn" data-wave="electric">nur E</button><button class="btn" data-wave="magnetic">nur B</button></div></div>
-    <div class="labbody">
-      <div class="canvasbox"><div class="canvas-labels"><span class="badge e">E-Feld: blau</span><span class="badge b">B-Feld: orange</span><span class="badge">Ausbreitung →</span></div><canvas id="waveCanvas" aria-label="Räumliche Darstellung einer elektromagnetischen Welle"></canvas></div>
-      <aside class="controls">
-        <div class="control"><h4>Frequenz</h4><div class="range-row"><input id="waveFrequency" type="range" min="1" max="6" value="3"><output class="out" id="waveFrequencyOut">3</output></div></div>
-        <div class="control"><h4>Amplitude</h4><div class="range-row"><input id="waveAmplitude" type="range" min="25" max="100" value="70"><output class="out" id="waveAmplitudeOut">70 %</output></div></div>
-        <div class="control"><h4>Messsonde</h4><p>Verschiebe die Sonde entlang der Ausbreitungsrichtung.</p><div class="range-row"><input id="probe" type="range" min="8" max="92" value="62"><output class="out" id="probeOut">62 %</output></div></div>
-        <div class="control"><div class="readouts"><div class="readout"><span>E an der Sonde</span><strong class="evalue" id="probeE">0</strong></div><div class="readout"><span>B an der Sonde</span><strong class="bvalue" id="probeB">0</strong></div><div class="readout"><span>Orientierung</span><strong>E ⟂ B ⟂ c</strong></div></div></div>
-      </aside>
-    </div>
-  </div>
-  <div class="grid3" style="margin-top:18px">
-    <article class="glass concept"><h3>E und B</h3><p>Beide Felder schwingen mit gleicher Frequenz und Phase.</p></article>
-    <article class="glass concept"><h3>Transversal</h3><p>E, B und Ausbreitungsrichtung stehen jeweils senkrecht aufeinander.</p></article>
-    <article class="glass concept"><h3>Gemeinsame Lösung</h3><p>Die räumlich und zeitlich veränderlichen Felder bilden zusammen eine Lösung der Maxwell-Gleichungen.</p></article>
-  </div>
-  <div class="insight warning"><strong>Sprachliche Präzision:</strong> E und B wechseln sich nicht wie zwei getrennte Dominosteine beim „Erzeugen“ ab. Die elektromagnetische Welle ist eine zusammenhängende Feldstruktur, deren räumliche und zeitliche Änderungen durch Maxwells Gleichungen verknüpft sind.</div>
-</section>
-
 <section class="stage reveal" id="dipol">
-  <div class="stage-head"><div class="stage-id">6</div><div><h2>Der Hertzsche Dipol: Wie Felder abgestrahlt werden</h2><p>Jetzt erhält die Feldwelle eine Quelle. Schwingende Ladungsträger erzeugen eine Störung, die sich zeitverzögert nach außen ausbreitet.</p></div></div>
+  <div class="stage-head"><div class="stage-id">5</div><div><h2>Der Hertzsche Dipol: Wie Felder abgestrahlt werden</h2><p>Nun wenden wir die vier Gleichungen auf eine konkrete Quelle an: Schwingende Ladungsträger erzeugen ein Gesamtfeld, dessen Phasen sich zeitverzögert nach außen ausbreiten.</p></div></div>
   <article class="glass dipole-intro">
     <h3>Vom Wechselstrom zur frei laufenden Welle</h3>
     <p>Im kurzen Dipol bewegen sich die violetten Leitungselektronen im halbtransparenten Metall hin und her. Ihre Beschleunigung verändert das Feld. Ein Ort im Abstand r reagiert erst auf den früheren Quellenzustand zur <strong>retardierten Zeit t − r/c</strong>. Überall liegt dasselbe Gesamtfeld vor: Nahe an der Quelle zeigen kurze blaue Stromlinien seine momentane Form; weiter außen markieren blaue E-Bögen, orange B-Ringe und gelbe Energiepfeile gemeinsam seine nach außen laufende Phase.</p>
   </article>
   <div class="glass dipole-lab">
     <div class="dipole-toolbar">
-      <h3>Labor 5 · Retardierte Felder eines schwingenden elektrischen Dipols</h3>
+      <h3>Labor 4 · Retardierte Felder eines schwingenden elektrischen Dipols</h3>
       <div class="btnrow"><button class="btn primary" id="dipolePlay">⏸ Pause</button><button class="btn" id="dipoleResetView">Ansicht zurücksetzen</button></div>
     </div>
     <div class="dipole-body">
@@ -330,6 +303,34 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     </div>
     <div class="checkpoint-feedback" aria-live="polite"></div>
   </article>
+  <div class="insight"><strong>Vom konkreten Sender zur allgemeinen Welle:</strong> Betrachte nun einen kleinen Ausschnitt einer weit entfernten Phasenfront. Dort ist die Krümmung kaum noch erkennbar, der 1/r-Anteil dominiert und die Feldstruktur lässt sich als nahezu ebene elektromagnetische Welle untersuchen.</div>
+</section>
+
+<section class="stage reveal" id="welle">
+  <div class="stage-head"><div class="stage-id">6</div><div><h2>Vom Dipolfeld zur idealen Feldwelle</h2><p>Wir lösen uns nun von der konkreten Quelle und betrachten einen kleinen Ausschnitt weit entfernt vom Dipol.</p></div></div>
+  <div class="glass wave-bridge">
+    <h3>Die entscheidende Kopplung im Vakuum</h3>
+    <p>In diesem fernen, nahezu ebenen Ausschnitt gibt es weder Ladung noch Leiterstrom. Eine zeitliche Änderung von B gehört dort zu einer räumlichen Änderung von E; eine zeitliche Änderung von E gehört zu einer räumlichen Änderung von B. Beide Aussagen gelten gleichzeitig für dieselbe Feldstruktur.</p>
+    <div class="coupling"><div class="coupling-box"><strong>Faraday</strong>Änderung von B ↔ räumliche Änderung von E</div><div class="coupling-arrow">⇄</div><div class="coupling-box"><strong>Ampère–Maxwell</strong>Änderung von E ↔ räumliche Änderung von B</div></div>
+  </div>
+  <div class="glass lab">
+    <div class="labbar"><h3>Labor 5 · Beobachte E, B und die Ausbreitungsrichtung</h3><div class="btnrow"><button class="btn primary" id="wavePlay">⏸ Pause</button><button class="btn active" data-wave="both">beide Felder</button><button class="btn" data-wave="electric">nur E</button><button class="btn" data-wave="magnetic">nur B</button></div></div>
+    <div class="labbody">
+      <div class="canvasbox"><div class="canvas-labels"><span class="badge e">E-Feld: blau</span><span class="badge b">B-Feld: orange</span><span class="badge">Ausbreitung →</span></div><canvas id="waveCanvas" aria-label="Räumliche Darstellung einer elektromagnetischen Welle"></canvas></div>
+      <aside class="controls">
+        <div class="control"><h4>Frequenz</h4><div class="range-row"><input id="waveFrequency" type="range" min="1" max="6" value="3"><output class="out" id="waveFrequencyOut">3</output></div></div>
+        <div class="control"><h4>Amplitude</h4><div class="range-row"><input id="waveAmplitude" type="range" min="25" max="100" value="70"><output class="out" id="waveAmplitudeOut">70 %</output></div></div>
+        <div class="control"><h4>Messsonde</h4><p>Verschiebe die Sonde entlang der Ausbreitungsrichtung.</p><div class="range-row"><input id="probe" type="range" min="8" max="92" value="62"><output class="out" id="probeOut">62 %</output></div></div>
+        <div class="control"><div class="readouts"><div class="readout"><span>E an der Sonde</span><strong class="evalue" id="probeE">0</strong></div><div class="readout"><span>B an der Sonde</span><strong class="bvalue" id="probeB">0</strong></div><div class="readout"><span>Orientierung</span><strong>E ⟂ B ⟂ c</strong></div></div></div>
+      </aside>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <article class="glass concept"><h3>E und B</h3><p>Beide Felder schwingen mit gleicher Frequenz und Phase.</p></article>
+    <article class="glass concept"><h3>Transversal</h3><p>E, B und Ausbreitungsrichtung stehen jeweils senkrecht aufeinander.</p></article>
+    <article class="glass concept"><h3>Gemeinsame Lösung</h3><p>Die räumlich und zeitlich veränderlichen Felder bilden zusammen eine Lösung der Maxwell-Gleichungen.</p></article>
+  </div>
+  <div class="insight warning"><strong>Sprachliche Präzision:</strong> E und B wechseln sich nicht wie zwei getrennte Dominosteine beim „Erzeugen“ ab. Die elektromagnetische Welle ist eine zusammenhängende Feldstruktur, deren räumliche und zeitliche Änderungen durch Maxwells Gleichungen verknüpft sind.</div>
 </section>
 
 <section class="stage reveal" id="licht">
@@ -605,7 +606,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     ['Genau: Das Integral ist der Grenzfall einer immer feineren Summe entlang eines geschlossenen Weges.','Nicht ganz. Entscheidend sind die Feldanteile entlang aller kleinen Wegstücke des geschlossenen Weges.'],
     ['Richtig: Faradays Gesetz reagiert auf die Änderungsrate des magnetischen Flusses.','Nicht die Größe allein, sondern dΦB/dt ist entscheidend.'],
     ['Richtig: Die Änderung des elektrischen Flusses schließt die Bilanz im Kondensatorspalt.','Achte auf die zwei verschiedenen Flächen mit demselben Rand.'],
-    ['Richtig: Die Welle ist transversal; E, B und c stehen paarweise senkrecht.','Prüfe die drei Richtungen noch einmal in Labor 4.'],
+    ['Richtig: Die Welle ist transversal; E, B und c stehen paarweise senkrecht.','Prüfe die drei Richtungen noch einmal in Labor 5.'],
     ['Richtig: 1/√(μ₀ε₀) ergab praktisch die bekannte Lichtgeschwindigkeit.','Der entscheidende Hinweis war eine quantitative Übereinstimmung der Geschwindigkeiten.']
   ];
   function paintQuiz(){
