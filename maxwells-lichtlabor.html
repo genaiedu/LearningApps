@@ -213,7 +213,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   <div class="stage-head"><div class="stage-id">5</div><div><h2>Der Hertzsche Dipol: Wie Felder abgestrahlt werden</h2><p>Nun wenden wir die vier Gleichungen auf eine konkrete Quelle an: Schwingende Ladungsträger erzeugen ein Gesamtfeld, dessen Phasen sich zeitverzögert nach außen ausbreiten.</p></div></div>
   <article class="glass dipole-intro">
     <h3>Vom Wechselstrom zur frei laufenden Welle</h3>
-    <p>Im kurzen Dipol bewegen sich die violetten Leitungselektronen im halbtransparenten Metall hin und her. Ihre Beschleunigung verändert das Feld. Ein Ort im Abstand r reagiert erst auf den früheren Quellenzustand zur <strong>retardierten Zeit t − r/c</strong>. Überall liegt dasselbe Gesamtfeld vor: Nahe an der Quelle zeigen kurze blaue Stromlinien seine momentane Form; weiter außen markieren blaue E-Bögen, orange B-Ringe und gelbe Energiepfeile gemeinsam seine nach außen laufende Phase.</p>
+    <p>Im kurzen Dipol bewegen sich die violetten Leitungselektronen im halbtransparenten Metall hin und her. Ihre Beschleunigung verändert das Feld. Ein Ort im Abstand r reagiert erst auf den früheren Quellenzustand zur <strong>retardierten Zeit t − r/c</strong>. Die blauen Kurven sind durchgehend berechnete momentane E-Feldlinien: Einige bleiben mit den Ladungsenden verbunden, andere schließen sich außerhalb der Quelle zu abgelösten Schleifen. In mehreren Meridianebenen bilden diese Schleifen gemeinsam die verzerrte toroidale Struktur der Dipolstrahlung. Die orangefarbenen Kreise sind dazu passende geschlossene B-Feldlinien derselben retardierten Lösung.</p>
   </article>
   <div class="glass dipole-lab">
     <div class="dipole-toolbar">
@@ -221,12 +221,12 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
       <div class="btnrow"><button class="btn primary" id="dipolePlay">⏸ Pause</button><button class="btn" id="dipoleResetView">Ansicht zurücksetzen</button></div>
     </div>
     <div class="dipole-body">
-      <div class="dipole-viewport" id="dipoleViewport" tabindex="0" role="img" aria-label="Frei drehbare dreidimensionale Simulation eines Hertzschen Dipols mit bewegten Ladungsträgern, elektrischen und magnetischen Feldern, nach außen laufenden Phasenfronten und Energieflussvektoren">
+      <div class="dipole-viewport" id="dipoleViewport" tabindex="0" role="img" aria-label="Frei drehbare dreidimensionale Simulation eines Hertzschen Dipols mit bewegten Ladungsträgern, berechneten geschlossenen elektrischen Feldlinienschleifen, kreisförmigen magnetischen Feldlinien, optionalen Phasenfronten und Energieflussvektoren">
         <div class="dipole-overlay">
-          <div class="dipole-legend"><span class="dipole-chip e">E-Gesamtfeld</span><span class="dipole-chip b">B-Gesamtfeld</span><span class="dipole-chip f">gemeinsame Wellenfront</span><span class="dipole-chip s">Energiefluss S</span><span class="dipole-chip q">Elektronen + Beschleunigung</span></div>
+          <div class="dipole-legend"><span class="dipole-chip e">berechnete E-Feldlinien</span><span class="dipole-chip b">berechnete B-Feldlinien</span><span class="dipole-chip f">optionale Phasenhilfe</span><span class="dipole-chip s">Energiefluss S</span><span class="dipole-chip q">Elektronen + Beschleunigung</span></div>
           <div class="dipole-help">Ziehen: drehen<br>Mausrad: zoomen</div>
         </div>
-        <div class="dipole-track-label" id="dipoleTrackLabel">E, B und Energiefluss liegen auf derselben nach außen laufenden Phasenfront.</div>
+        <div class="dipole-track-label" id="dipoleTrackLabel">Die Feldlinien werden aus dem vollständigen retardierten E- und B-Feld desselben Quellenzustands berechnet.</div>
       </div>
       <aside class="dipole-controls">
         <div class="control">
@@ -236,13 +236,11 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
         </div>
         <div class="control">
           <h4>Sichtbare Ebenen</h4>
-          <p>Die ruhige Startansicht zeigt die nach außen laufende Fernfeldphase. Die quellennahen Linien lassen sich zum Vergleich zuschalten. Die Schalter trennen nur die Darstellung – physikalisch bleibt es ein zusammenhängendes Gesamtfeld.</p>
+          <p>E- und B-Feldlinien reichen ohne künstliche Grenze vom Quellbereich bis in die Strahlungszone. Die kugelförmige Phasenhilfe ist getrennt und anfangs ausgeschaltet, damit sie nicht mit Feldlinien verwechselt wird.</p>
           <div class="layer-grid">
-            <button class="btn" data-dipole-layer="electricNear" aria-pressed="false">E-Nahfeld</button>
-            <button class="btn" data-dipole-layer="magneticNear" aria-pressed="false">B-Nahfeld</button>
-            <button class="btn active" data-dipole-layer="electricFar" aria-pressed="true">E-Fernfeld</button>
-            <button class="btn active" data-dipole-layer="magneticFar" aria-pressed="true">B-Fernfeld</button>
-            <button class="btn active" data-dipole-layer="fronts" aria-pressed="true">Phasenfronten</button>
+            <button class="btn active" data-dipole-layer="electric" aria-pressed="true">E-Feldlinien</button>
+            <button class="btn active" data-dipole-layer="magnetic" aria-pressed="true">B-Feldlinien</button>
+            <button class="btn" data-dipole-layer="fronts" aria-pressed="false">Phasenhilfe</button>
             <button class="btn active" data-dipole-layer="energy" aria-pressed="true">Energiefluss</button>
           </div>
         </div>
@@ -266,26 +264,26 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   </div>
   <article class="glass dipole-causality">
     <h3>Quelle → Laufzeit → gemeinsame Feldphase</h3>
-    <p>Die gestrichelte gelbe Strecke verbindet den Dipol mit der markierten Front. Vergleiche in der Momentaufnahme den Zustand der Quelle jetzt mit dem Zustand, den die Front aus der Vergangenheit mitführt.</p>
+    <p>Schaltest du die Phasenhilfe ein, verbindet eine gestrichelte gelbe Strecke den Dipol mit der markierten Front. Vergleiche in der Momentaufnahme den Zustand der Quelle jetzt mit dem Zustand, den die Front aus der Vergangenheit mitführt.</p>
     <div class="dipole-causal-grid">
       <div class="dipole-causal-step"><span>1 · Quelle zur Zeit t</span><strong>Elektronen werden beschleunigt</strong><p>Die Ladungen bleiben im Leiter. Ihre Schwingung verändert Dipolmoment und Strom; insbesondere die Beschleunigung ist für das Strahlungsfeld entscheidend.</p></div>
       <div class="dipole-causal-step"><span>2 · Laufzeit r/c</span><strong>Der Feldzustand kommt später an</strong><p>Am Ort r gilt nicht der jetzige, sondern der frühere Quellenzustand bei t − r/c. Größere Entfernung bedeutet eine entsprechend größere Verzögerung.</p></div>
-      <div class="dipole-causal-step"><span>3 · Eine gemeinsame Front</span><strong>E ⟂ B ⟂ S</strong><p>Blaue E-Bögen, orange B-Ringe und gelbe Energiepfeile besitzen denselben Radius. Sie bewegen sich daher gemeinsam mit demselben c nach außen.</p></div>
+      <div class="dipole-causal-step"><span>3 · Gekoppelte Felder</span><strong>E ⟂ B ⟂ S</strong><p>Am selben Ort gehören E und B zur gleichen retardierten Phase. Die blauen Schleifen verändern und verlagern sich nach außen; die orangefarbenen B-Maxima folgen derselben berechneten Zeitentwicklung.</p></div>
     </div>
   </article>
   <article class="glass dipole-maxwell">
     <h3>Vier Gleichungen im selben 3D-Bild</h3>
     <p>Die Gleichungen laufen nicht nacheinander ab. Sie beschreiben gleichzeitig verschiedene Eigenschaften derselben Feldkonfiguration. Blende einzelne Ebenen aus und suche die vier Aussagen im Modell.</p>
     <div class="dipole-law-grid">
-      <div class="dipole-law-card e"><span class="law-kicker">1 · Gauß für E</span><strong>Ladungen sind Quellen und Senken des E-Gesamtfeldes</strong><p>An den Dipolenden wechselt der Ladungsüberschuss. Die kurzen blauen Linien machen diesen quellennahen Teil der Gesamtstruktur sichtbar; ihre Gestalt besitzt keine eigene Bewegungsgeschwindigkeit.</p></div>
-      <div class="dipole-law-card b"><span class="law-kicker">2 · Gauß für B</span><strong>Magnetische Feldlinien besitzen keine Enden</strong><p>Die orangefarbenen B-Feldlinien bilden geschlossene Ringe um die Dipolachse. Die hellen Ringe markieren gleichphasige Feldmaxima und wachsen nach außen; sie öffnen sich dabei nirgends.</p></div>
+      <div class="dipole-law-card e"><span class="law-kicker">1 · Gauß für E</span><strong>Ladungen sind Quellen und Senken des E-Gesamtfeldes</strong><p>An den Dipolenden wechselt der Ladungsüberschuss. Daran angeschlossene blaue Linien beginnen beziehungsweise enden an Ladung; abgelöste Schleifen sind im ladungsfreien Raum geschlossen.</p></div>
+      <div class="dipole-law-card b"><span class="law-kicker">2 · Gauß für B</span><strong>Magnetische Feldlinien besitzen keine Enden</strong><p>Die orangefarbenen B-Feldlinien bilden in jedem Abstand geschlossene Kreise um die Dipolachse. Gezeigt werden ausgewählte momentane Betragsmaxima, deren Lage sich mit der retardierten Feldphase nach außen verschiebt.</p></div>
       <div class="dipole-law-card e"><span class="law-kicker">3 · Faraday</span><strong>Ein veränderlicher B-Fluss gehört zu einem E-Wirbelfeld</strong><p>Außerhalb des Leiters ist das E-Feld deshalb nicht nur ein statisches Feld zwischen zwei Ladungen. Sein Umlauf ist mit der zeitlichen Änderung des B-Feldes verknüpft.</p></div>
       <div class="dipole-law-card b"><span class="law-kicker">4 · Ampère–Maxwell</span><strong>Strom und veränderlicher E-Fluss gehören zu einem B-Wirbelfeld</strong><p>Im Dipol trägt der Leitungsstrom bei; außerhalb des Leiters bleibt der Maxwell-Term mit der Änderung des elektrischen Flusses. Dadurch kann das B-Feld die Quelle verlassen.</p></div>
     </div>
   </article>
   <div class="insight"><strong>Ein Gesamtfeld – keine harte Grenze:</strong> Nah-, Übergangs- und Fernbereich sind keine getrennten Felder. Die vollständige retardierte Dipollösung enthält überall den 1/r³-, 1/r²- und 1/r-Anteil. Mit wachsendem r werden die ersten beiden nur schneller klein; dadurch dominiert schließlich der nach außen energietragende 1/r-Anteil.</div>
   <div class="model-grid">
-    <article class="glass model-card"><strong>Nahbereich · 1/r³ dominiert</strong><p>Das Gesamtfeld folgt stark der augenblicklichen Ladungsverteilung. Seine kurzen Stromlinien ändern ihre Form, „fliegen“ aber nicht nach außen. Energie kann hier zum Dipol zurückfließen.</p></article>
+    <article class="glass model-card"><strong>Nahbereich · 1/r³ dominiert</strong><p>Das Gesamtfeld folgt stark der augenblicklichen Ladungsverteilung. Viele Feldlinien bleiben mit den Ladungsenden verbunden; Energie kann hier zeitweise zum Dipol zurückfließen.</p></article>
     <article class="glass model-card"><strong>Übergangsbereich · 1/r² wichtig</strong><p>Es entsteht kein neues Feld. Im selben Gesamtfeld verschiebt sich lediglich das Verhältnis der Anteile; elektrische und magnetische Wirkung sind deutlich gekoppelt.</p></article>
     <article class="glass model-card"><strong>Fernbereich · 1/r dominiert</strong><p>Der langsamst abklingende Anteil bleibt schließlich bestimmend. E, B und der dauerhaft nach außen gerichtete Energiefluss stehen senkrecht aufeinander.</p></article>
   </div>
@@ -294,8 +292,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <div class="dipole-term"><strong>Induktionsanteil</strong><span>E, B ∼ 1/r²</span></div>
     <div class="dipole-term"><strong>Strahlungsanteil</strong><span>E, B ∼ 1/r</span></div>
   </div>
-  <div class="insight"><strong>Woran du das Abstrahlen erkennst:</strong> In der Strahlungszone liegen die blauen E-Phasenbögen, die geschlossenen orangefarbenen B-Ringe und die gelben Poynting-Vektoren stets auf demselben Radius. Sie verlassen den Dipol als gemeinsame Feldphase; seitlich zur Dipolachse ist die Abstrahlung maximal, entlang der Achse verschwindet sie.</div>
-  <div class="insight warning"><strong>Modellgrenze:</strong> Dargestellt ist der analytische Hertzsche Punktdipol außerhalb eines kleinen ausgeblendeten Quellbereichs. Nur das Phasenmuster breitet sich nach außen aus. Feldlinien sind keine materiellen Fäden und ihre geometrische Form besitzt keine Signalgeschwindigkeit. Das Modell visualisiert deshalb dasselbe Gesamtfeld nahe am Dipol mit berechneten momentanen Stromlinien und weiter außen mit gemeinsam skalierten E-, B- und Energie-Phasenmarkierungen.</div>
+  <div class="insight"><strong>Woran du das Abstrahlen erkennst:</strong> Blaue E-Feldlinien schnüren sich zu geschlossenen Schleifen ab; ihre rotationssymmetrische Gesamtheit bildet verzerrte toroidale Bänder. Gleichzeitig verschieben sich die orangefarbenen B-Feldmaxima nach außen und der gelbe Poynting-Vektor zeigt dauerhaft vom Dipol weg. Seitlich zur Dipolachse ist die Abstrahlung maximal, entlang der Achse verschwindet sie.</div>
+  <div class="insight warning"><strong>Modellgrenze:</strong> Dargestellt ist der analytische Hertzsche Punktdipol außerhalb eines kleinen ausgeblendeten Quellbereichs. Die blauen Linien sind exakte Niveaulinien seiner elektrischen Stromfunktion, die orangefarbenen Kreise ausgewählte echte B-Feldlinien an momentanen Betragsmaxima. Feldlinien sind dennoch keine materiellen Fäden: Ihre Form wird für jeden Zeitpunkt neu aus dem Feld berechnet. Die optionale Kugelgrafik zeigt ausschließlich gleiche Phase und ist keine Feldlinie.</div>
   <article class="glass checkpoint dipole-check" id="dipoleCheckpoint">
     <h3>Zwischencheck · Was beweist in der Simulation die Abstrahlung?</h3>
     <p>Wähle die Beobachtung, die eine nach außen laufende elektromagnetische Welle beschreibt.</p>
