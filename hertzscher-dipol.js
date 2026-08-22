@@ -93,7 +93,10 @@
     metalness: 0.82,
     roughness: 0.24,
     emissive: 0x122033,
-    emissiveIntensity: 0.35
+    emissiveIntensity: 0.35,
+    transparent: true,
+    opacity: 0.34,
+    depthWrite: false
   });
   const rodGeometry = new T.CylinderGeometry(0.105, 0.105, 1.72, 24);
   const topRod = new T.Mesh(rodGeometry, metalMaterial);
@@ -119,25 +122,35 @@
     }
   });
 
-  const electronGeometry = new T.SphereGeometry(0.048, 14, 10);
-  const electronMaterial = new T.MeshStandardMaterial({
-    color: CHARGE_COLOR,
-    emissive: 0x6d55c7,
-    emissiveIntensity: 0.75,
-    roughness: 0.35
+  const electronGeometry = new T.SphereGeometry(0.064, 16, 12);
+  const electronMaterial = new T.MeshBasicMaterial({color: CHARGE_COLOR});
+  const electronTrailMaterial = new T.LineBasicMaterial({
+    color: 0xe9d5ff,
+    transparent: true,
+    opacity: 0.72,
+    blending: T.AdditiveBlending,
+    depthWrite: false
   });
   const electrons = [];
   [-1, 1].forEach(sign => {
     for (let i = 0; i < 7; i++) {
       const electron = new T.Mesh(electronGeometry, electronMaterial);
       const angle = i * 2.18 + (sign < 0 ? 0.7 : 0);
-      electron.userData.baseY = sign * (0.32 + i * 0.205);
-      electron.userData.x = 0.055 * Math.cos(angle);
-      electron.userData.z = 0.055 * Math.sin(angle);
+      electron.userData.baseY = sign * (0.34 + i * 0.215);
+      electron.userData.x = 0.045 * Math.cos(angle);
+      electron.userData.z = 0.045 * Math.sin(angle);
+      electron.renderOrder = 3;
       sourceGroup.add(electron);
+      const trailPositions = new Float32Array(6);
+      const trailGeometry = new T.BufferGeometry();
+      trailGeometry.setAttribute('position', new T.BufferAttribute(trailPositions, 3));
+      const trail = new T.Line(trailGeometry, electronTrailMaterial);
+      trail.frustumCulled = false;
+      trail.renderOrder = 4;
+      sourceGroup.add(trail);
       const velocityArrow = new T.ArrowHelper(AXIS, new T.Vector3(), 0.25, 0xffffff, 0.075, 0.045);
       vectorGroup.add(velocityArrow);
-      electrons.push({mesh: electron, arrow: velocityArrow});
+      electrons.push({mesh: electron, arrow: velocityArrow, trail, trailPositions});
     }
   });
 
@@ -197,19 +210,21 @@
     blending: T.AdditiveBlending,
     depthWrite: false
   });
-  const seedDirections = [];
-  [0, Math.PI / 3, 2 * Math.PI / 3, Math.PI].forEach(phi => {
-    [35, 62, 118, 145].forEach(degrees => {
-      const theta = degrees * Math.PI / 180;
-      seedDirections.push(new T.Vector3(
-        Math.sin(theta) * Math.cos(phi),
-        Math.cos(theta),
-        Math.sin(theta) * Math.sin(phi)
-      ).multiplyScalar(0.52));
-    });
+  // Wegen der Rotationssymmetrie genügt eine Rechnung in einer Meridianebene.
+  // Diese Grundlinien werden anschließend exakt in acht gleiche Raumrichtungen
+  // gedreht. So bleibt die Darstellung auch numerisch vollkommen symmetrisch.
+  const baseSeedDirections = [35, 62, 118, 145].map(degrees => {
+    const theta = degrees * Math.PI / 180;
+    return new T.Vector3(Math.sin(theta), Math.cos(theta), 0).multiplyScalar(0.52);
+  });
+  const electricSeeds = [];
+  baseSeedDirections.forEach((seed, thetaIndex) => {
+    for (let azimuthIndex = 0; azimuthIndex < 8; azimuthIndex++) {
+      electricSeeds.push({thetaIndex, rotation: azimuthIndex / 8 * TWO_PI});
+    }
   });
 
-  seedDirections.forEach(() => {
+  electricSeeds.forEach(() => {
     const array = new Float32Array(MAX_LINE_POINTS * 3);
     const geometry = new T.BufferGeometry();
     const attribute = new T.BufferAttribute(array, 3);
@@ -244,10 +259,13 @@
   };
 
   const updateElectricLines = () => {
-    seedDirections.forEach((seed, index) => {
+    const baseLines = baseSeedDirections.map(seed => {
       const backward = traceField(seed, -1, phase).reverse();
       const forward = traceField(seed, 1, phase);
-      const points = backward.concat(forward.slice(1)).slice(0, MAX_LINE_POINTS);
+      return backward.concat(forward.slice(1)).slice(0, MAX_LINE_POINTS);
+    });
+    electricSeeds.forEach((seed, index) => {
+      const points = baseLines[seed.thetaIndex].map(point => point.clone().applyAxisAngle(AXIS, seed.rotation));
       const {line, array} = electricLines[index];
       points.forEach((point, pointIndex) => {
         array[pointIndex * 3] = point.x;
@@ -261,12 +279,14 @@
   };
 
   // Magnetische Feldlinien: geschlossene azimutale Ringe -------------------
+  // Die schwachen inneren Ringe zeigen das momentane Nahfeld an festen Orten.
+  // Helle Ringe auf expandierenden Kugelschalen markieren dagegen gleiche
+  // Phasen des retardierten B-Feldes und machen die Ausbreitung sichtbar.
   const magneticRings = [];
-  const ringConfigs = [];
-  [0.72, 1.18, 1.8, 2.7, 3.8, 5.0].forEach(rho => {
-    const heights = rho < 1 ? [-1.4, -0.65, 0, 0.65, 1.4] : rho < 2 ? [-1.7, -0.8, 0, 0.8, 1.7] : [-2, 0, 2];
-    heights.forEach(y => ringConfigs.push({rho, y}));
-  });
+  const ringConfigs = [
+    {rho: 0.48, y: 0}, {rho: 0.72, y: 0}, {rho: 0.98, y: 0}, {rho: 1.28, y: 0},
+    {rho: 0.62, y: 0.72}, {rho: 0.62, y: -0.72}
+  ];
 
   ringConfigs.forEach(config => {
     const points = [];
@@ -277,7 +297,7 @@
     const material = new T.LineBasicMaterial({
       color: MAGNETIC_COLOR,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.22,
       blending: T.AdditiveBlending,
       depthWrite: false
     });
@@ -301,6 +321,76 @@
         item.arrow.setDirection(B.normalize());
         item.arrow.setLength(0.18 + visibility * 0.34, 0.08, 0.05);
       }
+    });
+  };
+
+  const magneticWaveShells = [];
+  const createMagneticWaveShell = () => {
+    const group = new T.Group();
+    const rings = [];
+    [42, 65, 90, 115, 138].forEach(degrees => {
+      const theta = degrees * Math.PI / 180;
+      const points = [];
+      for (let i = 0; i <= 96; i++) {
+        const phi = i / 96 * TWO_PI;
+        points.push(new T.Vector3(
+          Math.sin(theta) * Math.cos(phi),
+          Math.cos(theta),
+          Math.sin(theta) * Math.sin(phi)
+        ));
+      }
+      const material = new T.LineBasicMaterial({
+        color: MAGNETIC_COLOR,
+        transparent: true,
+        opacity: 0.54 * Math.sin(theta) ** 2,
+        blending: T.AdditiveBlending,
+        depthWrite: false
+      });
+      const line = new T.Line(new T.BufferGeometry().setFromPoints(points), material);
+      line.frustumCulled = false;
+      group.add(line);
+      const arrows = [0, Math.PI].map(phi => {
+        const n = new T.Vector3(
+          Math.sin(theta) * Math.cos(phi),
+          Math.cos(theta),
+          Math.sin(theta) * Math.sin(phi)
+        );
+        const tangent = AXIS.clone().cross(n).normalize();
+        const arrow = new T.ArrowHelper(tangent, n, 0.12, MAGNETIC_COLOR, 0.045, 0.028);
+        group.add(arrow);
+        return {arrow, phi};
+      });
+      rings.push({theta, line, arrows});
+    });
+    group.visible = false;
+    magneticGroup.add(group);
+    return {group, rings};
+  };
+  for (let i = 0; i < 4; i++) magneticWaveShells.push(createMagneticWaveShell());
+
+  const updateMagneticWaveShells = radii => {
+    magneticWaveShells.forEach((shell, shellIndex) => {
+      const radius = radii[shellIndex];
+      shell.group.visible = Boolean(radius);
+      if (!radius) return;
+      shell.group.scale.setScalar(radius);
+      shell.rings.forEach(ring => {
+        const sampleDirection = new T.Vector3(Math.sin(ring.theta), Math.cos(ring.theta), 0);
+        const sampleField = fieldAt(sampleDirection.clone().multiplyScalar(radius), phase).B;
+        const positiveTangent = AXIS.clone().cross(sampleDirection).normalize();
+        const fieldSign = sampleField.dot(positiveTangent) >= 0 ? 1 : -1;
+        const phaseVisibility = 0.32 + 0.68 * Math.tanh(sampleField.length() * radius * 6);
+        ring.line.material.opacity = (0.18 + 0.46 * Math.sin(ring.theta) ** 2) * phaseVisibility;
+        ring.arrows.forEach(item => {
+          const phi = item.phi;
+          const n = new T.Vector3(
+            Math.sin(ring.theta) * Math.cos(phi),
+            Math.cos(ring.theta),
+            Math.sin(ring.theta) * Math.sin(phi)
+          );
+          item.arrow.setDirection(AXIS.clone().cross(n).normalize().multiplyScalar(fieldSign));
+        });
+      });
     });
   };
 
@@ -419,6 +509,7 @@
       if (valid) front.scale.setScalar(radius);
       return valid ? radius : null;
     });
+    updateMagneticWaveShells(radii);
 
     const wrappedFullWave = ((phase % TWO_PI) + TWO_PI) % TWO_PI;
     trackedRadius = wrappedFullWave / K;
@@ -441,20 +532,33 @@
     });
 
     const trackText = trackedVisible
-      ? `Markierter Wellenberg: r = ${trackedRadius.toFixed(1)} Modell-Längeneinheiten · Bewegung radial nach außen mit c.`
+      ? `Wellenberg bei r = ${trackedRadius.toFixed(1)} · die hellen orangefarbenen B-Phasenringe laufen gemeinsam radial nach außen.`
       : 'Am Dipol entsteht gerade der nächste markierte Wellenberg.';
-    $('#dipoleTrackLabel').textContent = running ? trackText : `Pausiert · ${trackText}`;
+    const pausedTrackText = trackedVisible
+      ? `Pausiert bei r = ${trackedRadius.toFixed(1)} · nach dem Start laufen die B-Phasenringe in Richtung ihrer Pfeile weiter.`
+      : 'Pausiert · am Dipol liegt der Beginn der nächsten Feldphase.';
+    $('#dipoleTrackLabel').textContent = running ? trackText : pausedTrackText;
     $('#dipoleFrontState').textContent = trackedVisible ? `bei r = ${trackedRadius.toFixed(1)} · nach außen` : 'neue Front entsteht am Sender';
   };
 
   const updateSource = () => {
     const dipoleMoment = Math.cos(phase);
-    const electronDisplacement = -0.105 * dipoleMoment;
-    const electronVelocity = 0.105 * OMEGA * Math.sin(phase);
-    const velocityScale = Math.abs(electronVelocity) / (0.105 * OMEGA);
+    const electronDisplacement = -0.205 * dipoleMoment;
+    const electronVelocity = 0.205 * OMEGA * Math.sin(phase);
+    const velocityScale = Math.abs(electronVelocity) / (0.205 * OMEGA);
 
     electrons.forEach(item => {
       item.mesh.position.set(item.mesh.userData.x, item.mesh.userData.baseY + electronDisplacement, item.mesh.userData.z);
+      const direction = electronVelocity >= 0 ? 1 : -1;
+      const trailLength = 0.07 + velocityScale * 0.2;
+      item.trailPositions[0] = item.mesh.position.x;
+      item.trailPositions[1] = item.mesh.position.y - direction * trailLength;
+      item.trailPositions[2] = item.mesh.position.z;
+      item.trailPositions[3] = item.mesh.position.x;
+      item.trailPositions[4] = item.mesh.position.y;
+      item.trailPositions[5] = item.mesh.position.z;
+      item.trail.geometry.attributes.position.needsUpdate = true;
+      item.trail.visible = running && velocityScale > 0.08;
       item.arrow.position.copy(item.mesh.position);
       item.arrow.visible = (!running || vectorsForced) && velocityScale > 0.025;
       if (item.arrow.visible) {
