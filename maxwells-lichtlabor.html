@@ -239,7 +239,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
   <div class="stage-head"><div class="stage-id">6</div><div><h2>Der Hertzsche Dipol: Wie Felder abgestrahlt werden</h2><p>Jetzt erhält die Feldwelle eine Quelle. Schwingende Ladungsträger erzeugen eine Störung, die sich zeitverzögert nach außen ausbreitet.</p></div></div>
   <article class="glass dipole-intro">
     <h3>Vom Wechselstrom zur frei laufenden Welle</h3>
-    <p>Im kurzen Dipol bewegen sich Leitungselektronen nur ein kleines Stück hin und her. Dadurch ändern sich Ladungsverteilung und Strom. Das elektrische und das magnetische Feld reagieren nicht überall gleichzeitig: Die Feldwerte hängen von der <strong>retardierten Zeit t − r/c</strong> ab. Drehe das Modell und verfolge den gelb markierten Wellenberg vom Dipol in die Strahlungszone.</p>
+    <p>Im kurzen Dipol bewegen sich die violetten Leitungselektronen im halbtransparenten Metall hin und her. Dadurch ändern sich Ladungsverteilung und Strom. Das elektrische und das magnetische Feld reagieren nicht überall gleichzeitig: Die Feldwerte hängen von der <strong>retardierten Zeit t − r/c</strong> ab. Drehe das Modell und verfolge den gelb markierten Wellenberg sowie die hellen orangefarbenen B-Phasenringe vom Dipol in die Strahlungszone.</p>
   </article>
   <div class="glass dipole-lab">
     <div class="dipole-toolbar">
@@ -249,10 +249,10 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <div class="dipole-body">
       <div class="dipole-viewport" id="dipoleViewport" tabindex="0" role="img" aria-label="Frei drehbare dreidimensionale Simulation eines Hertzschen Dipols mit bewegten Ladungsträgern, elektrischen und magnetischen Feldern, nach außen laufenden Phasenfronten und Energieflussvektoren">
         <div class="dipole-overlay">
-          <div class="dipole-legend"><span class="dipole-chip e">E-Feld</span><span class="dipole-chip b">B-Feld</span><span class="dipole-chip f">Wellenfront</span><span class="dipole-chip s">Energiefluss</span><span class="dipole-chip q">Ladungsträger</span></div>
+          <div class="dipole-legend"><span class="dipole-chip e">E-Feld</span><span class="dipole-chip b">B-Feld / laufende Phase</span><span class="dipole-chip f">Wellenfront</span><span class="dipole-chip s">Energiefluss</span><span class="dipole-chip q">Elektronen im Stab</span></div>
           <div class="dipole-help">Ziehen: drehen<br>Mausrad: zoomen</div>
         </div>
-        <div class="dipole-track-label" id="dipoleTrackLabel">Der gelbe Wellenberg und die Pfeile zeigen die Abstrahlung nach außen.</div>
+        <div class="dipole-track-label" id="dipoleTrackLabel">Der gelbe Wellenberg und die hellen orangefarbenen B-Phasenringe laufen nach außen.</div>
       </div>
       <aside class="dipole-controls">
         <div class="control">
@@ -290,7 +290,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <p>Die Gleichungen laufen nicht nacheinander ab. Sie beschreiben gleichzeitig verschiedene Eigenschaften derselben Feldkonfiguration. Blende einzelne Ebenen aus und suche die vier Aussagen im Modell.</p>
     <div class="dipole-law-grid">
       <div class="dipole-law-card e"><span class="law-kicker">1 · Gauß für E</span><strong>Ladungen sind Quellen und Senken des E-Feldes</strong><p>An den Dipolenden wechselt der Ladungsüberschuss. Blaue E-Feldlinien beginnen am gerade positiven Ende und enden am negativen – oder setzen sich in den Raum fort.</p></div>
-      <div class="dipole-law-card b"><span class="law-kicker">2 · Gauß für B</span><strong>Magnetische Feldlinien besitzen keine Enden</strong><p>Die orangefarbenen B-Feldlinien bilden geschlossene Ringe um die Dipolachse. Es gibt kein magnetisch geladenes Dipolende als Quelle oder Senke.</p></div>
+      <div class="dipole-law-card b"><span class="law-kicker">2 · Gauß für B</span><strong>Magnetische Feldlinien besitzen keine Enden</strong><p>Die orangefarbenen B-Feldlinien bilden geschlossene Ringe um die Dipolachse. Die hellen Ringe markieren gleichphasige Feldmaxima und wachsen nach außen; sie öffnen sich dabei nirgends.</p></div>
       <div class="dipole-law-card e"><span class="law-kicker">3 · Faraday</span><strong>Ein veränderlicher B-Fluss gehört zu einem E-Wirbelfeld</strong><p>Außerhalb des Leiters ist das E-Feld deshalb nicht nur ein statisches Feld zwischen zwei Ladungen. Sein Umlauf ist mit der zeitlichen Änderung des B-Feldes verknüpft.</p></div>
       <div class="dipole-law-card b"><span class="law-kicker">4 · Ampère–Maxwell</span><strong>Strom und veränderlicher E-Fluss gehören zu einem B-Wirbelfeld</strong><p>Im Dipol trägt der Leitungsstrom bei; außerhalb des Leiters bleibt der Maxwell-Term mit der Änderung des elektrischen Flusses. Dadurch kann das B-Feld die Quelle verlassen.</p></div>
     </div>
@@ -305,8 +305,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;line-height:1.7;marg
     <div class="dipole-term"><strong>Induktionsanteil</strong><span>E, B ∼ 1/r²</span></div>
     <div class="dipole-term"><strong>Strahlungsanteil</strong><span>E, B ∼ 1/r</span></div>
   </div>
-  <div class="insight"><strong>Woran du das Abstrahlen erkennst:</strong> Die Phasenfronten verlassen den Dipol, der markierte Wellenberg wandert mit ihnen nach außen, und die gelben Poynting-Vektoren zeigen den Energiefluss radial vom Sender weg. Seitlich zur Dipolachse ist die Abstrahlung maximal; entlang der Achse verschwindet sie.</div>
-  <div class="insight warning"><strong>Modellgrenze:</strong> Dargestellt ist der analytische Hertzsche Punktdipol außerhalb eines kleinen ausgeblendeten Quellbereichs. Die Feldlinien sind berechnete momentane Stromlinien des Feldes – keine materiellen Fäden. Damit Nah- und Fernfeld gleichzeitig sichtbar bleiben, werden sehr große Amplituden nahe am Dipol begrenzt und die Sichtbarkeit logarithmisch angepasst.</div>
+  <div class="insight"><strong>Woran du das Abstrahlen erkennst:</strong> Die Phasenfronten und die hellen geschlossenen B-Ringe verlassen den Dipol, der markierte Wellenberg wandert mit ihnen nach außen, und die gelben Poynting-Vektoren zeigen den Energiefluss radial vom Sender weg. Seitlich zur Dipolachse ist die Abstrahlung maximal; entlang der Achse verschwindet sie.</div>
+  <div class="insight warning"><strong>Modellgrenze:</strong> Dargestellt ist der analytische Hertzsche Punktdipol außerhalb eines kleinen ausgeblendeten Quellbereichs. Die Feldlinien sind berechnete momentane Stromlinien des Feldes – keine materiellen Fäden. Die expandierenden hellen B-Ringe markieren das nach außen laufende Phasenmuster des Feldes; es wird kein Stoff transportiert. Damit Nah- und Fernfeld gleichzeitig sichtbar bleiben, werden sehr große Amplituden nahe am Dipol begrenzt und die Sichtbarkeit logarithmisch angepasst.</div>
   <article class="glass checkpoint dipole-check" id="dipoleCheckpoint">
     <h3>Zwischencheck · Was beweist in der Simulation die Abstrahlung?</h3>
     <p>Wähle die Beobachtung, die eine nach außen laufende elektromagnetische Welle beschreibt.</p>
