@@ -27,6 +27,7 @@
   const K = OMEGA / C_MODEL;
   const SOURCE_CUTOFF = 0.42;
   const FIELD_LIMIT = 6.8;
+  const ELECTRIC_NEAR_LIMIT = 1.9;
   const ELECTRIC_COLOR = 0x4b9cff;
   const MAGNETIC_COLOR = 0xff7043;
   const ENERGY_COLOR = 0xfbbf24;
@@ -110,6 +111,15 @@
   sourceGroup.add(feed);
   const feedGlow = new T.PointLight(0xffb84d, 1.1, 3.2);
   sourceGroup.add(feedGlow);
+  const sourceAccelerationArrow = new T.ArrowHelper(
+    AXIS,
+    new T.Vector3(0.3, 0, 0),
+    0.58,
+    CHARGE_COLOR,
+    0.13,
+    0.075
+  );
+  sourceGroup.add(sourceAccelerationArrow);
 
   const ionMaterial = new T.MeshBasicMaterial({color: 0x9aa8ba, transparent: true, opacity: 0.48});
   const ionGeometry = new T.SphereGeometry(0.022, 8, 6);
@@ -200,13 +210,16 @@
     return {E, B, r, retardedPhase, p, pDot, pDDot};
   };
 
-  // Elektrische Feldlinien: numerische Momentan-Stromlinien ----------------
+  // Elektrisches Nahfeld: numerische Momentan-Stromlinien ------------------
+  // Stromlinien sind keine bewegten Objekte. Deshalb werden sie auf den
+  // Quellbereich begrenzt; die Ausbreitung im Fernfeld zeigen weiter unten
+  // ausdrücklich gekoppelte E-/B-Phasenschalen.
   const MAX_LINE_POINTS = 175;
   const electricLines = [];
   const electricMaterial = new T.LineBasicMaterial({
     color: ELECTRIC_COLOR,
     transparent: true,
-    opacity: 0.68,
+    opacity: 0.46,
     blending: T.AdditiveBlending,
     depthWrite: false
   });
@@ -242,7 +255,7 @@
     let point = seed.clone();
     for (let i = 0; i < 86; i++) {
       const r = point.length();
-      if (r < SOURCE_CUTOFF || r > FIELD_LIMIT) break;
+      if (r < SOURCE_CUTOFF || r > ELECTRIC_NEAR_LIMIT) break;
       points.push(point.clone());
       const field = fieldAt(point, sourcePhase).E;
       const magnitude = field.length();
@@ -275,6 +288,75 @@
       line.geometry.setDrawRange(0, points.length);
       line.geometry.attributes.position.needsUpdate = true;
       line.visible = points.length > 2;
+    });
+  };
+
+  // Elektrisches Strahlungsfeld auf gemeinsamen Phasenschalen -------------
+  // Blaue Meridianbögen und E-Pfeile erhalten exakt dieselben Radien wie
+  // die orangefarbenen B-Ringe. Damit gibt es nur eine Ausbreitungsgeschwin-
+  // digkeit. Die Bögen sind Phasenmarkierungen, keine materiellen Feldfäden.
+  const electricWaveShells = [];
+  const createElectricWaveShell = () => {
+    const group = new T.Group();
+    const arcs = [];
+    for (let azimuthIndex = 0; azimuthIndex < 8; azimuthIndex++) {
+      const phi = azimuthIndex / 8 * TWO_PI;
+      const points = [];
+      for (let i = 0; i <= 56; i++) {
+        const theta = (42 + i / 56 * 96) * Math.PI / 180;
+        points.push(new T.Vector3(
+          Math.sin(theta) * Math.cos(phi),
+          Math.cos(theta),
+          Math.sin(theta) * Math.sin(phi)
+        ));
+      }
+      const material = new T.LineBasicMaterial({
+        color: ELECTRIC_COLOR,
+        transparent: true,
+        opacity: 0.56,
+        blending: T.AdditiveBlending,
+        depthWrite: false
+      });
+      const line = new T.Line(new T.BufferGeometry().setFromPoints(points), material);
+      line.frustumCulled = false;
+      group.add(line);
+      arcs.push(line);
+    }
+    const arrows = [];
+    [52, 90, 128].forEach(degrees => {
+      const theta = degrees * Math.PI / 180;
+      for (let azimuthIndex = 0; azimuthIndex < 4; azimuthIndex++) {
+        const phi = azimuthIndex / 4 * TWO_PI;
+        const n = new T.Vector3(
+          Math.sin(theta) * Math.cos(phi),
+          Math.cos(theta),
+          Math.sin(theta) * Math.sin(phi)
+        );
+        const transverse = n.clone().multiplyScalar(n.y).sub(AXIS).normalize();
+        const arrow = new T.ArrowHelper(transverse, n, 0.13, ELECTRIC_COLOR, 0.047, 0.03);
+        group.add(arrow);
+        arrows.push({arrow, n, transverse});
+      }
+    });
+    group.visible = false;
+    electricGroup.add(group);
+    return {group, arcs, arrows};
+  };
+  for (let i = 0; i < 4; i++) electricWaveShells.push(createElectricWaveShell());
+
+  const updateElectricWaveShells = radii => {
+    electricWaveShells.forEach((shell, shellIndex) => {
+      const radius = radii[shellIndex];
+      shell.group.visible = Boolean(radius);
+      if (!radius) return;
+      shell.group.scale.setScalar(radius);
+      const retardedPhase = phase - K * radius;
+      const radiationSign = -Math.cos(retardedPhase) >= 0 ? 1 : -1;
+      const phaseVisibility = 0.42 + 0.58 * Math.abs(Math.cos(retardedPhase));
+      shell.arcs.forEach(arc => {arc.material.opacity = 0.5 * phaseVisibility;});
+      shell.arrows.forEach(item => {
+        item.arrow.setDirection(item.transverse.clone().multiplyScalar(radiationSign));
+      });
     });
   };
 
@@ -394,37 +476,6 @@
     });
   };
 
-  // Berechnete Feldvektoren in der Strahlungszone --------------------------
-  const farFieldVectors = [];
-  for (let i = 0; i < 6; i++) {
-    const phi = i / 6 * TWO_PI;
-    const n = new T.Vector3(Math.cos(phi), 0, Math.sin(phi));
-    const position = n.clone().multiplyScalar(4.45);
-    const eArrow = new T.ArrowHelper(AXIS, position, 0.4, ELECTRIC_COLOR, 0.11, 0.065);
-    const bArrow = new T.ArrowHelper(new T.Vector3(0, 0, 1), position, 0.4, MAGNETIC_COLOR, 0.11, 0.065);
-    electricGroup.add(eArrow);
-    magneticGroup.add(bArrow);
-    farFieldVectors.push({position, eArrow, bArrow});
-  }
-
-  const updateFarFieldVectors = () => {
-    farFieldVectors.forEach(item => {
-      const field = fieldAt(item.position, phase);
-      const eLength = clamp(Math.tanh(field.E.length() * 11) * 0.78, 0.03, 0.78);
-      const bLength = clamp(Math.tanh(field.B.length() * 11) * 0.78, 0.03, 0.78);
-      item.eArrow.visible = field.E.length() > 1e-5;
-      item.bArrow.visible = field.B.length() > 1e-5;
-      if (item.eArrow.visible) {
-        item.eArrow.setDirection(field.E.clone().normalize());
-        item.eArrow.setLength(eLength, 0.12, 0.075);
-      }
-      if (item.bArrow.visible) {
-        item.bArrow.setDirection(field.B.clone().normalize());
-        item.bArrow.setLength(bLength, 0.12, 0.075);
-      }
-    });
-  };
-
   // Phasenfronten mit sin²(theta)-Richtungsverteilung ----------------------
   const fronts = [];
   const frontColors = [0x60a5fa, 0xa78bfa, 0x60a5fa, 0xa78bfa];
@@ -479,8 +530,25 @@
   const crestMaterial = new T.MeshBasicMaterial({color: ENERGY_COLOR});
   const crestMarker = new T.Mesh(new T.SphereGeometry(0.095, 16, 10), crestMaterial);
   frontGroup.add(crestMarker);
-  const crestArrow = new T.ArrowHelper(new T.Vector3(1, 0, 0), new T.Vector3(), 0.62, ENERGY_COLOR, 0.14, 0.085);
-  frontGroup.add(crestArrow);
+  const crestEArrow = new T.ArrowHelper(AXIS, new T.Vector3(), 0.66, ELECTRIC_COLOR, 0.13, 0.075);
+  const crestBArrow = new T.ArrowHelper(new T.Vector3(0, 0, -1), new T.Vector3(), 0.66, MAGNETIC_COLOR, 0.13, 0.075);
+  const crestArrow = new T.ArrowHelper(new T.Vector3(1, 0, 0), new T.Vector3(), 0.66, ENERGY_COLOR, 0.14, 0.085);
+  electricGroup.add(crestEArrow);
+  magneticGroup.add(crestBArrow);
+  energyGroup.add(crestArrow);
+  const retardationPositions = new Float32Array(6);
+  const retardationGeometry = new T.BufferGeometry();
+  retardationGeometry.setAttribute('position', new T.BufferAttribute(retardationPositions, 3));
+  const retardationMaterial = new T.LineDashedMaterial({
+    color: 0xfde68a,
+    transparent: true,
+    opacity: 0.45,
+    dashSize: 0.16,
+    gapSize: 0.11,
+    depthWrite: false
+  });
+  const retardationLine = new T.Line(retardationGeometry, retardationMaterial);
+  frontGroup.add(retardationLine);
 
   // Radialer Poynting-Vektor in der Fernzone -------------------------------
   const energyArrows = [];
@@ -509,43 +577,74 @@
       if (valid) front.scale.setScalar(radius);
       return valid ? radius : null;
     });
+    updateElectricWaveShells(radii);
     updateMagneticWaveShells(radii);
 
     const wrappedFullWave = ((phase % TWO_PI) + TWO_PI) % TWO_PI;
     trackedRadius = wrappedFullWave / K;
     const trackedVisible = trackedRadius > 0.45 && trackedRadius < FIELD_LIMIT;
     crestMarker.visible = trackedVisible;
+    crestEArrow.visible = trackedVisible;
+    crestBArrow.visible = trackedVisible;
     crestArrow.visible = trackedVisible;
+    retardationLine.visible = trackedVisible;
     if (trackedVisible) {
-      crestMarker.position.set(trackedRadius, 0, 0);
-      crestArrow.position.set(Math.max(0.25, trackedRadius - 0.38), 0, 0);
+      const crestPosition = new T.Vector3(trackedRadius, 0, 0);
+      const crestField = fieldAt(crestPosition, phase);
+      crestMarker.position.copy(crestPosition);
+      crestEArrow.position.copy(crestPosition);
+      crestBArrow.position.copy(crestPosition);
+      crestArrow.position.copy(crestPosition);
+      if (crestField.E.length() > 1e-7) crestEArrow.setDirection(crestField.E.clone().normalize());
+      if (crestField.B.length() > 1e-7) crestBArrow.setDirection(crestField.B.clone().normalize());
+      crestArrow.setDirection(crestPosition.clone().normalize());
+      retardationPositions[0] = 0;
+      retardationPositions[1] = 0;
+      retardationPositions[2] = 0;
+      retardationPositions[3] = trackedRadius;
+      retardationPositions[4] = 0;
+      retardationPositions[5] = 0;
+      retardationGeometry.attributes.position.needsUpdate = true;
+      retardationLine.computeLineDistances();
     }
 
-    const energyRadius = radii.find(radius => radius && radius > 2.1) || clamp(trackedRadius, 2.1, 5.8);
     energyArrows.forEach(item => {
-      const retarded = phase - K * energyRadius;
+      item.arrow.visible = trackedVisible;
+      if (!trackedVisible) return;
+      const retarded = phase - K * trackedRadius;
       const directionalPattern = Math.sin(item.theta) ** 2;
       const instantaneousPower = directionalPattern * (0.18 + 0.82 * Math.cos(retarded) ** 2);
-      item.arrow.position.copy(item.direction).multiplyScalar(energyRadius);
+      item.arrow.position.copy(item.direction).multiplyScalar(trackedRadius);
       item.arrow.setDirection(item.direction);
       item.arrow.setLength(0.15 + instantaneousPower * 0.52, 0.12, 0.075);
     });
 
     const trackText = trackedVisible
-      ? `Wellenberg bei r = ${trackedRadius.toFixed(1)} · die hellen orangefarbenen B-Phasenringe laufen gemeinsam radial nach außen.`
+      ? `Eine gemeinsame Phase: E (blau), B (orange) und Energiefluss (gelb) bei r = ${trackedRadius.toFixed(1)} · alle laufen mit demselben c nach außen.`
       : 'Am Dipol entsteht gerade der nächste markierte Wellenberg.';
     const pausedTrackText = trackedVisible
-      ? `Pausiert bei r = ${trackedRadius.toFixed(1)} · nach dem Start laufen die B-Phasenringe in Richtung ihrer Pfeile weiter.`
+      ? `Pausiert bei r = ${trackedRadius.toFixed(1)} · E, B und Energiefluss gehören hier zu derselben ausgesandten Phase.`
       : 'Pausiert · am Dipol liegt der Beginn der nächsten Feldphase.';
     $('#dipoleTrackLabel').textContent = running ? trackText : pausedTrackText;
-    $('#dipoleFrontState').textContent = trackedVisible ? `bei r = ${trackedRadius.toFixed(1)} · nach außen` : 'neue Front entsteht am Sender';
+    $('#dipoleFrontState').textContent = trackedVisible ? `E + B + S gemeinsam bei r = ${trackedRadius.toFixed(1)}` : 'neue gekoppelte Front entsteht';
+    if (trackedVisible) {
+      const emissionPhase = phase - K * trackedRadius;
+      const emissionMoment = Math.cos(emissionPhase);
+      const emissionState = emissionMoment >= 0 ? 'oben + · unten −' : 'oben − · unten +';
+      const emissionAcceleration = emissionMoment >= 0 ? 'Elektronen-a ↑' : 'Elektronen-a ↓';
+      $('#dipoleRetardedState').textContent = `vor Δt = r/c = ${trackedRadius.toFixed(1)}: ${emissionAcceleration}, ${emissionState}`;
+    } else {
+      $('#dipoleRetardedState').textContent = 'noch kein Laufzeitabstand zum Sender';
+    }
   };
 
   const updateSource = () => {
     const dipoleMoment = Math.cos(phase);
     const electronDisplacement = -0.205 * dipoleMoment;
     const electronVelocity = 0.205 * OMEGA * Math.sin(phase);
+    const electronAcceleration = 0.205 * OMEGA * OMEGA * Math.cos(phase);
     const velocityScale = Math.abs(electronVelocity) / (0.205 * OMEGA);
+    const accelerationScale = Math.abs(electronAcceleration) / (0.205 * OMEGA * OMEGA);
 
     electrons.forEach(item => {
       item.mesh.position.set(item.mesh.userData.x, item.mesh.userData.baseY + electronDisplacement, item.mesh.userData.z);
@@ -574,12 +673,22 @@
     });
     feedMaterial.opacity = 0.35 + 0.6 * Math.abs(Math.sin(phase));
     feedGlow.intensity = 0.4 + 1.5 * Math.abs(Math.sin(phase));
+    sourceAccelerationArrow.visible = accelerationScale > 0.045;
+    if (sourceAccelerationArrow.visible) {
+      sourceAccelerationArrow.setDirection(electronAcceleration >= 0 ? AXIS : AXIS.clone().multiplyScalar(-1));
+      sourceAccelerationArrow.setLength(0.18 + accelerationScale * 0.48, 0.13, 0.075);
+    }
 
     if (Math.abs(dipoleMoment) < 0.13) $('#dipoleChargeState').textContent = 'nahezu ausgeglichen · Strom maximal';
     else $('#dipoleChargeState').textContent = dipoleMoment > 0 ? 'oben + · unten −' : 'oben − · unten +';
 
     if (velocityScale < 0.08) $('#dipoleMotionState').textContent = 'am Umkehrpunkt · v ≈ 0';
     else $('#dipoleMotionState').textContent = electronVelocity > 0 ? 'Elektronen nach oben ↑' : 'Elektronen nach unten ↓';
+
+    if (accelerationScale < 0.08) $('#dipoleAccelerationState').textContent = 'a ≈ 0 · Strahlungsantrieb momentan klein';
+    else $('#dipoleAccelerationState').textContent = electronAcceleration > 0
+      ? 'a nach oben ↑ · violetter Pfeil'
+      : 'a nach unten ↓ · violetter Pfeil';
   };
 
   const updateLayerVisibility = () => {
@@ -593,7 +702,6 @@
   const updateFields = () => {
     updateElectricLines();
     updateMagneticRings();
-    updateFarFieldVectors();
   };
 
   // Bedienung --------------------------------------------------------------
