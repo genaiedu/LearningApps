@@ -32,8 +32,11 @@
   const MERIDIAN_COPIES = 6;
   const MAX_ELECTRIC_CURVES = 18;
   const MAX_ELECTRIC_POINTS = FIELDLINE_RADIAL_SAMPLES * 2 + 8;
-  const MAX_MAGNETIC_BANDS = 4;
-  const MAGNETIC_RING_ANGLES = [52, 70, 90, 110, 128];
+  const MAGNETIC_RADIAL_LINES = 10;
+  const MAGNETIC_FLUX_SAMPLES = 320;
+  // Gleiche Quantile von integral sin(theta) dtheta: dichter am Aequator,
+  // wo das B-Feld des Dipols staerker ist, und duenner an der Dipolachse.
+  const MAGNETIC_RING_ANGLES = [31, 55.15, 73.4, 90, 106.6, 124.85, 149];
   const ELECTRIC_COLOR = 0x4b9cff;
   const MAGNETIC_COLOR = 0xff7043;
   const ENERGY_COLOR = 0xfbbf24;
@@ -388,14 +391,18 @@
 
   // Magnetische Feldlinien derselben retardierten Lösung ------------------
   // B ist beim elektrischen Dipol rein azimutal. Jede dargestellte Kurve ist
-  // daher ein echter geschlossener Kreis um die Dipolachse. Ausgewählt werden
-  // die momentanen radialen Betragsmaxima; ihre Lage wandert mit der gemeinsam
-  // berechneten Feldphase nach außen.
+  // daher ein echter geschlossener Kreis um die Dipolachse. Welche Kreise
+  // sichtbar sind, wird in jedem Bild neu ueber gleiche magnetische
+  // Flussportionen gewaehlt: Auf einer Meridianflaeche gilt
+  //   dPhi_B = |B_phi| r dr dtheta.
+  // Die radialen und polaren Quantile dieser Dichte lassen die Linien dort
+  // zusammenruecken, wo |B| gross ist. Verdichtungen, Verduennungen und der
+  // Richtungswechsel folgen so demselben retardierten Feld wie die E-Linien.
   const unitMagneticRingPoints = Array.from({length: 97}, (_, index) => {
     const angle = index / 96 * TWO_PI;
     return new T.Vector3(Math.cos(angle), 0, Math.sin(angle));
   });
-  const magneticRingObjects = Array.from({length: MAX_MAGNETIC_BANDS}, () =>
+  const magneticRingObjects = Array.from({length: MAGNETIC_RADIAL_LINES}, () =>
     MAGNETIC_RING_ANGLES.map(degrees => {
       const theta = degrees * Math.PI / 180;
       const material = new T.LineBasicMaterial({
@@ -408,6 +415,8 @@
       const line = new T.Line(new T.BufferGeometry().setFromPoints(unitMagneticRingPoints), material);
       line.frustumCulled = false;
       const arrow = new T.ArrowHelper(new T.Vector3(0, 0, -1), new T.Vector3(), 0.18, MAGNETIC_COLOR, 0.055, 0.034);
+      arrow.line.material.transparent = true;
+      arrow.cone.material.transparent = true;
       line.visible = false;
       arrow.visible = false;
       magneticGroup.add(line, arrow);
@@ -415,56 +424,69 @@
     })
   );
 
-  const magneticSignedAmplitude = (radius, sourcePhase) => {
-    const field = fieldAt(new T.Vector3(radius, 0, 0), sourcePhase).B;
-    return -field.z;
-  };
-
-  const findMagneticBands = sourcePhase => {
-    const sampleCount = 220;
+  const magneticFluxLines = sourcePhase => {
     const minRadius = SOURCE_CUTOFF * 1.08;
-    const samples = Array.from({length: sampleCount + 1}, (_, index) => {
-      const radius = minRadius + index / sampleCount * (FIELD_LIMIT - minRadius);
-      const signed = magneticSignedAmplitude(radius, sourcePhase);
-      return {radius, signed, magnitude: Math.abs(signed)};
+    const samples = Array.from({length: MAGNETIC_FLUX_SAMPLES + 1}, (_, index) => {
+      const radius = minRadius + index / MAGNETIC_FLUX_SAMPLES * (FIELD_LIMIT - minRadius);
+      const magneticField = fieldAt(new T.Vector3(radius, 0, 0), sourcePhase).B;
+      const signed = -magneticField.z;
+      return {radius, signed, fluxDensity: Math.abs(signed) * radius, cumulative: 0};
     });
-    const candidates = [];
-    if (samples[0].magnitude > samples[1].magnitude) candidates.push(samples[0]);
-    for (let index = 1; index < samples.length - 1; index++) {
-      if (samples[index].magnitude >= samples[index - 1].magnitude && samples[index].magnitude > samples[index + 1].magnitude) {
-        candidates.push(samples[index]);
-      }
+
+    let totalFlux = 0;
+    let maximumFluxDensity = 0;
+    for (let index = 1; index < samples.length; index++) {
+      const left = samples[index - 1];
+      const right = samples[index];
+      totalFlux += 0.5 * (left.fluxDensity + right.fluxDensity) * (right.radius - left.radius);
+      right.cumulative = totalFlux;
+      maximumFluxDensity = Math.max(maximumFluxDensity, left.fluxDensity, right.fluxDensity);
     }
-    return candidates
-      .filter(candidate => candidate.magnitude * candidate.radius > 0.045)
-      .sort((first, second) => first.radius - second.radius)
-      .slice(0, MAX_MAGNETIC_BANDS);
+
+    if (totalFlux < 1e-8) return [];
+    return Array.from({length: MAGNETIC_RADIAL_LINES}, (_, lineIndex) => {
+      const targetFlux = (lineIndex + 0.5) / MAGNETIC_RADIAL_LINES * totalFlux;
+      let rightIndex = 1;
+      while (rightIndex < samples.length - 1 && samples[rightIndex].cumulative < targetFlux) rightIndex++;
+      const left = samples[rightIndex - 1];
+      const right = samples[rightIndex];
+      const fluxSpan = Math.max(1e-10, right.cumulative - left.cumulative);
+      const fraction = clamp((targetFlux - left.cumulative) / fluxSpan, 0, 1);
+      const radius = left.radius + fraction * (right.radius - left.radius);
+      const signed = left.signed + fraction * (right.signed - left.signed);
+      const fluxDensity = left.fluxDensity + fraction * (right.fluxDensity - left.fluxDensity);
+      return {radius, signed, relativeDensity: fluxDensity / Math.max(1e-8, maximumFluxDensity)};
+    });
   };
 
   const updateMagneticRings = () => {
-    const bands = findMagneticBands(phase);
-    magneticRingObjects.forEach((rings, bandIndex) => {
-      const band = bands[bandIndex];
+    const fluxLines = magneticFluxLines(phase);
+    magneticRingObjects.forEach((rings, lineIndex) => {
+      const fluxLine = fluxLines[lineIndex];
       rings.forEach(item => {
-        if (!band) {
+        if (!fluxLine) {
           item.line.visible = false;
           item.arrow.visible = false;
           return;
         }
-        const rho = band.radius * Math.sin(item.theta);
-        const y = band.radius * Math.cos(item.theta);
+        const rho = fluxLine.radius * Math.sin(item.theta);
+        const y = fluxLine.radius * Math.cos(item.theta);
         const samplePoint = new T.Vector3(rho, y, 0);
         const magneticField = fieldAt(samplePoint, phase).B;
-        const strength = clamp(Math.tanh(magneticField.length() * band.radius * 2.2), 0.08, 1);
+        const strength = clamp(Math.tanh(magneticField.length() * fluxLine.radius * 1.8), 0, 1);
+        const densityEmphasis = Math.sqrt(clamp(fluxLine.relativeDensity, 0, 1));
+        const opacity = 0.08 + 0.48 * Math.sqrt(strength) * (0.58 + 0.42 * densityEmphasis);
         item.line.position.set(0, y, 0);
         item.line.scale.set(rho, 1, rho);
-        item.line.material.opacity = (0.13 + 0.5 * strength) * Math.sin(item.theta);
+        item.line.material.opacity = opacity;
         item.line.visible = true;
         item.arrow.visible = magneticField.length() > 1e-7;
         if (item.arrow.visible) {
           item.arrow.position.copy(samplePoint);
           item.arrow.setDirection(magneticField.normalize());
           item.arrow.setLength(0.12 + 0.18 * strength, 0.055, 0.034);
+          item.arrow.line.material.opacity = 0.35 + 0.6 * strength;
+          item.arrow.cone.material.opacity = 0.35 + 0.6 * strength;
         }
       });
     });
